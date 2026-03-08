@@ -1,3 +1,4 @@
+import json
 import re
 
 from rllm.rewards.reward_types import RewardOutput
@@ -52,6 +53,68 @@ def _normalize_text(text: str) -> str:
     return text
 
 
+def _extract_numbers(text: str) -> list[float]:
+    """Return all numbers found in *text* as a sorted list of floats.
+
+    Percentage signs are stripped without dividing by 100, because EcoQA
+    stores percentage-unit values as their face value (e.g. ``15.077`` means
+    15.077 %).  An agent that writes ``15.077%`` should therefore match a
+    ground-truth value of ``15.077``.
+    """
+    tokens = _NUMBER_RE.findall(text)
+    results = []
+    for token in tokens:
+        clean = token.rstrip("%").replace(",", "")
+        try:
+            results.append(float(clean))
+        except ValueError:
+            pass
+    return sorted(results)
+
+
+def _numbers_close(a: float, b: float) -> bool:
+    tol = max(1e-4, 1e-3 * max(abs(b), 1.0))
+    return abs(a - b) <= tol
+
+
+def _compare_json_answers(pred_text: str, gt_text: str) -> bool:
+    """Compare answers where the ground truth is a JSON list or dict.
+
+    Strategy
+    --------
+    * Try to parse both sides as JSON and compare numeric values.
+    * Fall back to normalised text comparison if JSON parsing fails.
+    """
+    try:
+        gt_obj = json.loads(gt_text)
+    except (json.JSONDecodeError, ValueError):
+        return _normalize_text(pred_text) == _normalize_text(gt_text)
+
+    # For a list ground truth we collect all leaf numbers and check that
+    # the predicted text contains each of them.
+    gt_numbers = _extract_numbers(gt_text)
+    if not gt_numbers:
+        # Non-numeric list/dict: fall back to normalised text
+        return _normalize_text(pred_text) == _normalize_text(gt_text)
+
+    pred_numbers = _extract_numbers(pred_text)
+
+    # Check that every ground-truth number appears (approximately) in the
+    # predicted answer.  Allow the prediction to contain extra numbers.
+    if len(pred_numbers) < len(gt_numbers):
+        return False
+
+    # Greedy matching: for each GT number, find a close pred number.
+    remaining = list(pred_numbers)
+    for gt_val in gt_numbers:
+        matched_idx = next((i for i, pv in enumerate(remaining) if _numbers_close(pv, gt_val)), None)
+        if matched_idx is None:
+            return False
+        remaining.pop(matched_idx)
+
+    return True
+
+
 def _check_right_table_accessed(accessed_tables: list[str], expected_table_name: str | list[str]) -> float:
     if not accessed_tables or not expected_table_name:
         return 0.0
@@ -79,22 +142,27 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
 
     final_answer = _extract_final_answer(action)
 
-    pred_num, pred_pct = _parse_number(final_answer)
-    gt_num, gt_pct = _parse_number(str(ground_truth))
-
     is_correct = False
+    gt_str = str(ground_truth).strip()
 
-    if pred_num is not None and gt_num is not None:
-        # Allow decimal vs percentage equivalence.
-        if pred_pct and not gt_pct:
-            pred_num = pred_num / 100.0
-        if gt_pct and not pred_pct:
-            gt_num = gt_num / 100.0
-
-        tol = max(1e-4, 1e-3 * max(abs(gt_num), 1.0))
-        is_correct = abs(pred_num - gt_num) <= tol
+    if gt_str.startswith(("[", "{")):
+        # JSON list or dict ground truth — use structural comparison
+        is_correct = _compare_json_answers(final_answer, gt_str)
     else:
-        is_correct = _normalize_text(final_answer) == _normalize_text(str(ground_truth))
+        pred_num, pred_pct = _parse_number(final_answer)
+        gt_num, gt_pct = _parse_number(gt_str)
+
+        if pred_num is not None and gt_num is not None:
+            # Allow decimal vs percentage equivalence.
+            if pred_pct and not gt_pct:
+                pred_num = pred_num / 100.0
+            if gt_pct and not pred_pct:
+                gt_num = gt_num / 100.0
+
+            tol = max(1e-4, 1e-3 * max(abs(gt_num), 1.0))
+            is_correct = abs(pred_num - gt_num) <= tol
+        else:
+            is_correct = _normalize_text(final_answer) == _normalize_text(gt_str)
 
     correctness_reward = 1.0 if is_correct else 0.0
 

@@ -1511,11 +1511,9 @@ questions:
   - geo_level
   - consumption_100m_cny
   - investment_100m_cny
-  answer_type: list
-  answer:
-  - total_consumption: 704235.03
-    total_investment: 559909.26
-  answer_unit: 亿元
+  answer_type: scalar
+  answer: 1.2578
+  answer_unit: 倍
   requires_calculator: true
 - id: 46
   category: H. 边界与容错

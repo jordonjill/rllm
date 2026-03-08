@@ -1594,7 +1594,7 @@ questions:
   - youth_unemp_rate_pct
   - unemployment_rate_pct
   answer_type: scalar
-  answer: null
+  answer: 2.6446
   answer_unit: 倍
   requires_calculator: true
 - id: 46

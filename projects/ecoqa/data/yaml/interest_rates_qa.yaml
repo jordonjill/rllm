@@ -1338,6 +1338,7 @@ questions:
   - year
   - policy_rate_pct
   answer_type: scalar
+  answer: 0.9531
   answer_unit: 倍
   requires_calculator: true
 - id: 46

@@ -4,13 +4,18 @@ Each of the 15 ``data/yaml/<table>_qa.yaml`` files contains up to 50 hand-crafte
 questions with SQL ground truth.  This script:
 
 1. Loads every YAML file.
-2. Drops questions whose ``answer`` is ``None`` or whose ``answer_type`` is
-   ``"error"`` (these are intentional sentinel rows used to test robustness).
-3. Serialises ``list`` / ``dict`` answers to JSON strings so that every ``answer``
+2. Keeps questions with ``answer_type in (None, "error")`` *and* ``answer is None``
+   as **no-data sentinel** rows (``answer_type = "no_data"``, ``answer = "NO_DATA"``).
+   These are questions 46–50 in every file: unanswerable by design (future dates,
+   non-existent columns, impossible conditions).  Keeping them teaches the agent to
+   say "data not found" rather than hallucinate an answer.
+3. Drops questions whose ``answer_type`` is a concrete type (scalar/list/dict) but
+   whose ``answer`` is still ``None`` — these are incomplete entries.
+4. Serialises ``list`` / ``dict`` answers to JSON strings so that every ``answer``
    cell is a plain string.
-4. Splits the questions from **each table** independently into train / val / test
+5. Splits the questions from **each table** independently into train / val / test
    using a stable random seed, preserving the difficulty distribution.
-5. Writes three CSV files to ``data/qa_pairs/``.
+6. Writes three CSV files to ``data/qa_pairs/``.
 """
 
 import json
@@ -57,6 +62,12 @@ OUTPUT_COLUMNS = [
 ]
 
 
+# Ground-truth string written for no-data sentinel questions (Q46-50).
+# The reward function checks whether the agent output signals "data not found"
+# when it sees this as the ground truth.
+NO_DATA_ANSWER = "NO_DATA"
+
+
 def _serialize_answer(answer) -> str:
     """Return a plain-string representation of any answer value."""
     if isinstance(answer, (dict, list)):
@@ -76,10 +87,32 @@ def _load_yaml_file(yaml_path: Path) -> list[dict]:
         answer = q.get("answer")
         answer_type = q.get("answer_type")
 
-        # Drop incomplete / sentinel questions
-        if answer is None:
+        # No-data sentinel questions: answer is None AND answer_type is either absent
+        # (None — the question was written without a type) or explicitly "error" (the
+        # question was flagged as unanswerable).  Both signal the same intent: the data
+        # does not exist in the database.  These are the H. 边界与容错 questions (Q46-50)
+        # in every table: future dates, non-existent columns, impossible conditions.
+        # We keep them as no_data rows to teach the agent to say "data not found".
+        if answer is None and answer_type in (None, "error"):
+            rows.append(
+                {
+                    "user_query": q["question"],
+                    "question": q["question"],
+                    "answer": NO_DATA_ANSWER,
+                    "answer_type": "no_data",
+                    "question_type": "no_data",
+                    "table_name": table_name,
+                    "difficulty": q.get("difficulty", "medium"),
+                    "ground_truth_sql": "",
+                    "columns_used_json": "[]",
+                    "rows_used_json": "[]",
+                    "explanation": q.get("expected_error", ""),
+                }
+            )
             continue
-        if answer_type == "error":
+
+        # Drop genuinely incomplete questions: answer_type is set but answer is missing.
+        if answer is None:
             continue
 
         columns_used: list = q.get("columns_used") or []

@@ -1,0 +1,1531 @@
+table_name: exchange_rates
+table_description: 中国外汇市场数据，月频，仅国家层级，包含主要货币对人民币汇率、CFETS指数、美元指数、外汇储备、汇率波动率等
+table_unique_signals:
+- 美元兑人民币汇率
+- 欧元兑人民币汇率
+- CFETS人民币汇率指数
+- 外汇储备
+- 汇率波动率
+- 美元指数DXY
+- 日元兑人民币
+- 英镑兑人民币
+schema_summary:
+  time_frequency: monthly
+  geo_levels_available:
+  - national
+  row_count: 120
+  data_range:
+    start_year: 2016
+    end_year: 2025
+questions:
+- id: 1
+  category: A. 基础点查询
+  sub_category: A1 单条件等值
+  difficulty: easy
+  question: 查询2024年1月的美元兑人民币汇率是多少？
+  sql: 'SELECT usd_cny
+
+    FROM exchange_rates
+
+    WHERE year = 2024 AND month = 1 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - usd_cny
+  answer_type: scalar
+  answer: 6.9641
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 2
+  category: A. 基础点查询
+  sub_category: A1 单条件等值
+  difficulty: easy
+  question: 查询2025年12月的CFETS人民币汇率指数值
+  sql: 'SELECT cfets_index
+
+    FROM exchange_rates
+
+    WHERE year = 2025 AND month = 12'
+  columns_used:
+  - year
+  - month
+  - cfets_index
+  answer_type: scalar
+  answer: 100.76
+  answer_unit: 指数
+  requires_calculator: false
+- id: 3
+  category: A. 基础点查询
+  sub_category: A2 多条件AND
+  difficulty: easy
+  question: 查询2023年6月的欧元兑人民币汇率和英镑兑人民币汇率
+  sql: 'SELECT eur_cny, gbp_cny
+
+    FROM exchange_rates
+
+    WHERE year = 2023 AND month = 6 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - eur_cny
+  - gbp_cny
+  answer_type: list
+  answer:
+    eur_cny: 7.5744
+    gbp_cny: 8.8751
+  answer_unit: CNY
+  requires_calculator: false
+- id: 4
+  category: A. 基础点查询
+  sub_category: A2 多条件AND
+  difficulty: easy
+  question: 查询2022年3月中国的外汇储备和美元指数
+  sql: 'SELECT fx_reserve_100m_usd, dxy_index
+
+    FROM exchange_rates
+
+    WHERE year = 2022 AND month = 3'
+  columns_used:
+  - year
+  - month
+  - fx_reserve_100m_usd
+  - dxy_index
+  answer_type: list
+  answer:
+    fx_reserve_100m_usd: 32682.57
+    dxy_index: 105.469
+  answer_unit: 亿美元/指数
+  requires_calculator: false
+- id: 5
+  category: A. 基础点查询
+  sub_category: A3 OR/IN条件
+  difficulty: easy
+  question: 查询2024年1月、6月、12月的美元兑人民币汇率
+  sql: 'SELECT ref_date, usd_cny
+
+    FROM exchange_rates
+
+    WHERE year = 2024 AND month IN (1, 6, 12)
+
+    ORDER BY month'
+  columns_used:
+  - ref_date
+  - year
+  - month
+  - usd_cny
+  answer_type: list
+  answer:
+  - ref_date: '2024-01-01'
+    usd_cny: 6.9641
+  - ref_date: '2024-06-01'
+    usd_cny: 6.9961
+  - ref_date: '2024-12-01'
+    usd_cny: 6.9798
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 6
+  category: A. 基础点查询
+  sub_category: A3 OR/IN条件
+  difficulty: easy
+  question: 查询2020年和2021年12月的CFETS人民币汇率指数
+  sql: 'SELECT year, cfets_index
+
+    FROM exchange_rates
+
+    WHERE year IN (2020, 2021) AND month = 12
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - month
+  - cfets_index
+  answer_type: list
+  answer:
+  - year: 2020
+    cfets_index: 99.633
+  - year: 2021
+    cfets_index: 101.897
+  answer_unit: 指数
+  requires_calculator: false
+- id: 7
+  category: A. 基础点查询
+  sub_category: A4 NULL检查
+  difficulty: easy
+  question: 检查exchange_rates表中是否存在美元兑人民币汇率为空值的记录
+  sql: 'SELECT COUNT(*) AS null_count
+
+    FROM exchange_rates
+
+    WHERE usd_cny IS NULL'
+  columns_used:
+  - usd_cny
+  answer_type: scalar
+  answer: 0
+  answer_unit: 条
+  requires_calculator: false
+- id: 8
+  category: B. 范围与比较过滤
+  sub_category: B1 时间范围BETWEEN
+  difficulty: easy
+  question: 查询2018年至2020年期间美元兑人民币汇率的所有记录数
+  sql: 'SELECT COUNT(*) AS record_count
+
+    FROM exchange_rates
+
+    WHERE year BETWEEN 2018 AND 2020'
+  columns_used:
+  - year
+  answer_type: scalar
+  answer: 36
+  answer_unit: 条
+  requires_calculator: false
+- id: 9
+  category: B. 范围与比较过滤
+  sub_category: B1 时间范围BETWEEN
+  difficulty: easy
+  question: 查询2022年1月至2022年6月的人民币汇率波动率平均值
+  sql: 'SELECT AVG(fx_vol_1m_pct) AS avg_volatility
+
+    FROM exchange_rates
+
+    WHERE year = 2022 AND month BETWEEN 1 AND 6'
+  columns_used:
+  - year
+  - month
+  - fx_vol_1m_pct
+  answer_type: scalar
+  answer: 4.958833333333334
+  answer_unit: '%'
+  requires_calculator: false
+- id: 10
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 查询美元兑人民币汇率超过7.0的所有月份记录数
+  sql: 'SELECT COUNT(*) AS count
+
+    FROM exchange_rates
+
+    WHERE usd_cny > 7.0'
+  columns_used:
+  - usd_cny
+  answer_type: scalar
+  answer: 79
+  answer_unit: 条
+  requires_calculator: false
+- id: 11
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 查询外汇储备低于30000亿美元的所有记录
+  sql: 'SELECT ref_date, fx_reserve_100m_usd
+
+    FROM exchange_rates
+
+    WHERE fx_reserve_100m_usd < 30000
+
+    ORDER BY fx_reserve_100m_usd ASC
+
+    LIMIT 10'
+  columns_used:
+  - ref_date
+  - fx_reserve_100m_usd
+  answer_type: list
+  answer: []
+  answer_unit: 亿美元
+  requires_calculator: false
+- id: 12
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 查询美元指数（DXY）高于105的所有月份数据
+  sql: 'SELECT ref_date, year, month, dxy_index
+
+    FROM exchange_rates
+
+    WHERE dxy_index > 105
+
+    ORDER BY dxy_index DESC'
+  columns_used:
+  - ref_date
+  - year
+  - month
+  - dxy_index
+  answer_type: list
+  answer:
+  - ref_date: '2018-01-01'
+    year: 2018
+    month: 1
+    dxy_index: 106.225
+  - ref_date: '2019-01-01'
+    year: 2019
+    month: 1
+    dxy_index: 106.214
+  - ref_date: '2018-12-01'
+    year: 2018
+    month: 12
+    dxy_index: 105.994
+  - ref_date: '2017-08-01'
+    year: 2017
+    month: 8
+    dxy_index: 105.817
+  - ref_date: '2023-12-01'
+    year: 2023
+    month: 12
+    dxy_index: 105.672
+  - ref_date: '2020-08-01'
+    year: 2020
+    month: 8
+    dxy_index: 105.645
+  - ref_date: '2025-01-01'
+    year: 2025
+    month: 1
+    dxy_index: 105.603
+  - ref_date: '2024-04-01'
+    year: 2024
+    month: 4
+    dxy_index: 105.582
+  - ref_date: '2022-03-01'
+    year: 2022
+    month: 3
+    dxy_index: 105.469
+  - ref_date: '2020-03-01'
+    year: 2020
+    month: 3
+    dxy_index: 105.462
+  - ref_date: '2016-09-01'
+    year: 2016
+    month: 9
+    dxy_index: 105.447
+  - ref_date: '2023-02-01'
+    year: 2023
+    month: 2
+    dxy_index: 105.375
+  - ref_date: '2022-07-01'
+    year: 2022
+    month: 7
+    dxy_index: 105.324
+  - ref_date: '2024-09-01'
+    year: 2024
+    month: 9
+    dxy_index: 105.247
+  - ref_date: '2025-12-01'
+    year: 2025
+    month: 12
+    dxy_index: 105.164
+  - ref_date: '2025-02-01'
+    year: 2025
+    month: 2
+    dxy_index: 105.138
+  - ref_date: '2023-10-01'
+    year: 2023
+    month: 10
+    dxy_index: 105.106
+  answer_unit: 指数
+  requires_calculator: false
+- id: 13
+  category: B. 范围与比较过滤
+  sub_category: B3 复合范围条件
+  difficulty: medium
+  question: 查询2019-2021年期间汇率波动率超过6%的所有记录
+  sql: 'SELECT ref_date, usd_cny, fx_vol_1m_pct
+
+    FROM exchange_rates
+
+    WHERE year BETWEEN 2019 AND 2021 AND fx_vol_1m_pct > 6.0
+
+    ORDER BY fx_vol_1m_pct DESC'
+  columns_used:
+  - ref_date
+  - year
+  - usd_cny
+  - fx_vol_1m_pct
+  answer_type: list
+  answer:
+  - ref_date: '2021-04-01'
+    usd_cny: 7.0709
+    fx_vol_1m_pct: 6.374
+  - ref_date: '2019-01-01'
+    usd_cny: 7.1684
+    fx_vol_1m_pct: 6.311
+  - ref_date: '2021-09-01'
+    usd_cny: 7.0774
+    fx_vol_1m_pct: 6.269
+  - ref_date: '2020-04-01'
+    usd_cny: 7.0322
+    fx_vol_1m_pct: 6.183
+  - ref_date: '2019-07-01'
+    usd_cny: 6.9691
+    fx_vol_1m_pct: 6.075
+  - ref_date: '2019-08-01'
+    usd_cny: 6.9381
+    fx_vol_1m_pct: 6.07
+  - ref_date: '2021-02-01'
+    usd_cny: 7.0027
+    fx_vol_1m_pct: 6.033
+  - ref_date: '2020-10-01'
+    usd_cny: 6.9522
+    fx_vol_1m_pct: 6.015
+  - ref_date: '2021-05-01'
+    usd_cny: 6.9864
+    fx_vol_1m_pct: 6.003
+  answer_unit: '%'
+  requires_calculator: false
+- id: 14
+  category: B. 范围与比较过滤
+  sub_category: B3 复合范围条件
+  difficulty: medium
+  question: 查询2023年美元兑人民币汇率在6.8到7.2之间且外汇储备超过31000亿美元的月份
+  sql: "SELECT ref_date, usd_cny, fx_reserve_100m_usd\nFROM exchange_rates\nWHERE year = 2023\n  AND usd_cny BETWEEN 6.8 AND\
+    \ 7.2\n  AND fx_reserve_100m_usd > 31000\nORDER BY month"
+  columns_used:
+  - ref_date
+  - year
+  - usd_cny
+  - fx_reserve_100m_usd
+  answer_type: list
+  answer:
+  - ref_date: '2023-01-01'
+    usd_cny: 6.9903
+    fx_reserve_100m_usd: 32758.59
+  - ref_date: '2023-02-01'
+    usd_cny: 6.99
+    fx_reserve_100m_usd: 33005.54
+  - ref_date: '2023-03-01'
+    usd_cny: 7.145
+    fx_reserve_100m_usd: 32815.8
+  - ref_date: '2023-04-01'
+    usd_cny: 7.0692
+    fx_reserve_100m_usd: 32269.31
+  - ref_date: '2023-05-01'
+    usd_cny: 7.1463
+    fx_reserve_100m_usd: 32612.19
+  - ref_date: '2023-06-01'
+    usd_cny: 6.9985
+    fx_reserve_100m_usd: 32480.65
+  - ref_date: '2023-07-01'
+    usd_cny: 7.0545
+    fx_reserve_100m_usd: 32612.36
+  - ref_date: '2023-08-01'
+    usd_cny: 7.0377
+    fx_reserve_100m_usd: 32278.98
+  - ref_date: '2023-09-01'
+    usd_cny: 7.0119
+    fx_reserve_100m_usd: 32933.55
+  - ref_date: '2023-10-01'
+    usd_cny: 6.9839
+    fx_reserve_100m_usd: 32977.54
+  - ref_date: '2023-11-01'
+    usd_cny: 7.1225
+    fx_reserve_100m_usd: 32865.6
+  - ref_date: '2023-12-01'
+    usd_cny: 7.1466
+    fx_reserve_100m_usd: 32357.18
+  answer_unit: CNY/亿美元
+  requires_calculator: false
+- id: 15
+  category: C. 排序与Top-N
+  sub_category: C1 单指标最大值行
+  difficulty: medium
+  question: 历史上美元兑人民币汇率最高的月份及对应汇率是多少？
+  sql: 'SELECT ref_date, usd_cny
+
+    FROM exchange_rates
+
+    ORDER BY usd_cny DESC
+
+    LIMIT 1'
+  columns_used:
+  - ref_date
+  - usd_cny
+  answer_type: list
+  answer:
+    ref_date: '2018-01-01'
+    usd_cny: 7.1899
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 16
+  category: C. 排序与Top-N
+  sub_category: C1 单指标最大值行
+  difficulty: medium
+  question: 历史上中国外汇储备最高的月份及储备金额是多少？
+  sql: 'SELECT ref_date, fx_reserve_100m_usd
+
+    FROM exchange_rates
+
+    ORDER BY fx_reserve_100m_usd DESC
+
+    LIMIT 1'
+  columns_used:
+  - ref_date
+  - fx_reserve_100m_usd
+  answer_type: list
+  answer:
+    ref_date: '2025-12-01'
+    fx_reserve_100m_usd: 33308.09
+  answer_unit: 亿美元
+  requires_calculator: false
+- id: 17
+  category: C. 排序与Top-N
+  sub_category: C2 单指标最小值行
+  difficulty: medium
+  question: 历史上美元兑人民币汇率最低的月份及对应汇率是多少？
+  sql: 'SELECT ref_date, usd_cny
+
+    FROM exchange_rates
+
+    ORDER BY usd_cny ASC
+
+    LIMIT 1'
+  columns_used:
+  - ref_date
+  - usd_cny
+  answer_type: list
+  answer:
+    ref_date: '2016-09-01'
+    usd_cny: 6.8992
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 18
+  category: C. 排序与Top-N
+  sub_category: C2 单指标最小值行
+  difficulty: medium
+  question: 历史上人民币汇率波动率最低的月份及波动率数值
+  sql: 'SELECT ref_date, fx_vol_1m_pct
+
+    FROM exchange_rates
+
+    ORDER BY fx_vol_1m_pct ASC
+
+    LIMIT 1'
+  columns_used:
+  - ref_date
+  - fx_vol_1m_pct
+  answer_type: list
+  answer:
+    ref_date: '2022-10-01'
+    fx_vol_1m_pct: 4.144
+  answer_unit: '%'
+  requires_calculator: false
+- id: 19
+  category: C. 排序与Top-N
+  sub_category: C3 Top3/Top5排名
+  difficulty: medium
+  question: 查询CFETS人民币汇率指数最高的前5个月份
+  sql: 'SELECT ref_date, cfets_index
+
+    FROM exchange_rates
+
+    ORDER BY cfets_index DESC
+
+    LIMIT 5'
+  columns_used:
+  - ref_date
+  - cfets_index
+  answer_type: list
+  answer:
+  - ref_date: '2019-06-01'
+    cfets_index: 102.787
+  - ref_date: '2022-03-01'
+    cfets_index: 102.762
+  - ref_date: '2021-11-01'
+    cfets_index: 102.746
+  - ref_date: '2025-04-01'
+    cfets_index: 102.688
+  - ref_date: '2016-04-01'
+    cfets_index: 102.619
+  answer_unit: 指数
+  requires_calculator: false
+- id: 20
+  category: C. 排序与Top-N
+  sub_category: C3 Top3/Top5排名
+  difficulty: medium
+  question: 查询美元指数（DXY）最高的前3个月份数据
+  sql: 'SELECT ref_date, dxy_index, usd_cny
+
+    FROM exchange_rates
+
+    ORDER BY dxy_index DESC
+
+    LIMIT 3'
+  columns_used:
+  - ref_date
+  - dxy_index
+  - usd_cny
+  answer_type: list
+  answer:
+  - ref_date: '2018-01-01'
+    dxy_index: 106.225
+    usd_cny: 7.1899
+  - ref_date: '2019-01-01'
+    dxy_index: 106.214
+    usd_cny: 7.1684
+  - ref_date: '2018-12-01'
+    dxy_index: 105.994
+    usd_cny: 7.1141
+  answer_unit: 指数/CNY
+  requires_calculator: false
+- id: 21
+  category: C. 排序与Top-N
+  sub_category: C4 多列排序
+  difficulty: medium
+  question: 查询2024年按美元兑人民币汇率降序、月份升序排列的所有记录
+  sql: 'SELECT ref_date, month, usd_cny
+
+    FROM exchange_rates
+
+    WHERE year = 2024
+
+    ORDER BY usd_cny DESC, month ASC'
+  columns_used:
+  - ref_date
+  - year
+  - month
+  - usd_cny
+  answer_type: list
+  answer:
+  - ref_date: '2024-03-01'
+    month: 3
+    usd_cny: 7.164
+  - ref_date: '2024-04-01'
+    month: 4
+    usd_cny: 7.0711
+  - ref_date: '2024-07-01'
+    month: 7
+    usd_cny: 7.0699
+  - ref_date: '2024-09-01'
+    month: 9
+    usd_cny: 7.0625
+  - ref_date: '2024-05-01'
+    month: 5
+    usd_cny: 7.042
+  - ref_date: '2024-02-01'
+    month: 2
+    usd_cny: 7.0327
+  - ref_date: '2024-06-01'
+    month: 6
+    usd_cny: 6.9961
+  - ref_date: '2024-12-01'
+    month: 12
+    usd_cny: 6.9798
+  - ref_date: '2024-11-01'
+    month: 11
+    usd_cny: 6.9755
+  - ref_date: '2024-01-01'
+    month: 1
+    usd_cny: 6.9641
+  - ref_date: '2024-10-01'
+    month: 10
+    usd_cny: 6.9278
+  - ref_date: '2024-08-01'
+    month: 8
+    usd_cny: 6.9274
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 22
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D1 COUNT/COUNT DISTINCT
+  difficulty: easy
+  question: 外汇市场数据表exchange_rates中共有多少条美元兑人民币汇率记录？
+  sql: 'SELECT COUNT(*) AS total_records
+
+    FROM exchange_rates'
+  columns_used: []
+  answer_type: scalar
+  answer: 120
+  answer_unit: 条
+  requires_calculator: false
+- id: 23
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D1 COUNT/COUNT DISTINCT
+  difficulty: easy
+  question: 外汇市场数据表中覆盖了多少个不同的年份？（涵盖美元兑人民币汇率等指标）
+  sql: 'SELECT COUNT(DISTINCT year) AS year_count
+
+    FROM exchange_rates'
+  columns_used:
+  - year
+  answer_type: scalar
+  answer: 10
+  answer_unit: 年
+  requires_calculator: false
+- id: 24
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D2 SUM
+  difficulty: medium
+  question: 2023年全年的外汇储备总和是多少亿美元？
+  sql: 'SELECT SUM(fx_reserve_100m_usd) AS total_reserve
+
+    FROM exchange_rates
+
+    WHERE year = 2023'
+  columns_used:
+  - year
+  - fx_reserve_100m_usd
+  answer_type: scalar
+  answer: 391967.29000000004
+  answer_unit: 亿美元
+  requires_calculator: false
+- id: 25
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D2 SUM
+  difficulty: medium
+  question: 2020年全年人民币汇率波动率的累计总和
+  sql: 'SELECT SUM(fx_vol_1m_pct) AS total_volatility
+
+    FROM exchange_rates
+
+    WHERE year = 2020'
+  columns_used:
+  - year
+  - fx_vol_1m_pct
+  answer_type: scalar
+  answer: 63.297
+  answer_unit: '%'
+  requires_calculator: false
+- id: 26
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D3 AVG
+  difficulty: medium
+  question: 2016-2025年期间美元兑人民币汇率的平均值是多少？
+  sql: 'SELECT AVG(usd_cny) AS avg_usd_cny
+
+    FROM exchange_rates'
+  columns_used:
+  - usd_cny
+  answer_type: scalar
+  answer: 7.042629166666667
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 27
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D3 AVG
+  difficulty: medium
+  question: 2024年CFETS人民币汇率指数的年度平均值
+  sql: 'SELECT AVG(cfets_index) AS avg_cfets
+
+    FROM exchange_rates
+
+    WHERE year = 2024'
+  columns_used:
+  - year
+  - cfets_index
+  answer_type: scalar
+  answer: 99.51533333333333
+  answer_unit: 指数
+  requires_calculator: false
+- id: 28
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D4 MIN/MAX
+  difficulty: medium
+  question: 历史上欧元兑人民币汇率的最小值和最大值分别是多少？
+  sql: 'SELECT MIN(eur_cny) AS min_eur, MAX(eur_cny) AS max_eur
+
+    FROM exchange_rates'
+  columns_used:
+  - eur_cny
+  answer_type: list
+  answer:
+    min_eur: 7.5053
+    max_eur: 8.0146
+  answer_unit: CNY/EUR
+  requires_calculator: false
+- id: 29
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D4 MIN/MAX
+  difficulty: medium
+  question: 2022年外汇储备的最低值和最高值分别是多少？
+  sql: "SELECT MIN(fx_reserve_100m_usd) AS min_reserve,\n       MAX(fx_reserve_100m_usd) AS max_reserve\nFROM exchange_rates\n\
+    WHERE year = 2022"
+  columns_used:
+  - year
+  - fx_reserve_100m_usd
+  answer_type: list
+  answer:
+    min_reserve: 32181.45
+    max_reserve: 32940.97
+  answer_unit: 亿美元
+  requires_calculator: false
+- id: 30
+  category: E. 分组聚合GROUP BY
+  sub_category: E1 单维度分组SUM/AVG
+  difficulty: medium
+  question: 按年份统计美元兑人民币汇率的年度平均值
+  sql: 'SELECT year, AVG(usd_cny) AS avg_usd_cny
+
+    FROM exchange_rates
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - usd_cny
+  answer_type: list
+  answer:
+  - year: 2016
+    avg_usd_cny: 7.0401750000000005
+  - year: 2017
+    avg_usd_cny: 7.062675
+  - year: 2018
+    avg_usd_cny: 7.060383333333333
+  - year: 2019
+    avg_usd_cny: 7.048733333333334
+  - year: 2020
+    avg_usd_cny: 7.03465
+  - year: 2021
+    avg_usd_cny: 7.025016666666667
+  - year: 2022
+    avg_usd_cny: 7.083283333333333
+  - year: 2023
+    avg_usd_cny: 7.058033333333333
+  - year: 2024
+    avg_usd_cny: 7.017741666666667
+  - year: 2025
+    avg_usd_cny: 6.9956
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 31
+  category: E. 分组聚合GROUP BY
+  sub_category: E1 单维度分组SUM/AVG
+  difficulty: medium
+  question: 按年份统计人民币汇率波动率的年度平均值
+  sql: 'SELECT year, AVG(fx_vol_1m_pct) AS avg_volatility
+
+    FROM exchange_rates
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - fx_vol_1m_pct
+  answer_type: list
+  answer:
+  - year: 2016
+    avg_volatility: 5.577500000000001
+  - year: 2017
+    avg_volatility: 5.352666666666667
+  - year: 2018
+    avg_volatility: 5.30525
+  - year: 2019
+    avg_volatility: 5.261
+  - year: 2020
+    avg_volatility: 5.27475
+  - year: 2021
+    avg_volatility: 5.272083333333334
+  - year: 2022
+    avg_volatility: 5.10875
+  - year: 2023
+    avg_volatility: 5.467833333333334
+  - year: 2024
+    avg_volatility: 5.664416666666667
+  - year: 2025
+    avg_volatility: 5.273916666666667
+  answer_unit: '%'
+  requires_calculator: false
+- id: 32
+  category: E. 分组聚合GROUP BY
+  sub_category: E2 单维度分组COUNT
+  difficulty: easy
+  question: 按年份统计每年的外汇汇率数据记录条数（包含美元兑人民币等汇率）
+  sql: 'SELECT year, COUNT(*) AS record_count
+
+    FROM exchange_rates
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  answer_type: list
+  answer:
+  - year: 2016
+    record_count: 12
+  - year: 2017
+    record_count: 12
+  - year: 2018
+    record_count: 12
+  - year: 2019
+    record_count: 12
+  - year: 2020
+    record_count: 12
+  - year: 2021
+    record_count: 12
+  - year: 2022
+    record_count: 12
+  - year: 2023
+    record_count: 12
+  - year: 2024
+    record_count: 12
+  - year: 2025
+    record_count: 12
+  answer_unit: 条
+  requires_calculator: false
+- id: 33
+  category: E. 分组聚合GROUP BY
+  sub_category: E2 单维度分组COUNT
+  difficulty: easy
+  question: 统计美元兑人民币汇率超过7.0的记录按年份的分布
+  sql: 'SELECT year, COUNT(*) AS count_above_7
+
+    FROM exchange_rates
+
+    WHERE usd_cny > 7.0
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - usd_cny
+  answer_type: list
+  answer:
+  - year: 2016
+    count_above_7: 9
+  - year: 2017
+    count_above_7: 10
+  - year: 2018
+    count_above_7: 9
+  - year: 2019
+    count_above_7: 8
+  - year: 2020
+    count_above_7: 7
+  - year: 2021
+    count_above_7: 7
+  - year: 2022
+    count_above_7: 10
+  - year: 2023
+    count_above_7: 8
+  - year: 2024
+    count_above_7: 6
+  - year: 2025
+    count_above_7: 5
+  answer_unit: 条
+  requires_calculator: false
+- id: 34
+  category: E. 分组聚合GROUP BY
+  sub_category: E3 多维度分组
+  difficulty: medium
+  question: 按年份和季度统计美元兑人民币汇率的平均值（季度定义：Q1=1-3月，Q2=4-6月，Q3=7-9月，Q4=10-12月）
+  sql: "SELECT year,\n       CASE\n         WHEN month BETWEEN 1 AND 3 THEN 1\n         WHEN month BETWEEN 4 AND 6 THEN 2\n\
+    \         WHEN month BETWEEN 7 AND 9 THEN 3\n         ELSE 4\n       END AS quarter,\n       AVG(usd_cny) AS avg_usd_cny\n\
+    FROM exchange_rates\nGROUP BY year, quarter\nORDER BY year, quarter"
+  columns_used:
+  - year
+  - month
+  - usd_cny
+  answer_type: list
+  answer:
+  - year: 2016
+    quarter: 1
+    avg_usd_cny: 7.052366666666667
+  - year: 2016
+    quarter: 2
+    avg_usd_cny: 7.092366666666667
+  - year: 2016
+    quarter: 3
+    avg_usd_cny: 6.986266666666666
+  - year: 2016
+    quarter: 4
+    avg_usd_cny: 7.029699999999999
+  - year: 2017
+    quarter: 1
+    avg_usd_cny: 7.108366666666666
+  - year: 2017
+    quarter: 2
+    avg_usd_cny: 7.058933333333333
+  - year: 2017
+    quarter: 3
+    avg_usd_cny: 7.034199999999999
+  - year: 2017
+    quarter: 4
+    avg_usd_cny: 7.0492
+  - year: 2018
+    quarter: 1
+    avg_usd_cny: 7.110399999999999
+  - year: 2018
+    quarter: 2
+    avg_usd_cny: 7.040133333333333
+  - year: 2018
+    quarter: 3
+    avg_usd_cny: 7.026466666666667
+  - year: 2018
+    quarter: 4
+    avg_usd_cny: 7.064533333333333
+  - year: 2019
+    quarter: 1
+    avg_usd_cny: 7.178266666666667
+  - year: 2019
+    quarter: 2
+    avg_usd_cny: 7.078766666666667
+  - year: 2019
+    quarter: 3
+    avg_usd_cny: 6.944333333333333
+  - year: 2019
+    quarter: 4
+    avg_usd_cny: 6.993566666666666
+  - year: 2020
+    quarter: 1
+    avg_usd_cny: 7.118233333333333
+  - year: 2020
+    quarter: 2
+    avg_usd_cny: 7.0135
+  - year: 2020
+    quarter: 3
+    avg_usd_cny: 6.969033333333333
+  - year: 2020
+    quarter: 4
+    avg_usd_cny: 7.037833333333334
+  - year: 2021
+    quarter: 1
+    avg_usd_cny: 7.045533333333334
+  - year: 2021
+    quarter: 2
+    avg_usd_cny: 7.05
+  - year: 2021
+    quarter: 3
+    avg_usd_cny: 6.9753
+  - year: 2021
+    quarter: 4
+    avg_usd_cny: 7.029233333333333
+  - year: 2022
+    quarter: 1
+    avg_usd_cny: 7.1084000000000005
+  - year: 2022
+    quarter: 2
+    avg_usd_cny: 7.105366666666666
+  - year: 2022
+    quarter: 3
+    avg_usd_cny: 7.071566666666667
+  - year: 2022
+    quarter: 4
+    avg_usd_cny: 7.0478
+  - year: 2023
+    quarter: 1
+    avg_usd_cny: 7.041766666666667
+  - year: 2023
+    quarter: 2
+    avg_usd_cny: 7.071333333333333
+  - year: 2023
+    quarter: 3
+    avg_usd_cny: 7.0347
+  - year: 2023
+    quarter: 4
+    avg_usd_cny: 7.084333333333333
+  - year: 2024
+    quarter: 1
+    avg_usd_cny: 7.0536
+  - year: 2024
+    quarter: 2
+    avg_usd_cny: 7.0364
+  - year: 2024
+    quarter: 3
+    avg_usd_cny: 7.019933333333333
+  - year: 2024
+    quarter: 4
+    avg_usd_cny: 6.961033333333333
+  - year: 2025
+    quarter: 1
+    avg_usd_cny: 6.976666666666667
+  - year: 2025
+    quarter: 2
+    avg_usd_cny: 7.0461
+  - year: 2025
+    quarter: 3
+    avg_usd_cny: 6.943366666666667
+  - year: 2025
+    quarter: 4
+    avg_usd_cny: 7.016266666666667
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 35
+  category: E. 分组聚合GROUP BY
+  sub_category: E3 多维度分组
+  difficulty: hard
+  question: 按年份和汇率区间（<6.5, 6.5-7.0, 7.0-7.5, >7.5）统计美元兑人民币汇率的记录数
+  sql: "SELECT year,\n       CASE\n         WHEN usd_cny < 6.5 THEN '<6.5'\n         WHEN usd_cny >= 6.5 AND usd_cny < 7.0\
+    \ THEN '6.5-7.0'\n         WHEN usd_cny >= 7.0 AND usd_cny < 7.5 THEN '7.0-7.5'\n         ELSE '>7.5'\n       END AS rate_range,\n\
+    \       COUNT(*) AS count\nFROM exchange_rates\nGROUP BY year, rate_range\nORDER BY year, rate_range"
+  columns_used:
+  - year
+  - usd_cny
+  answer_type: list
+  answer:
+  - year: 2016
+    rate_range: 6.5-7.0
+    count: 3
+  - year: 2016
+    rate_range: 7.0-7.5
+    count: 9
+  - year: 2017
+    rate_range: 6.5-7.0
+    count: 2
+  - year: 2017
+    rate_range: 7.0-7.5
+    count: 10
+  - year: 2018
+    rate_range: 6.5-7.0
+    count: 3
+  - year: 2018
+    rate_range: 7.0-7.5
+    count: 9
+  - year: 2019
+    rate_range: 6.5-7.0
+    count: 4
+  - year: 2019
+    rate_range: 7.0-7.5
+    count: 8
+  - year: 2020
+    rate_range: 6.5-7.0
+    count: 5
+  - year: 2020
+    rate_range: 7.0-7.5
+    count: 7
+  - year: 2021
+    rate_range: 6.5-7.0
+    count: 5
+  - year: 2021
+    rate_range: 7.0-7.5
+    count: 7
+  - year: 2022
+    rate_range: 6.5-7.0
+    count: 2
+  - year: 2022
+    rate_range: 7.0-7.5
+    count: 10
+  - year: 2023
+    rate_range: 6.5-7.0
+    count: 4
+  - year: 2023
+    rate_range: 7.0-7.5
+    count: 8
+  - year: 2024
+    rate_range: 6.5-7.0
+    count: 6
+  - year: 2024
+    rate_range: 7.0-7.5
+    count: 6
+  - year: 2025
+    rate_range: 6.5-7.0
+    count: 7
+  - year: 2025
+    rate_range: 7.0-7.5
+    count: 5
+  answer_unit: 条
+  requires_calculator: false
+- id: 36
+  category: E. 分组聚合GROUP BY
+  sub_category: E4 GROUP BY+ORDER BY
+  difficulty: medium
+  question: 按年份统计CFETS人民币汇率指数的年度平均值，按平均值降序排列
+  sql: 'SELECT year, AVG(cfets_index) AS avg_cfets
+
+    FROM exchange_rates
+
+    GROUP BY year
+
+    ORDER BY avg_cfets DESC'
+  columns_used:
+  - year
+  - cfets_index
+  answer_type: list
+  answer:
+  - year: 2021
+    avg_cfets: 101.23183333333333
+  - year: 2022
+    avg_cfets: 100.93849999999999
+  - year: 2018
+    avg_cfets: 100.73183333333333
+  - year: 2025
+    avg_cfets: 100.54008333333333
+  - year: 2020
+    avg_cfets: 100.532
+  - year: 2019
+    avg_cfets: 100.43041666666666
+  - year: 2016
+    avg_cfets: 100.28408333333333
+  - year: 2017
+    avg_cfets: 99.92125
+  - year: 2023
+    avg_cfets: 99.79450000000001
+  - year: 2024
+    avg_cfets: 99.51533333333333
+  answer_unit: 指数
+  requires_calculator: false
+- id: 37
+  category: F. 分组过滤HAVING
+  sub_category: F1 HAVING AVG条件
+  difficulty: hard
+  question: 查询哪些年份的美元兑人民币汇率年度平均值超过6.9？
+  sql: 'SELECT year, AVG(usd_cny) AS avg_usd_cny
+
+    FROM exchange_rates
+
+    GROUP BY year
+
+    HAVING AVG(usd_cny) > 6.9
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - usd_cny
+  answer_type: list
+  answer:
+  - year: 2016
+    avg_usd_cny: 7.0401750000000005
+  - year: 2017
+    avg_usd_cny: 7.062675
+  - year: 2018
+    avg_usd_cny: 7.060383333333333
+  - year: 2019
+    avg_usd_cny: 7.048733333333334
+  - year: 2020
+    avg_usd_cny: 7.03465
+  - year: 2021
+    avg_usd_cny: 7.025016666666667
+  - year: 2022
+    avg_usd_cny: 7.083283333333333
+  - year: 2023
+    avg_usd_cny: 7.058033333333333
+  - year: 2024
+    avg_usd_cny: 7.017741666666667
+  - year: 2025
+    avg_usd_cny: 6.9956
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 38
+  category: F. 分组过滤HAVING
+  sub_category: F1 HAVING AVG条件
+  difficulty: hard
+  question: 查询哪些年份的人民币汇率波动率年度平均值低于5%？
+  sql: 'SELECT year, AVG(fx_vol_1m_pct) AS avg_volatility
+
+    FROM exchange_rates
+
+    GROUP BY year
+
+    HAVING AVG(fx_vol_1m_pct) < 5.0
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - fx_vol_1m_pct
+  answer_type: list
+  answer: []
+  answer_unit: '%'
+  requires_calculator: false
+- id: 39
+  category: F. 分组过滤HAVING
+  sub_category: F2 HAVING COUNT条件
+  difficulty: hard
+  question: 查询哪些年份的美元兑人民币汇率超过7.0的月份数达到6个月及以上？
+  sql: 'SELECT year, COUNT(*) AS months_above_7
+
+    FROM exchange_rates
+
+    WHERE usd_cny > 7.0
+
+    GROUP BY year
+
+    HAVING COUNT(*) >= 6
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - usd_cny
+  answer_type: list
+  answer:
+  - year: 2016
+    months_above_7: 9
+  - year: 2017
+    months_above_7: 10
+  - year: 2018
+    months_above_7: 9
+  - year: 2019
+    months_above_7: 8
+  - year: 2020
+    months_above_7: 7
+  - year: 2021
+    months_above_7: 7
+  - year: 2022
+    months_above_7: 10
+  - year: 2023
+    months_above_7: 8
+  - year: 2024
+    months_above_7: 6
+  answer_unit: 个月
+  requires_calculator: false
+- id: 40
+  category: F. 分组过滤HAVING
+  sub_category: F3 HAVING SUM条件
+  difficulty: hard
+  question: 查询哪些年份的外汇储备年度累计总和超过380000亿美元？
+  sql: 'SELECT year, SUM(fx_reserve_100m_usd) AS total_reserve
+
+    FROM exchange_rates
+
+    GROUP BY year
+
+    HAVING SUM(fx_reserve_100m_usd) > 380000
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - fx_reserve_100m_usd
+  answer_type: list
+  answer:
+  - year: 2016
+    total_reserve: 382949.46
+  - year: 2017
+    total_reserve: 384014.33
+  - year: 2018
+    total_reserve: 385134.17
+  - year: 2019
+    total_reserve: 386375.41
+  - year: 2020
+    total_reserve: 389460.71
+  - year: 2021
+    total_reserve: 390940.57
+  - year: 2022
+    total_reserve: 390712.13
+  - year: 2023
+    total_reserve: 391967.29000000004
+  - year: 2024
+    total_reserve: 394770.45
+  - year: 2025
+    total_reserve: 394820.62
+  answer_unit: 亿美元
+  requires_calculator: false
+- id: 41
+  category: G. 时间趋势与子查询
+  sub_category: G1 按年聚合趋势
+  difficulty: medium
+  question: 按年份展示美元兑人民币汇率的最大值、最小值和平均值趋势
+  sql: "SELECT year,\n       MIN(usd_cny) AS min_rate,\n       MAX(usd_cny) AS max_rate,\n       AVG(usd_cny) AS avg_rate\n\
+    FROM exchange_rates\nGROUP BY year\nORDER BY year"
+  columns_used:
+  - year
+  - usd_cny
+  answer_type: list
+  answer:
+  - year: 2016
+    min_rate: 6.8992
+    max_rate: 7.1832
+    avg_rate: 7.0401750000000005
+  - year: 2017
+    min_rate: 6.9197
+    max_rate: 7.1498
+    avg_rate: 7.062675
+  - year: 2018
+    min_rate: 6.9037
+    max_rate: 7.1899
+    avg_rate: 7.060383333333333
+  - year: 2019
+    min_rate: 6.9258
+    max_rate: 7.1896
+    avg_rate: 7.048733333333334
+  - year: 2020
+    min_rate: 6.9522
+    max_rate: 7.1575
+    avg_rate: 7.03465
+  - year: 2021
+    min_rate: 6.9069
+    max_rate: 7.1425
+    avg_rate: 7.025016666666667
+  - year: 2022
+    min_rate: 6.9192
+    max_rate: 7.1825
+    avg_rate: 7.083283333333333
+  - year: 2023
+    min_rate: 6.9839
+    max_rate: 7.1466
+    avg_rate: 7.058033333333333
+  - year: 2024
+    min_rate: 6.9274
+    max_rate: 7.164
+    avg_rate: 7.017741666666667
+  - year: 2025
+    min_rate: 6.9182
+    max_rate: 7.0821
+    avg_rate: 6.9956
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 42
+  category: G. 时间趋势与子查询
+  sub_category: G1 按年聚合趋势
+  difficulty: medium
+  question: 按年份展示外汇储备的年度平均值趋势
+  sql: 'SELECT year, AVG(fx_reserve_100m_usd) AS avg_reserve
+
+    FROM exchange_rates
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - fx_reserve_100m_usd
+  answer_type: list
+  answer:
+  - year: 2016
+    avg_reserve: 31912.455
+  - year: 2017
+    avg_reserve: 32001.194166666668
+  - year: 2018
+    avg_reserve: 32094.514166666664
+  - year: 2019
+    avg_reserve: 32197.950833333332
+  - year: 2020
+    avg_reserve: 32455.05916666667
+  - year: 2021
+    avg_reserve: 32578.380833333333
+  - year: 2022
+    avg_reserve: 32559.344166666666
+  - year: 2023
+    avg_reserve: 32663.940833333338
+  - year: 2024
+    avg_reserve: 32897.5375
+  - year: 2025
+    avg_reserve: 32901.71833333333
+  answer_unit: 亿美元
+  requires_calculator: false
+- id: 43
+  category: G. 时间趋势与子查询
+  sub_category: G2 子查询对比
+  difficulty: hard
+  question: 查询美元兑人民币汇率高于历史平均值的所有月份记录
+  sql: 'SELECT ref_date, usd_cny
+
+    FROM exchange_rates
+
+    WHERE usd_cny > (SELECT AVG(usd_cny) FROM exchange_rates)
+
+    ORDER BY usd_cny DESC
+
+    LIMIT 10'
+  columns_used:
+  - ref_date
+  - usd_cny
+  answer_type: list
+  answer:
+  - ref_date: '2018-01-01'
+    usd_cny: 7.1899
+  - ref_date: '2019-03-01'
+    usd_cny: 7.1896
+  - ref_date: '2016-04-01'
+    usd_cny: 7.1832
+  - ref_date: '2022-04-01'
+    usd_cny: 7.1825
+  - ref_date: '2019-02-01'
+    usd_cny: 7.1768
+  - ref_date: '2016-03-01'
+    usd_cny: 7.1718
+  - ref_date: '2019-01-01'
+    usd_cny: 7.1684
+  - ref_date: '2024-03-01'
+    usd_cny: 7.164
+  - ref_date: '2020-01-01'
+    usd_cny: 7.1575
+  - ref_date: '2017-03-01'
+    usd_cny: 7.1498
+  answer_unit: CNY/USD
+  requires_calculator: false
+- id: 44
+  category: G. 时间趋势与子查询
+  sub_category: G2 子查询对比
+  difficulty: hard
+  question: 查询2024年中CFETS人民币汇率指数高于2024年平均值的月份
+  sql: "SELECT ref_date, cfets_index\nFROM exchange_rates\nWHERE year = 2024\n  AND cfets_index > (SELECT AVG(cfets_index)\
+    \ FROM exchange_rates WHERE year = 2024)\nORDER BY cfets_index DESC"
+  columns_used:
+  - ref_date
+  - year
+  - cfets_index
+  answer_type: list
+  answer:
+  - ref_date: '2024-01-01'
+    cfets_index: 100.982
+  - ref_date: '2024-03-01'
+    cfets_index: 100.974
+  - ref_date: '2024-02-01'
+    cfets_index: 100.773
+  - ref_date: '2024-05-01'
+    cfets_index: 100.723
+  - ref_date: '2024-10-01'
+    cfets_index: 99.75
+  answer_unit: 指数
+  requires_calculator: false
+- id: 45
+  category: G. 时间趋势与子查询
+  sub_category: G3 跨工具计算
+  difficulty: hard
+  question: 2024年美元兑人民币汇率的平均值是2016年平均值的多少倍？
+  sql: '-- 步骤1: 查询2024年平均汇率
+
+    SELECT AVG(usd_cny) AS rate_2024
+
+    FROM exchange_rates
+
+    WHERE year = 2024;
+
+
+    -- 步骤2: 查询2016年平均汇率
+
+    SELECT AVG(usd_cny) AS rate_2016
+
+    FROM exchange_rates
+
+    WHERE year = 2016;
+
+
+    -- 步骤3: 使用 calculator 工具计算 rate_2024 / rate_2016'
+  columns_used:
+  - year
+  - usd_cny
+  answer_type: scalar
+  answer: 0.9968
+  answer_unit: 倍
+  requires_calculator: true
+- id: 46
+  category: H. 边界与容错
+  sub_category: H1 数据不存在
+  difficulty: medium
+  question: 查询2030年的美元兑人民币汇率数据
+  sql: null
+  expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
+  answer: null
+- id: 47
+  category: H. 边界与容错
+  sub_category: H2 字段不存在
+  difficulty: medium
+  question: 查询各月份的人民币兑日元汇率（CNY/JPY）
+  sql: null
+  expected_error: 表中仅包含jpy_cny字段（日元兑人民币），不包含反向汇率cny_jpy字段
+  answer: null
+- id: 48
+  category: H. 边界与容错
+  sub_category: H3 逻辑矛盾
+  difficulty: hard
+  question: 查询geo_level为national且geo_name为北京的汇率数据
+  sql: null
+  expected_error: 逻辑冲突：geo_level='national'时geo_name固定为'中国'，不可能为'北京'
+  answer: null
+- id: 49
+  category: H. 边界与容错
+  sub_category: H4 极端值查询
+  difficulty: hard
+  question: 查询人民币汇率波动率超过100%的记录
+  sql: null
+  expected_error: 汇率波动率（fx_vol_1m_pct）的合理范围通常在0-20%之间，不存在超过100%的情况
+  answer: null
+- id: 50
+  category: H. 边界与容错
+  sub_category: H1 数据不存在
+  difficulty: medium
+  question: 查询2015年的外汇储备数据
+  sql: null
+  expected_error: 数据起始年份为2016年，2015年数据不存在
+  answer: null

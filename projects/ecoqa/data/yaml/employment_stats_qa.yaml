@@ -1,0 +1,1649 @@
+table_name: employment_stats
+table_description: 中国就业市场统计数据，月频，多地理层级，包含劳动力规模、就业人数、失业率、青年失业率、劳动参与率、平均月薪、新增城镇就业岗位等指标
+table_unique_signals:
+- 失业率
+- 就业人数
+- 劳动参与率
+- 平均工资
+- 青年失业率
+- 新增城镇就业岗位
+- 劳动力人口
+- 就业市场
+schema_summary:
+  time_frequency: monthly
+  geo_levels_available:
+  - national
+  - region
+  - province
+  - city
+  row_count: 5880
+  data_range:
+    start_year: 2016
+    end_year: 2025
+questions:
+- id: 1
+  category: A. 基础点查询
+  sub_category: A1 单条件等值
+  difficulty: easy
+  question: 2024年1月全国的失业率是多少？
+  sql: 'SELECT unemployment_rate_pct
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND month = 1 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - unemployment_rate_pct
+  answer_type: scalar
+  answer: 5.501
+  answer_unit: '%'
+  requires_calculator: false
+- id: 2
+  category: A. 基础点查询
+  sub_category: A1 单条件等值
+  difficulty: easy
+  question: 查询北京市2023年6月的劳动参与率
+  sql: 'SELECT participation_rate_pct
+
+    FROM employment_stats
+
+    WHERE geo_name = ''北京'' AND year = 2023 AND month = 6'
+  columns_used:
+  - geo_name
+  - year
+  - month
+  - participation_rate_pct
+  answer_type: scalar
+  answer: 66.022
+  answer_unit: '%'
+  requires_calculator: false
+- id: 3
+  category: A. 基础点查询
+  sub_category: A2 多条件AND
+  difficulty: easy
+  question: 2022年全国青年失业率超过15%的月份有哪些？
+  sql: 'SELECT year, month, youth_unemp_rate_pct
+
+    FROM employment_stats
+
+    WHERE year = 2022 AND geo_level = ''national'' AND youth_unemp_rate_pct > 15
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - youth_unemp_rate_pct
+  answer_type: list
+  answer:
+  - year: 2022
+    month: 3
+    youth_unemp_rate_pct: 15.077
+  - year: 2022
+    month: 4
+    youth_unemp_rate_pct: 15.047
+  - year: 2022
+    month: 8
+    youth_unemp_rate_pct: 15.909
+  answer_unit: '%'
+  requires_calculator: false
+- id: 4
+  category: A. 基础点查询
+  sub_category: A2 多条件AND
+  difficulty: easy
+  question: 广东省2021年平均月薪超过8000元的月份的就业人数
+  sql: 'SELECT month, employed_10k, avg_monthly_wage_cny
+
+    FROM employment_stats
+
+    WHERE geo_name = ''广东'' AND year = 2021 AND avg_monthly_wage_cny > 8000
+
+    LIMIT 10'
+  columns_used:
+  - geo_name
+  - year
+  - month
+  - employed_10k
+  - avg_monthly_wage_cny
+  answer_type: list
+  answer:
+  - month: 1
+    employed_10k: 8790.14
+    avg_monthly_wage_cny: 9609.71
+  - month: 2
+    employed_10k: 9050.64
+    avg_monthly_wage_cny: 9641.15
+  - month: 3
+    employed_10k: 8925.38
+    avg_monthly_wage_cny: 9652.65
+  - month: 4
+    employed_10k: 8457.07
+    avg_monthly_wage_cny: 9641.15
+  - month: 5
+    employed_10k: 8780.1
+    avg_monthly_wage_cny: 9609.71
+  - month: 6
+    employed_10k: 8640.13
+    avg_monthly_wage_cny: 9566.77
+  - month: 7
+    employed_10k: 8795.1
+    avg_monthly_wage_cny: 9523.82
+  - month: 8
+    employed_10k: 8874.25
+    avg_monthly_wage_cny: 9492.39
+  - month: 9
+    employed_10k: 8724.76
+    avg_monthly_wage_cny: 9480.88
+  - month: 10
+    employed_10k: 9070.94
+    avg_monthly_wage_cny: 9492.39
+  answer_unit: 万人
+  requires_calculator: false
+- id: 5
+  category: A. 基础点查询
+  sub_category: A3 OR/IN条件
+  difficulty: easy
+  question: 查询上海、北京、深圳三个城市2024年3月的失业率
+  sql: 'SELECT geo_name, unemployment_rate_pct
+
+    FROM employment_stats
+
+    WHERE geo_name IN (''上海'', ''北京'', ''深圳'') AND year = 2024 AND month = 3'
+  columns_used:
+  - geo_name
+  - year
+  - month
+  - unemployment_rate_pct
+  answer_type: list
+  answer:
+  - geo_name: 北京
+    unemployment_rate_pct: 5.564
+  - geo_name: 上海
+    unemployment_rate_pct: 4.352
+  - geo_name: 深圳
+    unemployment_rate_pct: 4.65
+  answer_unit: '%'
+  requires_calculator: false
+- id: 6
+  category: A. 基础点查询
+  sub_category: A3 OR/IN条件
+  difficulty: easy
+  question: 2023年第一季度（1-3月）全国的新增城镇就业岗位数
+  sql: 'SELECT month, new_urban_jobs_10k
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND month IN (1, 2, 3) AND geo_level = ''national'''
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - new_urban_jobs_10k
+  answer_type: list
+  answer:
+  - month: 1
+    new_urban_jobs_10k: 143.28
+  - month: 2
+    new_urban_jobs_10k: 143.53
+  - month: 3
+    new_urban_jobs_10k: 150.0
+  answer_unit: 万个
+  requires_calculator: false
+- id: 7
+  category: A. 基础点查询
+  sub_category: A4 NULL检查
+  difficulty: easy
+  question: 有多少条就业统计记录的青年失业率数据缺失？
+  sql: 'SELECT COUNT(*) AS missing_count
+
+    FROM employment_stats
+
+    WHERE youth_unemp_rate_pct IS NULL'
+  columns_used:
+  - youth_unemp_rate_pct
+  answer_type: scalar
+  answer: 0
+  answer_unit: 条
+  requires_calculator: false
+- id: 8
+  category: B. 范围与比较过滤
+  sub_category: B1 时间范围BETWEEN
+  difficulty: easy
+  question: 2018年至2020年间全国的平均失业率是多少？
+  sql: 'SELECT AVG(unemployment_rate_pct) AS avg_rate
+
+    FROM employment_stats
+
+    WHERE year BETWEEN 2018 AND 2020 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - geo_level
+  - unemployment_rate_pct
+  answer_type: scalar
+  answer: 5.159194444444444
+  answer_unit: '%'
+  requires_calculator: false
+- id: 9
+  category: B. 范围与比较过滤
+  sub_category: B1 时间范围BETWEEN
+  difficulty: easy
+  question: 北京市2019年至2021年期间劳动参与率最高的月份
+  sql: 'SELECT year, month, participation_rate_pct
+
+    FROM employment_stats
+
+    WHERE geo_name = ''北京'' AND year BETWEEN 2019 AND 2021
+
+    ORDER BY participation_rate_pct DESC
+
+    LIMIT 1'
+  columns_used:
+  - geo_name
+  - year
+  - month
+  - participation_rate_pct
+  answer_type: list
+  answer:
+  - year: 2021
+    month: 3
+    participation_rate_pct: 67.761
+  answer_unit: '%'
+  requires_calculator: false
+- id: 10
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 2023年哪些省份的平均月薪超过9000元？
+  sql: 'SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    HAVING AVG(avg_monthly_wage_cny) > 9000'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - avg_monthly_wage_cny
+  answer_type: list
+  answer:
+  - geo_name: 上海
+    avg_wage: 9270.255833333333
+  - geo_name: 云南
+    avg_wage: 11593.9825
+  - geo_name: 内蒙古
+    avg_wage: 13876.795833333332
+  - geo_name: 北京
+    avg_wage: 12205.5625
+  - geo_name: 吉林
+    avg_wage: 12270.740833333331
+  - geo_name: 四川
+    avg_wage: 12847.155833333332
+  - geo_name: 天津
+    avg_wage: 12710.53
+  - geo_name: 宁夏
+    avg_wage: 11759.653333333334
+  - geo_name: 安徽
+    avg_wage: 9706.78
+  - geo_name: 山东
+    avg_wage: 12820.43
+  - geo_name: 山西
+    avg_wage: 13852.678333333335
+  - geo_name: 广东
+    avg_wage: 9900.7675
+  - geo_name: 广西
+    avg_wage: 12986.700833333334
+  - geo_name: 新疆
+    avg_wage: 11739.751666666665
+  - geo_name: 江苏
+    avg_wage: 11726.301666666666
+  - geo_name: 江西
+    avg_wage: 10133.494166666667
+  - geo_name: 河北
+    avg_wage: 13218.745833333334
+  - geo_name: 河南
+    avg_wage: 12975.57
+  - geo_name: 浙江
+    avg_wage: 10384.02
+  - geo_name: 海南
+    avg_wage: 13568.785833333333
+  - geo_name: 湖北
+    avg_wage: 10223.951666666666
+  - geo_name: 湖南
+    avg_wage: 9153.88
+  - geo_name: 甘肃
+    avg_wage: 12061.124166666666
+  - geo_name: 福建
+    avg_wage: 11780.541666666666
+  - geo_name: 西藏
+    avg_wage: 12924.114166666666
+  - geo_name: 贵州
+    avg_wage: 9312.926666666666
+  - geo_name: 辽宁
+    avg_wage: 13759.0625
+  - geo_name: 重庆
+    avg_wage: 9334.343333333332
+  - geo_name: 陕西
+    avg_wage: 12638.86
+  - geo_name: 青海
+    avg_wage: 9629.289999999999
+  - geo_name: 黑龙江
+    avg_wage: 10171.685833333333
+  answer_unit: 元
+  requires_calculator: false
+- id: 11
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 全国青年失业率低于10%的月份有多少个？
+  sql: 'SELECT COUNT(*) AS count
+
+    FROM employment_stats
+
+    WHERE geo_level = ''national'' AND youth_unemp_rate_pct < 10'
+  columns_used:
+  - geo_level
+  - youth_unemp_rate_pct
+  answer_type: scalar
+  answer: 0
+  answer_unit: 个月
+  requires_calculator: false
+- id: 12
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 2024年哪些城市的就业人数超过500万人？
+  sql: 'SELECT DISTINCT geo_name, employed_10k
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''city'' AND employed_10k > 500
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - employed_10k
+  answer_type: list
+  answer:
+  - geo_name: 广州
+    employed_10k: 1541.87
+  - geo_name: 深圳
+    employed_10k: 1994.9
+  - geo_name: 杭州
+    employed_10k: 1187.94
+  - geo_name: 南京
+    employed_10k: 1229.48
+  - geo_name: 武汉
+    employed_10k: 891.73
+  - geo_name: 成都
+    employed_10k: 1041.92
+  - geo_name: 西安
+    employed_10k: 555.01
+  - geo_name: 苏州
+    employed_10k: 1887.06
+  - geo_name: 青岛
+    employed_10k: 1178.08
+  - geo_name: 宁波
+    employed_10k: 772.63
+  answer_unit: 万人
+  requires_calculator: false
+- id: 13
+  category: B. 范围与比较过滤
+  sub_category: B3 复合范围条件
+  difficulty: medium
+  question: 2020年至2022年间失业率超过5%且劳动参与率低于70%的记录
+  sql: "SELECT year, month, geo_name, unemployment_rate_pct, participation_rate_pct\nFROM employment_stats\nWHERE year BETWEEN\
+    \ 2020 AND 2022\n  AND unemployment_rate_pct > 5\n  AND participation_rate_pct < 70\nLIMIT 10"
+  columns_used:
+  - year
+  - month
+  - geo_name
+  - unemployment_rate_pct
+  - participation_rate_pct
+  answer_type: list
+  answer:
+  - year: 2020
+    month: 1
+    geo_name: 华北
+    unemployment_rate_pct: 5.421
+    participation_rate_pct: 65.425
+  - year: 2020
+    month: 1
+    geo_name: 华东
+    unemployment_rate_pct: 5.135
+    participation_rate_pct: 66.261
+  - year: 2020
+    month: 1
+    geo_name: 华中
+    unemployment_rate_pct: 5.139
+    participation_rate_pct: 67.583
+  - year: 2020
+    month: 1
+    geo_name: 北京
+    unemployment_rate_pct: 5.577
+    participation_rate_pct: 65.941
+  - year: 2020
+    month: 1
+    geo_name: 河北
+    unemployment_rate_pct: 5.41
+    participation_rate_pct: 67.248
+  - year: 2020
+    month: 1
+    geo_name: 山西
+    unemployment_rate_pct: 5.514
+    participation_rate_pct: 66.118
+  - year: 2020
+    month: 1
+    geo_name: 吉林
+    unemployment_rate_pct: 5.439
+    participation_rate_pct: 65.999
+  - year: 2020
+    month: 1
+    geo_name: 黑龙江
+    unemployment_rate_pct: 5.139
+    participation_rate_pct: 67.469
+  - year: 2020
+    month: 1
+    geo_name: 浙江
+    unemployment_rate_pct: 5.059
+    participation_rate_pct: 67.608
+  - year: 2020
+    month: 1
+    geo_name: 江西
+    unemployment_rate_pct: 5.26
+    participation_rate_pct: 67.439
+  answer_unit: '%'
+  requires_calculator: false
+- id: 14
+  category: B. 范围与比较过滤
+  sub_category: B3 复合范围条件
+  difficulty: medium
+  question: 2023年新增城镇就业岗位超过100万且平均月薪超过7500元的月份
+  sql: "SELECT month, new_urban_jobs_10k, avg_monthly_wage_cny\nFROM employment_stats\nWHERE year = 2023\n  AND geo_level\
+    \ = 'national'\n  AND new_urban_jobs_10k > 100\n  AND avg_monthly_wage_cny > 7500"
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - new_urban_jobs_10k
+  - avg_monthly_wage_cny
+  answer_type: list
+  answer:
+  - month: 1
+    new_urban_jobs_10k: 143.28
+    avg_monthly_wage_cny: 9137.76
+  - month: 2
+    new_urban_jobs_10k: 143.53
+    avg_monthly_wage_cny: 9166.65
+  - month: 3
+    new_urban_jobs_10k: 150.0
+    avg_monthly_wage_cny: 9177.22
+  - month: 4
+    new_urban_jobs_10k: 149.37
+    avg_monthly_wage_cny: 9166.65
+  - month: 5
+    new_urban_jobs_10k: 143.74
+    avg_monthly_wage_cny: 9137.76
+  - month: 6
+    new_urban_jobs_10k: 143.31
+    avg_monthly_wage_cny: 9098.3
+  - month: 7
+    new_urban_jobs_10k: 137.35
+    avg_monthly_wage_cny: 9058.83
+  - month: 8
+    new_urban_jobs_10k: 142.93
+    avg_monthly_wage_cny: 9029.94
+  - month: 9
+    new_urban_jobs_10k: 135.65
+    avg_monthly_wage_cny: 9019.37
+  - month: 10
+    new_urban_jobs_10k: 135.18
+    avg_monthly_wage_cny: 9029.94
+  - month: 11
+    new_urban_jobs_10k: 145.3
+    avg_monthly_wage_cny: 9058.83
+  - month: 12
+    new_urban_jobs_10k: 147.74
+    avg_monthly_wage_cny: 9098.3
+  answer_unit: 万个
+  requires_calculator: false
+- id: 15
+  category: C. 排序与Top-N
+  sub_category: C1 单指标最大值行
+  difficulty: easy
+  question: 历史上全国失业率最高的月份是哪个？
+  sql: 'SELECT year, month, unemployment_rate_pct
+
+    FROM employment_stats
+
+    WHERE geo_level = ''national''
+
+    ORDER BY unemployment_rate_pct DESC
+
+    LIMIT 1'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - unemployment_rate_pct
+  answer_type: list
+  answer:
+  - year: 2018
+    month: 5
+    unemployment_rate_pct: 5.973
+  answer_unit: '%'
+  requires_calculator: false
+- id: 16
+  category: C. 排序与Top-N
+  sub_category: C1 单指标最大值行
+  difficulty: easy
+  question: 2024年平均月薪最高的省份是哪个？
+  sql: 'SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    ORDER BY avg_wage DESC
+
+    LIMIT 1'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - avg_monthly_wage_cny
+  answer_type: list
+  answer:
+  - geo_name: 内蒙古
+    avg_wage: 14110.86
+  answer_unit: 元
+  requires_calculator: false
+- id: 17
+  category: C. 排序与Top-N
+  sub_category: C2 单指标最小值行
+  difficulty: easy
+  question: 2023年全国青年失业率最低的月份
+  sql: 'SELECT year, month, youth_unemp_rate_pct
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''national''
+
+    ORDER BY youth_unemp_rate_pct ASC
+
+    LIMIT 1'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - youth_unemp_rate_pct
+  answer_type: list
+  answer:
+  - year: 2023
+    month: 1
+    youth_unemp_rate_pct: 11.622
+  answer_unit: '%'
+  requires_calculator: false
+- id: 18
+  category: C. 排序与Top-N
+  sub_category: C2 单指标最小值行
+  difficulty: easy
+  question: 哪个城市2022年的劳动参与率最低？
+  sql: 'SELECT geo_name, AVG(participation_rate_pct) AS avg_participation
+
+    FROM employment_stats
+
+    WHERE year = 2022 AND geo_level = ''city''
+
+    GROUP BY geo_name
+
+    ORDER BY avg_participation ASC
+
+    LIMIT 1'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - participation_rate_pct
+  answer_type: list
+  answer:
+  - geo_name: 西安
+    avg_participation: 66.42383333333333
+  answer_unit: '%'
+  requires_calculator: false
+- id: 19
+  category: C. 排序与Top-N
+  sub_category: C3 Top3/Top5排名
+  difficulty: medium
+  question: 2023年就业人数最多的前5个省份
+  sql: 'SELECT geo_name, AVG(employed_10k) AS avg_employed
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    ORDER BY avg_employed DESC
+
+    LIMIT 5'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - employed_10k
+  answer_type: list
+  answer:
+  - geo_name: 广东
+    avg_employed: 8877.210833333333
+  - geo_name: 江苏
+    avg_employed: 8376.115833333333
+  - geo_name: 山东
+    avg_employed: 7574.285833333332
+  - geo_name: 浙江
+    avg_employed: 5724.239166666666
+  - geo_name: 四川
+    avg_employed: 4202.492499999999
+  answer_unit: 万人
+  requires_calculator: false
+- id: 20
+  category: C. 排序与Top-N
+  sub_category: C3 Top3/Top5排名
+  difficulty: medium
+  question: 2024年新增城镇就业岗位最多的前3个月份
+  sql: 'SELECT month, new_urban_jobs_10k
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''national''
+
+    ORDER BY new_urban_jobs_10k DESC
+
+    LIMIT 3'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - new_urban_jobs_10k
+  answer_type: list
+  answer:
+  - month: 1
+    new_urban_jobs_10k: 150.0
+  - month: 3
+    new_urban_jobs_10k: 150.0
+  - month: 4
+    new_urban_jobs_10k: 150.0
+  answer_unit: 万个
+  requires_calculator: false
+- id: 21
+  category: C. 排序与Top-N
+  sub_category: C4 多列排序
+  difficulty: medium
+  question: 2022年各省份按失业率升序、劳动参与率降序排列的前5个
+  sql: "SELECT geo_name,\n       AVG(unemployment_rate_pct) AS avg_unemp,\n       AVG(participation_rate_pct) AS avg_participation\n\
+    FROM employment_stats\nWHERE year = 2022 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_unemp ASC, avg_participation\
+    \ DESC\nLIMIT 5"
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - unemployment_rate_pct
+  - participation_rate_pct
+  answer_type: list
+  answer:
+  - geo_name: 广东
+    avg_unemp: 4.723166666666667
+    avg_participation: 66.74366666666667
+  - geo_name: 河南
+    avg_unemp: 4.747083333333333
+    avg_participation: 66.78808333333333
+  - geo_name: 四川
+    avg_unemp: 4.765333333333333
+    avg_participation: 66.64891666666666
+  - geo_name: 上海
+    avg_unemp: 4.784166666666667
+    avg_participation: 66.32583333333334
+  - geo_name: 内蒙古
+    avg_unemp: 4.78825
+    avg_participation: 66.74974999999999
+  answer_unit: '%'
+  requires_calculator: false
+- id: 22
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D1 COUNT/COUNT DISTINCT
+  difficulty: easy
+  question: 就业统计数据库中总共有多少条记录？
+  sql: 'SELECT COUNT(*) AS total_records
+
+    FROM employment_stats'
+  columns_used: []
+  answer_type: scalar
+  answer: 5880
+  answer_unit: 条
+  requires_calculator: false
+- id: 23
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D1 COUNT/COUNT DISTINCT
+  difficulty: easy
+  question: 数据库中包含多少个不同的省份就业数据？
+  sql: 'SELECT COUNT(DISTINCT geo_name) AS province_count
+
+    FROM employment_stats
+
+    WHERE geo_level = ''province'''
+  columns_used:
+  - geo_level
+  - geo_name
+  answer_type: scalar
+  answer: 31
+  answer_unit: 个
+  requires_calculator: false
+- id: 24
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D2 SUM
+  difficulty: easy
+  question: 2023年全国全年新增城镇就业岗位总数
+  sql: 'SELECT SUM(new_urban_jobs_10k) AS total_new_jobs
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - geo_level
+  - new_urban_jobs_10k
+  answer_type: scalar
+  answer: 1717.38
+  answer_unit: 万个
+  requires_calculator: false
+- id: 25
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D2 SUM
+  difficulty: easy
+  question: 2022年广东省全年的失业人口总数
+  sql: 'SELECT SUM(unemployed_10k) AS total_unemployed
+
+    FROM employment_stats
+
+    WHERE year = 2022 AND geo_name = ''广东'''
+  columns_used:
+  - year
+  - geo_name
+  - unemployed_10k
+  answer_type: scalar
+  answer: 5268.860000000001
+  answer_unit: 万人
+  requires_calculator: false
+- id: 26
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D3 AVG
+  difficulty: easy
+  question: 2024年全国的平均失业率是多少？
+  sql: 'SELECT AVG(unemployment_rate_pct) AS avg_rate
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - geo_level
+  - unemployment_rate_pct
+  answer_type: scalar
+  answer: 5.069166666666667
+  answer_unit: '%'
+  requires_calculator: false
+- id: 27
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D3 AVG
+  difficulty: easy
+  question: 2021年全国的平均月薪是多少？
+  sql: 'SELECT AVG(avg_monthly_wage_cny) AS avg_wage
+
+    FROM employment_stats
+
+    WHERE year = 2021 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - geo_level
+  - avg_monthly_wage_cny
+  answer_type: scalar
+  answer: 8791.365833333333
+  answer_unit: 元
+  requires_calculator: false
+- id: 28
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D4 MIN/MAX
+  difficulty: easy
+  question: 历史数据中全国青年失业率的最高值和最低值
+  sql: "SELECT MIN(youth_unemp_rate_pct) AS min_rate,\n       MAX(youth_unemp_rate_pct) AS max_rate\nFROM employment_stats\n\
+    WHERE geo_level = 'national'"
+  columns_used:
+  - geo_level
+  - youth_unemp_rate_pct
+  answer_type: list
+  answer:
+  - min_rate: 11.278
+    max_rate: 17.921
+  answer_unit: '%'
+  requires_calculator: false
+- id: 29
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D4 MIN/MAX
+  difficulty: easy
+  question: 2023年所有省份中平均月薪的最大值
+  sql: 'SELECT MAX(avg_monthly_wage_cny) AS max_wage
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''province'''
+  columns_used:
+  - year
+  - geo_level
+  - avg_monthly_wage_cny
+  answer_type: scalar
+  answer: 13997.17
+  answer_unit: 元
+  requires_calculator: false
+- id: 30
+  category: E. 分组聚合GROUP BY
+  sub_category: E1 单维度分组SUM/AVG
+  difficulty: medium
+  question: 2016年至2025年每年全国的平均失业率
+  sql: 'SELECT year, AVG(unemployment_rate_pct) AS avg_rate
+
+    FROM employment_stats
+
+    WHERE geo_level = ''national''
+
+    GROUP BY year'
+  columns_used:
+  - year
+  - geo_level
+  - unemployment_rate_pct
+  answer_type: list
+  answer:
+  - year: 2016
+    avg_rate: 5.288666666666667
+  - year: 2017
+    avg_rate: 5.196833333333333
+  - year: 2018
+    avg_rate: 5.328666666666667
+  - year: 2019
+    avg_rate: 5.193333333333333
+  - year: 2020
+    avg_rate: 4.955583333333333
+  - year: 2021
+    avg_rate: 4.85775
+  - year: 2022
+    avg_rate: 4.932666666666667
+  - year: 2023
+    avg_rate: 4.718916666666667
+  - year: 2024
+    avg_rate: 5.069166666666667
+  - year: 2025
+    avg_rate: 4.730583333333334
+  answer_unit: '%'
+  requires_calculator: false
+- id: 31
+  category: E. 分组聚合GROUP BY
+  sub_category: E1 单维度分组SUM/AVG
+  difficulty: medium
+  question: 2023年各省份的年度新增城镇就业岗位总数
+  sql: 'SELECT geo_name, SUM(new_urban_jobs_10k) AS total_new_jobs
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - new_urban_jobs_10k
+  answer_type: list
+  answer:
+  - geo_name: 上海
+    total_new_jobs: 62.86
+  - geo_name: 云南
+    total_new_jobs: 36.26
+  - geo_name: 内蒙古
+    total_new_jobs: 24.86
+  - geo_name: 北京
+    total_new_jobs: 60.3
+  - geo_name: 吉林
+    total_new_jobs: 15.969999999999999
+  - geo_name: 四川
+    total_new_jobs: 88.7
+  - geo_name: 天津
+    total_new_jobs: 24.31
+  - geo_name: 宁夏
+    total_new_jobs: 8.9
+  - geo_name: 安徽
+    total_new_jobs: 62.980000000000004
+  - geo_name: 山东
+    total_new_jobs: 153.86
+  answer_unit: 万个
+  requires_calculator: false
+- id: 32
+  category: E. 分组聚合GROUP BY
+  sub_category: E2 单维度分组COUNT
+  difficulty: medium
+  question: 每个地理层级分别有多少条就业统计记录？
+  sql: 'SELECT geo_level, COUNT(*) AS record_count
+
+    FROM employment_stats
+
+    GROUP BY geo_level'
+  columns_used:
+  - geo_level
+  answer_type: list
+  answer:
+  - geo_level: city
+    record_count: 1200
+  - geo_level: national
+    record_count: 120
+  - geo_level: province
+    record_count: 3720
+  - geo_level: region
+    record_count: 840
+  answer_unit: 条
+  requires_calculator: false
+- id: 33
+  category: E. 分组聚合GROUP BY
+  sub_category: E2 单维度分组COUNT
+  difficulty: medium
+  question: 2024年每个月份有多少个地区的就业数据？
+  sql: 'SELECT month, COUNT(DISTINCT geo_name) AS region_count
+
+    FROM employment_stats
+
+    WHERE year = 2024
+
+    GROUP BY month'
+  columns_used:
+  - year
+  - month
+  - geo_name
+  answer_type: list
+  answer:
+  - month: 1
+    region_count: 49
+  - month: 2
+    region_count: 49
+  - month: 3
+    region_count: 49
+  - month: 4
+    region_count: 49
+  - month: 5
+    region_count: 49
+  - month: 6
+    region_count: 49
+  - month: 7
+    region_count: 49
+  - month: 8
+    region_count: 49
+  - month: 9
+    region_count: 49
+  - month: 10
+    region_count: 49
+  - month: 11
+    region_count: 49
+  - month: 12
+    region_count: 49
+  answer_unit: 个
+  requires_calculator: false
+- id: 34
+  category: E. 分组聚合GROUP BY
+  sub_category: E3 多维度分组
+  difficulty: hard
+  question: 2022年和2023年各省份的平均劳动参与率对比
+  sql: 'SELECT year, geo_name, AVG(participation_rate_pct) AS avg_participation
+
+    FROM employment_stats
+
+    WHERE year IN (2022, 2023) AND geo_level = ''province''
+
+    GROUP BY year, geo_name
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - participation_rate_pct
+  answer_type: list
+  answer:
+  - year: 2022
+    geo_name: 上海
+    avg_participation: 66.32583333333334
+  - year: 2022
+    geo_name: 云南
+    avg_participation: 66.52075
+  - year: 2022
+    geo_name: 内蒙古
+    avg_participation: 66.74974999999999
+  - year: 2022
+    geo_name: 北京
+    avg_participation: 66.87958333333334
+  - year: 2022
+    geo_name: 吉林
+    avg_participation: 67.37575
+  - year: 2022
+    geo_name: 四川
+    avg_participation: 66.64891666666666
+  - year: 2022
+    geo_name: 天津
+    avg_participation: 66.68366666666667
+  - year: 2022
+    geo_name: 宁夏
+    avg_participation: 66.68058333333333
+  - year: 2022
+    geo_name: 安徽
+    avg_participation: 66.71041666666666
+  - year: 2022
+    geo_name: 山东
+    avg_participation: 66.81258333333334
+  answer_unit: '%'
+  requires_calculator: false
+- id: 35
+  category: E. 分组聚合GROUP BY
+  sub_category: E3 多维度分组
+  difficulty: hard
+  question: 2024年各地理层级每个月的平均失业率
+  sql: 'SELECT geo_level, month, AVG(unemployment_rate_pct) AS avg_rate
+
+    FROM employment_stats
+
+    WHERE year = 2024
+
+    GROUP BY geo_level, month
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - geo_level
+  - month
+  - unemployment_rate_pct
+  answer_type: list
+  answer:
+  - geo_level: city
+    month: 1
+    avg_rate: 4.7438
+  - geo_level: city
+    month: 2
+    avg_rate: 4.8588000000000005
+  - geo_level: city
+    month: 3
+    avg_rate: 4.9399999999999995
+  - geo_level: city
+    month: 4
+    avg_rate: 4.7478
+  - geo_level: city
+    month: 5
+    avg_rate: 5.1596
+  - geo_level: city
+    month: 6
+    avg_rate: 4.7173
+  - geo_level: city
+    month: 7
+    avg_rate: 5.0455
+  - geo_level: city
+    month: 8
+    avg_rate: 4.8524
+  - geo_level: city
+    month: 9
+    avg_rate: 4.6923
+  - geo_level: city
+    month: 10
+    avg_rate: 5.0049
+  answer_unit: '%'
+  requires_calculator: false
+- id: 36
+  category: E. 分组聚合GROUP BY
+  sub_category: E4 GROUP BY+ORDER BY
+  difficulty: medium
+  question: 2023年各省份按平均月薪降序排列
+  sql: 'SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    ORDER BY avg_wage DESC
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - avg_monthly_wage_cny
+  answer_type: list
+  answer:
+  - geo_name: 内蒙古
+    avg_wage: 13876.795833333332
+  - geo_name: 山西
+    avg_wage: 13852.678333333335
+  - geo_name: 辽宁
+    avg_wage: 13759.0625
+  - geo_name: 海南
+    avg_wage: 13568.785833333333
+  - geo_name: 河北
+    avg_wage: 13218.745833333334
+  - geo_name: 广西
+    avg_wage: 12986.700833333334
+  - geo_name: 河南
+    avg_wage: 12975.57
+  - geo_name: 西藏
+    avg_wage: 12924.114166666666
+  - geo_name: 四川
+    avg_wage: 12847.155833333332
+  - geo_name: 山东
+    avg_wage: 12820.43
+  answer_unit: 元
+  requires_calculator: false
+- id: 37
+  category: F. 分组过滤HAVING
+  sub_category: F1 HAVING AVG条件
+  difficulty: hard
+  question: 2023年平均失业率超过4.5%的省份
+  sql: 'SELECT geo_name, AVG(unemployment_rate_pct) AS avg_rate
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    HAVING AVG(unemployment_rate_pct) > 4.5'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - unemployment_rate_pct
+  answer_type: list
+  answer:
+  - geo_name: 上海
+    avg_rate: 4.9310833333333335
+  - geo_name: 云南
+    avg_rate: 5.038916666666666
+  - geo_name: 内蒙古
+    avg_rate: 4.685583333333334
+  - geo_name: 北京
+    avg_rate: 4.947916666666667
+  - geo_name: 吉林
+    avg_rate: 4.716
+  - geo_name: 四川
+    avg_rate: 4.96075
+  - geo_name: 天津
+    avg_rate: 4.7775
+  - geo_name: 宁夏
+    avg_rate: 4.867416666666666
+  - geo_name: 安徽
+    avg_rate: 5.217416666666667
+  - geo_name: 山东
+    avg_rate: 4.884416666666667
+  - geo_name: 山西
+    avg_rate: 4.854916666666667
+  - geo_name: 广东
+    avg_rate: 5.024583333333333
+  - geo_name: 广西
+    avg_rate: 4.796
+  - geo_name: 新疆
+    avg_rate: 4.823083333333334
+  - geo_name: 江苏
+    avg_rate: 4.7285
+  - geo_name: 江西
+    avg_rate: 5.082833333333333
+  - geo_name: 河北
+    avg_rate: 4.929583333333333
+  - geo_name: 河南
+    avg_rate: 5.021583333333333
+  - geo_name: 浙江
+    avg_rate: 4.70775
+  - geo_name: 海南
+    avg_rate: 4.872916666666667
+  - geo_name: 湖北
+    avg_rate: 4.922666666666667
+  - geo_name: 湖南
+    avg_rate: 4.764666666666667
+  - geo_name: 甘肃
+    avg_rate: 5.032666666666667
+  - geo_name: 福建
+    avg_rate: 4.972583333333334
+  - geo_name: 西藏
+    avg_rate: 4.791333333333333
+  - geo_name: 贵州
+    avg_rate: 4.805666666666666
+  - geo_name: 辽宁
+    avg_rate: 5.115583333333333
+  - geo_name: 重庆
+    avg_rate: 5.207166666666667
+  - geo_name: 陕西
+    avg_rate: 4.9395
+  - geo_name: 青海
+    avg_rate: 4.929666666666667
+  - geo_name: 黑龙江
+    avg_rate: 4.826083333333333
+  answer_unit: '%'
+  requires_calculator: false
+- id: 38
+  category: F. 分组过滤HAVING
+  sub_category: F1 HAVING AVG条件
+  difficulty: hard
+  question: 2022年平均劳动参与率低于65%的城市
+  sql: 'SELECT geo_name, AVG(participation_rate_pct) AS avg_participation
+
+    FROM employment_stats
+
+    WHERE year = 2022 AND geo_level = ''city''
+
+    GROUP BY geo_name
+
+    HAVING AVG(participation_rate_pct) < 65
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - participation_rate_pct
+  answer_type: list
+  answer: []
+  answer_unit: '%'
+  requires_calculator: false
+- id: 39
+  category: F. 分组过滤HAVING
+  sub_category: F2 HAVING COUNT条件
+  difficulty: hard
+  question: 哪些省份在2023年有超过10个月的就业数据记录？
+  sql: 'SELECT geo_name, COUNT(*) AS month_count
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    HAVING COUNT(*) > 10'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  answer_type: list
+  answer:
+  - geo_name: 上海
+    month_count: 12
+  - geo_name: 云南
+    month_count: 12
+  - geo_name: 内蒙古
+    month_count: 12
+  - geo_name: 北京
+    month_count: 12
+  - geo_name: 吉林
+    month_count: 12
+  - geo_name: 四川
+    month_count: 12
+  - geo_name: 天津
+    month_count: 12
+  - geo_name: 宁夏
+    month_count: 12
+  - geo_name: 安徽
+    month_count: 12
+  - geo_name: 山东
+    month_count: 12
+  - geo_name: 山西
+    month_count: 12
+  - geo_name: 广东
+    month_count: 12
+  - geo_name: 广西
+    month_count: 12
+  - geo_name: 新疆
+    month_count: 12
+  - geo_name: 江苏
+    month_count: 12
+  - geo_name: 江西
+    month_count: 12
+  - geo_name: 河北
+    month_count: 12
+  - geo_name: 河南
+    month_count: 12
+  - geo_name: 浙江
+    month_count: 12
+  - geo_name: 海南
+    month_count: 12
+  - geo_name: 湖北
+    month_count: 12
+  - geo_name: 湖南
+    month_count: 12
+  - geo_name: 甘肃
+    month_count: 12
+  - geo_name: 福建
+    month_count: 12
+  - geo_name: 西藏
+    month_count: 12
+  - geo_name: 贵州
+    month_count: 12
+  - geo_name: 辽宁
+    month_count: 12
+  - geo_name: 重庆
+    month_count: 12
+  - geo_name: 陕西
+    month_count: 12
+  - geo_name: 青海
+    month_count: 12
+  - geo_name: 黑龙江
+    month_count: 12
+  answer_unit: 个月
+  requires_calculator: false
+- id: 40
+  category: F. 分组过滤HAVING
+  sub_category: F3 HAVING SUM条件
+  difficulty: hard
+  question: 2023年全年新增城镇就业岗位超过1000万的省份
+  sql: 'SELECT geo_name, SUM(new_urban_jobs_10k) AS total_jobs
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    HAVING SUM(new_urban_jobs_10k) > 1000'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - new_urban_jobs_10k
+  answer_type: list
+  answer: []
+  answer_unit: 万个
+  requires_calculator: false
+- id: 41
+  category: G. 时间趋势与子查询
+  sub_category: G1 按年聚合趋势
+  difficulty: medium
+  question: 全国历年平均失业率的变化趋势
+  sql: 'SELECT year, AVG(unemployment_rate_pct) AS avg_rate
+
+    FROM employment_stats
+
+    WHERE geo_level = ''national''
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - geo_level
+  - unemployment_rate_pct
+  answer_type: list
+  answer:
+  - year: 2016
+    avg_rate: 5.288666666666667
+  - year: 2017
+    avg_rate: 5.196833333333333
+  - year: 2018
+    avg_rate: 5.328666666666667
+  - year: 2019
+    avg_rate: 5.193333333333333
+  - year: 2020
+    avg_rate: 4.955583333333333
+  - year: 2021
+    avg_rate: 4.85775
+  - year: 2022
+    avg_rate: 4.932666666666667
+  - year: 2023
+    avg_rate: 4.718916666666667
+  - year: 2024
+    avg_rate: 5.069166666666667
+  - year: 2025
+    avg_rate: 4.730583333333334
+  answer_unit: '%'
+  requires_calculator: false
+- id: 42
+  category: G. 时间趋势与子查询
+  sub_category: G1 按年聚合趋势
+  difficulty: medium
+  question: 北京市2016年至2025年的平均月薪年度趋势
+  sql: 'SELECT year, AVG(avg_monthly_wage_cny) AS avg_wage
+
+    FROM employment_stats
+
+    WHERE geo_name = ''北京''
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - geo_name
+  - avg_monthly_wage_cny
+  answer_type: list
+  answer:
+  - year: 2016
+    avg_wage: 10764.428333333333
+  - year: 2017
+    avg_wage: 10970.301666666666
+  - year: 2018
+    avg_wage: 11176.18
+  - year: 2019
+    avg_wage: 11382.058333333334
+  - year: 2020
+    avg_wage: 11587.931666666665
+  - year: 2021
+    avg_wage: 11793.811666666666
+  - year: 2022
+    avg_wage: 11999.688333333334
+  - year: 2023
+    avg_wage: 12205.5625
+  - year: 2024
+    avg_wage: 12411.441666666666
+  - year: 2025
+    avg_wage: 12617.318333333335
+  answer_unit: 元
+  requires_calculator: false
+- id: 43
+  category: G. 时间趋势与子查询
+  sub_category: G2 子查询对比
+  difficulty: hard
+  question: 2024年哪些月份的全国失业率高于全年平均值？
+  sql: "SELECT month, unemployment_rate_pct\nFROM employment_stats\nWHERE year = 2024\n  AND geo_level = 'national'\n  AND\
+    \ unemployment_rate_pct > (\n    SELECT AVG(unemployment_rate_pct)\n    FROM employment_stats\n    WHERE year = 2024 AND\
+    \ geo_level = 'national'\n  )"
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - unemployment_rate_pct
+  answer_type: list
+  answer:
+  - month: 1
+    unemployment_rate_pct: 5.501
+  - month: 2
+    unemployment_rate_pct: 5.541
+  - month: 5
+    unemployment_rate_pct: 5.768
+  - month: 6
+    unemployment_rate_pct: 5.437
+  - month: 8
+    unemployment_rate_pct: 5.208
+  - month: 12
+    unemployment_rate_pct: 5.498
+  answer_unit: '%'
+  requires_calculator: false
+- id: 44
+  category: G. 时间趋势与子查询
+  sub_category: G2 子查询对比
+  difficulty: hard
+  question: 2023年平均月薪高于全国平均水平的省份
+  sql: "SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\n\
+    GROUP BY geo_name\nHAVING AVG(avg_monthly_wage_cny) > (\n  SELECT AVG(avg_monthly_wage_cny)\n  FROM employment_stats\n\
+    \  WHERE year = 2023 AND geo_level = 'national'\n)"
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - avg_monthly_wage_cny
+  answer_type: list
+  answer:
+  - geo_name: 上海
+    avg_wage: 9270.255833333333
+  - geo_name: 云南
+    avg_wage: 11593.9825
+  - geo_name: 内蒙古
+    avg_wage: 13876.795833333332
+  - geo_name: 北京
+    avg_wage: 12205.5625
+  - geo_name: 吉林
+    avg_wage: 12270.740833333331
+  - geo_name: 四川
+    avg_wage: 12847.155833333332
+  - geo_name: 天津
+    avg_wage: 12710.53
+  - geo_name: 宁夏
+    avg_wage: 11759.653333333334
+  - geo_name: 安徽
+    avg_wage: 9706.78
+  - geo_name: 山东
+    avg_wage: 12820.43
+  - geo_name: 山西
+    avg_wage: 13852.678333333335
+  - geo_name: 广东
+    avg_wage: 9900.7675
+  - geo_name: 广西
+    avg_wage: 12986.700833333334
+  - geo_name: 新疆
+    avg_wage: 11739.751666666665
+  - geo_name: 江苏
+    avg_wage: 11726.301666666666
+  - geo_name: 江西
+    avg_wage: 10133.494166666667
+  - geo_name: 河北
+    avg_wage: 13218.745833333334
+  - geo_name: 河南
+    avg_wage: 12975.57
+  - geo_name: 浙江
+    avg_wage: 10384.02
+  - geo_name: 海南
+    avg_wage: 13568.785833333333
+  - geo_name: 湖北
+    avg_wage: 10223.951666666666
+  - geo_name: 湖南
+    avg_wage: 9153.88
+  - geo_name: 甘肃
+    avg_wage: 12061.124166666666
+  - geo_name: 福建
+    avg_wage: 11780.541666666666
+  - geo_name: 西藏
+    avg_wage: 12924.114166666666
+  - geo_name: 贵州
+    avg_wage: 9312.926666666666
+  - geo_name: 辽宁
+    avg_wage: 13759.0625
+  - geo_name: 重庆
+    avg_wage: 9334.343333333332
+  - geo_name: 陕西
+    avg_wage: 12638.86
+  - geo_name: 青海
+    avg_wage: 9629.289999999999
+  - geo_name: 黑龙江
+    avg_wage: 10171.685833333333
+  answer_unit: 元
+  requires_calculator: false
+- id: 45
+  category: G. 时间趋势与子查询
+  sub_category: G3 跨工具计算
+  difficulty: hard
+  question: 2024年全国青年失业率是整体失业率的多少倍？
+  sql: '-- 步骤1: 查询青年失业率
+
+    SELECT AVG(youth_unemp_rate_pct) AS youth_rate
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询整体失业率
+
+    SELECT AVG(unemployment_rate_pct) AS overall_rate
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 youth_rate / overall_rate'
+  columns_used:
+  - year
+  - geo_level
+  - youth_unemp_rate_pct
+  - unemployment_rate_pct
+  answer_type: scalar
+  answer: null
+  answer_unit: 倍
+  requires_calculator: true
+- id: 46
+  category: H. 边界与容错
+  sub_category: H1 数据不存在
+  difficulty: medium
+  question: 2030年全国的失业率是多少？
+  sql: null
+  columns_used: []
+  expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
+  answer: null
+  requires_calculator: false
+- id: 47
+  category: H. 边界与容错
+  sub_category: H2 字段不存在
+  difficulty: medium
+  question: 查询各企业的公司名称和就业人数
+  sql: null
+  columns_used: []
+  expected_error: 表中不包含企业名称字段，仅有地理区域聚合的就业统计数据
+  answer: null
+  requires_calculator: false
+- id: 48
+  category: H. 边界与容错
+  sub_category: H3 逻辑矛盾
+  difficulty: hard
+  question: 查询全国层级且地区为北京的失业率
+  sql: null
+  columns_used: []
+  expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不能同时为'北京'
+  answer: null
+  requires_calculator: false
+- id: 49
+  category: H. 边界与容错
+  sub_category: H4 极端值查询
+  difficulty: hard
+  question: 查询失业率超过100%的就业统计记录
+  sql: null
+  columns_used: []
+  expected_error: 失业率的合理范围为0-100%，不存在超过100%的情况
+  answer: null
+  requires_calculator: false
+- id: 50
+  category: H. 边界与容错
+  sub_category: H1 数据不存在
+  difficulty: medium
+  question: 查询2015年的就业市场数据
+  sql: null
+  columns_used: []
+  expected_error: 数据起始年份为2016年，2015年数据不存在
+  answer: null
+  requires_calculator: false

@@ -1,0 +1,1361 @@
+table_name: real_estate
+table_description: 中国房地产市场数据，月频，多地理层级，包含房价指数、新房销售面积、二手房销售面积、新开工面积、房地产投资额、房贷利率、空置率、去化周期、房价同比等指标
+table_unique_signals:
+- 房价指数
+- 新房销售面积
+- 二手房销售面积
+- 住宅销售
+- 新开工面积
+- 房地产投资
+- 房地产开发投资
+- 按揭利率
+- 房贷利率
+- 住宅空置率
+- 去化周期
+- 房价同比
+- 库存去化
+schema_summary:
+  time_frequency: monthly
+  geo_levels_available:
+  - national
+  - region
+  - province
+  row_count: 5880
+  data_range:
+    start_year: 2016
+    end_year: 2025
+questions:
+- id: 1
+  category: A. 基础点查询
+  sub_category: A1 单条件等值
+  difficulty: easy
+  question: 查询2024年全国的房价指数和新房销售面积数据
+  sql: "\nSELECT year, month, home_price_idx, new_home_sales_10k_sqm\nFROM real_estate\nWHERE year = 2024 AND geo_level =\
+    \ 'national'\nORDER BY month\nLIMIT 10\n        "
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - home_price_idx
+  - new_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 指数/万平方米
+  requires_calculator: false
+  answer:
+  - year: 2024
+    month: 1
+    home_price_idx: 99.724
+    new_home_sales_10k_sqm: 9012.44
+  - year: 2024
+    month: 2
+    home_price_idx: 97.832
+    new_home_sales_10k_sqm: 8845.6
+  - year: 2024
+    month: 3
+    home_price_idx: 98.187
+    new_home_sales_10k_sqm: 9248.45
+  - year: 2024
+    month: 4
+    home_price_idx: 99.458
+    new_home_sales_10k_sqm: 9296.35
+  - year: 2024
+    month: 5
+    home_price_idx: 101.009
+    new_home_sales_10k_sqm: 8677.68
+  - year: 2024
+    month: 6
+    home_price_idx: 98.754
+    new_home_sales_10k_sqm: 8543.09
+  - year: 2024
+    month: 7
+    home_price_idx: 98.821
+    new_home_sales_10k_sqm: 7857.68
+  - year: 2024
+    month: 8
+    home_price_idx: 94.901
+    new_home_sales_10k_sqm: 8328.85
+  - year: 2024
+    month: 9
+    home_price_idx: 99.196
+    new_home_sales_10k_sqm: 8591.25
+  - year: 2024
+    month: 10
+    home_price_idx: 96.728
+    new_home_sales_10k_sqm: 8763.83
+- id: 2
+  category: A. 基础点查询
+  sub_category: A1 单条件等值
+  difficulty: easy
+  question: 查询上海市2023年6月的房地产投资额和按揭利率
+  sql: "\nSELECT geo_name, year, month, real_estate_investment_100m_cny, mortgage_rate_pct\nFROM real_estate\nWHERE geo_code\
+    \ = 'CN-SH' AND year = 2023 AND month = 6\n        "
+  columns_used:
+  - geo_name
+  - year
+  - month
+  - geo_code
+  - real_estate_investment_100m_cny
+  - mortgage_rate_pct
+  answer_type: list
+  answer_unit: 亿元/%
+  requires_calculator: false
+  answer:
+  - geo_name: 上海
+    year: 2023
+    month: 6
+    real_estate_investment_100m_cny: 283.57
+    mortgage_rate_pct: 2.954
+- id: 3
+  category: A. 基础点查询
+  sub_category: A2 多条件AND
+  difficulty: easy
+  question: 查询2022年华东地区房价同比增速大于-2%的月份的住宅库存去化周期
+  sql: "\nSELECT year, month, geo_name, home_price_yoy_pct, inventory_months\nFROM real_estate\nWHERE year = 2022\n  AND geo_code\
+    \ = 'CN-R-EC'\n  AND home_price_yoy_pct > -2\nORDER BY month\n        "
+  columns_used:
+  - year
+  - month
+  - geo_code
+  - geo_name
+  - home_price_yoy_pct
+  - inventory_months
+  answer_type: list
+  answer_unit: 月
+  requires_calculator: false
+  answer:
+  - year: 2022
+    month: 4
+    geo_name: 华东
+    home_price_yoy_pct: -1.384
+    inventory_months: 17.258
+  - year: 2022
+    month: 5
+    geo_name: 华东
+    home_price_yoy_pct: -1.881
+    inventory_months: 17.737
+  - year: 2022
+    month: 8
+    geo_name: 华东
+    home_price_yoy_pct: -1.407
+    inventory_months: 12.755
+- id: 4
+  category: A. 基础点查询
+  sub_category: A2 多条件AND
+  difficulty: easy
+  question: 查询北京2020年1月的新房销售面积和二手房销售面积
+  sql: "\nSELECT geo_name, year, month, new_home_sales_10k_sqm, existing_home_sales_10k_sqm\nFROM real_estate\nWHERE geo_code\
+    \ = 'CN-BJ' AND year = 2020 AND month = 1\n        "
+  columns_used:
+  - geo_code
+  - geo_name
+  - year
+  - month
+  - new_home_sales_10k_sqm
+  - existing_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - geo_name: 北京
+    year: 2020
+    month: 1
+    new_home_sales_10k_sqm: 292.02
+    existing_home_sales_10k_sqm: 385.29
+- id: 5
+  category: A. 基础点查询
+  sub_category: A3 OR/IN条件
+  difficulty: easy
+  question: 查询北京、上海、深圳三城市2024年12月的房价指数
+  sql: "\nSELECT geo_name, home_price_idx, new_home_sales_10k_sqm\nFROM real_estate\nWHERE geo_code IN ('CN-BJ', 'CN-SH',\
+    \ 'CN-GD-SZ')\n  AND year = 2024\n  AND month = 12\n        "
+  columns_used:
+  - geo_code
+  - geo_name
+  - year
+  - month
+  - home_price_idx
+  - new_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 指数
+  requires_calculator: false
+  answer:
+  - geo_name: 北京
+    home_price_idx: 99.205
+    new_home_sales_10k_sqm: 298.81
+  - geo_name: 上海
+    home_price_idx: 96.213
+    new_home_sales_10k_sqm: 337.15
+  - geo_name: 深圳
+    home_price_idx: 99.633
+    new_home_sales_10k_sqm: 197.25
+- id: 6
+  category: A. 基础点查询
+  sub_category: A3 OR/IN条件
+  difficulty: easy
+  question: 查询华北、东北、华南三大区域2023年7月的住宅空置率
+  sql: "\nSELECT geo_name, vacancy_rate_pct, inventory_months\nFROM real_estate\nWHERE geo_code IN ('CN-R-NC', 'CN-R-NE',\
+    \ 'CN-R-SC')\n  AND year = 2023\n  AND month = 7\nORDER BY vacancy_rate_pct DESC\n        "
+  columns_used:
+  - geo_code
+  - geo_name
+  - year
+  - month
+  - vacancy_rate_pct
+  - inventory_months
+  answer_type: list
+  answer_unit: '%'
+  requires_calculator: false
+  answer:
+  - geo_name: 华北
+    vacancy_rate_pct: 16.751
+    inventory_months: 16.123
+  - geo_name: 东北
+    vacancy_rate_pct: 16.356
+    inventory_months: 16.613
+  - geo_name: 华南
+    vacancy_rate_pct: 13.479
+    inventory_months: 14.364
+- id: 7
+  category: A. 基础点查询
+  sub_category: A4 NULL检查
+  difficulty: easy
+  question: 查询房价同比数据缺失的省级记录数量
+  sql: "\nSELECT COUNT(*) AS missing_count\nFROM real_estate\nWHERE home_price_yoy_pct IS NULL\n  AND geo_level = 'province'\n\
+    \        "
+  columns_used:
+  - home_price_yoy_pct
+  - geo_level
+  answer_type: scalar
+  answer_unit: 条
+  requires_calculator: false
+  answer: 0
+- id: 8
+  category: B. 范围与比较过滤
+  sub_category: B1 时间范围BETWEEN
+  difficulty: easy
+  question: 查询全国2020-2022年间新房销售面积的年度总和
+  sql: "\nSELECT year, SUM(new_home_sales_10k_sqm) AS total_sales\nFROM real_estate\nWHERE geo_level = 'national'\n  AND year\
+    \ BETWEEN 2020 AND 2022\nGROUP BY year\nORDER BY year\n        "
+  columns_used:
+  - year
+  - geo_level
+  - new_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - year: 2020
+    total_sales: 108563.99
+  - year: 2021
+    total_sales: 107174.96
+  - year: 2022
+    total_sales: 105029.13
+- id: 9
+  category: B. 范围与比较过滤
+  sub_category: B1 时间范围BETWEEN
+  difficulty: easy
+  question: 查询2018-2021年间华东地区房地产开发投资额的季度平均值
+  sql: "\nSELECT year,\n       CASE\n         WHEN month BETWEEN 1 AND 3 THEN 'Q1'\n         WHEN month BETWEEN 4 AND 6 THEN\
+    \ 'Q2'\n         WHEN month BETWEEN 7 AND 9 THEN 'Q3'\n         ELSE 'Q4'\n       END AS quarter,\n       AVG(real_estate_investment_100m_cny)\
+    \ AS avg_investment\nFROM real_estate\nWHERE geo_code = 'CN-R-EC'\n  AND year BETWEEN 2018 AND 2021\nGROUP BY year, quarter\n\
+    ORDER BY year, quarter\nLIMIT 10\n        "
+  columns_used:
+  - year
+  - month
+  - geo_code
+  - real_estate_investment_100m_cny
+  answer_type: list
+  answer_unit: 亿元
+  requires_calculator: false
+  answer:
+  - year: 2018
+    quarter: Q1
+    avg_investment: 3441.7466666666664
+  - year: 2018
+    quarter: Q2
+    avg_investment: 3246.44
+  - year: 2018
+    quarter: Q3
+    avg_investment: 3494.153333333333
+  - year: 2018
+    quarter: Q4
+    avg_investment: 3627.626666666667
+  - year: 2019
+    quarter: Q1
+    avg_investment: 3479.103333333333
+  - year: 2019
+    quarter: Q2
+    avg_investment: 3617.0266666666666
+  - year: 2019
+    quarter: Q3
+    avg_investment: 3243.5433333333335
+  - year: 2019
+    quarter: Q4
+    avg_investment: 3358.9
+  - year: 2020
+    quarter: Q1
+    avg_investment: 3544.263333333334
+  - year: 2020
+    quarter: Q2
+    avg_investment: 3418.3766666666666
+- id: 10
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 查询2024年全国层级房价指数超过99的月份及其新开工面积
+  sql: "\nSELECT year, month, home_price_idx, housing_starts_10k_sqm\nFROM real_estate\nWHERE year = 2024\n  AND geo_level\
+    \ = 'national'\n  AND home_price_idx > 99\nORDER BY month\n        "
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - home_price_idx
+  - housing_starts_10k_sqm
+  answer_type: list
+  answer_unit: 指数/万平方米
+  requires_calculator: false
+  answer:
+  - year: 2024
+    month: 1
+    home_price_idx: 99.724
+    housing_starts_10k_sqm: 6800.68
+  - year: 2024
+    month: 4
+    home_price_idx: 99.458
+    housing_starts_10k_sqm: 6641.06
+  - year: 2024
+    month: 5
+    home_price_idx: 101.009
+    housing_starts_10k_sqm: 6608.7
+  - year: 2024
+    month: 9
+    home_price_idx: 99.196
+    housing_starts_10k_sqm: 6731.36
+  - year: 2024
+    month: 12
+    home_price_idx: 99.889
+    housing_starts_10k_sqm: 6322.59
+- id: 11
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 查询2023年省级地区中住宅空置率低于10%的城市数量
+  sql: "\nSELECT COUNT(DISTINCT geo_code) AS low_vacancy_count\nFROM real_estate\nWHERE year = 2023\n  AND geo_level = 'province'\n\
+    \  AND vacancy_rate_pct < 10\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_code
+  - vacancy_rate_pct
+  answer_type: scalar
+  answer_unit: 个
+  requires_calculator: false
+  answer: 0
+- id: 12
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 查询2022年房贷利率超过3.2%的省份及其对应的房价同比增速，按利率降序排列
+  sql: "\nSELECT geo_name,\n       AVG(mortgage_rate_pct) AS avg_rate,\n       AVG(home_price_yoy_pct) AS avg_yoy\nFROM real_estate\n\
+    WHERE year = 2022\n  AND geo_level = 'province'\n  AND mortgage_rate_pct > 3.2\nGROUP BY geo_name\nORDER BY avg_rate DESC\n\
+    LIMIT 10\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - mortgage_rate_pct
+  - home_price_yoy_pct
+  answer_type: list
+  answer_unit: '%'
+  requires_calculator: false
+  answer:
+  - geo_name: 浙江
+    avg_rate: 3.4339999999999997
+    avg_yoy: -3.2241666666666666
+  - geo_name: 安徽
+    avg_rate: 3.4265555555555554
+    avg_yoy: -2.479
+  - geo_name: 西藏
+    avg_rate: 3.4246000000000003
+    avg_yoy: -3.6122
+  - geo_name: 贵州
+    avg_rate: 3.41425
+    avg_yoy: -3.3315
+  - geo_name: 宁夏
+    avg_rate: 3.4098571428571427
+    avg_yoy: -3.391428571428571
+  - geo_name: 海南
+    avg_rate: 3.4055
+    avg_yoy: -3.5860000000000003
+  - geo_name: 内蒙古
+    avg_rate: 3.404833333333333
+    avg_yoy: -3.587666666666667
+  - geo_name: 上海
+    avg_rate: 3.404
+    avg_yoy: -3.5105
+  - geo_name: 湖南
+    avg_rate: 3.40375
+    avg_yoy: -2.54025
+  - geo_name: 山西
+    avg_rate: 3.394714285714286
+    avg_yoy: -3.3841428571428573
+- id: 13
+  category: B. 范围与比较过滤
+  sub_category: B3 复合范围条件
+  difficulty: medium
+  question: 查询2023年新房销售面积超过1000万平方米且去化周期低于15个月的区域
+  sql: "\nSELECT geo_name,\n       AVG(new_home_sales_10k_sqm) AS avg_sales,\n       AVG(inventory_months) AS avg_inventory\n\
+    FROM real_estate\nWHERE year = 2023\n  AND geo_level = 'region'\n  AND new_home_sales_10k_sqm > 1000\n  AND inventory_months\
+    \ < 15\nGROUP BY geo_name\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - new_home_sales_10k_sqm
+  - inventory_months
+  answer_type: list
+  answer_unit: 万平方米/月
+  requires_calculator: false
+  answer:
+  - geo_name: 华东
+    avg_sales: 3379.34
+    avg_inventory: 13.6135
+  - geo_name: 华中
+    avg_sales: 1131.995
+    avg_inventory: 13.1715
+  - geo_name: 华北
+    avg_sales: 1089.7575
+    avg_inventory: 13.84925
+  - geo_name: 华南
+    avg_sales: 1121.394
+    avg_inventory: 14.375800000000002
+  - geo_name: 西南
+    avg_sales: 1028.9066666666668
+    avg_inventory: 14.195666666666666
+- id: 14
+  category: B. 范围与比较过滤
+  sub_category: B3 复合范围条件
+  difficulty: medium
+  question: 查询2021-2023年间房价指数在98-105区间且新开工面积超过300万平方米的省份
+  sql: "\nSELECT geo_name,\n       AVG(home_price_idx) AS avg_idx,\n       AVG(housing_starts_10k_sqm) AS avg_starts\nFROM\
+    \ real_estate\nWHERE year BETWEEN 2021 AND 2023\n  AND geo_level = 'province'\n  AND home_price_idx BETWEEN 98 AND 105\n\
+    \  AND housing_starts_10k_sqm > 300\nGROUP BY geo_name\nORDER BY avg_idx DESC\nLIMIT 10\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - home_price_idx
+  - housing_starts_10k_sqm
+  answer_type: list
+  answer_unit: 指数/万平方米
+  requires_calculator: false
+  answer:
+  - geo_name: 河北
+    avg_idx: 101.425
+    avg_starts: 301.45
+  - geo_name: 福建
+    avg_idx: 100.77233333333334
+    avg_starts: 303.92
+  - geo_name: 安徽
+    avg_idx: 100.366
+    avg_starts: 304.62
+  - geo_name: 河南
+    avg_idx: 99.8146923076923
+    avg_starts: 351.66692307692307
+  - geo_name: 湖北
+    avg_idx: 99.80416666666667
+    avg_starts: 338.35833333333335
+  - geo_name: 广东
+    avg_idx: 99.68209523809524
+    avg_starts: 728.2480952380952
+  - geo_name: 江苏
+    avg_idx: 99.67492307692308
+    avg_starts: 702.5153846153846
+  - geo_name: 山东
+    avg_idx: 99.66246666666666
+    avg_starts: 634.5020000000001
+  - geo_name: 浙江
+    avg_idx: 99.51017647058823
+    avg_starts: 474.95588235294116
+  - geo_name: 四川
+    avg_idx: 99.47238888888889
+    avg_starts: 360.5338888888889
+- id: 15
+  category: C. 排序与Top-N
+  sub_category: C1 单指标最大值行
+  difficulty: easy
+  question: 查询2024年全国单月新房销售面积最高的月份
+  sql: "\nSELECT year, month, new_home_sales_10k_sqm, home_price_idx\nFROM real_estate\nWHERE year = 2024 AND geo_level =\
+    \ 'national'\nORDER BY new_home_sales_10k_sqm DESC\nLIMIT 1\n        "
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - new_home_sales_10k_sqm
+  - home_price_idx
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - year: 2024
+    month: 4
+    new_home_sales_10k_sqm: 9296.35
+    home_price_idx: 99.458
+- id: 16
+  category: C. 排序与Top-N
+  sub_category: C1 单指标最大值行
+  difficulty: easy
+  question: 查询2023年省级地区中房地产投资额最高的省份
+  sql: "\nSELECT geo_name, SUM(real_estate_investment_100m_cny) AS total_investment\nFROM real_estate\nWHERE year = 2023 AND\
+    \ geo_level = 'province'\nGROUP BY geo_name\nORDER BY total_investment DESC\nLIMIT 1\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - real_estate_investment_100m_cny
+  answer_type: list
+  answer_unit: 亿元
+  requires_calculator: false
+  answer:
+  - geo_name: 广东
+    total_investment: 10726.369999999999
+- id: 17
+  category: C. 排序与Top-N
+  sub_category: C2 单指标最小值行
+  difficulty: easy
+  question: 查询2022年全国房贷利率最低的月份及其对应的新房销售面积
+  sql: "\nSELECT year, month, mortgage_rate_pct, new_home_sales_10k_sqm\nFROM real_estate\nWHERE year = 2022 AND geo_level\
+    \ = 'national'\nORDER BY mortgage_rate_pct ASC\nLIMIT 1\n        "
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - mortgage_rate_pct
+  - new_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: '%/万平方米'
+  requires_calculator: false
+  answer:
+  - year: 2022
+    month: 6
+    mortgage_rate_pct: 2.861
+    new_home_sales_10k_sqm: 8774.7
+- id: 18
+  category: C. 排序与Top-N
+  sub_category: C2 单指标最小值行
+  difficulty: easy
+  question: 查询2023年区域层级中住宅空置率最低的区域
+  sql: "\nSELECT geo_name, AVG(vacancy_rate_pct) AS avg_vacancy\nFROM real_estate\nWHERE year = 2023 AND geo_level = 'region'\n\
+    GROUP BY geo_name\nORDER BY avg_vacancy ASC\nLIMIT 1\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - vacancy_rate_pct
+  answer_type: list
+  answer_unit: '%'
+  requires_calculator: false
+  answer:
+  - geo_name: 华北
+    avg_vacancy: 14.996916666666666
+- id: 19
+  category: C. 排序与Top-N
+  sub_category: C3 Top3/Top5排名
+  difficulty: medium
+  question: 查询2024年省级地区中新房销售面积排名前5的省份
+  sql: "\nSELECT geo_name, SUM(new_home_sales_10k_sqm) AS total_sales\nFROM real_estate\nWHERE year = 2024 AND geo_level =\
+    \ 'province'\nGROUP BY geo_name\nORDER BY total_sales DESC\nLIMIT 5\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - new_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - geo_name: 广东
+    total_sales: 10858.710000000001
+  - geo_name: 江苏
+    total_sales: 10672.23
+  - geo_name: 山东
+    total_sales: 9365.15
+  - geo_name: 浙江
+    total_sales: 7198.54
+  - geo_name: 四川
+    total_sales: 5225.09
+- id: 20
+  category: C. 排序与Top-N
+  sub_category: C3 Top3/Top5排名
+  difficulty: medium
+  question: 查询2023年房价同比增速最快的前3个省份
+  sql: "\nSELECT geo_name, AVG(home_price_yoy_pct) AS avg_yoy\nFROM real_estate\nWHERE year = 2023 AND geo_level = 'province'\n\
+    GROUP BY geo_name\nORDER BY avg_yoy DESC\nLIMIT 3\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - home_price_yoy_pct
+  answer_type: list
+  answer_unit: '%'
+  requires_calculator: false
+  answer:
+  - geo_name: 湖北
+    avg_yoy: -2.1194166666666665
+  - geo_name: 广西
+    avg_yoy: -2.427
+  - geo_name: 西藏
+    avg_yoy: -2.4526666666666666
+- id: 21
+  category: C. 排序与Top-N
+  sub_category: C4 多列排序
+  difficulty: medium
+  question: 查询2024年各区域的房价指数，按平均指数降序和空置率升序排列
+  sql: "\nSELECT geo_name,\n       AVG(home_price_idx) AS avg_idx,\n       AVG(vacancy_rate_pct) AS avg_vacancy\nFROM real_estate\n\
+    WHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY avg_idx DESC, avg_vacancy ASC\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - home_price_idx
+  - vacancy_rate_pct
+  answer_type: list
+  answer_unit: 指数/%
+  requires_calculator: false
+  answer:
+  - geo_name: 华南
+    avg_idx: 97.79333333333334
+    avg_vacancy: 16.52475
+  - geo_name: 东北
+    avg_idx: 97.66858333333333
+    avg_vacancy: 16.074333333333332
+  - geo_name: 西南
+    avg_idx: 97.66791666666666
+    avg_vacancy: 14.313083333333333
+  - geo_name: 西北
+    avg_idx: 97.33274999999999
+    avg_vacancy: 15.645666666666665
+  - geo_name: 华东
+    avg_idx: 97.29541666666667
+    avg_vacancy: 15.480583333333334
+  - geo_name: 华中
+    avg_idx: 97.11200000000001
+    avg_vacancy: 15.646500000000001
+  - geo_name: 华北
+    avg_idx: 97.08333333333333
+    avg_vacancy: 15.652166666666666
+- id: 22
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D1 COUNT/COUNT DISTINCT
+  difficulty: easy
+  question: 统计数据集中包含的省级行政区数量
+  sql: "\nSELECT COUNT(DISTINCT geo_code) AS value\nFROM real_estate\nWHERE geo_level = 'province'\n        "
+  columns_used:
+  - geo_level
+  - geo_code
+  answer_type: scalar
+  answer_unit: 个
+  requires_calculator: false
+  answer: 31
+- id: 23
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D1 COUNT/COUNT DISTINCT
+  difficulty: easy
+  question: 统计2023年全国层级的新房销售记录总数
+  sql: "\nSELECT COUNT(*) AS value\nFROM real_estate\nWHERE year = 2023 AND geo_level = 'national'\n        "
+  columns_used:
+  - year
+  - geo_level
+  answer_type: scalar
+  answer_unit: 条
+  requires_calculator: false
+  answer: 12
+- id: 24
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D2 SUM
+  difficulty: easy
+  question: 计算2024年全国全年的新房销售面积总和
+  sql: "\nSELECT SUM(new_home_sales_10k_sqm) AS value\nFROM real_estate\nWHERE year = 2024 AND geo_level = 'national'\n  \
+    \      "
+  columns_used:
+  - year
+  - geo_level
+  - new_home_sales_10k_sqm
+  answer_type: scalar
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer: 104641.37
+- id: 25
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D2 SUM
+  difficulty: easy
+  question: 计算2023年华东地区全年房地产开发投资总额
+  sql: "\nSELECT SUM(real_estate_investment_100m_cny) AS value\nFROM real_estate\nWHERE year = 2023 AND geo_code = 'CN-R-EC'\n\
+    \        "
+  columns_used:
+  - year
+  - geo_code
+  - real_estate_investment_100m_cny
+  answer_type: scalar
+  answer_unit: 亿元
+  requires_calculator: false
+  answer: 40549.7
+- id: 26
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D3 AVG
+  difficulty: easy
+  question: 计算2022年全国的房贷利率年度平均值
+  sql: "\nSELECT AVG(mortgage_rate_pct) AS value\nFROM real_estate\nWHERE year = 2022 AND geo_level = 'national'\n        "
+  columns_used:
+  - year
+  - geo_level
+  - mortgage_rate_pct
+  answer_type: scalar
+  answer_unit: '%'
+  requires_calculator: false
+  answer: 3.162
+- id: 27
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D3 AVG
+  difficulty: easy
+  question: 计算2023年省级地区的住宅空置率平均水平
+  sql: "\nSELECT AVG(vacancy_rate_pct) AS value\nFROM real_estate\nWHERE year = 2023 AND geo_level = 'province'\n        "
+  columns_used:
+  - year
+  - geo_level
+  - vacancy_rate_pct
+  answer_type: scalar
+  answer_unit: '%'
+  requires_calculator: false
+  answer: 15.304
+- id: 28
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D4 MIN/MAX
+  difficulty: easy
+  question: 查询2024年全国房价指数的最高值和最低值
+  sql: "\nSELECT MIN(home_price_idx) AS min_idx, MAX(home_price_idx) AS max_idx\nFROM real_estate\nWHERE year = 2024 AND geo_level\
+    \ = 'national'\n        "
+  columns_used:
+  - year
+  - geo_level
+  - home_price_idx
+  answer_type: list
+  answer_unit: 指数
+  requires_calculator: false
+  answer:
+  - min_idx: 94.901
+    max_idx: 101.009
+- id: 29
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D4 MIN/MAX
+  difficulty: easy
+  question: 查询2023年省级地区中新开工面积的极值范围
+  sql: "\nSELECT MIN(housing_starts_10k_sqm) AS min_starts, MAX(housing_starts_10k_sqm) AS max_starts\nFROM real_estate\n\
+    WHERE year = 2023 AND geo_level = 'province'\n        "
+  columns_used:
+  - year
+  - geo_level
+  - housing_starts_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - min_starts: 13.33
+    max_starts: 826.35
+- id: 30
+  category: E. 分组聚合GROUP BY
+  sub_category: E1 单维度分组SUM/AVG
+  difficulty: medium
+  question: 按年份分组统计全国新房销售面积的年度总和
+  sql: "\nSELECT year, SUM(new_home_sales_10k_sqm) AS total_sales\nFROM real_estate\nWHERE geo_level = 'national'\nGROUP BY\
+    \ year\nORDER BY year\n        "
+  columns_used:
+  - year
+  - geo_level
+  - new_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - year: 2016
+    total_sales: 116898.3
+  - year: 2017
+    total_sales: 115592.61
+  - year: 2018
+    total_sales: 112187.70999999999
+  - year: 2019
+    total_sales: 113390.38
+  - year: 2020
+    total_sales: 108563.99
+  - year: 2021
+    total_sales: 107174.96
+  - year: 2022
+    total_sales: 105029.13
+  - year: 2023
+    total_sales: 103215.65
+  - year: 2024
+    total_sales: 104641.37
+  - year: 2025
+    total_sales: 101972.19
+- id: 31
+  category: E. 分组聚合GROUP BY
+  sub_category: E1 单维度分组SUM/AVG
+  difficulty: medium
+  question: 按区域分组计算2024年房价指数的平均值
+  sql: "\nSELECT geo_name, AVG(home_price_idx) AS avg_idx\nFROM real_estate\nWHERE year = 2024 AND geo_level = 'region'\n\
+    GROUP BY geo_name\nORDER BY avg_idx DESC\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - home_price_idx
+  answer_type: list
+  answer_unit: 指数
+  requires_calculator: false
+  answer:
+  - geo_name: 华南
+    avg_idx: 97.79333333333334
+  - geo_name: 东北
+    avg_idx: 97.66858333333333
+  - geo_name: 西南
+    avg_idx: 97.66791666666666
+  - geo_name: 西北
+    avg_idx: 97.33274999999999
+  - geo_name: 华东
+    avg_idx: 97.29541666666667
+  - geo_name: 华中
+    avg_idx: 97.11200000000001
+  - geo_name: 华北
+    avg_idx: 97.08333333333333
+- id: 32
+  category: E. 分组聚合GROUP BY
+  sub_category: E2 单维度分组COUNT
+  difficulty: medium
+  question: 按地理层级统计数据记录数量
+  sql: "\nSELECT geo_level, COUNT(*) AS record_count\nFROM real_estate\nGROUP BY geo_level\nORDER BY record_count DESC\n \
+    \       "
+  columns_used:
+  - geo_level
+  answer_type: list
+  answer_unit: 条
+  requires_calculator: false
+  answer:
+  - geo_level: province
+    record_count: 3720
+  - geo_level: city
+    record_count: 1200
+  - geo_level: region
+    record_count: 840
+  - geo_level: national
+    record_count: 120
+- id: 33
+  category: E. 分组聚合GROUP BY
+  sub_category: E2 单维度分组COUNT
+  difficulty: medium
+  question: 按年份统计2020-2024年间全国层级的月度记录数
+  sql: "\nSELECT year, COUNT(*) AS month_count\nFROM real_estate\nWHERE geo_level = 'national' AND year BETWEEN 2020 AND 2024\n\
+    GROUP BY year\nORDER BY year\n        "
+  columns_used:
+  - year
+  - geo_level
+  answer_type: list
+  answer_unit: 条
+  requires_calculator: false
+  answer:
+  - year: 2020
+    month_count: 12
+  - year: 2021
+    month_count: 12
+  - year: 2022
+    month_count: 12
+  - year: 2023
+    month_count: 12
+  - year: 2024
+    month_count: 12
+- id: 34
+  category: E. 分组聚合GROUP BY
+  sub_category: E3 多维度分组
+  difficulty: hard
+  question: 按年份和区域分组统计2022-2023年新房销售面积的平均值
+  sql: "\nSELECT year, geo_name, AVG(new_home_sales_10k_sqm) AS avg_sales\nFROM real_estate\nWHERE geo_level = 'region' AND\
+    \ year BETWEEN 2022 AND 2023\nGROUP BY year, geo_name\nORDER BY year, avg_sales DESC\nLIMIT 10\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - new_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - year: 2022
+    geo_name: 华东
+    avg_sales: 3434.138333333334
+  - year: 2022
+    geo_name: 华中
+    avg_sales: 1157.7508333333333
+  - year: 2022
+    geo_name: 华南
+    avg_sales: 1155.1716666666669
+  - year: 2022
+    geo_name: 华北
+    avg_sales: 1063.2458333333334
+  - year: 2022
+    geo_name: 西南
+    avg_sales: 1014.4508333333333
+  - year: 2022
+    geo_name: 西北
+    avg_sales: 514.8000000000001
+  - year: 2022
+    geo_name: 东北
+    avg_sales: 412.8725
+  - year: 2023
+    geo_name: 华东
+    avg_sales: 3391.820833333333
+  - year: 2023
+    geo_name: 华中
+    avg_sales: 1145.9866666666667
+  - year: 2023
+    geo_name: 华南
+    avg_sales: 1132.8308333333334
+- id: 35
+  category: E. 分组聚合GROUP BY
+  sub_category: E3 多维度分组
+  difficulty: hard
+  question: 按年份和地理层级分组计算2023年房地产投资额的总和
+  sql: "\nSELECT year, geo_level, SUM(real_estate_investment_100m_cny) AS total_investment\nFROM real_estate\nWHERE year =\
+    \ 2023\nGROUP BY year, geo_level\nORDER BY total_investment DESC\n        "
+  columns_used:
+  - year
+  - geo_level
+  - real_estate_investment_100m_cny
+  answer_type: list
+  answer_unit: 亿元
+  requires_calculator: false
+  answer:
+  - year: 2023
+    geo_level: province
+    total_investment: 102761.25
+  - year: 2023
+    geo_level: region
+    total_investment: 102761.24
+  - year: 2023
+    geo_level: national
+    total_investment: 102761.2
+  - year: 2023
+    geo_level: city
+    total_investment: 15002.78
+- id: 36
+  category: E. 分组聚合GROUP BY
+  sub_category: E4 GROUP BY+ORDER BY
+  difficulty: medium
+  question: 按省份分组统计2024年二手房销售面积，按总量降序排列取前10
+  sql: "\nSELECT geo_name, SUM(existing_home_sales_10k_sqm) AS total_existing_sales\nFROM real_estate\nWHERE year = 2024 AND\
+    \ geo_level = 'province'\nGROUP BY geo_name\nORDER BY total_existing_sales DESC\nLIMIT 10\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - existing_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - geo_name: 广东
+    total_existing_sales: 14824.29
+  - geo_name: 江苏
+    total_existing_sales: 14573.800000000001
+  - geo_name: 山东
+    total_existing_sales: 12773.98
+  - geo_name: 浙江
+    total_existing_sales: 9839.22
+  - geo_name: 四川
+    total_existing_sales: 7130.49
+  - geo_name: 河南
+    total_existing_sales: 6748.07
+  - geo_name: 湖北
+    total_existing_sales: 6376.21
+  - geo_name: 福建
+    total_existing_sales: 5629.53
+  - geo_name: 湖南
+    total_existing_sales: 5443.8
+  - geo_name: 安徽
+    total_existing_sales: 5414.68
+- id: 37
+  category: F. 分组过滤HAVING
+  sub_category: F1 HAVING AVG条件
+  difficulty: hard
+  question: 查询2023年房价指数年均值超过98的省份
+  sql: "\nSELECT geo_name, AVG(home_price_idx) AS avg_idx\nFROM real_estate\nWHERE year = 2023 AND geo_level = 'province'\n\
+    GROUP BY geo_name\nHAVING AVG(home_price_idx) > 98\nORDER BY avg_idx DESC\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - home_price_idx
+  answer_type: list
+  answer_unit: 指数
+  requires_calculator: false
+  answer:
+  - geo_name: 广西
+    avg_idx: 98.63366666666667
+  - geo_name: 青海
+    avg_idx: 98.41474999999998
+  - geo_name: 山西
+    avg_idx: 98.3975
+  - geo_name: 海南
+    avg_idx: 98.33441666666666
+  - geo_name: 新疆
+    avg_idx: 98.28491666666667
+  - geo_name: 四川
+    avg_idx: 98.27583333333332
+  - geo_name: 广东
+    avg_idx: 98.2325
+  - geo_name: 陕西
+    avg_idx: 98.19041666666668
+  - geo_name: 上海
+    avg_idx: 98.12991666666666
+  - geo_name: 西藏
+    avg_idx: 98.11508333333335
+  - geo_name: 辽宁
+    avg_idx: 98.0705
+  - geo_name: 云南
+    avg_idx: 98.06125000000002
+  - geo_name: 甘肃
+    avg_idx: 98.01925
+- id: 38
+  category: F. 分组过滤HAVING
+  sub_category: F1 HAVING AVG条件
+  difficulty: hard
+  question: 查询2022年住宅空置率年均值低于15%的区域
+  sql: "\nSELECT geo_name, AVG(vacancy_rate_pct) AS avg_vacancy\nFROM real_estate\nWHERE year = 2022 AND geo_level = 'region'\n\
+    GROUP BY geo_name\nHAVING AVG(vacancy_rate_pct) < 15\nORDER BY avg_vacancy ASC\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - vacancy_rate_pct
+  answer_type: list
+  answer_unit: '%'
+  requires_calculator: false
+  answer:
+  - geo_name: 西南
+    avg_vacancy: 14.439166666666667
+  - geo_name: 华中
+    avg_vacancy: 14.738833333333334
+  - geo_name: 华北
+    avg_vacancy: 14.799916666666666
+  - geo_name: 华东
+    avg_vacancy: 14.813416666666667
+- id: 39
+  category: F. 分组过滤HAVING
+  sub_category: F2 HAVING COUNT条件
+  difficulty: hard
+  question: 查询2023年月度数据记录超过10条的省份
+  sql: "\nSELECT geo_name, COUNT(*) AS record_count\nFROM real_estate\nWHERE year = 2023 AND geo_level = 'province'\nGROUP\
+    \ BY geo_name\nHAVING COUNT(*) > 10\nORDER BY record_count DESC\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  answer_type: list
+  answer_unit: 条
+  requires_calculator: false
+  answer:
+  - geo_name: 黑龙江
+    record_count: 12
+  - geo_name: 青海
+    record_count: 12
+  - geo_name: 陕西
+    record_count: 12
+  - geo_name: 重庆
+    record_count: 12
+  - geo_name: 辽宁
+    record_count: 12
+  - geo_name: 贵州
+    record_count: 12
+  - geo_name: 西藏
+    record_count: 12
+  - geo_name: 福建
+    record_count: 12
+  - geo_name: 甘肃
+    record_count: 12
+  - geo_name: 湖南
+    record_count: 12
+  - geo_name: 湖北
+    record_count: 12
+  - geo_name: 海南
+    record_count: 12
+  - geo_name: 浙江
+    record_count: 12
+  - geo_name: 河南
+    record_count: 12
+  - geo_name: 河北
+    record_count: 12
+  - geo_name: 江西
+    record_count: 12
+  - geo_name: 江苏
+    record_count: 12
+  - geo_name: 新疆
+    record_count: 12
+  - geo_name: 广西
+    record_count: 12
+  - geo_name: 广东
+    record_count: 12
+  - geo_name: 山西
+    record_count: 12
+  - geo_name: 山东
+    record_count: 12
+  - geo_name: 安徽
+    record_count: 12
+  - geo_name: 宁夏
+    record_count: 12
+  - geo_name: 天津
+    record_count: 12
+  - geo_name: 四川
+    record_count: 12
+  - geo_name: 吉林
+    record_count: 12
+  - geo_name: 北京
+    record_count: 12
+  - geo_name: 内蒙古
+    record_count: 12
+  - geo_name: 云南
+    record_count: 12
+  - geo_name: 上海
+    record_count: 12
+- id: 40
+  category: F. 分组过滤HAVING
+  sub_category: F3 HAVING SUM条件
+  difficulty: hard
+  question: 查询2024年新开工面积累计超过5000万平方米的省份
+  sql: "\nSELECT geo_name, SUM(housing_starts_10k_sqm) AS total_starts\nFROM real_estate\nWHERE year = 2024 AND geo_level\
+    \ = 'province'\nGROUP BY geo_name\nHAVING SUM(housing_starts_10k_sqm) > 5000\nORDER BY total_starts DESC\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - housing_starts_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - geo_name: 广东
+    total_starts: 8170.71
+  - geo_name: 江苏
+    total_starts: 8036.4800000000005
+  - geo_name: 山东
+    total_starts: 7035.53
+  - geo_name: 浙江
+    total_starts: 5418.16
+- id: 41
+  category: G. 时间趋势与子查询
+  sub_category: G1 按年聚合趋势
+  difficulty: medium
+  question: 查询全国2016-2025年房价指数的年度变化趋势
+  sql: "\nSELECT year, AVG(home_price_idx) AS avg_idx\nFROM real_estate\nWHERE geo_level = 'national'\nGROUP BY year\nORDER\
+    \ BY year\n        "
+  columns_used:
+  - year
+  - geo_level
+  - home_price_idx
+  answer_type: list
+  answer_unit: 指数
+  requires_calculator: false
+  answer:
+  - year: 2016
+    avg_idx: 100.1025
+  - year: 2017
+    avg_idx: 98.73966666666666
+  - year: 2018
+    avg_idx: 98.58524999999999
+  - year: 2019
+    avg_idx: 98.61708333333333
+  - year: 2020
+    avg_idx: 98.70800000000001
+  - year: 2021
+    avg_idx: 97.42750000000001
+  - year: 2022
+    avg_idx: 98.37633333333333
+  - year: 2023
+    avg_idx: 97.94158333333333
+  - year: 2024
+    avg_idx: 98.41958333333334
+  - year: 2025
+    avg_idx: 97.16741666666667
+- id: 42
+  category: G. 时间趋势与子查询
+  sub_category: G1 按年聚合趋势
+  difficulty: medium
+  question: 查询华东地区2018-2024年房贷利率的年度趋势
+  sql: "\nSELECT year, AVG(mortgage_rate_pct) AS avg_rate\nFROM real_estate\nWHERE geo_code = 'CN-R-EC'\nGROUP BY year\nORDER\
+    \ BY year\n        "
+  columns_used:
+  - year
+  - geo_code
+  - mortgage_rate_pct
+  answer_type: list
+  answer_unit: '%'
+  requires_calculator: false
+  answer:
+  - year: 2016
+    avg_rate: 4.093583333333333
+  - year: 2017
+    avg_rate: 3.8956666666666666
+  - year: 2018
+    avg_rate: 3.72025
+  - year: 2019
+    avg_rate: 3.5180000000000002
+  - year: 2020
+    avg_rate: 3.4000833333333333
+  - year: 2021
+    avg_rate: 3.157666666666666
+  - year: 2022
+    avg_rate: 3.162333333333333
+  - year: 2023
+    avg_rate: 3.2113333333333336
+  - year: 2024
+    avg_rate: 3.2710000000000004
+  - year: 2025
+    avg_rate: 3.16075
+- id: 43
+  category: G. 时间趋势与子查询
+  sub_category: G2 子查询对比
+  difficulty: hard
+  question: 查询2024年新房销售面积月均值高于2023年全国月均值的省份
+  sql: "\nSELECT geo_name, AVG(new_home_sales_10k_sqm) AS avg_sales_2024\nFROM real_estate\nWHERE year = 2024 AND geo_level\
+    \ = 'province'\nGROUP BY geo_name\nHAVING AVG(new_home_sales_10k_sqm) > (\n    SELECT AVG(new_home_sales_10k_sqm)\n  \
+    \  FROM real_estate\n    WHERE year = 2023 AND geo_level = 'province'\n)\nORDER BY avg_sales_2024 DESC\nLIMIT 10\n   \
+    \     "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - new_home_sales_10k_sqm
+  answer_type: list
+  answer_unit: 万平方米
+  requires_calculator: false
+  answer:
+  - geo_name: 广东
+    avg_sales_2024: 904.8925
+  - geo_name: 江苏
+    avg_sales_2024: 889.3525
+  - geo_name: 山东
+    avg_sales_2024: 780.4291666666667
+  - geo_name: 浙江
+    avg_sales_2024: 599.8783333333333
+  - geo_name: 四川
+    avg_sales_2024: 435.4241666666667
+  - geo_name: 河南
+    avg_sales_2024: 412.2558333333333
+  - geo_name: 湖北
+    avg_sales_2024: 388.865
+  - geo_name: 福建
+    avg_sales_2024: 343.59999999999997
+  - geo_name: 湖南
+    avg_sales_2024: 332.2183333333333
+  - geo_name: 安徽
+    avg_sales_2024: 330.2725
+- id: 44
+  category: G. 时间趋势与子查询
+  sub_category: G2 子查询对比
+  difficulty: hard
+  question: 查询2024年房价指数年均值低于2016-2019年区域平均水平的区域
+  sql: "\nSELECT geo_name, AVG(home_price_idx) AS avg_idx_2024\nFROM real_estate\nWHERE year = 2024 AND geo_level = 'region'\n\
+    GROUP BY geo_name\nHAVING AVG(home_price_idx) < (\n    SELECT AVG(home_price_idx)\n    FROM real_estate\n    WHERE year\
+    \ BETWEEN 2016 AND 2019 AND geo_level = 'region'\n)\nORDER BY avg_idx_2024 DESC\n        "
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - home_price_idx
+  answer_type: list
+  answer_unit: 指数
+  requires_calculator: false
+  answer:
+  - geo_name: 华南
+    avg_idx_2024: 97.79333333333334
+  - geo_name: 东北
+    avg_idx_2024: 97.66858333333333
+  - geo_name: 西南
+    avg_idx_2024: 97.66791666666666
+  - geo_name: 西北
+    avg_idx_2024: 97.33274999999999
+  - geo_name: 华东
+    avg_idx_2024: 97.29541666666667
+  - geo_name: 华中
+    avg_idx_2024: 97.11200000000001
+  - geo_name: 华北
+    avg_idx_2024: 97.08333333333333
+- id: 45
+  category: G. 时间趋势与子查询
+  sub_category: G3 跨工具计算
+  difficulty: hard
+  question: 2024年全国新房销售面积总量是二手房销售面积总量的多少倍？
+  sql: "\n-- 步骤1: 查询新房销售总量\nSELECT SUM(new_home_sales_10k_sqm) AS new_total\nFROM real_estate\nWHERE year = 2024 AND geo_level\
+    \ = 'national';\n\n-- 步骤2: 查询二手房销售总量\nSELECT SUM(existing_home_sales_10k_sqm) AS existing_total\nFROM real_estate\nWHERE\
+    \ year = 2024 AND geo_level = 'national';\n\n-- 步骤3: 使用 calculator 工具计算 new_total / existing_total\n        "
+  columns_used:
+  - year
+  - geo_level
+  - new_home_sales_10k_sqm
+  - existing_home_sales_10k_sqm
+  answer_type: scalar
+  answer_unit: 倍
+  requires_calculator: true
+  answer: 0.733
+- id: 46
+  category: H. 边界与容错
+  sub_category: H1 数据不存在
+  difficulty: medium
+  question: 查询2030年全国的房价指数数据
+  sql: null
+  columns_used: []
+  answer_type: error
+  expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
+  answer: null
+  requires_calculator: false
+- id: 47
+  category: H. 边界与容错
+  sub_category: H2 字段不存在
+  difficulty: medium
+  question: 查询各城市的房地产开发商企业名称和信用评级
+  sql: null
+  columns_used: []
+  answer_type: error
+  expected_error: 表中不包含开发商名称和评级字段，仅有地区聚合统计数据
+  answer: null
+  requires_calculator: false
+- id: 48
+  category: H. 边界与容错
+  sub_category: H3 逻辑矛盾
+  difficulty: hard
+  question: 查询全国层级且地区为上海市的房价指数
+  sql: null
+  columns_used: []
+  answer_type: error
+  expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不能同时为上海市
+  answer: null
+  requires_calculator: false
+- id: 49
+  category: H. 边界与容错
+  sub_category: H4 极端值查询
+  difficulty: hard
+  question: 查询住宅空置率超过100%的记录
+  sql: null
+  columns_used: []
+  answer_type: error
+  expected_error: 空置率的合理范围为0-100%，不存在超过100%的情况
+  answer: null
+  requires_calculator: false
+- id: 50
+  category: H. 边界与容错
+  sub_category: H1 数据不存在
+  difficulty: medium
+  question: 查询2015年全国的新房销售数据
+  sql: null
+  columns_used: []
+  answer_type: error
+  expected_error: 数据起始年份为2016年，2015年数据不存在
+  answer: null
+  requires_calculator: false

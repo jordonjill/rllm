@@ -1,0 +1,1592 @@
+table_name: trade_balance
+table_description: 中国对外贸易数据，月频，多地理层级，包含出口额、进口额、贸易差额（百万美元）、出口/进口同比增速、第一大出口品类、第一大进口品类、第一大出口目的地、第一大进口来源地
+table_unique_signals:
+- 进出口
+- 贸易顺差
+- 贸易逆差
+- 贸易差额
+- 出口额
+- 进口额
+- 出口同比
+- 进口同比
+- 出口目的地
+- 进口来源地
+- 出口商品类别
+- 进口商品类别
+- 第一大出口
+- 第一大进口
+schema_summary:
+  time_frequency: monthly
+  geo_levels_available:
+  - national
+  - region
+  - province
+  - city
+  row_count: 5880
+  data_range:
+    start_year: 2016
+    end_year: 2025
+questions:
+- id: 1
+  category: A. 基础点查询
+  sub_category: A1 单条件等值
+  difficulty: easy
+  question: 2024年1月全国层级的进出口贸易数据是多少？
+  sql: 'SELECT exports_musd, imports_musd, trade_balance_musd
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND month = 1 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - exports_musd
+  - imports_musd
+  - trade_balance_musd
+  answer_type: list
+  answer:
+  - exports_musd: 326324.56
+    imports_musd: 265438.55
+    trade_balance_musd: 60886.01
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 2
+  category: A. 基础点查询
+  sub_category: A1 单条件等值
+  difficulty: easy
+  question: 查询华东地区2023年6月的第一大出口商品类别和第一大进口商品类别
+  sql: 'SELECT top_export_category, top_import_category, exports_musd
+
+    FROM trade_balance
+
+    WHERE geo_name = ''华东'' AND year = 2023 AND month = 6'
+  columns_used:
+  - geo_name
+  - year
+  - month
+  - top_export_category
+  - top_import_category
+  answer_type: list
+  answer:
+  - top_export_category: 高新技术产品
+    top_import_category: 集成电路
+    exports_musd: 129000.88
+  answer_unit: ''
+  requires_calculator: false
+- id: 3
+  category: A. 基础点查询
+  sub_category: A2 多条件AND
+  difficulty: easy
+  question: 2022年12月广东省的出口额和贸易顺差分别是多少？
+  sql: 'SELECT exports_musd, trade_balance_musd
+
+    FROM trade_balance
+
+    WHERE year = 2022 AND month = 12 AND geo_name = ''广东'' AND geo_level = ''province'''
+  columns_used:
+  - year
+  - month
+  - geo_name
+  - geo_level
+  - exports_musd
+  - trade_balance_musd
+  answer_type: list
+  answer:
+  - exports_musd: 33327.54
+    trade_balance_musd: 5543.26
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 4
+  category: A. 基础点查询
+  sub_category: A2 多条件AND
+  difficulty: easy
+  question: 2020年全年全国层级中，哪些月份的第一大出口目的地是美国？
+  sql: 'SELECT month, exports_musd, top_export_partner
+
+    FROM trade_balance
+
+    WHERE year = 2020 AND geo_level = ''national'' AND top_export_partner = ''美国'''
+  columns_used:
+  - year
+  - geo_level
+  - top_export_partner
+  - month
+  answer_type: list
+  answer:
+  - month: 10.0
+    exports_musd: 302163.18
+    top_export_partner: 美国
+  answer_unit: ''
+  requires_calculator: false
+- id: 5
+  category: A. 基础点查询
+  sub_category: A3 OR/IN条件
+  difficulty: easy
+  question: 2023年3月，北京、上海、深圳三市的出口额分别是多少？
+  sql: 'SELECT geo_name, exports_musd
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND month = 3 AND geo_name IN (''北京'', ''上海'', ''深圳'')
+
+    ORDER BY exports_musd DESC'
+  columns_used:
+  - year
+  - month
+  - geo_name
+  - exports_musd
+  answer_type: list
+  answer:
+  - geo_name: 上海
+    exports_musd: 12223.3
+  - geo_name: 北京
+    exports_musd: 12012.52
+  - geo_name: 深圳
+    exports_musd: 7296.27
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 6
+  category: A. 基础点查询
+  sub_category: A3 OR/IN条件
+  difficulty: easy
+  question: 2021年5月全国层级的第一大进口来源地是日本、韩国还是东盟？
+  sql: "SELECT top_import_partner, imports_musd\nFROM trade_balance\nWHERE year =\
+    \ 2021 AND month = 5 AND geo_level = 'national'\n  AND top_import_partner IN ('日本',\
+    \ '韩国', '东盟')"
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - top_import_partner
+  answer_type: list
+  answer:
+  - top_import_partner: 韩国
+    imports_musd: 257622.8
+  answer_unit: ''
+  requires_calculator: false
+- id: 7
+  category: A. 基础点查询
+  sub_category: A4 NULL检查
+  difficulty: easy
+  question: trade_balance表中是否存在出口同比增速缺失的记录？
+  sql: 'SELECT COUNT(*) AS missing_count
+
+    FROM trade_balance
+
+    WHERE export_yoy_pct IS NULL'
+  columns_used:
+  - export_yoy_pct
+  answer_type: scalar
+  answer: 0.0
+  answer_unit: 条
+  requires_calculator: false
+- id: 8
+  category: B. 范围与比较过滤
+  sub_category: B1 时间范围BETWEEN
+  difficulty: easy
+  question: 2018年至2020年期间，全国层级的贸易顺差在哪些月份超过80000百万美元？
+  sql: "SELECT year, month, trade_balance_musd\nFROM trade_balance\nWHERE year BETWEEN\
+    \ 2018 AND 2020\n  AND geo_level = 'national'\n  AND trade_balance_musd > 80000\n\
+    ORDER BY year, month"
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - trade_balance_musd
+  answer_type: list
+  answer:
+  - year: 2018.0
+    month: 4.0
+    trade_balance_musd: 82221.03
+  - year: 2018.0
+    month: 5.0
+    trade_balance_musd: 87672.24
+  - year: 2019.0
+    month: 1.0
+    trade_balance_musd: 80263.6
+  - year: 2019.0
+    month: 2.0
+    trade_balance_musd: 83879.38
+  - year: 2020.0
+    month: 5.0
+    trade_balance_musd: 91753.82
+  - year: 2020.0
+    month: 6.0
+    trade_balance_musd: 85171.62
+  - year: 2020.0
+    month: 11.0
+    trade_balance_musd: 84984.23
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 9
+  category: B. 范围与比较过滤
+  sub_category: B1 时间范围BETWEEN
+  difficulty: easy
+  question: 2019年到2021年间，江苏省的出口同比增速在哪些月份为负增长？
+  sql: "SELECT year, month, export_yoy_pct\nFROM trade_balance\nWHERE year BETWEEN\
+    \ 2019 AND 2021\n  AND geo_name = '江苏'\n  AND export_yoy_pct < 0\nORDER BY year,\
+    \ month\nLIMIT 10"
+  columns_used:
+  - year
+  - month
+  - geo_name
+  - export_yoy_pct
+  answer_type: list
+  answer:
+  - year: 2019.0
+    month: 4.0
+    export_yoy_pct: -2.2
+  - year: 2019.0
+    month: 8.0
+    export_yoy_pct: -0.53
+  - year: 2021.0
+    month: 9.0
+    export_yoy_pct: -1.53
+  answer_unit: '%'
+  requires_calculator: false
+- id: 10
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: easy
+  question: 2024年全国层级中，哪些月份的进口额超过250000百万美元？
+  sql: 'SELECT month, imports_musd
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''national'' AND imports_musd > 250000
+
+    ORDER BY month'
+  columns_used:
+  - year
+  - geo_level
+  - month
+  - imports_musd
+  answer_type: list
+  answer:
+  - month: 1.0
+    imports_musd: 265438.55
+  - month: 2.0
+    imports_musd: 260578.13
+  - month: 3.0
+    imports_musd: 261588.98
+  - month: 4.0
+    imports_musd: 269298.8
+  - month: 5.0
+    imports_musd: 264240.0
+  - month: 6.0
+    imports_musd: 250085.69
+  - month: 7.0
+    imports_musd: 259858.35
+  - month: 10.0
+    imports_musd: 252294.7
+  - month: 11.0
+    imports_musd: 265556.98
+  - month: 12.0
+    imports_musd: 257255.6
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 11
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: easy
+  question: 2023年所有省份中，哪些省份的年度平均出口额超过30000百万美元？
+  sql: 'SELECT geo_name, AVG(exports_musd) AS avg_exports
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    HAVING AVG(exports_musd) > 30000
+
+    ORDER BY avg_exports DESC'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - exports_musd
+  answer_type: list
+  answer:
+  - geo_name: 广东
+    avg_exports: 35219.31
+  - geo_name: 江苏
+    avg_exports: 33041.75
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 12
+  category: B. 范围与比较过滤
+  sub_category: B2 数值阈值
+  difficulty: medium
+  question: 2022年华南地区中，进口同比增速超过5%的月份有哪些？
+  sql: 'SELECT month, import_yoy_pct
+
+    FROM trade_balance
+
+    WHERE year = 2022 AND geo_name = ''华南'' AND import_yoy_pct > 5
+
+    ORDER BY month'
+  columns_used:
+  - year
+  - geo_name
+  - import_yoy_pct
+  - month
+  answer_type: list
+  answer:
+  - month: 5.0
+    import_yoy_pct: 8.99
+  - month: 6.0
+    import_yoy_pct: 9.64
+  - month: 8.0
+    import_yoy_pct: 10.77
+  - month: 9.0
+    import_yoy_pct: 6.1
+  - month: 10.0
+    import_yoy_pct: 9.37
+  - month: 11.0
+    import_yoy_pct: 6.95
+  - month: 12.0
+    import_yoy_pct: 11.33
+  answer_unit: '%'
+  requires_calculator: false
+- id: 13
+  category: B. 范围与比较过滤
+  sub_category: B3 复合范围条件
+  difficulty: medium
+  question: 2020年至2022年间，全国层级中出口额超过300000百万美元且贸易顺差超过60000百万美元的月份有哪些？
+  sql: "SELECT year, month, exports_musd, trade_balance_musd\nFROM trade_balance\n\
+    WHERE year BETWEEN 2020 AND 2022\n  AND geo_level = 'national'\n  AND exports_musd\
+    \ > 300000\n  AND trade_balance_musd > 60000\nORDER BY year, month"
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - exports_musd
+  - trade_balance_musd
+  answer_type: list
+  answer:
+  - year: 2020.0
+    month: 1.0
+    exports_musd: 336373.91
+    trade_balance_musd: 70714.6
+  - year: 2020.0
+    month: 2.0
+    exports_musd: 331969.54
+    trade_balance_musd: 70863.62
+  - year: 2020.0
+    month: 3.0
+    exports_musd: 326064.74
+    trade_balance_musd: 74841.5
+  - year: 2020.0
+    month: 4.0
+    exports_musd: 336329.24
+    trade_balance_musd: 71559.96
+  - year: 2020.0
+    month: 5.0
+    exports_musd: 341647.86
+    trade_balance_musd: 91753.82
+  - year: 2020.0
+    month: 6.0
+    exports_musd: 327438.64
+    trade_balance_musd: 85171.62
+  - year: 2020.0
+    month: 9.0
+    exports_musd: 302659.45
+    trade_balance_musd: 64117.76
+  - year: 2020.0
+    month: 11.0
+    exports_musd: 335349.25
+    trade_balance_musd: 84984.23
+  - year: 2020.0
+    month: 12.0
+    exports_musd: 329281.44
+    trade_balance_musd: 63437.63
+  - year: 2021.0
+    month: 1.0
+    exports_musd: 345113.41
+    trade_balance_musd: 75455.61
+  - year: 2021.0
+    month: 2.0
+    exports_musd: 340625.49
+    trade_balance_musd: 87359.77
+  - year: 2021.0
+    month: 4.0
+    exports_musd: 349842.54
+    trade_balance_musd: 99149.12
+  - year: 2021.0
+    month: 5.0
+    exports_musd: 324309.03
+    trade_balance_musd: 66686.23
+  - year: 2021.0
+    month: 8.0
+    exports_musd: 303296.2
+    trade_balance_musd: 64374.84
+  - year: 2021.0
+    month: 9.0
+    exports_musd: 312403.84
+    trade_balance_musd: 78988.21
+  - year: 2021.0
+    month: 12.0
+    exports_musd: 336064.47
+    trade_balance_musd: 85633.73
+  - year: 2022.0
+    month: 1.0
+    exports_musd: 342335.73
+    trade_balance_musd: 85277.43
+  - year: 2022.0
+    month: 2.0
+    exports_musd: 343863.24
+    trade_balance_musd: 67727.25
+  - year: 2022.0
+    month: 3.0
+    exports_musd: 344555.76
+    trade_balance_musd: 66098.87
+  - year: 2022.0
+    month: 8.0
+    exports_musd: 331301.84
+    trade_balance_musd: 89530.81
+  - year: 2022.0
+    month: 9.0
+    exports_musd: 330631.3
+    trade_balance_musd: 77146.82
+  - year: 2022.0
+    month: 10.0
+    exports_musd: 318374.85
+    trade_balance_musd: 61692.66
+  - year: 2022.0
+    month: 11.0
+    exports_musd: 321203.38
+    trade_balance_musd: 60573.02
+  - year: 2022.0
+    month: 12.0
+    exports_musd: 317567.96
+    trade_balance_musd: 65768.49
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 14
+  category: B. 范围与比较过滤
+  sub_category: B3 复合范围条件
+  difficulty: medium
+  question: 2023年所有区域中，哪些区域在1-6月期间的平均出口同比增速高于3%？
+  sql: 'SELECT geo_name, AVG(export_yoy_pct) AS avg_export_yoy
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_level = ''region'' AND month BETWEEN 1 AND 6
+
+    GROUP BY geo_name
+
+    HAVING AVG(export_yoy_pct) > 3
+
+    ORDER BY avg_export_yoy DESC'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - month
+  - export_yoy_pct
+  answer_type: list
+  answer:
+  - geo_name: 华中
+    avg_export_yoy: 7.57
+  - geo_name: 华北
+    avg_export_yoy: 7.42
+  - geo_name: 西北
+    avg_export_yoy: 6.84
+  - geo_name: 东北
+    avg_export_yoy: 6.77
+  - geo_name: 华东
+    avg_export_yoy: 6.02
+  - geo_name: 华南
+    avg_export_yoy: 5.54
+  - geo_name: 西南
+    avg_export_yoy: 5.22
+  answer_unit: '%'
+  requires_calculator: false
+- id: 15
+  category: C. 排序与Top-N
+  sub_category: C1 单指标最大值行
+  difficulty: easy
+  question: 2024年全国层级中，哪个月的出口额最高？
+  sql: 'SELECT month, exports_musd
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''national''
+
+    ORDER BY exports_musd DESC
+
+    LIMIT 1'
+  columns_used:
+  - year
+  - geo_level
+  - month
+  - exports_musd
+  answer_type: list
+  answer:
+  - month: 5.0
+    exports_musd: 348214.66
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 16
+  category: C. 排序与Top-N
+  sub_category: C1 单指标最大值行
+  difficulty: easy
+  question: 2023年所有省份中，哪个省份某月的贸易顺差最大？
+  sql: 'SELECT geo_name, year, month, trade_balance_musd
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    ORDER BY trade_balance_musd DESC
+
+    LIMIT 1'
+  columns_used:
+  - geo_name
+  - year
+  - month
+  - geo_level
+  - trade_balance_musd
+  answer_type: list
+  answer:
+  - geo_name: 江苏
+    year: 2023.0
+    month: 9.0
+    trade_balance_musd: 11981.62
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 17
+  category: C. 排序与Top-N
+  sub_category: C2 单指标最小值行
+  difficulty: easy
+  question: 2020年全国层级中，哪个月的进口额最低？
+  sql: 'SELECT month, imports_musd
+
+    FROM trade_balance
+
+    WHERE year = 2020 AND geo_level = ''national''
+
+    ORDER BY imports_musd ASC
+
+    LIMIT 1'
+  columns_used:
+  - year
+  - geo_level
+  - month
+  - imports_musd
+  answer_type: list
+  answer:
+  - month: 9.0
+    imports_musd: 238541.69
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 18
+  category: C. 排序与Top-N
+  sub_category: C2 单指标最小值行
+  difficulty: medium
+  question: 2022年所有区域层级中，哪个区域哪个月的出口同比增速最低？
+  sql: 'SELECT geo_name, month, export_yoy_pct
+
+    FROM trade_balance
+
+    WHERE year = 2022 AND geo_level = ''region''
+
+    ORDER BY export_yoy_pct ASC
+
+    LIMIT 1'
+  columns_used:
+  - geo_name
+  - year
+  - month
+  - geo_level
+  - export_yoy_pct
+  answer_type: list
+  answer:
+  - geo_name: 华中
+    month: 12.0
+    export_yoy_pct: -2.22
+  answer_unit: '%'
+  requires_calculator: false
+- id: 19
+  category: C. 排序与Top-N
+  sub_category: C3 Top3/Top5排名
+  difficulty: medium
+  question: 2023年12月，出口额排名前5的省份是哪些？
+  sql: 'SELECT geo_name, exports_musd
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND month = 12 AND geo_level = ''province''
+
+    ORDER BY exports_musd DESC
+
+    LIMIT 5'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - geo_name
+  - exports_musd
+  answer_type: list
+  answer:
+  - geo_name: 广东
+    exports_musd: 33590.83
+  - geo_name: 江苏
+    exports_musd: 32013.05
+  - geo_name: 山东
+    exports_musd: 27894.57
+  - geo_name: 浙江
+    exports_musd: 20663.93
+  - geo_name: 河南
+    exports_musd: 16497.21
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 20
+  category: C. 排序与Top-N
+  sub_category: C3 Top3/Top5排名
+  difficulty: medium
+  question: 2021年全年，进口额合计排名前3的区域是哪些？
+  sql: 'SELECT geo_name, SUM(imports_musd) AS total_imports
+
+    FROM trade_balance
+
+    WHERE year = 2021 AND geo_level = ''region''
+
+    GROUP BY geo_name
+
+    ORDER BY total_imports DESC
+
+    LIMIT 3'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - imports_musd
+  answer_type: list
+  answer:
+  - geo_name: 华东
+    total_imports: 1215675.64
+  - geo_name: 华南
+    total_imports: 395844.29
+  - geo_name: 华中
+    total_imports: 395211.55
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 21
+  category: C. 排序与Top-N
+  sub_category: C4 多列排序
+  difficulty: medium
+  question: 2024年所有省份的数据，按出口额降序、进口额升序排列，前10条记录是什么？
+  sql: 'SELECT geo_name, month, exports_musd, imports_musd
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''province''
+
+    ORDER BY exports_musd DESC, imports_musd ASC
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - month
+  - exports_musd
+  - imports_musd
+  answer_type: list
+  answer:
+  - geo_name: 广东
+    month: 5.0
+    exports_musd: 38039.59
+    imports_musd: 30988.49
+  - geo_name: 广东
+    month: 6.0
+    exports_musd: 37117.68
+    imports_musd: 26937.2
+  - geo_name: 广东
+    month: 3.0
+    exports_musd: 36789.39
+    imports_musd: 27347.72
+  - geo_name: 广东
+    month: 4.0
+    exports_musd: 36717.86
+    imports_musd: 28202.63
+  - geo_name: 广东
+    month: 7.0
+    exports_musd: 36511.89
+    imports_musd: 27080.78
+  - geo_name: 江苏
+    month: 5.0
+    exports_musd: 36187.3
+    imports_musd: 25645.78
+  - geo_name: 江苏
+    month: 3.0
+    exports_musd: 35728.31
+    imports_musd: 28364.63
+  - geo_name: 广东
+    month: 1.0
+    exports_musd: 34878.91
+    imports_musd: 29105.72
+  - geo_name: 江苏
+    month: 11.0
+    exports_musd: 34560.45
+    imports_musd: 25752.66
+  - geo_name: 广东
+    month: 9.0
+    exports_musd: 34485.98
+    imports_musd: 25529.12
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 22
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D1 COUNT/COUNT DISTINCT
+  difficulty: easy
+  question: trade_balance表中总共包含多少条进出口贸易记录？
+  sql: 'SELECT COUNT(*) AS total_count
+
+    FROM trade_balance'
+  columns_used: []
+  answer_type: scalar
+  answer: 5880.0
+  answer_unit: 条
+  requires_calculator: false
+- id: 23
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D1 COUNT/COUNT DISTINCT
+  difficulty: easy
+  question: 进出口贸易数据中有多少个不同的第一大出口商品类别？
+  sql: 'SELECT COUNT(DISTINCT top_export_category) AS category_count
+
+    FROM trade_balance'
+  columns_used:
+  - top_export_category
+  answer_type: scalar
+  answer: 8.0
+  answer_unit: 个
+  requires_calculator: false
+- id: 24
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D2 SUM
+  difficulty: easy
+  question: 2023年全国层级的全年出口额合计是多少？
+  sql: 'SELECT SUM(exports_musd) AS total_exports
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - geo_level
+  - exports_musd
+  answer_type: scalar
+  answer: 3983043.8
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 25
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D2 SUM
+  difficulty: medium
+  question: 2022年1-6月期间，所有省份的进口额合计是多少？
+  sql: 'SELECT SUM(imports_musd) AS total_imports
+
+    FROM trade_balance
+
+    WHERE year = 2022 AND geo_level = ''province'' AND month BETWEEN 1 AND 6'
+  columns_used:
+  - year
+  - geo_level
+  - month
+  - imports_musd
+  answer_type: scalar
+  answer: 1620119.94
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 26
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D3 AVG
+  difficulty: easy
+  question: 2024年全国层级的月均贸易顺差是多少？
+  sql: 'SELECT AVG(trade_balance_musd) AS avg_trade_balance
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - geo_level
+  - trade_balance_musd
+  answer_type: scalar
+  answer: 72451.4
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 27
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D3 AVG
+  difficulty: medium
+  question: 2020年至2022年期间，广东省的平均出口同比增速是多少？
+  sql: 'SELECT AVG(export_yoy_pct) AS avg_export_yoy
+
+    FROM trade_balance
+
+    WHERE year BETWEEN 2020 AND 2022 AND geo_name = ''广东'''
+  columns_used:
+  - year
+  - geo_name
+  - export_yoy_pct
+  answer_type: scalar
+  answer: 6.43
+  answer_unit: '%'
+  requires_calculator: false
+- id: 28
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D4 MIN/MAX
+  difficulty: easy
+  question: 2023年全国层级中，单月最高出口额和最低出口额分别是多少？
+  sql: 'SELECT MAX(exports_musd) AS max_exports, MIN(exports_musd) AS min_exports
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_level = ''national'''
+  columns_used:
+  - year
+  - geo_level
+  - exports_musd
+  answer_type: list
+  answer:
+  - max_exports: 351600.4
+    min_exports: 317318.53
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 29
+  category: D. 聚合函数（无GROUP BY）
+  sub_category: D4 MIN/MAX
+  difficulty: medium
+  question: 2021年所有区域层级中，进口同比增速的最大值和最小值是多少？
+  sql: 'SELECT MAX(import_yoy_pct) AS max_import_yoy, MIN(import_yoy_pct) AS min_import_yoy
+
+    FROM trade_balance
+
+    WHERE year = 2021 AND geo_level = ''region'''
+  columns_used:
+  - year
+  - geo_level
+  - import_yoy_pct
+  answer_type: list
+  answer:
+  - max_import_yoy: 11.45
+    min_import_yoy: -2.43
+  answer_unit: '%'
+  requires_calculator: false
+- id: 30
+  category: E. 分组聚合GROUP BY
+  sub_category: E1 单维度分组SUM/AVG
+  difficulty: medium
+  question: 2016年至2025年，全国层级每年的出口额合计是多少？
+  sql: 'SELECT year, SUM(exports_musd) AS annual_exports
+
+    FROM trade_balance
+
+    WHERE geo_level = ''national''
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - geo_level
+  - exports_musd
+  answer_type: list
+  answer:
+  - year: 2016.0
+    annual_exports: 3757926.29
+  - year: 2017.0
+    annual_exports: 3755990.57
+  - year: 2018.0
+    annual_exports: 3784361.39
+  - year: 2019.0
+    annual_exports: 3889633.2
+  - year: 2020.0
+    annual_exports: 3888909.98
+  - year: 2021.0
+    annual_exports: 3874208.07
+  - year: 2022.0
+    annual_exports: 3946213.01
+  - year: 2023.0
+    annual_exports: 3983043.8
+  - year: 2024.0
+    annual_exports: 3961527.06
+  - year: 2025.0
+    annual_exports: 4072954.59
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 31
+  category: E. 分组聚合GROUP BY
+  sub_category: E1 单维度分组SUM/AVG
+  difficulty: medium
+  question: 2023年各区域的平均贸易顺差是多少？
+  sql: 'SELECT geo_name, AVG(trade_balance_musd) AS avg_trade_balance
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_level = ''region''
+
+    GROUP BY geo_name
+
+    ORDER BY avg_trade_balance DESC'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - trade_balance_musd
+  answer_type: list
+  answer:
+  - geo_name: 华东
+    avg_trade_balance: 29232.1
+  - geo_name: 华南
+    avg_trade_balance: 9877.09
+  - geo_name: 华中
+    avg_trade_balance: 9830.85
+  - geo_name: 华北
+    avg_trade_balance: 8808.04
+  - geo_name: 西南
+    avg_trade_balance: 8683.19
+  - geo_name: 西北
+    avg_trade_balance: 4412.14
+  - geo_name: 东北
+    avg_trade_balance: 3719.03
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 32
+  category: E. 分组聚合GROUP BY
+  sub_category: E2 单维度分组COUNT
+  difficulty: medium
+  question: 进出口贸易数据中，每个地理层级分别有多少条记录？
+  sql: 'SELECT geo_level, COUNT(*) AS record_count
+
+    FROM trade_balance
+
+    GROUP BY geo_level
+
+    ORDER BY record_count DESC'
+  columns_used:
+  - geo_level
+  answer_type: list
+  answer:
+  - geo_level: province
+    record_count: 3720.0
+  - geo_level: city
+    record_count: 1200.0
+  - geo_level: region
+    record_count: 840.0
+  - geo_level: national
+    record_count: 120.0
+  answer_unit: 条
+  requires_calculator: false
+- id: 33
+  category: E. 分组聚合GROUP BY
+  sub_category: E2 单维度分组COUNT
+  difficulty: medium
+  question: 2022年全国层级中，每个第一大出口目的地出现的次数是多少？
+  sql: 'SELECT top_export_partner, COUNT(*) AS occurrence_count
+
+    FROM trade_balance
+
+    WHERE year = 2022 AND geo_level = ''national''
+
+    GROUP BY top_export_partner
+
+    ORDER BY occurrence_count DESC'
+  columns_used:
+  - year
+  - geo_level
+  - top_export_partner
+  answer_type: list
+  answer:
+  - top_export_partner: 韩国
+    occurrence_count: 4.0
+  - top_export_partner: 日本
+    occurrence_count: 2.0
+  - top_export_partner: 美国
+    occurrence_count: 1.0
+  - top_export_partner: 澳大利亚
+    occurrence_count: 1.0
+  - top_export_partner: 欧盟
+    occurrence_count: 1.0
+  - top_export_partner: 巴西
+    occurrence_count: 1.0
+  - top_export_partner: 印度
+    occurrence_count: 1.0
+  - top_export_partner: 俄罗斯
+    occurrence_count: 1.0
+  answer_unit: 次
+  requires_calculator: false
+- id: 34
+  category: E. 分组聚合GROUP BY
+  sub_category: E3 多维度分组
+  difficulty: hard
+  question: 2021年和2022年，各区域每年的进口额合计分别是多少？
+  sql: 'SELECT year, geo_name, SUM(imports_musd) AS annual_imports
+
+    FROM trade_balance
+
+    WHERE year IN (2021, 2022) AND geo_level = ''region''
+
+    GROUP BY year, geo_name
+
+    ORDER BY year, annual_imports DESC'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - imports_musd
+  answer_type: list
+  answer:
+  - year: 2021.0
+    geo_name: 华东
+    annual_imports: 1215675.64
+  - year: 2021.0
+    geo_name: 华南
+    annual_imports: 395844.29
+  - year: 2021.0
+    geo_name: 华中
+    annual_imports: 395211.55
+  - year: 2021.0
+    geo_name: 华北
+    annual_imports: 375535.2
+  - year: 2021.0
+    geo_name: 西南
+    annual_imports: 363165.11
+  - year: 2021.0
+    geo_name: 西北
+    annual_imports: 182557.87
+  - year: 2021.0
+    geo_name: 东北
+    annual_imports: 142795.47
+  - year: 2022.0
+    geo_name: 华东
+    annual_imports: 1269047.28
+  - year: 2022.0
+    geo_name: 华南
+    annual_imports: 413087.89
+  - year: 2022.0
+    geo_name: 华中
+    annual_imports: 401894.96
+  - year: 2022.0
+    geo_name: 华北
+    annual_imports: 371940.03
+  - year: 2022.0
+    geo_name: 西南
+    annual_imports: 356077.32
+  - year: 2022.0
+    geo_name: 西北
+    annual_imports: 186792.74
+  - year: 2022.0
+    geo_name: 东北
+    annual_imports: 150269.47
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 35
+  category: E. 分组聚合GROUP BY
+  sub_category: E3 多维度分组
+  difficulty: hard
+  question: 2023年各省份每季度的平均出口额是多少？（季度定义：Q1=1-3月，Q2=4-6月，Q3=7-9月，Q4=10-12月）
+  sql: "SELECT geo_name,\n       CASE\n           WHEN month BETWEEN 1 AND 3 THEN\
+    \ 'Q1'\n           WHEN month BETWEEN 4 AND 6 THEN 'Q2'\n           WHEN month\
+    \ BETWEEN 7 AND 9 THEN 'Q3'\n           WHEN month BETWEEN 10 AND 12 THEN 'Q4'\n\
+    \       END AS quarter,\n       AVG(exports_musd) AS avg_exports\nFROM trade_balance\n\
+    WHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name, quarter\nORDER\
+    \ BY geo_name, quarter\nLIMIT 20"
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - month
+  - exports_musd
+  answer_type: list
+  answer:
+  - geo_name: 上海
+    quarter: Q1
+    avg_exports: 12090.39
+  - geo_name: 上海
+    quarter: Q2
+    avg_exports: 11881.99
+  - geo_name: 上海
+    quarter: Q3
+    avg_exports: 11741.93
+  - geo_name: 上海
+    quarter: Q4
+    avg_exports: 12473.72
+  - geo_name: 云南
+    quarter: Q1
+    avg_exports: 7226.13
+  - geo_name: 云南
+    quarter: Q2
+    avg_exports: 6971.65
+  - geo_name: 云南
+    quarter: Q3
+    avg_exports: 6808.62
+  - geo_name: 云南
+    quarter: Q4
+    avg_exports: 6672.56
+  - geo_name: 内蒙古
+    quarter: Q1
+    avg_exports: 4848.02
+  - geo_name: 内蒙古
+    quarter: Q2
+    avg_exports: 4638.86
+  - geo_name: 内蒙古
+    quarter: Q3
+    avg_exports: 4638.75
+  - geo_name: 内蒙古
+    quarter: Q4
+    avg_exports: 4461.11
+  - geo_name: 北京
+    quarter: Q1
+    avg_exports: 12415.44
+  - geo_name: 北京
+    quarter: Q2
+    avg_exports: 12368.63
+  - geo_name: 北京
+    quarter: Q3
+    avg_exports: 11794.65
+  - geo_name: 北京
+    quarter: Q4
+    avg_exports: 11648.97
+  - geo_name: 吉林
+    quarter: Q1
+    avg_exports: 3166.1
+  - geo_name: 吉林
+    quarter: Q2
+    avg_exports: 3295.06
+  - geo_name: 吉林
+    quarter: Q3
+    avg_exports: 3200.44
+  - geo_name: 吉林
+    quarter: Q4
+    avg_exports: 3084.47
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 36
+  category: E. 分组聚合GROUP BY
+  sub_category: E4 GROUP BY+ORDER BY
+  difficulty: medium
+  question: 2024年各省份的年度出口额排名前10的省份是哪些？
+  sql: 'SELECT geo_name, SUM(exports_musd) AS total_exports
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    ORDER BY total_exports DESC
+
+    LIMIT 10'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - exports_musd
+  answer_type: list
+  answer:
+  - geo_name: 广东
+    total_exports: 422510.86
+  - geo_name: 江苏
+    total_exports: 391656.27
+  - geo_name: 山东
+    total_exports: 353766.51
+  - geo_name: 浙江
+    total_exports: 268148.85
+  - geo_name: 四川
+    total_exports: 197903.32
+  - geo_name: 河南
+    total_exports: 190739.97
+  - geo_name: 湖北
+    total_exports: 176967.98
+  - geo_name: 湖南
+    total_exports: 155295.76
+  - geo_name: 福建
+    total_exports: 155219.68
+  - geo_name: 安徽
+    total_exports: 145019.45
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 37
+  category: F. 分组过滤HAVING
+  sub_category: F1 HAVING AVG条件
+  difficulty: hard
+  question: 2023年哪些区域的平均出口同比增速超过4%？
+  sql: 'SELECT geo_name, AVG(export_yoy_pct) AS avg_export_yoy
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_level = ''region''
+
+    GROUP BY geo_name
+
+    HAVING AVG(export_yoy_pct) > 4
+
+    ORDER BY avg_export_yoy DESC'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - export_yoy_pct
+  answer_type: list
+  answer:
+  - geo_name: 华中
+    avg_export_yoy: 7.83
+  - geo_name: 西北
+    avg_export_yoy: 6.77
+  - geo_name: 东北
+    avg_export_yoy: 6.4
+  - geo_name: 华北
+    avg_export_yoy: 6.34
+  - geo_name: 华东
+    avg_export_yoy: 5.6
+  - geo_name: 西南
+    avg_export_yoy: 5.06
+  - geo_name: 华南
+    avg_export_yoy: 5.04
+  answer_unit: '%'
+  requires_calculator: false
+- id: 38
+  category: F. 分组过滤HAVING
+  sub_category: F1 HAVING AVG条件
+  difficulty: hard
+  question: 2022年哪些省份的月均进口额超过20000百万美元？
+  sql: 'SELECT geo_name, AVG(imports_musd) AS avg_imports
+
+    FROM trade_balance
+
+    WHERE year = 2022 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    HAVING AVG(imports_musd) > 20000
+
+    ORDER BY avg_imports DESC'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - imports_musd
+  answer_type: list
+  answer:
+  - geo_name: 广东
+    avg_imports: 27370.47
+  - geo_name: 江苏
+    avg_imports: 25818.64
+  - geo_name: 山东
+    avg_imports: 25059.71
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 39
+  category: F. 分组过滤HAVING
+  sub_category: F2 HAVING COUNT条件
+  difficulty: hard
+  question: 在trade_balance表中，哪些第一大进口商品类别出现的次数超过100次？
+  sql: 'SELECT top_import_category, COUNT(*) AS occurrence_count
+
+    FROM trade_balance
+
+    GROUP BY top_import_category
+
+    HAVING COUNT(*) > 100
+
+    ORDER BY occurrence_count DESC'
+  columns_used:
+  - top_import_category
+  answer_type: list
+  answer:
+  - top_import_category: 化工品
+    occurrence_count: 771.0
+  - top_import_category: 集成电路
+    occurrence_count: 764.0
+  - top_import_category: 原油
+    occurrence_count: 752.0
+  - top_import_category: 机械设备
+    occurrence_count: 741.0
+  - top_import_category: 服务贸易
+    occurrence_count: 731.0
+  - top_import_category: 农产品
+    occurrence_count: 723.0
+  - top_import_category: 天然气
+    occurrence_count: 708.0
+  - top_import_category: 铁矿砂
+    occurrence_count: 690.0
+  answer_unit: 次
+  requires_calculator: false
+- id: 40
+  category: F. 分组过滤HAVING
+  sub_category: F3 HAVING SUM条件
+  difficulty: hard
+  question: 2020年至2022年期间，哪些区域的累计贸易顺差超过500000百万美元？
+  sql: 'SELECT geo_name, SUM(trade_balance_musd) AS total_trade_balance
+
+    FROM trade_balance
+
+    WHERE year BETWEEN 2020 AND 2022 AND geo_level = ''region''
+
+    GROUP BY geo_name
+
+    HAVING SUM(trade_balance_musd) > 500000
+
+    ORDER BY total_trade_balance DESC'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - trade_balance_musd
+  answer_type: list
+  answer:
+  - geo_name: 华东
+    total_trade_balance: 915979.13
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 41
+  category: G. 时间趋势与子查询
+  sub_category: G1 按年聚合趋势
+  difficulty: medium
+  question: 2016年至2025年，全国层级的年度平均贸易顺差趋势如何？
+  sql: 'SELECT year, AVG(trade_balance_musd) AS avg_trade_balance
+
+    FROM trade_balance
+
+    WHERE geo_level = ''national''
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - geo_level
+  - trade_balance_musd
+  answer_type: list
+  answer:
+  - year: 2016.0
+    avg_trade_balance: 65641.28
+  - year: 2017.0
+    avg_trade_balance: 64995.71
+  - year: 2018.0
+    avg_trade_balance: 66534.06
+  - year: 2019.0
+    avg_trade_balance: 70754.93
+  - year: 2020.0
+    avg_trade_balance: 68725.65
+  - year: 2021.0
+    avg_trade_balance: 66951.91
+  - year: 2022.0
+    avg_trade_balance: 66425.28
+  - year: 2023.0
+    avg_trade_balance: 74562.44
+  - year: 2024.0
+    avg_trade_balance: 72451.4
+  - year: 2025.0
+    avg_trade_balance: 79117.55
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 42
+  category: G. 时间趋势与子查询
+  sub_category: G1 按年聚合趋势
+  difficulty: medium
+  question: 华东地区2018年至2024年每年的进口额变化趋势是什么？
+  sql: 'SELECT year, SUM(imports_musd) AS annual_imports
+
+    FROM trade_balance
+
+    WHERE geo_name = ''华东'' AND year BETWEEN 2018 AND 2024
+
+    GROUP BY year
+
+    ORDER BY year'
+  columns_used:
+  - year
+  - geo_name
+  - imports_musd
+  answer_type: list
+  answer:
+  - year: 2018.0
+    annual_imports: 1152737.58
+  - year: 2019.0
+    annual_imports: 1192252.51
+  - year: 2020.0
+    annual_imports: 1230681.81
+  - year: 2021.0
+    annual_imports: 1215675.64
+  - year: 2022.0
+    annual_imports: 1269047.28
+  - year: 2023.0
+    annual_imports: 1214577.45
+  - year: 2024.0
+    annual_imports: 1222307.4
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 43
+  category: G. 时间趋势与子查询
+  sub_category: G2 子查询对比
+  difficulty: hard
+  question: 2023年全国层级中，哪些月份的出口额高于全年平均出口额？
+  sql: "SELECT month, exports_musd\nFROM trade_balance\nWHERE year = 2023 AND geo_level\
+    \ = 'national'\n  AND exports_musd > (\n      SELECT AVG(exports_musd)\n     \
+    \ FROM trade_balance\n      WHERE year = 2023 AND geo_level = 'national'\n  )\n\
+    ORDER BY month"
+  columns_used:
+  - year
+  - geo_level
+  - month
+  - exports_musd
+  answer_type: list
+  answer:
+  - month: 1.0
+    exports_musd: 346473.93
+  - month: 2.0
+    exports_musd: 339476.81
+  - month: 3.0
+    exports_musd: 338051.62
+  - month: 4.0
+    exports_musd: 351600.4
+  - month: 9.0
+    exports_musd: 334613.0
+  answer_unit: 百万美元
+  requires_calculator: false
+- id: 44
+  category: G. 时间趋势与子查询
+  sub_category: G2 子查询对比
+  difficulty: hard
+  question: 2022年所有省份中，哪些省份的年度平均出口同比增速高于所有省份的总体平均值？
+  sql: "SELECT geo_name, AVG(export_yoy_pct) AS avg_export_yoy\nFROM trade_balance\n\
+    WHERE year = 2022 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(export_yoy_pct)\
+    \ > (\n    SELECT AVG(export_yoy_pct)\n    FROM trade_balance\n    WHERE year\
+    \ = 2022 AND geo_level = 'province'\n)\nORDER BY avg_export_yoy DESC"
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - export_yoy_pct
+  answer_type: list
+  answer:
+  - geo_name: 上海
+    avg_export_yoy: 8.11
+  - geo_name: 吉林
+    avg_export_yoy: 7.75
+  - geo_name: 山东
+    avg_export_yoy: 7.43
+  - geo_name: 江苏
+    avg_export_yoy: 7.31
+  - geo_name: 内蒙古
+    avg_export_yoy: 7.24
+  - geo_name: 青海
+    avg_export_yoy: 7.15
+  - geo_name: 江西
+    avg_export_yoy: 7.11
+  - geo_name: 甘肃
+    avg_export_yoy: 7.04
+  - geo_name: 安徽
+    avg_export_yoy: 7.03
+  - geo_name: 辽宁
+    avg_export_yoy: 6.93
+  - geo_name: 海南
+    avg_export_yoy: 6.87
+  - geo_name: 湖北
+    avg_export_yoy: 6.83
+  - geo_name: 新疆
+    avg_export_yoy: 6.77
+  - geo_name: 重庆
+    avg_export_yoy: 6.73
+  - geo_name: 四川
+    avg_export_yoy: 6.68
+  - geo_name: 浙江
+    avg_export_yoy: 6.67
+  answer_unit: '%'
+  requires_calculator: false
+- id: 45
+  category: G. 时间趋势与子查询
+  sub_category: G3 跨工具计算
+  difficulty: hard
+  question: 2024年全国层级的出口额是进口额的多少倍？
+  sql: '-- 步骤1: 查询出口总额
+
+    SELECT SUM(exports_musd) AS total_exports
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询进口总额
+
+    SELECT SUM(imports_musd) AS total_imports
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 total_exports / total_imports'
+  columns_used:
+  - year
+  - geo_level
+  - exports_musd
+  - imports_musd
+  answer_type: scalar
+  answer: 1.28
+  answer_unit: 倍
+  requires_calculator: true
+- id: 46
+  category: H. 边界与容错
+  sub_category: H1 数据不存在
+  difficulty: medium
+  question: 2030年全国层级的进出口贸易数据是多少？
+  sql: null
+  columns_used: []
+  expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
+  answer: null
+  answer_unit: ''
+  requires_calculator: false
+- id: 47
+  category: H. 边界与容错
+  sub_category: H1 数据不存在
+  difficulty: medium
+  question: 查询2015年全国层级的贸易顺差
+  sql: null
+  columns_used: []
+  expected_error: 数据起始年份为2016年，2015年数据不存在
+  answer: null
+  answer_unit: ''
+  requires_calculator: false
+- id: 48
+  category: H. 边界与容错
+  sub_category: H2 字段不存在
+  difficulty: medium
+  question: 查询各个出口企业的公司名称和出口额
+  sql: null
+  columns_used: []
+  expected_error: 表中不包含企业名称字段，仅有地理区域聚合数据
+  answer: null
+  answer_unit: ''
+  requires_calculator: false
+- id: 49
+  category: H. 边界与容错
+  sub_category: H3 逻辑矛盾
+  difficulty: hard
+  question: 查询全国层级且地理名称为广东省的贸易数据
+  sql: null
+  columns_used: []
+  expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为省份名称
+  answer: null
+  answer_unit: ''
+  requires_calculator: false
+- id: 50
+  category: H. 边界与容错
+  sub_category: H4 极端值查询
+  difficulty: hard
+  question: 查询出口同比增速超过1000%的记录
+  sql: null
+  columns_used: []
+  expected_error: 出口同比增速超过1000%不符合经济常理，可能是数据异常
+  answer: null
+  answer_unit: ''
+  requires_calculator: false

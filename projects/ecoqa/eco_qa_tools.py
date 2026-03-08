@@ -182,10 +182,10 @@ Returns:
             return f"Error: table '{table_name}' not found."
 
         sql_name = _SQL_NAMES[table]
-        query_upper = re.sub(r"(\\r|\\n|\\t|[\r\n\t])+", " ", query).upper()
+        query_upper = re.sub(r"\s+", " ", query).upper().strip()
 
-        if "SELECT *" in query_upper:
-            return "Error: SELECT * is not allowed. Please select explicit columns."
+        if re.search(r"\bSELECT\s+\*\s+FROM\b", query_upper):
+            return f'Error: "SELECT *" is not allowed. Please list columns explicitly, e.g., SELECT column1, column2 FROM {table} LIMIT 5.'
 
         forbidden = ("INSERT ", "UPDATE ", "DELETE ", "DROP ", "ALTER ", "CREATE ", "ATTACH ", "PRAGMA ")
         if any(token in query_upper for token in forbidden):
@@ -212,11 +212,11 @@ Returns:
 
         quoted_sql_name = f'"{sql_name}"'
         pattern = rf'(FROM|JOIN)\s+[`"\']?{re.escape(table_name)}[`"\']?(?=\s|$|;|,|\))'
-        query_for_execution = re.sub(pattern, rf"\\1 {quoted_sql_name}", query, flags=re.IGNORECASE)
+        query_for_execution = re.sub(pattern, rf"\g<1> {quoted_sql_name}", query, flags=re.IGNORECASE)
 
         # Also normalize canonical table name if caller uses the normalized name.
         pattern2 = rf'(FROM|JOIN)\s+[`"\']?{re.escape(table)}[`"\']?(?=\s|$|;|,|\))'
-        query_for_execution = re.sub(pattern2, rf"\\1 {quoted_sql_name}", query_for_execution, flags=re.IGNORECASE)
+        query_for_execution = re.sub(pattern2, rf"\g<1> {quoted_sql_name}", query_for_execution, flags=re.IGNORECASE)
 
         try:
             with _DB_LOCK:

@@ -27,13 +27,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 2024年1月全国的工业总产出指数是多少？
-  sql: 'SELECT total_index AS value
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND month = 1 AND geo_level = ''national''
-
-    LIMIT 1'
+  sql: "SELECT total_index AS value\nFROM industrial_output\nWHERE year = 2024 AND month = 1 AND geo_level = 'national'\nLIMIT 1"
   columns_used:
   - year
   - month
@@ -42,19 +36,13 @@ questions:
   answer_type: scalar
   answer_unit: 指数
   requires_calculator: false
-  answer: 159.84
+  answer: 159.845
 - id: 2
   category: A. 基础点查询
   sub_category: A1 单条件等值
   difficulty: easy
   question: 查询2023年12月全国制造业指数的具体数值
-  sql: 'SELECT manufacturing_index AS value
-
-    FROM industrial_output
-
-    WHERE year = 2023 AND month = 12 AND geo_level = ''national''
-
-    LIMIT 1'
+  sql: "SELECT manufacturing_index AS value\nFROM industrial_output\nWHERE year = 2023 AND month = 12 AND geo_level = 'national'\nLIMIT 1"
   columns_used:
   - year
   - month
@@ -63,19 +51,13 @@ questions:
   answer_type: scalar
   answer_unit: 指数
   requires_calculator: false
-  answer: 158.52
+  answer: 158.523
 - id: 3
   category: A. 基础点查询
   sub_category: A2 多条件AND
   difficulty: easy
   question: 2022年6月华北地区的工业产能利用率是多少？
-  sql: 'SELECT capacity_utilization_pct AS value
-
-    FROM industrial_output
-
-    WHERE year = 2022 AND month = 6 AND geo_name = ''华北''
-
-    LIMIT 1'
+  sql: "SELECT capacity_utilization_pct AS value\nFROM industrial_output\nWHERE year = 2022 AND month = 6 AND geo_name = '华北'\nLIMIT 1"
   columns_used:
   - year
   - month
@@ -84,37 +66,31 @@ questions:
   answer_type: scalar
   answer_unit: '%'
   requires_calculator: false
-  answer: 74.5
+  answer: 74.501
 - id: 4
   category: A. 基础点查询
   sub_category: A2 多条件AND
   difficulty: easy
   question: 北京市2021年3月的高技术产业指数和装备制造指数分别是多少？
-  sql: 'SELECT hightech_index, equipment_mfg_index
-
-    FROM industrial_output
-
-    WHERE year = 2021 AND month = 3 AND geo_name = ''北京''
-
-    LIMIT 1'
+  sql: "SELECT hightech_index, equipment_mfg_index\nFROM industrial_output\nWHERE year = 2021 AND month = 3 AND geo_name = '北京'\nLIMIT 1"
   columns_used:
   - year
   - month
   - geo_name
   - hightech_index
   - equipment_mfg_index
-  answer_type: dict
+  answer_type: list
   answer_unit: 指数
   requires_calculator: false
   answer:
-    hightech_index: 161.609
+  - hightech_index: 161.609
     equipment_mfg_index: 158.032
 - id: 5
   category: A. 基础点查询
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 2024年1月采矿业指数在华东、华南、华北三大区域的分布情况
-  sql: "SELECT geo_name, mining_index\nFROM industrial_output\nWHERE year = 2024 AND month = 1\n  AND geo_name IN ('华东', '华南', '华北')\nORDER BY mining_index DESC"
+  sql: "SELECT geo_name, mining_index\nFROM industrial_output\nWHERE year = 2024 AND month = 1 AND geo_name IN ('华东', '华南', '华北')\nORDER BY mining_index DESC"
   columns_used:
   - year
   - month
@@ -125,9 +101,9 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 华北
-    mining_index: 159.15
+    mining_index: 159.152
   - geo_name: 华东
-    mining_index: 149.39
+    mining_index: 149.391
   - geo_name: 华南
     mining_index: 141.49
 - id: 6
@@ -135,7 +111,7 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 2023年全年1月、6月、12月全国的公用事业指数对比
-  sql: "SELECT month, utilities_index\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national'\n  AND month IN (1, 6, 12)\nORDER BY month"
+  sql: "SELECT month, utilities_index\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national' AND month IN (1, 6, 12)\nORDER BY month"
   columns_used:
   - year
   - month
@@ -146,21 +122,17 @@ questions:
   requires_calculator: false
   answer:
   - month: 1
-    utilities_index: 164.36
+    utilities_index: 164.356
   - month: 6
-    utilities_index: 165.05
+    utilities_index: 165.054
   - month: 12
-    utilities_index: 171.01
+    utilities_index: 171.009
 - id: 7
   category: A. 基础点查询
   sub_category: A4 NULL检查
   difficulty: medium
-  question: 工业数据中存在产能利用率缺失值的记录有多少条？
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM industrial_output
-
-    WHERE capacity_utilization_pct IS NULL'
+  question: 产能利用率为空值的工业数据有多少条？
+  sql: "SELECT COUNT(*) AS value\nFROM industrial_output\nWHERE capacity_utilization_pct IS NULL"
   columns_used:
   - capacity_utilization_pct
   answer_type: scalar
@@ -171,8 +143,8 @@ questions:
   category: B. 范围与比较过滤
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
-  question: 2020年至2022年间全国工业同比增速的月度记录数
-  sql: "SELECT COUNT(*) AS value\nFROM industrial_output\nWHERE year BETWEEN 2020 AND 2022\n  AND geo_level = 'national'"
+  question: 2020年至2022年，全国工业同比增速为正的月度数据有多少期？
+  sql: "SELECT COUNT(*) AS value\nFROM industrial_output\nWHERE year BETWEEN 2020 AND 2022 AND geo_level = 'national' AND yoy_growth_pct > 0"
   columns_used:
   - year
   - geo_level
@@ -185,7 +157,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: medium
   question: 2018年至2020年间华南地区工业总产出指数的平均值
-  sql: "SELECT AVG(total_index) AS value\nFROM industrial_output\nWHERE year BETWEEN 2018 AND 2020\n  AND geo_name = '华南'"
+  sql: "SELECT AVG(total_index) AS value\nFROM industrial_output\nWHERE year BETWEEN 2018 AND 2020 AND geo_name = '华南'"
   columns_used:
   - year
   - geo_name
@@ -193,13 +165,13 @@ questions:
   answer_type: scalar
   answer_unit: 指数
   requires_calculator: false
-  answer: 125.61
+  answer: 125.61219444444444
 - id: 10
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
-  question: 全国工业同比增速超过8%的月份有哪些？（2016-2020年）
-  sql: "SELECT year, month, yoy_growth_pct\nFROM industrial_output\nWHERE geo_level = 'national'\n  AND yoy_growth_pct > 8\n  AND year BETWEEN 2016 AND 2020\nORDER BY yoy_growth_pct DESC\nLIMIT 10"
+  question: 2016-2020年全国工业同比增速超过7%的月份有哪些？
+  sql: "SELECT year, month, yoy_growth_pct\nFROM industrial_output\nWHERE geo_level = 'national' AND yoy_growth_pct > 7 AND year BETWEEN 2016 AND 2020\nORDER BY yoy_growth_pct DESC\nLIMIT 10"
   columns_used:
   - year
   - month
@@ -208,13 +180,25 @@ questions:
   answer_type: list
   answer_unit: '%'
   requires_calculator: false
-  answer: null
+  answer:
+  - year: 2020
+    month: 3
+    yoy_growth_pct: 7.792
+  - year: 2019
+    month: 1
+    yoy_growth_pct: 7.681
+  - year: 2017
+    month: 4
+    yoy_growth_pct: 7.307
+  - year: 2019
+    month: 3
+    yoy_growth_pct: 7.184
 - id: 11
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
   question: 2023年全国产能利用率低于75%的月份统计
-  sql: "SELECT month, capacity_utilization_pct\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national'\n  AND capacity_utilization_pct < 75\nORDER BY month"
+  sql: "SELECT month, capacity_utilization_pct\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national' AND capacity_utilization_pct < 75\nORDER BY month"
   columns_used:
   - year
   - month
@@ -225,15 +209,15 @@ questions:
   requires_calculator: false
   answer:
   - month: 4
-    capacity_utilization_pct: 74.91
+    capacity_utilization_pct: 74.912
   - month: 5
-    capacity_utilization_pct: 74.08
+    capacity_utilization_pct: 74.083
 - id: 12
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
   question: 2024年高技术产业指数超过120的省级地区有哪些？
-  sql: "SELECT DISTINCT geo_name, MAX(hightech_index) as max_index\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'province'\n  AND hightech_index > 120\nGROUP BY geo_name\nORDER BY max_index DESC\nLIMIT 10"
+  sql: "SELECT DISTINCT geo_name, MAX(hightech_index) AS max_index\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'province' AND hightech_index > 120\nGROUP BY geo_name\nORDER BY max_index DESC\nLIMIT 10"
   columns_used:
   - year
   - geo_level
@@ -244,31 +228,31 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 辽宁
-    max_index: 203.59
+    max_index: 203.594
   - geo_name: 河北
-    max_index: 201.38
+    max_index: 201.377
   - geo_name: 天津
-    max_index: 200.89
+    max_index: 200.894
   - geo_name: 北京
     max_index: 200.18
   - geo_name: 陕西
-    max_index: 200.18
+    max_index: 200.177
   - geo_name: 江苏
-    max_index: 199.96
+    max_index: 199.964
   - geo_name: 甘肃
-    max_index: 199.39
+    max_index: 199.388
   - geo_name: 四川
-    max_index: 198.89
+    max_index: 198.892
   - geo_name: 湖北
-    max_index: 197.57
+    max_index: 197.572
   - geo_name: 广西
-    max_index: 196.57
+    max_index: 196.573
 - id: 13
   category: B. 范围与比较过滤
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2022年制造业指数超过105且产能利用率高于76%的区域分布
-  sql: "SELECT geo_name, AVG(manufacturing_index) as avg_mfg,\n       AVG(capacity_utilization_pct) as avg_capacity\nFROM industrial_output\nWHERE year = 2022 AND geo_level = 'region'\n  AND manufacturing_index > 105\n  AND capacity_utilization_pct > 76\nGROUP BY geo_name\nORDER BY avg_mfg DESC"
+  sql: "SELECT geo_name, AVG(manufacturing_index) AS avg_mfg, AVG(capacity_utilization_pct) AS avg_capacity\nFROM industrial_output\nWHERE year = 2022 AND geo_level = 'region' AND manufacturing_index > 105 AND capacity_utilization_pct > 76\nGROUP BY geo_name\nORDER BY avg_mfg DESC"
   columns_used:
   - year
   - geo_level
@@ -280,32 +264,32 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 西北
-    avg_mfg: 152.64
-    avg_capacity: 77.19
+    avg_mfg: 152.63585714285713
+    avg_capacity: 77.18628571428572
   - geo_name: 华中
-    avg_mfg: 149.93
-    avg_capacity: 77.46
+    avg_mfg: 149.926125
+    avg_capacity: 77.464125
   - geo_name: 西南
-    avg_mfg: 149.74
-    avg_capacity: 76.82
+    avg_mfg: 149.738625
+    avg_capacity: 76.8245
   - geo_name: 华北
-    avg_mfg: 148.8
-    avg_capacity: 76.97
+    avg_mfg: 148.80166666666665
+    avg_capacity: 76.97149999999999
   - geo_name: 华东
-    avg_mfg: 148.64
-    avg_capacity: 77.58
+    avg_mfg: 148.63544444444446
+    avg_capacity: 77.57988888888889
   - geo_name: 东北
-    avg_mfg: 148.06
-    avg_capacity: 76.77
+    avg_mfg: 148.06485714285714
+    avg_capacity: 76.77142857142857
   - geo_name: 华南
-    avg_mfg: 145.48
-    avg_capacity: 77.32
+    avg_mfg: 145.48322222222222
+    avg_capacity: 77.32122222222222
 - id: 14
   category: B. 范围与比较过滤
   sub_category: B3 复合范围条件
   difficulty: hard
   question: 2021年工业同比增速在5%-10%区间且季调环比增速为正的全国月份
-  sql: "SELECT month, yoy_growth_pct, mom_growth_sa_pct\nFROM industrial_output\nWHERE year = 2021 AND geo_level = 'national'\n  AND yoy_growth_pct BETWEEN 5 AND 10\n  AND mom_growth_sa_pct > 0\nORDER BY month"
+  sql: "SELECT month, yoy_growth_pct, mom_growth_sa_pct\nFROM industrial_output\nWHERE year = 2021 AND geo_level = 'national' AND yoy_growth_pct BETWEEN 5 AND 10 AND mom_growth_sa_pct > 0\nORDER BY month"
   columns_used:
   - year
   - month
@@ -318,143 +302,99 @@ questions:
   answer:
   - month: 1
     yoy_growth_pct: 6.21
-    mom_growth_sa_pct: 0.5
+    mom_growth_sa_pct: 0.504
   - month: 4
     yoy_growth_pct: 7.06
-    mom_growth_sa_pct: 0.58
+    mom_growth_sa_pct: 0.585
   - month: 5
-    yoy_growth_pct: 7.27
-    mom_growth_sa_pct: 0.3
+    yoy_growth_pct: 7.267
+    mom_growth_sa_pct: 0.301
   - month: 6
     yoy_growth_pct: 5.38
-    mom_growth_sa_pct: 0.0
+    mom_growth_sa_pct: 0.004
   - month: 10
-    yoy_growth_pct: 5.35
-    mom_growth_sa_pct: 0.03
+    yoy_growth_pct: 5.353
+    mom_growth_sa_pct: 0.034
   - month: 11
-    yoy_growth_pct: 6.79
-    mom_growth_sa_pct: 0.8
+    yoy_growth_pct: 6.786
+    mom_growth_sa_pct: 0.802
   - month: 12
-    yoy_growth_pct: 6.42
-    mom_growth_sa_pct: 0.46
+    yoy_growth_pct: 6.421
+    mom_growth_sa_pct: 0.462
 - id: 15
   category: C. 排序与Top-N
   sub_category: C1 单指标最大值行
   difficulty: easy
   question: 2023年全年全国工业同比增速的最高值出现在哪个月？
-  sql: 'SELECT month, yoy_growth_pct
-
-    FROM industrial_output
-
-    WHERE year = 2023 AND geo_level = ''national''
-
-    ORDER BY yoy_growth_pct DESC
-
-    LIMIT 1'
+  sql: "SELECT month, yoy_growth_pct\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national'\nORDER BY yoy_growth_pct DESC\nLIMIT 1"
   columns_used:
   - year
   - month
   - geo_level
   - yoy_growth_pct
-  answer_type: dict
+  answer_type: list
   answer_unit: '%'
   requires_calculator: false
   answer:
-    month: 12
+  - month: 12
     yoy_growth_pct: 7.416
 - id: 16
   category: C. 排序与Top-N
   sub_category: C1 单指标最大值行
   difficulty: medium
   question: 2024年装备制造业指数最高的省份是哪个？
-  sql: 'SELECT geo_name, MAX(equipment_mfg_index) as max_index
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    ORDER BY max_index DESC
-
-    LIMIT 1'
+  sql: "SELECT geo_name, MAX(equipment_mfg_index) AS max_index\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY max_index DESC\nLIMIT 1"
   columns_used:
   - year
   - geo_level
   - geo_name
   - equipment_mfg_index
-  answer_type: dict
+  answer_type: list
   answer_unit: 指数
   requires_calculator: false
   answer:
-    geo_name: 四川
+  - geo_name: 四川
     max_index: 191.109
 - id: 17
   category: C. 排序与Top-N
   sub_category: C2 单指标最小值行
   difficulty: easy
   question: 2020年全国采矿业指数的最低点出现在哪个月？
-  sql: 'SELECT month, mining_index
-
-    FROM industrial_output
-
-    WHERE year = 2020 AND geo_level = ''national''
-
-    ORDER BY mining_index ASC
-
-    LIMIT 1'
+  sql: "SELECT month, mining_index\nFROM industrial_output\nWHERE year = 2020 AND geo_level = 'national'\nORDER BY mining_index ASC\nLIMIT 1"
   columns_used:
   - year
   - month
   - geo_level
   - mining_index
-  answer_type: dict
+  answer_type: list
   answer_unit: 指数
   requires_calculator: false
   answer:
-    month: 3
+  - month: 3
     mining_index: 118.147
 - id: 18
   category: C. 排序与Top-N
   sub_category: C2 单指标最小值行
   difficulty: medium
   question: 2022年产能利用率最低的区域是哪个？
-  sql: 'SELECT geo_name, MIN(capacity_utilization_pct) as min_capacity
-
-    FROM industrial_output
-
-    WHERE year = 2022 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY min_capacity ASC
-
-    LIMIT 1'
+  sql: "SELECT geo_name, MIN(capacity_utilization_pct) AS min_capacity\nFROM industrial_output\nWHERE year = 2022 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY min_capacity ASC\nLIMIT 1"
   columns_used:
   - year
   - geo_level
   - geo_name
   - capacity_utilization_pct
-  answer_type: dict
+  answer_type: list
   answer_unit: '%'
   requires_calculator: false
   answer:
-    geo_name: 西北
+  - geo_name: 西北
     min_capacity: 73.694
 - id: 19
   category: C. 排序与Top-N
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2024年1月高技术产业指数排名前5的省份
-  sql: 'SELECT geo_name, hightech_index
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND month = 1 AND geo_level = ''province''
-
-    ORDER BY hightech_index DESC
-
-    LIMIT 5'
+  sql: "SELECT geo_name, hightech_index\nFROM industrial_output\nWHERE year = 2024 AND month = 1 AND geo_level = 'province'\nORDER BY hightech_index DESC\nLIMIT 5"
   columns_used:
   - year
   - month
@@ -466,31 +406,21 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 山东
-    hightech_index: 191.22
+    hightech_index: 191.221
   - geo_name: 贵州
-    hightech_index: 190.99
+    hightech_index: 190.986
   - geo_name: 湖北
-    hightech_index: 190.54
+    hightech_index: 190.541
   - geo_name: 福建
-    hightech_index: 187.06
+    hightech_index: 187.055
   - geo_name: 天津
-    hightech_index: 185.42
+    hightech_index: 185.416
 - id: 20
   category: C. 排序与Top-N
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2023年平均工业总产出指数最高的3个区域
-  sql: 'SELECT geo_name, AVG(total_index) as avg_index
-
-    FROM industrial_output
-
-    WHERE year = 2023 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_index DESC
-
-    LIMIT 3'
+  sql: "SELECT geo_name, AVG(total_index) AS avg_index\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY avg_index DESC\nLIMIT 3"
   columns_used:
   - year
   - geo_level
@@ -501,17 +431,17 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 华北
-    avg_index: 155.88
+    avg_index: 155.88308333333333
   - geo_name: 华东
-    avg_index: 155.64
+    avg_index: 155.63758333333334
   - geo_name: 西北
-    avg_index: 155.52
+    avg_index: 155.52191666666667
 - id: 21
   category: C. 排序与Top-N
   sub_category: C4 多列排序
   difficulty: medium
   question: 2024年工业同比增速最高且季调环比增速也为正的前5个省份
-  sql: "SELECT geo_name,\n       AVG(yoy_growth_pct) as avg_yoy,\n       AVG(mom_growth_sa_pct) as avg_mom\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'province'\n  AND mom_growth_sa_pct > 0\nGROUP BY geo_name\nORDER BY avg_yoy DESC, avg_mom DESC\nLIMIT 5"
+  sql: "SELECT geo_name, AVG(yoy_growth_pct) AS avg_yoy, AVG(mom_growth_sa_pct) AS avg_mom\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'province' AND mom_growth_sa_pct > 0\nGROUP BY geo_name\nORDER BY avg_yoy DESC, avg_mom DESC\nLIMIT 5"
   columns_used:
   - year
   - geo_level
@@ -523,30 +453,26 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 陕西
-    avg_yoy: 7.48
-    avg_mom: 0.51
+    avg_yoy: 7.4813
+    avg_mom: 0.5075000000000001
   - geo_name: 湖南
-    avg_yoy: 7.44
-    avg_mom: 0.55
+    avg_yoy: 7.441
+    avg_mom: 0.5469
   - geo_name: 贵州
-    avg_yoy: 7.42
-    avg_mom: 0.55
+    avg_yoy: 7.415666666666667
+    avg_mom: 0.5463333333333333
   - geo_name: 山东
-    avg_yoy: 7.35
-    avg_mom: 0.5
+    avg_yoy: 7.3516666666666675
+    avg_mom: 0.49811111111111106
   - geo_name: 北京
-    avg_yoy: 7.13
-    avg_mom: 0.54
+    avg_yoy: 7.132818181818181
+    avg_mom: 0.5407272727272727
 - id: 22
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 工业生产数据集中共覆盖多少个不同的省级行政区？
-  sql: 'SELECT COUNT(DISTINCT geo_name) AS value
-
-    FROM industrial_output
-
-    WHERE geo_level = ''province'''
+  question: 工业生产统计涉及多少个省级行政区？
+  sql: "SELECT COUNT(DISTINCT geo_name) AS value\nFROM industrial_output\nWHERE geo_level = 'province'"
   columns_used:
   - geo_level
   - geo_name
@@ -559,11 +485,7 @@ questions:
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
   question: 2024年全国层级的工业生产数据记录总数
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND geo_level = ''national'''
+  sql: "SELECT COUNT(*) AS value\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -576,11 +498,7 @@ questions:
   sub_category: D2 SUM
   difficulty: medium
   question: 2023年全国12个月的工业同比增速累计和是多少？
-  sql: 'SELECT SUM(yoy_growth_pct) AS value
-
-    FROM industrial_output
-
-    WHERE year = 2023 AND geo_level = ''national'''
+  sql: "SELECT SUM(yoy_growth_pct) AS value\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -588,17 +506,13 @@ questions:
   answer_type: scalar
   answer_unit: '%'
   requires_calculator: false
-  answer: 76.56
+  answer: 76.563
 - id: 25
   category: D. 聚合函数（无GROUP BY）
   sub_category: D2 SUM
   difficulty: medium
   question: 2022年华北地区各月制造业指数的总和
-  sql: 'SELECT SUM(manufacturing_index) AS value
-
-    FROM industrial_output
-
-    WHERE year = 2022 AND geo_name = ''华北'''
+  sql: "SELECT SUM(manufacturing_index) AS value\nFROM industrial_output\nWHERE year = 2022 AND geo_name = '华北'"
   columns_used:
   - year
   - geo_name
@@ -606,17 +520,13 @@ questions:
   answer_type: scalar
   answer_unit: 指数
   requires_calculator: false
-  answer: 1793.84
+  answer: 1793.836
 - id: 26
   category: D. 聚合函数（无GROUP BY）
   sub_category: D3 AVG
   difficulty: medium
   question: 2024年全国工业产能利用率的年度平均值
-  sql: 'SELECT AVG(capacity_utilization_pct) AS value
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND geo_level = ''national'''
+  sql: "SELECT AVG(capacity_utilization_pct) AS value\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -624,13 +534,13 @@ questions:
   answer_type: scalar
   answer_unit: '%'
   requires_calculator: false
-  answer: 76.27
+  answer: 76.26891666666667
 - id: 27
   category: D. 聚合函数（无GROUP BY）
   sub_category: D3 AVG
   difficulty: medium
   question: 2020-2022年期间全国高技术产业指数的三年平均水平
-  sql: "SELECT AVG(hightech_index) AS value\nFROM industrial_output\nWHERE year BETWEEN 2020 AND 2022\n  AND geo_level = 'national'"
+  sql: "SELECT AVG(hightech_index) AS value\nFROM industrial_output\nWHERE year BETWEEN 2020 AND 2022 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -638,51 +548,43 @@ questions:
   answer_type: scalar
   answer_unit: 指数
   requires_calculator: false
-  answer: 158.06
+  answer: 158.05547222222222
 - id: 28
   category: D. 聚合函数（无GROUP BY）
   sub_category: D4 MIN/MAX
   difficulty: easy
-  question: 全数据集中采矿业指数的极值范围（最小值和最大值）
-  sql: "SELECT MIN(mining_index) AS min_value,\n       MAX(mining_index) AS max_value\nFROM industrial_output"
+  question: 采矿业指数的历史最小值和最大值分别是多少？
+  sql: "SELECT MIN(mining_index) AS min_value, MAX(mining_index) AS max_value\nFROM industrial_output"
   columns_used:
   - mining_index
-  answer_type: dict
+  answer_type: list
   answer_unit: 指数
   requires_calculator: false
   answer:
-    min_value: 86.712
+  - min_value: 86.712
     max_value: 176.344
 - id: 29
   category: D. 聚合函数（无GROUP BY）
   sub_category: D4 MIN/MAX
   difficulty: medium
-  question: 2023年全国工业季调环比增速的波动区间（月度统计）
-  sql: "SELECT MIN(mom_growth_sa_pct) AS min_value,\n       MAX(mom_growth_sa_pct) AS max_value\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national'"
+  question: 2023年全国工业季调环比增速的月度波动区间是多少？
+  sql: "SELECT MIN(mom_growth_sa_pct) AS min_value, MAX(mom_growth_sa_pct) AS max_value\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
   - mom_growth_sa_pct
-  answer_type: dict
+  answer_type: list
   answer_unit: '%'
   requires_calculator: false
   answer:
-    min_value: -0.015
+  - min_value: -0.015
     max_value: 1.061
 - id: 30
   category: E. 分组聚合GROUP BY
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
-  question: 按年度统计全国工业总产出指数的年均值（2016-2025）
-  sql: 'SELECT year, AVG(total_index) as avg_index
-
-    FROM industrial_output
-
-    WHERE geo_level = ''national''
-
-    GROUP BY year
-
-    ORDER BY year'
+  question: 按年度统计2016年至2025年全国工业总产出指数的年均值
+  sql: "SELECT year, AVG(total_index) AS avg_index\nFROM industrial_output\nWHERE geo_level = 'national' AND year BETWEEN 2016 AND 2025\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -692,9 +594,9 @@ questions:
   requires_calculator: false
   answer:
   - year: 2016
-    avg_index: 103.41
+    avg_index: 103.41000000000001
   - year: 2017
-    avg_index: 110.85
+    avg_index: 110.85000000000001
   - year: 2018
     avg_index: 118.29
   - year: 2019
@@ -702,9 +604,9 @@ questions:
   - year: 2020
     avg_index: 133.17
   - year: 2021
-    avg_index: 140.61
+    avg_index: 140.60999999999999
   - year: 2022
-    avg_index: 148.05
+    avg_index: 148.04999999999998
   - year: 2023
     avg_index: 155.49
   - year: 2024
@@ -716,15 +618,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 2024年各区域的平均制造业指数对比
-  sql: 'SELECT geo_name, AVG(manufacturing_index) as avg_index
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_index DESC'
+  sql: "SELECT geo_name, AVG(manufacturing_index) AS avg_index\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY avg_index DESC"
   columns_used:
   - year
   - geo_level
@@ -735,31 +629,25 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 华中
-    avg_index: 167.02
+    avg_index: 167.02108333333334
   - geo_name: 华南
-    avg_index: 166.75
+    avg_index: 166.74966666666668
   - geo_name: 西南
-    avg_index: 166.2
+    avg_index: 166.204
   - geo_name: 华东
-    avg_index: 165.35
+    avg_index: 165.35191666666665
   - geo_name: 西北
-    avg_index: 164.91
+    avg_index: 164.91308333333333
   - geo_name: 东北
-    avg_index: 163.24
+    avg_index: 163.241
   - geo_name: 华北
-    avg_index: 162.35
+    avg_index: 162.35108333333332
 - id: 32
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: easy
-  question: 按地理层级统计工业生产数据的记录数分布
-  sql: 'SELECT geo_level, COUNT(*) as record_count
-
-    FROM industrial_output
-
-    GROUP BY geo_level
-
-    ORDER BY record_count DESC'
+  question: 2023年各统计层级中工业同比增速超过6%的数据数量分别是多少？
+  sql: "SELECT geo_level, COUNT(*) AS record_count\nFROM industrial_output\nWHERE year = 2023 AND yoy_growth_pct > 6.0\nGROUP BY geo_level\nORDER BY record_count DESC"
   columns_used:
   - geo_level
   answer_type: list
@@ -767,29 +655,19 @@ questions:
   requires_calculator: false
   answer:
   - geo_level: province
-    record_count: 3720
+    record_count: 238
   - geo_level: city
-    record_count: 1200
+    record_count: 73
   - geo_level: region
-    record_count: 840
+    record_count: 52
   - geo_level: national
-    record_count: 120
+    record_count: 8
 - id: 33
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
-  question: 2023年各省份的工业产能利用率数据月度覆盖完整性统计
-  sql: 'SELECT geo_name, COUNT(*) as month_count
-
-    FROM industrial_output
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    ORDER BY month_count DESC
-
-    LIMIT 10'
+  question: 2023年哪些省份每个月都有产能利用率数据？
+  sql: "SELECT geo_name, COUNT(*) AS month_count\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'province' AND capacity_utilization_pct IS NOT NULL\nGROUP BY geo_name\nHAVING COUNT(*) = 12\nORDER BY geo_name"
   columns_used:
   - year
   - geo_level
@@ -798,32 +676,74 @@ questions:
   answer_unit: 个月
   requires_calculator: false
   answer:
-  - geo_name: 黑龙江
+  - geo_name: 上海
     month_count: 12
-  - geo_name: 青海
+  - geo_name: 云南
     month_count: 12
-  - geo_name: 陕西
+  - geo_name: 内蒙古
     month_count: 12
-  - geo_name: 重庆
+  - geo_name: 北京
     month_count: 12
-  - geo_name: 辽宁
+  - geo_name: 吉林
     month_count: 12
-  - geo_name: 贵州
+  - geo_name: 四川
     month_count: 12
-  - geo_name: 西藏
+  - geo_name: 天津
     month_count: 12
-  - geo_name: 福建
+  - geo_name: 宁夏
+    month_count: 12
+  - geo_name: 安徽
+    month_count: 12
+  - geo_name: 山东
+    month_count: 12
+  - geo_name: 山西
+    month_count: 12
+  - geo_name: 广东
+    month_count: 12
+  - geo_name: 广西
+    month_count: 12
+  - geo_name: 新疆
+    month_count: 12
+  - geo_name: 江苏
+    month_count: 12
+  - geo_name: 江西
+    month_count: 12
+  - geo_name: 河北
+    month_count: 12
+  - geo_name: 河南
+    month_count: 12
+  - geo_name: 浙江
+    month_count: 12
+  - geo_name: 海南
+    month_count: 12
+  - geo_name: 湖北
+    month_count: 12
+  - geo_name: 湖南
     month_count: 12
   - geo_name: 甘肃
     month_count: 12
-  - geo_name: 湖南
+  - geo_name: 福建
+    month_count: 12
+  - geo_name: 西藏
+    month_count: 12
+  - geo_name: 贵州
+    month_count: 12
+  - geo_name: 辽宁
+    month_count: 12
+  - geo_name: 重庆
+    month_count: 12
+  - geo_name: 陕西
+    month_count: 12
+  - geo_name: 青海
+    month_count: 12
+  - geo_name: 黑龙江
     month_count: 12
 - id: 34
   category: E. 分组聚合GROUP BY
   sub_category: E3 多维度分组
   difficulty: medium
   question: 2024年各区域按季度的平均产能利用率
-  sql: "SELECT geo_name,\n       CASE\n         WHEN month IN (1,2,3) THEN 'Q1'\n         WHEN month IN (4,5,6) THEN 'Q2'\n         WHEN month IN (7,8,9) THEN 'Q3'\n         ELSE 'Q4'\n       END as quarter,\n       AVG(capacity_utilization_pct) as avg_capacity\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name, quarter\nORDER BY geo_name, quarter"
+  sql: "SELECT geo_name, CASE WHEN month IN (1,2,3) THEN 'Q1' WHEN month IN (4,5,6) THEN 'Q2' WHEN month IN (7,8,9) THEN 'Q3' ELSE 'Q4' END AS quarter, AVG(capacity_utilization_pct) AS avg_capacity\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name, quarter\nORDER BY geo_name, quarter"
   columns_used:
   - year
   - month
@@ -836,94 +756,94 @@ questions:
   answer:
   - geo_name: 东北
     quarter: Q1
-    avg_capacity: 76.36
+    avg_capacity: 76.362
   - geo_name: 东北
     quarter: Q2
-    avg_capacity: 76.34
+    avg_capacity: 76.339
   - geo_name: 东北
     quarter: Q3
     avg_capacity: 76.92
   - geo_name: 东北
     quarter: Q4
-    avg_capacity: 77.87
+    avg_capacity: 77.87266666666666
   - geo_name: 华东
     quarter: Q1
-    avg_capacity: 77.87
+    avg_capacity: 77.872
   - geo_name: 华东
     quarter: Q2
-    avg_capacity: 77.09
+    avg_capacity: 77.087
   - geo_name: 华东
     quarter: Q3
-    avg_capacity: 76.26
+    avg_capacity: 76.26466666666666
   - geo_name: 华东
     quarter: Q4
-    avg_capacity: 75.62
+    avg_capacity: 75.62066666666666
   - geo_name: 华中
     quarter: Q1
-    avg_capacity: 77.79
+    avg_capacity: 77.78699999999999
   - geo_name: 华中
     quarter: Q2
-    avg_capacity: 77.67
+    avg_capacity: 77.67166666666667
   - geo_name: 华中
     quarter: Q3
-    avg_capacity: 76.35
+    avg_capacity: 76.349
   - geo_name: 华中
     quarter: Q4
-    avg_capacity: 77.11
+    avg_capacity: 77.11399999999999
   - geo_name: 华北
     quarter: Q1
-    avg_capacity: 78.09
+    avg_capacity: 78.091
   - geo_name: 华北
     quarter: Q2
     avg_capacity: 76.28
   - geo_name: 华北
     quarter: Q3
-    avg_capacity: 77.43
+    avg_capacity: 77.431
   - geo_name: 华北
     quarter: Q4
-    avg_capacity: 76.82
+    avg_capacity: 76.819
   - geo_name: 华南
     quarter: Q1
-    avg_capacity: 77.62
+    avg_capacity: 77.621
   - geo_name: 华南
     quarter: Q2
-    avg_capacity: 77.25
+    avg_capacity: 77.24666666666667
   - geo_name: 华南
     quarter: Q3
-    avg_capacity: 76.8
+    avg_capacity: 76.80366666666667
   - geo_name: 华南
     quarter: Q4
-    avg_capacity: 76.66
+    avg_capacity: 76.661
   - geo_name: 西北
     quarter: Q1
-    avg_capacity: 76.44
+    avg_capacity: 76.44033333333333
   - geo_name: 西北
     quarter: Q2
-    avg_capacity: 77.26
+    avg_capacity: 77.25866666666667
   - geo_name: 西北
     quarter: Q3
-    avg_capacity: 76.86
+    avg_capacity: 76.859
   - geo_name: 西北
     quarter: Q4
-    avg_capacity: 76.86
+    avg_capacity: 76.86200000000001
   - geo_name: 西南
     quarter: Q1
-    avg_capacity: 77.73
+    avg_capacity: 77.73233333333333
   - geo_name: 西南
     quarter: Q2
-    avg_capacity: 78.02
+    avg_capacity: 78.015
   - geo_name: 西南
     quarter: Q3
-    avg_capacity: 77.79
+    avg_capacity: 77.79033333333332
   - geo_name: 西南
     quarter: Q4
-    avg_capacity: 77.2
+    avg_capacity: 77.204
 - id: 35
   category: E. 分组聚合GROUP BY
   sub_category: E3 多维度分组
   difficulty: hard
   question: 2022-2024年各年度华东地区的工业同比增速季度平均
-  sql: "SELECT year,\n       CASE\n         WHEN month IN (1,2,3) THEN 'Q1'\n         WHEN month IN (4,5,6) THEN 'Q2'\n         WHEN month IN (7,8,9) THEN 'Q3'\n         ELSE 'Q4'\n       END as quarter,\n       AVG(yoy_growth_pct) as avg_growth\nFROM industrial_output\nWHERE year BETWEEN 2022 AND 2024\n  AND geo_name = '华东'\nGROUP BY year, quarter\nORDER BY year, quarter"
+  sql: "SELECT year, CASE WHEN month IN (1,2,3) THEN 'Q1' WHEN month IN (4,5,6) THEN 'Q2' WHEN month IN (7,8,9) THEN 'Q3' ELSE 'Q4' END AS quarter, AVG(yoy_growth_pct) AS avg_growth\nFROM industrial_output\nWHERE year BETWEEN 2022 AND 2024 AND geo_name = '华东'\nGROUP BY year, quarter\nORDER BY year, quarter"
   columns_used:
   - year
   - month
@@ -935,56 +855,46 @@ questions:
   answer:
   - year: 2022
     quarter: Q1
-    avg_growth: 7.65
+    avg_growth: 7.653666666666666
   - year: 2022
     quarter: Q2
-    avg_growth: 8.18
+    avg_growth: 8.181333333333333
   - year: 2022
     quarter: Q3
-    avg_growth: 4.71
+    avg_growth: 4.708666666666667
   - year: 2022
     quarter: Q4
-    avg_growth: 6.0
+    avg_growth: 5.997333333333333
   - year: 2023
     quarter: Q1
-    avg_growth: 6.18
+    avg_growth: 6.178999999999999
   - year: 2023
     quarter: Q2
-    avg_growth: 7.13
+    avg_growth: 7.134
   - year: 2023
     quarter: Q3
-    avg_growth: 5.88
+    avg_growth: 5.8806666666666665
   - year: 2023
     quarter: Q4
-    avg_growth: 5.72
+    avg_growth: 5.7203333333333335
   - year: 2024
     quarter: Q1
-    avg_growth: 7.34
+    avg_growth: 7.339333333333333
   - year: 2024
     quarter: Q2
-    avg_growth: 6.25
+    avg_growth: 6.255
   - year: 2024
     quarter: Q3
-    avg_growth: 6.19
+    avg_growth: 6.187666666666666
   - year: 2024
     quarter: Q4
-    avg_growth: 6.69
+    avg_growth: 6.692333333333333
 - id: 36
   category: E. 分组聚合GROUP BY
   sub_category: E4 GROUP BY+ORDER BY
   difficulty: medium
-  question: 2023年各省份的高技术产业指数年均值排名（降序）
-  sql: 'SELECT geo_name, AVG(hightech_index) as avg_index
-
-    FROM industrial_output
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_index DESC
-
-    LIMIT 10'
+  question: 2023年各省份的高技术产业指数年均值降序排名
+  sql: "SELECT geo_name, AVG(hightech_index) AS avg_index\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_index DESC\nLIMIT 10"
   columns_used:
   - year
   - geo_level
@@ -995,41 +905,31 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 内蒙古
-    avg_index: 177.27
+    avg_index: 177.26683333333335
   - geo_name: 浙江
-    avg_index: 176.39
+    avg_index: 176.3875833333333
   - geo_name: 上海
-    avg_index: 175.54
+    avg_index: 175.53975
   - geo_name: 辽宁
-    avg_index: 175.51
+    avg_index: 175.50966666666667
   - geo_name: 海南
-    avg_index: 175.19
+    avg_index: 175.18741666666665
   - geo_name: 湖南
-    avg_index: 175.02
+    avg_index: 175.0220833333333
   - geo_name: 山西
-    avg_index: 174.98
+    avg_index: 174.97616666666667
   - geo_name: 重庆
-    avg_index: 174.47
+    avg_index: 174.475
   - geo_name: 贵州
-    avg_index: 174.08
+    avg_index: 174.08041666666668
   - geo_name: 广东
-    avg_index: 173.98
+    avg_index: 173.98033333333333
 - id: 37
   category: F. 分组过滤HAVING
   sub_category: F1 HAVING AVG条件
   difficulty: medium
   question: 2024年平均装备制造业指数超过105的省份列表
-  sql: 'SELECT geo_name, AVG(equipment_mfg_index) as avg_index
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    HAVING AVG(equipment_mfg_index) > 105
-
-    ORDER BY avg_index DESC'
+  sql: "SELECT geo_name, AVG(equipment_mfg_index) AS avg_index\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(equipment_mfg_index) > 105\nORDER BY avg_index DESC"
   columns_used:
   - year
   - geo_level
@@ -1040,73 +940,73 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 西藏
-    avg_index: 177.37
+    avg_index: 177.37491666666665
   - geo_name: 四川
-    avg_index: 177.23
+    avg_index: 177.23225000000002
   - geo_name: 山西
-    avg_index: 176.89
+    avg_index: 176.89391666666666
   - geo_name: 青海
-    avg_index: 176.57
+    avg_index: 176.5665
   - geo_name: 重庆
-    avg_index: 175.89
+    avg_index: 175.89091666666664
   - geo_name: 贵州
-    avg_index: 175.79
+    avg_index: 175.78725
   - geo_name: 吉林
-    avg_index: 175.76
+    avg_index: 175.75825
   - geo_name: 福建
-    avg_index: 175.75
+    avg_index: 175.75241666666668
   - geo_name: 江西
-    avg_index: 175.47
+    avg_index: 175.46516666666665
   - geo_name: 海南
-    avg_index: 175.36
+    avg_index: 175.35666666666668
   - geo_name: 天津
-    avg_index: 175.33
+    avg_index: 175.32841666666664
   - geo_name: 广东
-    avg_index: 175.25
+    avg_index: 175.24625
   - geo_name: 宁夏
-    avg_index: 175.12
+    avg_index: 175.12433333333334
   - geo_name: 北京
-    avg_index: 174.83
+    avg_index: 174.83041666666668
   - geo_name: 河南
-    avg_index: 174.64
+    avg_index: 174.63708333333332
   - geo_name: 黑龙江
-    avg_index: 174.51
+    avg_index: 174.50525000000002
   - geo_name: 内蒙古
-    avg_index: 174.48
+    avg_index: 174.48325
   - geo_name: 河北
-    avg_index: 174.32
+    avg_index: 174.32116666666664
   - geo_name: 甘肃
-    avg_index: 174.08
+    avg_index: 174.08358333333334
   - geo_name: 湖北
-    avg_index: 173.75
+    avg_index: 173.74766666666665
   - geo_name: 江苏
-    avg_index: 173.72
+    avg_index: 173.72216666666668
   - geo_name: 湖南
-    avg_index: 173.4
+    avg_index: 173.39716666666666
   - geo_name: 安徽
-    avg_index: 173.35
+    avg_index: 173.35491666666667
   - geo_name: 山东
-    avg_index: 173.27
+    avg_index: 173.26999999999998
   - geo_name: 浙江
-    avg_index: 173.04
+    avg_index: 173.0385
   - geo_name: 新疆
-    avg_index: 172.94
+    avg_index: 172.944
   - geo_name: 辽宁
-    avg_index: 172.93
+    avg_index: 172.929
   - geo_name: 广西
-    avg_index: 172.85
+    avg_index: 172.84591666666665
   - geo_name: 上海
-    avg_index: 172.55
+    avg_index: 172.55308333333335
   - geo_name: 云南
-    avg_index: 171.74
+    avg_index: 171.73925
   - geo_name: 陕西
-    avg_index: 170.66
+    avg_index: 170.66291666666666
 - id: 38
   category: F. 分组过滤HAVING
   sub_category: F1 HAVING AVG条件
   difficulty: hard
-  question: 2020-2022年平均工业同比增速低于5%的区域
-  sql: "SELECT geo_name, AVG(yoy_growth_pct) as avg_growth\nFROM industrial_output\nWHERE year BETWEEN 2020 AND 2022\n  AND geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(yoy_growth_pct) < 5\nORDER BY avg_growth"
+  question: 2020-2022年平均工业同比增速低于6.2%的区域
+  sql: "SELECT geo_name, AVG(yoy_growth_pct) AS avg_growth\nFROM industrial_output\nWHERE year BETWEEN 2020 AND 2022 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(yoy_growth_pct) < 6.2\nORDER BY avg_growth"
   columns_used:
   - year
   - geo_level
@@ -1115,23 +1015,23 @@ questions:
   answer_type: list
   answer_unit: '%'
   requires_calculator: false
-  answer: null
+  answer:
+  - geo_name: 华中
+    avg_growth: 5.99725
+  - geo_name: 西北
+    avg_growth: 5.9976666666666665
+  - geo_name: 华北
+    avg_growth: 6.0435
+  - geo_name: 东北
+    avg_growth: 6.060694444444445
+  - geo_name: 西南
+    avg_growth: 6.08725
 - id: 39
   category: F. 分组过滤HAVING
   sub_category: F2 HAVING COUNT条件
   difficulty: medium
-  question: 2023年工业产能利用率数据记录超过10条的省份（检查数据完整性）
-  sql: 'SELECT geo_name, COUNT(*) as record_count
-
-    FROM industrial_output
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    HAVING COUNT(*) > 10
-
-    ORDER BY record_count DESC'
+  question: 2023年哪些省份产能利用率高于75%的月份达到10个月以上？
+  sql: "SELECT geo_name, COUNT(*) AS month_count\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'province' AND capacity_utilization_pct > 75\nGROUP BY geo_name\nHAVING COUNT(*) >= 10\nORDER BY month_count DESC"
   columns_used:
   - year
   - geo_level
@@ -1140,84 +1040,38 @@ questions:
   answer_unit: 条
   requires_calculator: false
   answer:
-  - geo_name: 黑龙江
-    record_count: 12
-  - geo_name: 青海
-    record_count: 12
-  - geo_name: 陕西
-    record_count: 12
-  - geo_name: 重庆
-    record_count: 12
-  - geo_name: 辽宁
-    record_count: 12
-  - geo_name: 贵州
-    record_count: 12
   - geo_name: 西藏
-    record_count: 12
-  - geo_name: 福建
-    record_count: 12
-  - geo_name: 甘肃
-    record_count: 12
-  - geo_name: 湖南
-    record_count: 12
+    month_count: 12
   - geo_name: 湖北
-    record_count: 12
-  - geo_name: 海南
-    record_count: 12
+    month_count: 12
   - geo_name: 浙江
-    record_count: 12
-  - geo_name: 河南
-    record_count: 12
-  - geo_name: 河北
-    record_count: 12
-  - geo_name: 江西
-    record_count: 12
-  - geo_name: 江苏
-    record_count: 12
+    month_count: 12
+  - geo_name: 辽宁
+    month_count: 11
   - geo_name: 新疆
-    record_count: 12
-  - geo_name: 广西
-    record_count: 12
-  - geo_name: 广东
-    record_count: 12
-  - geo_name: 山西
-    record_count: 12
-  - geo_name: 山东
-    record_count: 12
-  - geo_name: 安徽
-    record_count: 12
+    month_count: 11
   - geo_name: 宁夏
-    record_count: 12
-  - geo_name: 天津
-    record_count: 12
+    month_count: 11
   - geo_name: 四川
-    record_count: 12
-  - geo_name: 吉林
-    record_count: 12
-  - geo_name: 北京
-    record_count: 12
+    month_count: 11
   - geo_name: 内蒙古
-    record_count: 12
-  - geo_name: 云南
-    record_count: 12
+    month_count: 11
+  - geo_name: 重庆
+    month_count: 10
+  - geo_name: 湖南
+    month_count: 10
+  - geo_name: 江苏
+    month_count: 10
+  - geo_name: 吉林
+    month_count: 10
   - geo_name: 上海
-    record_count: 12
+    month_count: 10
 - id: 40
   category: F. 分组过滤HAVING
   sub_category: F3 HAVING SUM条件
   difficulty: hard
   question: 2024年公用事业指数年度累计超过1200的区域
-  sql: 'SELECT geo_name, SUM(utilities_index) as total_index
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    HAVING SUM(utilities_index) > 1200
-
-    ORDER BY total_index DESC'
+  sql: "SELECT geo_name, SUM(utilities_index) AS total_index\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING SUM(utilities_index) > 1200\nORDER BY total_index DESC"
   columns_used:
   - year
   - geo_level
@@ -1230,31 +1084,23 @@ questions:
   - geo_name: 华南
     total_index: 2086.02
   - geo_name: 华中
-    total_index: 2079.44
+    total_index: 2079.441
   - geo_name: 华东
-    total_index: 2078.62
+    total_index: 2078.618
   - geo_name: 华北
-    total_index: 2060.68
+    total_index: 2060.682
   - geo_name: 西北
-    total_index: 2054.12
+    total_index: 2054.121
   - geo_name: 西南
     total_index: 2043.75
   - geo_name: 东北
-    total_index: 2023.82
+    total_index: 2023.819
 - id: 41
   category: G. 时间趋势与子查询
   sub_category: G1 按年聚合趋势
   difficulty: medium
-  question: 全国工业产能利用率的历年变化趋势（2016-2025年均值）
-  sql: 'SELECT year, AVG(capacity_utilization_pct) as avg_capacity
-
-    FROM industrial_output
-
-    WHERE geo_level = ''national''
-
-    GROUP BY year
-
-    ORDER BY year'
+  question: 全国工业产能利用率在2016年至2025年的年均值变化趋势如何？
+  sql: "SELECT year, AVG(capacity_utilization_pct) AS avg_capacity\nFROM industrial_output\nWHERE geo_level = 'national' AND year BETWEEN 2016 AND 2025\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -1264,39 +1110,31 @@ questions:
   requires_calculator: false
   answer:
   - year: 2016
-    avg_capacity: 76.3
+    avg_capacity: 76.30116666666667
   - year: 2017
-    avg_capacity: 75.21
+    avg_capacity: 75.21025
   - year: 2018
-    avg_capacity: 75.22
+    avg_capacity: 75.22083333333333
   - year: 2019
-    avg_capacity: 74.71
+    avg_capacity: 74.7075
   - year: 2020
-    avg_capacity: 75.83
+    avg_capacity: 75.83266666666667
   - year: 2021
-    avg_capacity: 75.35
+    avg_capacity: 75.34516666666667
   - year: 2022
-    avg_capacity: 76.47
+    avg_capacity: 76.47175
   - year: 2023
-    avg_capacity: 76.5
+    avg_capacity: 76.49783333333333
   - year: 2024
-    avg_capacity: 76.27
+    avg_capacity: 76.26891666666667
   - year: 2025
-    avg_capacity: 77.17
+    avg_capacity: 77.16725
 - id: 42
   category: G. 时间趋势与子查询
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 华南地区采矿业指数的年度演进轨迹
-  sql: 'SELECT year, AVG(mining_index) as avg_index
-
-    FROM industrial_output
-
-    WHERE geo_name = ''华南''
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(mining_index) AS avg_index\nFROM industrial_output\nWHERE geo_name = '华南'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_name
@@ -1306,31 +1144,31 @@ questions:
   requires_calculator: false
   answer:
   - year: 2016
-    avg_index: 96.42
+    avg_index: 96.41875
   - year: 2017
-    avg_index: 104.86
+    avg_index: 104.86108333333334
   - year: 2018
-    avg_index: 112.96
+    avg_index: 112.95558333333334
   - year: 2019
-    avg_index: 116.21
+    avg_index: 116.20825
   - year: 2020
-    avg_index: 124.46
+    avg_index: 124.45800000000001
   - year: 2021
-    avg_index: 132.08
+    avg_index: 132.08175
   - year: 2022
-    avg_index: 137.26
+    avg_index: 137.25758333333334
   - year: 2023
-    avg_index: 145.43
+    avg_index: 145.42633333333333
   - year: 2024
-    avg_index: 154.29
+    avg_index: 154.28783333333334
   - year: 2025
-    avg_index: 160.89
+    avg_index: 160.89191666666667
 - id: 43
   category: G. 时间趋势与子查询
   sub_category: G2 子查询对比
   difficulty: hard
   question: 2024年1月工业总产出指数高于全年月均值的省份
-  sql: "SELECT geo_name, total_index\nFROM industrial_output\nWHERE year = 2024 AND month = 1 AND geo_level = 'province'\n  AND total_index > (\n    SELECT AVG(total_index)\n    FROM industrial_output\n    WHERE year = 2024 AND geo_level = 'province'\n  )\nORDER BY total_index DESC\nLIMIT 10"
+  sql: "SELECT geo_name, total_index\nFROM industrial_output\nWHERE year = 2024 AND month = 1 AND geo_level = 'province' AND total_index > ( SELECT AVG(total_index)\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'province' )\nORDER BY total_index DESC\nLIMIT 10"
   columns_used:
   - year
   - month
@@ -1342,31 +1180,31 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 山东
-    total_index: 167.0
+    total_index: 166.997
   - geo_name: 浙江
-    total_index: 166.4
+    total_index: 166.403
   - geo_name: 甘肃
-    total_index: 165.72
+    total_index: 165.718
   - geo_name: 北京
-    total_index: 165.48
+    total_index: 165.483
   - geo_name: 河北
-    total_index: 165.14
+    total_index: 165.139
   - geo_name: 湖北
-    total_index: 164.63
+    total_index: 164.629
   - geo_name: 福建
-    total_index: 164.2
+    total_index: 164.202
   - geo_name: 贵州
-    total_index: 163.63
+    total_index: 163.626
   - geo_name: 江苏
-    total_index: 163.51
+    total_index: 163.507
   - geo_name: 广东
-    total_index: 163.32
+    total_index: 163.317
 - id: 44
   category: G. 时间趋势与子查询
   sub_category: G2 子查询对比
   difficulty: hard
   question: 2023年高技术产业指数超过全国平均水平的区域列表
-  sql: "SELECT geo_name, AVG(hightech_index) as avg_index\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(hightech_index) > (\n  SELECT AVG(hightech_index)\n  FROM industrial_output\n  WHERE year = 2023 AND geo_level = 'national'\n)\nORDER BY avg_index DESC"
+  sql: "SELECT geo_name, AVG(hightech_index) AS avg_index\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(hightech_index) > ( SELECT AVG(hightech_index)\nFROM industrial_output\nWHERE year = 2023 AND geo_level = 'national' )\nORDER BY avg_index DESC"
   columns_used:
   - year
   - geo_level
@@ -1377,35 +1215,17 @@ questions:
   requires_calculator: false
   answer:
   - geo_name: 华北
-    avg_index: 176.26
+    avg_index: 176.265
   - geo_name: 西南
-    avg_index: 174.25
+    avg_index: 174.24775
   - geo_name: 华东
-    avg_index: 174.2
+    avg_index: 174.20291666666665
 - id: 45
   category: G. 时间趋势与子查询
   sub_category: G3 跨工具计算
   difficulty: hard
   question: 2024年全国制造业指数年均值是采矿业指数年均值的多少倍？
-  sql: '-- 步骤1: 查询制造业年均值
-
-    SELECT AVG(manufacturing_index) AS mfg_avg
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤2: 查询采矿业年均值
-
-    SELECT AVG(mining_index) AS mining_avg
-
-    FROM industrial_output
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤3: 使用 calculator 计算 mfg_avg / mining_avg'
+  sql: "SELECT AVG(manufacturing_index) AS mfg_avg, AVG(mining_index) AS mining_avg\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -1414,7 +1234,7 @@ questions:
   answer_type: scalar
   answer_unit: 倍
   requires_calculator: true
-  answer: 1.06
+  answer: 1.0595279498838552
 - id: 46
   category: H. 边界与容错
   sub_category: H1 数据不存在
@@ -1423,7 +1243,6 @@ questions:
   sql: null
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
   answer: null
-  requires_calculator: false
 - id: 47
   category: H. 边界与容错
   sub_category: H2 字段不存在
@@ -1432,7 +1251,6 @@ questions:
   sql: null
   expected_error: 表中不包含员工数或薪资字段，仅有工业生产指数和增速数据
   answer: null
-  requires_calculator: false
 - id: 48
   category: H. 边界与容错
   sub_category: H3 逻辑矛盾
@@ -1441,7 +1259,6 @@ questions:
   sql: null
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不存在北京市
   answer: null
-  requires_calculator: false
 - id: 49
   category: H. 边界与容错
   sub_category: H4 极端值查询
@@ -1450,7 +1267,6 @@ questions:
   sql: null
   expected_error: 工业同比增速的合理范围通常在-20%至30%之间，不存在超过200%的情况
   answer: null
-  requires_calculator: false
 - id: 50
   category: H. 边界与容错
   sub_category: H1 数据不存在
@@ -1459,4 +1275,3 @@ questions:
   sql: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
-  requires_calculator: false

@@ -25,13 +25,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 2024年1月全国M2货币供应余额是多少？
-  sql: 'SELECT m2_100m_cny AS value
-
-    FROM money_supply
-
-    WHERE year = 2024 AND month = 1 AND geo_level = ''national''
-
-    LIMIT 1'
+  sql: "SELECT m2_100m_cny AS value\nFROM money_supply\nWHERE year = 2024 AND month = 1 AND geo_level = 'national'\nLIMIT 1"
   columns_used:
   - year
   - month
@@ -46,13 +40,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 查询华东地区2023年12月的M1狭义货币余额
-  sql: 'SELECT m1_100m_cny AS value
-
-    FROM money_supply
-
-    WHERE geo_name = ''华东'' AND year = 2023 AND month = 12
-
-    LIMIT 1'
+  sql: "SELECT m1_100m_cny AS value\nFROM money_supply\nWHERE geo_name = '华东' AND year = 2023 AND month = 12\nLIMIT 1"
   columns_used:
   - geo_name
   - year
@@ -67,13 +55,7 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 2022年6月北京的M0流通中货币余额和法定存款准备金率分别是多少？
-  sql: 'SELECT m0_100m_cny, reserve_ratio_pct
-
-    FROM money_supply
-
-    WHERE geo_name = ''北京'' AND year = 2022 AND month = 6
-
-    LIMIT 1'
+  sql: "SELECT m0_100m_cny, reserve_ratio_pct\nFROM money_supply\nWHERE geo_name = '北京' AND year = 2022 AND month = 6\nLIMIT 1"
   columns_used:
   - geo_name
   - year
@@ -91,13 +73,7 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 查询省级层面2020年3月广东省货币供应统计中的人民币贷款余额
-  sql: 'SELECT loan_balance_100m_cny AS value
-
-    FROM money_supply
-
-    WHERE geo_level = ''province'' AND geo_name = ''广东'' AND year = 2020 AND month = 3
-
-    LIMIT 1'
+  sql: "SELECT loan_balance_100m_cny AS value\nFROM money_supply\nWHERE geo_level = 'province' AND geo_name = '广东' AND year = 2020 AND month = 3\nLIMIT 1"
   columns_used:
   - geo_level
   - geo_name
@@ -113,13 +89,7 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 2024年1月北京、上海、广州三地的M2广义货币余额分别是多少？
-  sql: 'SELECT geo_name, m2_100m_cny
-
-    FROM money_supply
-
-    WHERE year = 2024 AND month = 1 AND geo_name IN (''北京'', ''上海'', ''广东'')
-
-    ORDER BY m2_100m_cny DESC'
+  sql: "SELECT geo_name, m2_100m_cny\nFROM money_supply\nWHERE year = 2024 AND month = 1 AND geo_name IN ('北京', '上海', '广东')\nORDER BY m2_100m_cny DESC"
   columns_used:
   - year
   - month
@@ -139,14 +109,8 @@ questions:
   category: A. 基础点查询
   sub_category: A3 OR/IN条件
   difficulty: easy
-  question: 查询2023年全国或华北地区的社会融资规模流量记录（仅查看1月数据）
-  sql: 'SELECT geo_level, geo_name, social_financing_flow_100m_cny
-
-    FROM money_supply
-
-    WHERE year = 2023 AND month = 1 AND (geo_level = ''national'' OR geo_name = ''华北'')
-
-    ORDER BY geo_level'
+  question: 查询2023年1月全国或华北地区的社会融资规模流量记录
+  sql: "SELECT geo_level, geo_name, social_financing_flow_100m_cny\nFROM money_supply\nWHERE year = 2023 AND month = 1 AND (geo_level = 'national' OR geo_name = '华北')\nORDER BY geo_level"
   columns_used:
   - year
   - month
@@ -168,11 +132,7 @@ questions:
   sub_category: A4 NULL检查
   difficulty: easy
   question: 检查2024年数据中是否存在M2货币供应余额为空的记录
-  sql: 'SELECT COUNT(*) AS count
-
-    FROM money_supply
-
-    WHERE year = 2024 AND m2_100m_cny IS NULL'
+  sql: "SELECT COUNT(*) AS count\nFROM money_supply\nWHERE year = 2024 AND m2_100m_cny IS NULL"
   columns_used:
   - year
   - m2_100m_cny
@@ -185,11 +145,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 2018至2020年间全国M1货币同比增速的最高值是多少？
-  sql: 'SELECT MAX(m1_yoy_pct) AS value
-
-    FROM money_supply
-
-    WHERE geo_level = ''national'' AND year BETWEEN 2018 AND 2020'
+  sql: "SELECT MAX(m1_yoy_pct) AS value\nFROM money_supply\nWHERE geo_level = 'national' AND year BETWEEN 2018 AND 2020"
   columns_used:
   - geo_level
   - year
@@ -203,13 +159,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 统计2021-2023年间华南地区每年1月的社会融资规模流量
-  sql: 'SELECT year, social_financing_flow_100m_cny
-
-    FROM money_supply
-
-    WHERE geo_name = ''华南'' AND year BETWEEN 2021 AND 2023 AND month = 1
-
-    ORDER BY year'
+  sql: "SELECT year, social_financing_flow_100m_cny\nFROM money_supply\nWHERE geo_name = '华南' AND year BETWEEN 2021 AND 2023 AND month = 1\nORDER BY year"
   columns_used:
   - geo_name
   - year
@@ -229,60 +179,90 @@ questions:
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
-  question: 2024年哪些省份的M2同比增速超过10%？
-  sql: 'SELECT DISTINCT geo_name, AVG(m2_yoy_pct) as avg_yoy
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''province'' AND m2_yoy_pct > 10.0
-
-    GROUP BY geo_name
-
-    ORDER BY avg_yoy DESC'
+  question: 2024年哪些省份的M2同比增速超过9%？
+  sql: "SELECT DISTINCT geo_name, AVG(m2_yoy_pct) AS avg_yoy\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'province' AND m2_yoy_pct > 9.0\nGROUP BY geo_name\nORDER BY avg_yoy DESC"
   columns_used:
   - year
   - geo_level
   - geo_name
   - m2_yoy_pct
   answer_type: list
-  answer: []
+  answer:
+  - geo_name: 湖北
+    avg_yoy: 9.46
+  - geo_name: 河北
+    avg_yoy: 9.404
+  - geo_name: 西藏
+    avg_yoy: 9.394
+  - geo_name: 河南
+    avg_yoy: 9.383
+  - geo_name: 安徽
+    avg_yoy: 9.371500000000001
+  - geo_name: 黑龙江
+    avg_yoy: 9.356666666666667
+  - geo_name: 天津
+    avg_yoy: 9.34
+  - geo_name: 宁夏
+    avg_yoy: 9.273
+  - geo_name: 吉林
+    avg_yoy: 9.245333333333333
+  - geo_name: 新疆
+    avg_yoy: 9.244499999999999
+  - geo_name: 甘肃
+    avg_yoy: 9.242333333333333
+  - geo_name: 青海
+    avg_yoy: 9.1975
+  - geo_name: 内蒙古
+    avg_yoy: 9.197
+  - geo_name: 广东
+    avg_yoy: 9.184
+  - geo_name: 北京
+    avg_yoy: 9.159999999999998
+  - geo_name: 山西
+    avg_yoy: 9.158
+  - geo_name: 广西
+    avg_yoy: 9.154
+  - geo_name: 海南
+    avg_yoy: 9.141
+  - geo_name: 江苏
+    avg_yoy: 9.134
+  - geo_name: 湖南
+    avg_yoy: 9.097
+  - geo_name: 四川
+    avg_yoy: 9.074
+  - geo_name: 江西
+    avg_yoy: 9.043
+  - geo_name: 重庆
+    avg_yoy: 9.0235
   answer_unit: '%'
   requires_calculator: false
 - id: 11
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
-  question: 查询2023年全国法定存款准备金率低于7%的月份
-  sql: 'SELECT month, reserve_ratio_pct
-
-    FROM money_supply
-
-    WHERE year = 2023 AND geo_level = ''national'' AND reserve_ratio_pct < 7.0
-
-    ORDER BY month'
+  question: 查询2023年全国法定存款准备金率低于7.2%的月份
+  sql: "SELECT month, reserve_ratio_pct\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'national' AND reserve_ratio_pct < 7.2\nORDER BY month"
   columns_used:
   - year
   - geo_level
   - month
   - reserve_ratio_pct
   answer_type: list
-  answer: []
+  answer:
+  - month: 4
+    reserve_ratio_pct: 7.143
+  - month: 8
+    reserve_ratio_pct: 7.132
+  - month: 12
+    reserve_ratio_pct: 7.199
   answer_unit: '%'
   requires_calculator: false
 - id: 12
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
-  question: 2022年哪些大区的人民币贷款余额超过100万亿（1000000亿元）？
-  sql: 'SELECT geo_name, MAX(loan_balance_100m_cny) as max_balance
-
-    FROM money_supply
-
-    WHERE year = 2022 AND geo_level = ''region'' AND loan_balance_100m_cny > 1000000
-
-    GROUP BY geo_name
-
-    ORDER BY max_balance DESC'
+  question: 2022年哪些大区的人民币贷款余额超过100万亿元？
+  sql: "SELECT geo_name, MAX(loan_balance_100m_cny) AS max_balance\nFROM money_supply\nWHERE year = 2022 AND geo_level = 'region' AND loan_balance_100m_cny > 1000000\nGROUP BY geo_name\nORDER BY max_balance DESC"
   columns_used:
   - year
   - geo_level
@@ -299,8 +279,7 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2019-2021年间全国M0同比增速在5%-8%之间的月份有多少个？
-  sql: "SELECT COUNT(*) AS count\nFROM money_supply\nWHERE geo_level = 'national'\n  AND year BETWEEN 2019 AND 2021\n  AND\
-    \ m0_yoy_pct BETWEEN 5.0 AND 8.0"
+  sql: "SELECT COUNT(*) AS count\nFROM money_supply\nWHERE geo_level = 'national' AND year BETWEEN 2019 AND 2021 AND m0_yoy_pct BETWEEN 5.0 AND 8.0"
   columns_used:
   - geo_level
   - year
@@ -314,8 +293,7 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 查询2023年社会融资规模流量超过30000亿且M2同比增速超过9%的全国数据月份
-  sql: "SELECT month, social_financing_flow_100m_cny, m2_yoy_pct\nFROM money_supply\nWHERE year = 2023\n  AND geo_level =\
-    \ 'national'\n  AND social_financing_flow_100m_cny > 30000\n  AND m2_yoy_pct > 9.0\nORDER BY month"
+  sql: "SELECT month, social_financing_flow_100m_cny, m2_yoy_pct\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'national' AND social_financing_flow_100m_cny > 30000 AND m2_yoy_pct > 9.0\nORDER BY month"
   columns_used:
   - year
   - geo_level
@@ -334,15 +312,7 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: easy
   question: 2024年哪个省份的M2货币供应余额最高？
-  sql: 'SELECT geo_name, m2_100m_cny
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''province''
-
-    ORDER BY m2_100m_cny DESC
-
-    LIMIT 1'
+  sql: "SELECT geo_name, m2_100m_cny\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'province'\nORDER BY m2_100m_cny DESC\nLIMIT 1"
   columns_used:
   - year
   - geo_level
@@ -359,15 +329,7 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: easy
   question: 全国历史上M1货币同比增速的最高点出现在哪年哪月？
-  sql: 'SELECT year, month, m1_yoy_pct
-
-    FROM money_supply
-
-    WHERE geo_level = ''national''
-
-    ORDER BY m1_yoy_pct DESC
-
-    LIMIT 1'
+  sql: "SELECT year, month, m1_yoy_pct\nFROM money_supply\nWHERE geo_level = 'national'\nORDER BY m1_yoy_pct DESC\nLIMIT 1"
   columns_used:
   - geo_level
   - year
@@ -385,15 +347,7 @@ questions:
   sub_category: C2 单指标最小值行
   difficulty: easy
   question: 2023年全国法定存款准备金率的最低值是多少？出现在哪个月？
-  sql: 'SELECT month, reserve_ratio_pct
-
-    FROM money_supply
-
-    WHERE year = 2023 AND geo_level = ''national''
-
-    ORDER BY reserve_ratio_pct ASC
-
-    LIMIT 1'
+  sql: "SELECT month, reserve_ratio_pct\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'national'\nORDER BY reserve_ratio_pct ASC\nLIMIT 1"
   columns_used:
   - year
   - geo_level
@@ -409,18 +363,8 @@ questions:
   category: C. 排序与Top-N
   sub_category: C2 单指标最小值行
   difficulty: easy
-  question: 2020年哪个大区的M0流通中货币余额最少（取全年平均）？
-  sql: 'SELECT geo_name, AVG(m0_100m_cny) as avg_m0
-
-    FROM money_supply
-
-    WHERE year = 2020 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_m0 ASC
-
-    LIMIT 1'
+  question: 2020年哪个大区的M0流通中货币余额最少，并按全年平均计算？
+  sql: "SELECT geo_name, AVG(m0_100m_cny) AS avg_m0\nFROM money_supply\nWHERE year = 2020 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY avg_m0 ASC\nLIMIT 1"
   columns_used:
   - year
   - geo_level
@@ -437,15 +381,7 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2024年6月人民币贷款余额最高的前5个省份是哪些？
-  sql: 'SELECT geo_name, loan_balance_100m_cny
-
-    FROM money_supply
-
-    WHERE year = 2024 AND month = 6 AND geo_level = ''province''
-
-    ORDER BY loan_balance_100m_cny DESC
-
-    LIMIT 5'
+  sql: "SELECT geo_name, loan_balance_100m_cny\nFROM money_supply\nWHERE year = 2024 AND month = 6 AND geo_level = 'province'\nORDER BY loan_balance_100m_cny DESC\nLIMIT 5"
   columns_used:
   - year
   - month
@@ -471,17 +407,7 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2022年全年社会融资规模流量累计最高的前3个大区是哪些？
-  sql: 'SELECT geo_name, SUM(social_financing_flow_100m_cny) as total_flow
-
-    FROM money_supply
-
-    WHERE year = 2022 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY total_flow DESC
-
-    LIMIT 3'
+  sql: "SELECT geo_name, SUM(social_financing_flow_100m_cny) AS total_flow\nFROM money_supply\nWHERE year = 2022 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY total_flow DESC\nLIMIT 3"
   columns_used:
   - year
   - geo_level
@@ -502,15 +428,7 @@ questions:
   sub_category: C4 多列排序
   difficulty: medium
   question: 2023年各省份按M2余额降序、M1余额升序排列的前5名是哪些？
-  sql: 'SELECT geo_name, m2_100m_cny, m1_100m_cny
-
-    FROM money_supply
-
-    WHERE year = 2023 AND geo_level = ''province'' AND month = 12
-
-    ORDER BY m2_100m_cny DESC, m1_100m_cny ASC
-
-    LIMIT 5'
+  sql: "SELECT geo_name, m2_100m_cny, m1_100m_cny\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'province' AND month = 12\nORDER BY m2_100m_cny DESC, m1_100m_cny ASC\nLIMIT 5"
   columns_used:
   - year
   - geo_level
@@ -541,12 +459,8 @@ questions:
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 数据集中总共包含多少个省级行政区的货币供应数据？
-  sql: 'SELECT COUNT(DISTINCT geo_name) AS value
-
-    FROM money_supply
-
-    WHERE geo_level = ''province'''
+  question: 货币供应量统计涉及多少个省级行政区？
+  sql: "SELECT COUNT(DISTINCT geo_name) AS value\nFROM money_supply\nWHERE geo_level = 'province'"
   columns_used:
   - geo_level
   - geo_name
@@ -558,17 +472,13 @@ questions:
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 2024年全国层面共有多少条M2货币供应记录？
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''national'''
+  question: 2024年全国层面M2同比增速高于8%的月份有多少个？
+  sql: "SELECT COUNT(*) AS value\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'national' AND m2_yoy_pct > 8.0"
   columns_used:
   - year
   - geo_level
   answer_type: scalar
-  answer: 12
+  answer: 8
   answer_unit: 条
   requires_calculator: false
 - id: 24
@@ -576,11 +486,7 @@ questions:
   sub_category: D2 SUM
   difficulty: easy
   question: 2023年全年全国社会融资规模流量的累计总额是多少？
-  sql: 'SELECT SUM(social_financing_flow_100m_cny) AS value
-
-    FROM money_supply
-
-    WHERE year = 2023 AND geo_level = ''national'''
+  sql: "SELECT SUM(social_financing_flow_100m_cny) AS value\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -594,11 +500,7 @@ questions:
   sub_category: D2 SUM
   difficulty: easy
   question: 2022年所有大区1月的M0流通货币余额总和是多少？
-  sql: 'SELECT SUM(m0_100m_cny) AS value
-
-    FROM money_supply
-
-    WHERE year = 2022 AND month = 1 AND geo_level = ''region'''
+  sql: "SELECT SUM(m0_100m_cny) AS value\nFROM money_supply\nWHERE year = 2022 AND month = 1 AND geo_level = 'region'"
   columns_used:
   - year
   - month
@@ -613,11 +515,7 @@ questions:
   sub_category: D3 AVG
   difficulty: easy
   question: 2024年全国M2货币同比增速的年均值是多少？
-  sql: 'SELECT AVG(m2_yoy_pct) AS value
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''national'''
+  sql: "SELECT AVG(m2_yoy_pct) AS value\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -631,11 +529,7 @@ questions:
   sub_category: D3 AVG
   difficulty: easy
   question: 2021年所有省份的法定存款准备金率平均水平是多少？
-  sql: 'SELECT AVG(reserve_ratio_pct) AS value
-
-    FROM money_supply
-
-    WHERE year = 2021 AND geo_level = ''province'''
+  sql: "SELECT AVG(reserve_ratio_pct) AS value\nFROM money_supply\nWHERE year = 2021 AND geo_level = 'province'"
   columns_used:
   - year
   - geo_level
@@ -649,11 +543,7 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: easy
   question: 2023年全国M1狭义货币余额的最大值和最小值分别是多少？
-  sql: 'SELECT MIN(m1_100m_cny) as min_value, MAX(m1_100m_cny) as max_value
-
-    FROM money_supply
-
-    WHERE year = 2023 AND geo_level = ''national'''
+  sql: "SELECT MIN(m1_100m_cny) AS min_value, MAX(m1_100m_cny) AS max_value\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -669,11 +559,7 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: easy
   question: 2016-2025年全国人民币贷款余额的历史最高值是多少？
-  sql: 'SELECT MAX(loan_balance_100m_cny) AS value
-
-    FROM money_supply
-
-    WHERE geo_level = ''national'''
+  sql: "SELECT MAX(loan_balance_100m_cny) AS value\nFROM money_supply\nWHERE geo_level = 'national'"
   columns_used:
   - geo_level
   - loan_balance_100m_cny
@@ -686,15 +572,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 各年份全国社会融资规模流量的年度总额趋势如何？
-  sql: 'SELECT year, SUM(social_financing_flow_100m_cny) as annual_total
-
-    FROM money_supply
-
-    WHERE geo_level = ''national''
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, SUM(social_financing_flow_100m_cny) AS annual_total\nFROM money_supply\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -728,15 +606,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 2024年各大区M2货币供应余额的平均水平是多少？
-  sql: 'SELECT geo_name, AVG(m2_100m_cny) as avg_m2
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_m2 DESC'
+  sql: "SELECT geo_name, AVG(m2_100m_cny) AS avg_m2\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY avg_m2 DESC"
   columns_used:
   - year
   - geo_level
@@ -764,24 +634,18 @@ questions:
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
-  question: 各地理层级分别包含多少条货币供应数据记录？
-  sql: 'SELECT geo_level, COUNT(*) as record_count
-
-    FROM money_supply
-
-    GROUP BY geo_level
-
-    ORDER BY record_count DESC'
+  question: 2024年各统计层级中M2同比增速高于8%的数据数量分别是多少？
+  sql: "SELECT geo_level, COUNT(*) AS record_count\nFROM money_supply\nWHERE year = 2024 AND m2_yoy_pct > 8.0\nGROUP BY geo_level\nORDER BY record_count DESC"
   columns_used:
   - geo_level
   answer_type: list
   answer:
   - geo_level: province
-    record_count: 3720
+    record_count: 250
   - geo_level: region
-    record_count: 840
+    record_count: 55
   - geo_level: national
-    record_count: 120
+    record_count: 8
   answer_unit: 条
   requires_calculator: false
 - id: 33
@@ -789,15 +653,7 @@ questions:
   sub_category: E2 单维度分组COUNT
   difficulty: medium
   question: 2023年每个月有多少个省份的M2同比增速数据？
-  sql: 'SELECT month, COUNT(DISTINCT geo_name) as province_count
-
-    FROM money_supply
-
-    WHERE year = 2023 AND geo_level = ''province'' AND m2_yoy_pct IS NOT NULL
-
-    GROUP BY month
-
-    ORDER BY month'
+  sql: "SELECT month, COUNT(DISTINCT geo_name) AS province_count\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'province' AND m2_yoy_pct IS NOT NULL\nGROUP BY month\nORDER BY month"
   columns_used:
   - year
   - month
@@ -837,15 +693,7 @@ questions:
   sub_category: E3 多维度分组
   difficulty: medium
   question: 2022和2023年各大区的M0货币余额年度平均值对比
-  sql: 'SELECT year, geo_name, AVG(m0_100m_cny) as avg_m0
-
-    FROM money_supply
-
-    WHERE year IN (2022, 2023) AND geo_level = ''region''
-
-    GROUP BY year, geo_name
-
-    ORDER BY geo_name, year'
+  sql: "SELECT year, geo_name, AVG(m0_100m_cny) AS avg_m0\nFROM money_supply\nWHERE year IN (2022, 2023) AND geo_level = 'region'\nGROUP BY year, geo_name\nORDER BY geo_name, year"
   columns_used:
   - year
   - geo_level
@@ -901,16 +749,8 @@ questions:
   category: E. 分组聚合GROUP BY
   sub_category: E3 多维度分组
   difficulty: hard
-  question: 各省份各年度人民币贷款余额的年末值（12月）
-  sql: 'SELECT geo_name, year, loan_balance_100m_cny
-
-    FROM money_supply
-
-    WHERE geo_level = ''province'' AND month = 12 AND year >= 2020
-
-    GROUP BY geo_name, year
-
-    ORDER BY geo_name, year'
+  question: 各省份各年度人民币贷款余额的12月年末值是多少？
+  sql: "SELECT geo_name, year, loan_balance_100m_cny\nFROM money_supply\nWHERE geo_level = 'province' AND month = 12 AND year >= 2020\nGROUP BY geo_name, year\nORDER BY geo_name, year"
   columns_used:
   - geo_level
   - geo_name
@@ -1484,17 +1324,7 @@ questions:
   sub_category: E4 GROUP BY+ORDER BY
   difficulty: medium
   question: 按M1货币同比增速平均值降序，2024年各省份的排名如何？
-  sql: 'SELECT geo_name, AVG(m1_yoy_pct) as avg_yoy
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_yoy DESC
-
-    LIMIT 10'
+  sql: "SELECT geo_name, AVG(m1_yoy_pct) AS avg_yoy\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_yoy DESC\nLIMIT 10"
   columns_used:
   - year
   - geo_level
@@ -1528,25 +1358,33 @@ questions:
   category: F. 分组过滤HAVING
   sub_category: F1 HAVING AVG条件
   difficulty: hard
-  question: 2023年哪些省份的M2货币同比增速年均值超过9%？
-  sql: 'SELECT geo_name, AVG(m2_yoy_pct) as avg_yoy
-
-    FROM money_supply
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    HAVING AVG(m2_yoy_pct) > 9.0
-
-    ORDER BY avg_yoy DESC'
+  question: 2023年哪些省份的M2货币同比增速年均值超过8.3%？
+  sql: "SELECT geo_name, AVG(m2_yoy_pct) AS avg_yoy\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(m2_yoy_pct) > 8.3\nORDER BY avg_yoy DESC"
   columns_used:
   - year
   - geo_level
   - geo_name
   - m2_yoy_pct
   answer_type: list
-  answer: []
+  answer:
+  - geo_name: 辽宁
+    avg_yoy: 8.621
+  - geo_name: 宁夏
+    avg_yoy: 8.43075
+  - geo_name: 黑龙江
+    avg_yoy: 8.379583333333334
+  - geo_name: 福建
+    avg_yoy: 8.366916666666667
+  - geo_name: 山西
+    avg_yoy: 8.366333333333333
+  - geo_name: 内蒙古
+    avg_yoy: 8.347083333333334
+  - geo_name: 广东
+    avg_yoy: 8.328333333333333
+  - geo_name: 贵州
+    avg_yoy: 8.31
+  - geo_name: 河南
+    avg_yoy: 8.304083333333333
   answer_unit: '%'
   requires_calculator: false
 - id: 38
@@ -1554,17 +1392,7 @@ questions:
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 哪些大区在2022年的法定存款准备金率平均值低于7.5%？
-  sql: 'SELECT geo_name, AVG(reserve_ratio_pct) as avg_ratio
-
-    FROM money_supply
-
-    WHERE year = 2022 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    HAVING AVG(reserve_ratio_pct) < 7.5
-
-    ORDER BY avg_ratio'
+  sql: "SELECT geo_name, AVG(reserve_ratio_pct) AS avg_ratio\nFROM money_supply\nWHERE year = 2022 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(reserve_ratio_pct) < 7.5\nORDER BY avg_ratio"
   columns_used:
   - year
   - geo_level
@@ -1593,17 +1421,7 @@ questions:
   sub_category: F2 HAVING COUNT条件
   difficulty: hard
   question: 哪些省份在2024年有超过6个月的M0同比增速数据记录？
-  sql: 'SELECT geo_name, COUNT(*) as month_count
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''province'' AND m0_yoy_pct IS NOT NULL
-
-    GROUP BY geo_name
-
-    HAVING COUNT(*) > 6
-
-    ORDER BY month_count DESC'
+  sql: "SELECT geo_name, COUNT(*) AS month_count\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'province' AND m0_yoy_pct IS NOT NULL\nGROUP BY geo_name\nHAVING COUNT(*) > 6\nORDER BY month_count DESC"
   columns_used:
   - year
   - geo_level
@@ -1680,17 +1498,7 @@ questions:
   sub_category: F3 HAVING SUM条件
   difficulty: hard
   question: 2023年哪些大区的社会融资规模流量年度累计超过10万亿？
-  sql: 'SELECT geo_name, SUM(social_financing_flow_100m_cny) as total_flow
-
-    FROM money_supply
-
-    WHERE year = 2023 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    HAVING SUM(social_financing_flow_100m_cny) > 100000
-
-    ORDER BY total_flow DESC'
+  sql: "SELECT geo_name, SUM(social_financing_flow_100m_cny) AS total_flow\nFROM money_supply\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING SUM(social_financing_flow_100m_cny) > 100000\nORDER BY total_flow DESC"
   columns_used:
   - year
   - geo_level
@@ -1706,14 +1514,8 @@ questions:
   category: G. 时间趋势与子查询
   sub_category: G1 按年聚合趋势
   difficulty: medium
-  question: 全国M2货币供应余额的历年年末值（12月）趋势如何？
-  sql: 'SELECT year, m2_100m_cny
-
-    FROM money_supply
-
-    WHERE geo_level = ''national'' AND month = 12
-
-    ORDER BY year'
+  question: 全国M2货币供应余额在12月年末值上的历年趋势如何？
+  sql: "SELECT year, m2_100m_cny\nFROM money_supply\nWHERE geo_level = 'national' AND month = 12\nORDER BY year"
   columns_used:
   - geo_level
   - year
@@ -1748,15 +1550,7 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 华东地区人民币贷款余额的年度平均值逐年变化趋势
-  sql: 'SELECT year, AVG(loan_balance_100m_cny) as avg_balance
-
-    FROM money_supply
-
-    WHERE geo_name = ''华东''
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(loan_balance_100m_cny) AS avg_balance\nFROM money_supply\nWHERE geo_name = '华东'\nGROUP BY year\nORDER BY year"
   columns_used:
   - geo_name
   - year
@@ -1790,8 +1584,7 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 2024年哪些月份全国M2同比增速高于该年的平均水平？
-  sql: "SELECT month, m2_yoy_pct\nFROM money_supply\nWHERE year = 2024\n  AND geo_level = 'national'\n  AND m2_yoy_pct > (\n\
-    \    SELECT AVG(m2_yoy_pct)\n    FROM money_supply\n    WHERE year = 2024 AND geo_level = 'national'\n  )\nORDER BY month"
+  sql: "SELECT month, m2_yoy_pct\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'national' AND m2_yoy_pct > ( SELECT AVG(m2_yoy_pct)\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'national' )\nORDER BY month"
   columns_used:
   - year
   - geo_level
@@ -1812,11 +1605,7 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 2023年12月哪些省份的人民币贷款余额高于所有省份的中位数？
-  sql: "WITH median_calc AS (\n  SELECT loan_balance_100m_cny as median_value\n  FROM money_supply\n  WHERE year = 2023 AND\
-    \ month = 12 AND geo_level = 'province'\n  ORDER BY loan_balance_100m_cny\n  LIMIT 1 OFFSET (\n    SELECT COUNT(*)/2\n\
-    \    FROM money_supply\n    WHERE year = 2023 AND month = 12 AND geo_level = 'province'\n  )\n)\nSELECT geo_name, loan_balance_100m_cny\n\
-    FROM money_supply\nWHERE year = 2023\n  AND month = 12\n  AND geo_level = 'province'\n  AND loan_balance_100m_cny > (SELECT\
-    \ median_value FROM median_calc)\nORDER BY loan_balance_100m_cny DESC"
+  sql: "WITH median_calc AS ( SELECT loan_balance_100m_cny AS median_value\nFROM money_supply\nWHERE year = 2023 AND month = 12 AND geo_level = 'province'\nORDER BY loan_balance_100m_cny\nLIMIT 1\nOFFSET ( SELECT COUNT(*)/2\nFROM money_supply\nWHERE year = 2023 AND month = 12 AND geo_level = 'province' ) ) SELECT geo_name, loan_balance_100m_cny\nFROM money_supply\nWHERE year = 2023 AND month = 12 AND geo_level = 'province' AND loan_balance_100m_cny > (SELECT median_value\nFROM median_calc)\nORDER BY loan_balance_100m_cny DESC"
   columns_used:
   - year
   - month
@@ -1862,32 +1651,14 @@ questions:
   sub_category: G3 跨工具计算
   difficulty: hard
   question: 2024年全国M2货币余额的年均值是M0货币余额年均值的多少倍？
-  sql: '-- 步骤1: 查询M2年均值
-
-    SELECT AVG(m2_100m_cny) as m2_avg
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤2: 查询M0年均值
-
-    SELECT AVG(m0_100m_cny) as m0_avg
-
-    FROM money_supply
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 m2_avg / m0_avg'
+  sql: "SELECT AVG(m2_100m_cny) AS m2_avg, AVG(m0_100m_cny) AS m0_avg\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
   - m2_100m_cny
   - m0_100m_cny
   answer_type: scalar
-  answer: 21.01
+  answer: 21.0078802162955
   answer_unit: 倍
   requires_calculator: true
 - id: 46
@@ -1899,8 +1670,6 @@ questions:
   columns_used: []
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
   answer: null
-  answer_type: error
-  requires_calculator: false
 - id: 47
   category: H. 边界与容错
   sub_category: H1 数据不存在
@@ -1910,8 +1679,6 @@ questions:
   columns_used: []
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
-  answer_type: error
-  requires_calculator: false
 - id: 48
   category: H. 边界与容错
   sub_category: H2 字段不存在
@@ -1921,8 +1688,6 @@ questions:
   columns_used: []
   expected_error: 表中不包含行长姓名字段，仅包含货币统计指标
   answer: null
-  answer_type: error
-  requires_calculator: false
 - id: 49
   category: H. 边界与容错
   sub_category: H3 逻辑矛盾
@@ -1932,8 +1697,6 @@ questions:
   columns_used: []
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为'上海'
   answer: null
-  answer_type: error
-  requires_calculator: false
 - id: 50
   category: H. 边界与容错
   sub_category: H4 极端值查询
@@ -1943,5 +1706,3 @@ questions:
   columns_used: []
   expected_error: M2同比增速的合理范围通常在-50%到50%之间，不存在超过200%的情况
   answer: null
-  answer_type: error
-  requires_calculator: false

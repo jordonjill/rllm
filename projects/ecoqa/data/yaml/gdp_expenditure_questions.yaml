@@ -28,7 +28,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 查询2024年第1季度全国层级的名义GDP支出数据
-  sql: SELECT year, quarter, geo_level, nominal_gdp_100m_cny FROM gdp_expenditure WHERE year = 2024 AND quarter = 1 AND geo_level = 'national' LIMIT 10
+  sql: "SELECT year, quarter, geo_level, nominal_gdp_100m_cny\nFROM gdp_expenditure\nWHERE year = 2024 AND quarter = 1 AND geo_level = 'national'\nLIMIT 10"
   columns_used:
   - year
   - quarter
@@ -47,7 +47,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 查询华东地区2023年第4季度的消费支出和投资支出数据
-  sql: SELECT geo_name, year, quarter, consumption_100m_cny, investment_100m_cny FROM gdp_expenditure WHERE geo_name = '华东' AND year = 2023 AND quarter = 4 LIMIT 10
+  sql: "SELECT geo_name, year, quarter, consumption_100m_cny, investment_100m_cny\nFROM gdp_expenditure\nWHERE geo_name = '华东' AND year = 2023 AND quarter = 4\nLIMIT 10"
   columns_used:
   - geo_name
   - year
@@ -68,7 +68,7 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 查询2022年第2季度北京市的GDP同比增速和消费贡献率
-  sql: SELECT geo_name, year, quarter, gdp_yoy_pct, consumption_contrib_pct FROM gdp_expenditure WHERE geo_name = '北京' AND year = 2022 AND quarter = 2 LIMIT 10
+  sql: "SELECT geo_name, year, quarter, gdp_yoy_pct, consumption_contrib_pct\nFROM gdp_expenditure\nWHERE geo_name = '北京' AND year = 2022 AND quarter = 2\nLIMIT 10"
   columns_used:
   - geo_name
   - year
@@ -89,7 +89,7 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 查询2021年第3季度广东省的投资拉动贡献率和净出口贡献率
-  sql: SELECT geo_name, year, quarter, investment_contrib_pct, net_export_contrib_pct FROM gdp_expenditure WHERE geo_name = '广东' AND year = 2021 AND quarter = 3 LIMIT 10
+  sql: "SELECT geo_name, year, quarter, investment_contrib_pct, net_export_contrib_pct\nFROM gdp_expenditure\nWHERE geo_name = '广东' AND year = 2021 AND quarter = 3\nLIMIT 10"
   columns_used:
   - geo_name
   - year
@@ -110,7 +110,7 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 查询2024年全国层级在第1、第2、第3季度的名义GDP支出
-  sql: SELECT year, quarter, geo_level, nominal_gdp_100m_cny FROM gdp_expenditure WHERE year = 2024 AND geo_level = 'national' AND quarter IN (1, 2, 3) ORDER BY quarter
+  sql: "SELECT year, quarter, geo_level, nominal_gdp_100m_cny\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'national' AND quarter IN (1, 2, 3)\nORDER BY quarter"
   columns_used:
   - year
   - quarter
@@ -137,7 +137,7 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 查询2023年第1季度上海、江苏、浙江三省市的实际GDP支出
-  sql: SELECT geo_name, year, quarter, real_gdp_100m_cny FROM gdp_expenditure WHERE year = 2023 AND quarter = 1 AND geo_name IN ('上海', '江苏', '浙江') ORDER BY real_gdp_100m_cny DESC
+  sql: "SELECT geo_name, year, quarter, real_gdp_100m_cny\nFROM gdp_expenditure\nWHERE year = 2023 AND quarter = 1 AND geo_name IN ('上海', '江苏', '浙江')\nORDER BY real_gdp_100m_cny DESC"
   columns_used:
   - geo_name
   - year
@@ -163,8 +163,8 @@ questions:
   category: A. 基础点查询
   sub_category: A4 NULL检查
   difficulty: easy
-  question: 查询GDP同比增速数据缺失的记录数量
-  sql: SELECT COUNT(*) AS missing_count FROM gdp_expenditure WHERE gdp_yoy_pct IS NULL
+  question: GDP同比增速为空值的数据有多少条？
+  sql: "SELECT COUNT(*) AS missing_count\nFROM gdp_expenditure\nWHERE gdp_yoy_pct IS NULL"
   columns_used:
   - gdp_yoy_pct
   answer_type: scalar
@@ -176,7 +176,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 查询2020年至2022年全国层级的年度名义GDP支出总额
-  sql: SELECT year, SUM(nominal_gdp_100m_cny) AS total_gdp FROM gdp_expenditure WHERE year BETWEEN 2020 AND 2022 AND geo_level = 'national' GROUP BY year ORDER BY year
+  sql: "SELECT year, SUM(nominal_gdp_100m_cny) AS total_gdp\nFROM gdp_expenditure\nWHERE year BETWEEN 2020 AND 2022 AND geo_level = 'national'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -196,7 +196,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 查询2018年至2021年华南地区的季度消费支出数据
-  sql: SELECT year, quarter, geo_name, consumption_100m_cny FROM gdp_expenditure WHERE year BETWEEN 2018 AND 2021 AND geo_name = '华南' ORDER BY year, quarter LIMIT 20
+  sql: "SELECT year, quarter, geo_name, consumption_100m_cny\nFROM gdp_expenditure\nWHERE year BETWEEN 2018 AND 2021 AND geo_name = '华南'\nORDER BY year, quarter\nLIMIT 20"
   columns_used:
   - year
   - quarter
@@ -275,7 +275,7 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 查询2024年GDP同比增速超过5%的省级地区
-  sql: SELECT DISTINCT geo_name, year, AVG(gdp_yoy_pct) AS avg_yoy FROM gdp_expenditure WHERE year = 2024 AND geo_level = 'province' AND gdp_yoy_pct > 5.0 GROUP BY geo_name, year ORDER BY avg_yoy DESC
+  sql: "SELECT DISTINCT geo_name, year, AVG(gdp_yoy_pct) AS avg_yoy\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'province' AND gdp_yoy_pct > 5.0\nGROUP BY geo_name, year\nORDER BY avg_yoy DESC"
   columns_used:
   - geo_name
   - year
@@ -383,7 +383,7 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 查询2023年消费贡献率超过60%的地区数量
-  sql: SELECT COUNT(DISTINCT geo_code) AS region_count FROM gdp_expenditure WHERE year = 2023 AND consumption_contrib_pct > 60.0
+  sql: "SELECT COUNT(DISTINCT geo_code) AS region_count\nFROM gdp_expenditure\nWHERE year = 2023 AND consumption_contrib_pct > 60.0"
   columns_used:
   - year
   - geo_code
@@ -396,8 +396,8 @@ questions:
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
-  question: 查询2022年净出口为负值（贸易逆差）的省级地区
-  sql: SELECT geo_name, year, quarter, net_export_100m_cny FROM gdp_expenditure WHERE year = 2022 AND geo_level = 'province' AND net_export_100m_cny < 0 ORDER BY net_export_100m_cny ASC LIMIT 10
+  question: 查询2022年净出口为负值即贸易逆差的省级地区
+  sql: "SELECT geo_name, year, quarter, net_export_100m_cny\nFROM gdp_expenditure\nWHERE year = 2022 AND geo_level = 'province' AND net_export_100m_cny < 0\nORDER BY net_export_100m_cny ASC\nLIMIT 10"
   columns_used:
   - geo_name
   - year
@@ -453,7 +453,7 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 查询2020-2023年间投资支出超过10000亿元且投资贡献率超过30%的记录
-  sql: SELECT geo_name, year, quarter, investment_100m_cny, investment_contrib_pct FROM gdp_expenditure WHERE year BETWEEN 2020 AND 2023 AND investment_100m_cny > 10000 AND investment_contrib_pct > 30 ORDER BY investment_100m_cny DESC LIMIT 10
+  sql: "SELECT geo_name, year, quarter, investment_100m_cny, investment_contrib_pct\nFROM gdp_expenditure\nWHERE year BETWEEN 2020 AND 2023 AND investment_100m_cny > 10000 AND investment_contrib_pct > 30\nORDER BY investment_100m_cny DESC\nLIMIT 10"
   columns_used:
   - geo_name
   - year
@@ -519,7 +519,7 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 查询2021-2024年全国层级GDP同比增速在4%-6%区间的季度数
-  sql: SELECT COUNT(*) AS quarter_count FROM gdp_expenditure WHERE year BETWEEN 2021 AND 2024 AND geo_level = 'national' AND gdp_yoy_pct BETWEEN 4.0 AND 6.0
+  sql: "SELECT COUNT(*) AS quarter_count\nFROM gdp_expenditure\nWHERE year BETWEEN 2021 AND 2024 AND geo_level = 'national' AND gdp_yoy_pct BETWEEN 4.0 AND 6.0"
   columns_used:
   - year
   - geo_level
@@ -533,7 +533,7 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: medium
   question: 查询2024年第2季度名义GDP支出最高的省份
-  sql: SELECT geo_name, year, quarter, nominal_gdp_100m_cny FROM gdp_expenditure WHERE year = 2024 AND quarter = 2 AND geo_level = 'province' ORDER BY nominal_gdp_100m_cny DESC LIMIT 1
+  sql: "SELECT geo_name, year, quarter, nominal_gdp_100m_cny\nFROM gdp_expenditure\nWHERE year = 2024 AND quarter = 2 AND geo_level = 'province'\nORDER BY nominal_gdp_100m_cny DESC\nLIMIT 1"
   columns_used:
   - geo_name
   - year
@@ -553,7 +553,7 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: medium
   question: 查询2023年全年消费支出最高的地区
-  sql: SELECT geo_name, year, SUM(consumption_100m_cny) AS total_consumption FROM gdp_expenditure WHERE year = 2023 GROUP BY geo_name, year ORDER BY total_consumption DESC LIMIT 1
+  sql: "SELECT geo_name, year, SUM(consumption_100m_cny) AS total_consumption\nFROM gdp_expenditure\nWHERE year = 2023\nGROUP BY geo_name, year\nORDER BY total_consumption DESC\nLIMIT 1"
   columns_used:
   - geo_name
   - year
@@ -570,7 +570,7 @@ questions:
   sub_category: C2 单指标最小值行
   difficulty: medium
   question: 查询2022年GDP同比增速最低的省份及其增速值
-  sql: SELECT geo_name, year, AVG(gdp_yoy_pct) AS avg_yoy FROM gdp_expenditure WHERE year = 2022 AND geo_level = 'province' GROUP BY geo_name, year ORDER BY avg_yoy ASC LIMIT 1
+  sql: "SELECT geo_name, year, AVG(gdp_yoy_pct) AS avg_yoy\nFROM gdp_expenditure\nWHERE year = 2022 AND geo_level = 'province'\nGROUP BY geo_name, year\nORDER BY avg_yoy ASC\nLIMIT 1"
   columns_used:
   - geo_name
   - year
@@ -587,8 +587,8 @@ questions:
   category: C. 排序与Top-N
   sub_category: C2 单指标最小值行
   difficulty: medium
-  question: 查询2021年净出口贡献率最低（可能为负）的区域层级地区
-  sql: SELECT geo_name, year, AVG(net_export_contrib_pct) AS avg_contrib FROM gdp_expenditure WHERE year = 2021 AND geo_level = 'region' GROUP BY geo_name, year ORDER BY avg_contrib ASC LIMIT 1
+  question: 查询2021年净出口贡献率最低且可能为负的区域层级地区
+  sql: "SELECT geo_name, year, AVG(net_export_contrib_pct) AS avg_contrib\nFROM gdp_expenditure\nWHERE year = 2021 AND geo_level = 'region'\nGROUP BY geo_name, year\nORDER BY avg_contrib ASC\nLIMIT 1"
   columns_used:
   - geo_name
   - year
@@ -606,7 +606,7 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 查询2024年第1季度实际GDP支出前5名的省份
-  sql: SELECT geo_name, year, quarter, real_gdp_100m_cny FROM gdp_expenditure WHERE year = 2024 AND quarter = 1 AND geo_level = 'province' ORDER BY real_gdp_100m_cny DESC LIMIT 5
+  sql: "SELECT geo_name, year, quarter, real_gdp_100m_cny\nFROM gdp_expenditure\nWHERE year = 2024 AND quarter = 1 AND geo_level = 'province'\nORDER BY real_gdp_100m_cny DESC\nLIMIT 5"
   columns_used:
   - geo_name
   - year
@@ -642,7 +642,7 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 查询2023年投资贡献率最高的前3个区域
-  sql: SELECT geo_name, year, AVG(investment_contrib_pct) AS avg_contrib FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'region' GROUP BY geo_name, year ORDER BY avg_contrib DESC LIMIT 3
+  sql: "SELECT geo_name, year, AVG(investment_contrib_pct) AS avg_contrib\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name, year\nORDER BY avg_contrib DESC\nLIMIT 3"
   columns_used:
   - geo_name
   - year
@@ -666,7 +666,7 @@ questions:
   sub_category: C4 多列排序
   difficulty: medium
   question: 查询2022年全国各省份按GDP同比增速降序、消费贡献率升序的前5名
-  sql: SELECT geo_name, year, AVG(gdp_yoy_pct) AS avg_yoy, AVG(consumption_contrib_pct) AS avg_consumption_contrib FROM gdp_expenditure WHERE year = 2022 AND geo_level = 'province' GROUP BY geo_name, year ORDER BY avg_yoy DESC, avg_consumption_contrib ASC LIMIT 5
+  sql: "SELECT geo_name, year, AVG(gdp_yoy_pct) AS avg_yoy, AVG(consumption_contrib_pct) AS avg_consumption_contrib\nFROM gdp_expenditure\nWHERE year = 2022 AND geo_level = 'province'\nGROUP BY geo_name, year\nORDER BY avg_yoy DESC, avg_consumption_contrib ASC\nLIMIT 5"
   columns_used:
   - geo_name
   - year
@@ -701,8 +701,8 @@ questions:
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 统计GDP支出数据集中包含的不同地理层级数量
-  sql: SELECT COUNT(DISTINCT geo_level) AS level_count FROM gdp_expenditure
+  question: GDP支出法统计涉及多少个层级？
+  sql: "SELECT COUNT(DISTINCT geo_level) AS level_count\nFROM gdp_expenditure"
   columns_used:
   - geo_level
   answer_type: scalar
@@ -714,7 +714,7 @@ questions:
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
   question: 统计2023年全国层级的季度GDP支出记录总数
-  sql: SELECT COUNT(*) AS record_count FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'national'
+  sql: "SELECT COUNT(*) AS record_count\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -727,7 +727,7 @@ questions:
   sub_category: D2 SUM
   difficulty: medium
   question: 计算2024年全国层级的总名义GDP支出
-  sql: SELECT SUM(nominal_gdp_100m_cny) AS total_gdp FROM gdp_expenditure WHERE year = 2024 AND geo_level = 'national'
+  sql: "SELECT SUM(nominal_gdp_100m_cny) AS total_gdp\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -741,7 +741,7 @@ questions:
   sub_category: D2 SUM
   difficulty: medium
   question: 计算2022年省级层级的政府支出总和
-  sql: SELECT SUM(government_spending_100m_cny) AS total_gov_spending FROM gdp_expenditure WHERE year = 2022 AND geo_level = 'province'
+  sql: "SELECT SUM(government_spending_100m_cny) AS total_gov_spending\nFROM gdp_expenditure\nWHERE year = 2022 AND geo_level = 'province'"
   columns_used:
   - year
   - geo_level
@@ -755,7 +755,7 @@ questions:
   sub_category: D3 AVG
   difficulty: medium
   question: 计算2023年全国层级的平均GDP同比增速
-  sql: SELECT AVG(gdp_yoy_pct) AS avg_yoy FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'national'
+  sql: "SELECT AVG(gdp_yoy_pct) AS avg_yoy\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -769,7 +769,7 @@ questions:
   sub_category: D3 AVG
   difficulty: medium
   question: 计算2021-2023年区域层级的平均消费贡献率
-  sql: SELECT AVG(consumption_contrib_pct) AS avg_contrib FROM gdp_expenditure WHERE year BETWEEN 2021 AND 2023 AND geo_level = 'region'
+  sql: "SELECT AVG(consumption_contrib_pct) AS avg_contrib\nFROM gdp_expenditure\nWHERE year BETWEEN 2021 AND 2023 AND geo_level = 'region'"
   columns_used:
   - year
   - geo_level
@@ -783,7 +783,7 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: medium
   question: 查询2024年省级层级的最高和最低实际GDP支出值
-  sql: SELECT MAX(real_gdp_100m_cny) AS max_gdp, MIN(real_gdp_100m_cny) AS min_gdp FROM gdp_expenditure WHERE year = 2024 AND geo_level = 'province'
+  sql: "SELECT MAX(real_gdp_100m_cny) AS max_gdp, MIN(real_gdp_100m_cny) AS min_gdp\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'province'"
   columns_used:
   - year
   - geo_level
@@ -799,7 +799,7 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: medium
   question: 查询2020-2022年投资贡献率的最大值和最小值
-  sql: SELECT MAX(investment_contrib_pct) AS max_contrib, MIN(investment_contrib_pct) AS min_contrib FROM gdp_expenditure WHERE year BETWEEN 2020 AND 2022
+  sql: "SELECT MAX(investment_contrib_pct) AS max_contrib, MIN(investment_contrib_pct) AS min_contrib\nFROM gdp_expenditure\nWHERE year BETWEEN 2020 AND 2022"
   columns_used:
   - year
   - investment_contrib_pct
@@ -814,7 +814,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 按年份统计全国层级的年度名义GDP支出总额
-  sql: SELECT year, SUM(nominal_gdp_100m_cny) AS total_gdp FROM gdp_expenditure WHERE geo_level = 'national' GROUP BY year ORDER BY year
+  sql: "SELECT year, SUM(nominal_gdp_100m_cny) AS total_gdp\nFROM gdp_expenditure\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -848,7 +848,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 按区域层级统计2023年的平均消费支出
-  sql: SELECT geo_name, AVG(consumption_100m_cny) AS avg_consumption FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'region' GROUP BY geo_name ORDER BY avg_consumption DESC
+  sql: "SELECT geo_name, AVG(consumption_100m_cny) AS avg_consumption\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY avg_consumption DESC"
   columns_used:
   - geo_name
   - year
@@ -876,28 +876,28 @@ questions:
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
-  question: 统计GDP支出表中各地理层级的记录数量
-  sql: SELECT geo_level, COUNT(*) AS record_count FROM gdp_expenditure GROUP BY geo_level ORDER BY record_count DESC
+  question: 2024年各统计层级中GDP同比为正的季度数据数量分别是多少？
+  sql: "SELECT geo_level, COUNT(*) AS record_count\nFROM gdp_expenditure\nWHERE year = 2024 AND gdp_yoy_pct > 0\nGROUP BY geo_level\nORDER BY record_count DESC"
   columns_used:
   - geo_level
   answer_type: list
   answer:
   - geo_level: province
-    record_count: 1240
+    record_count: 124
   - geo_level: city
-    record_count: 400
-  - geo_level: region
-    record_count: 280
-  - geo_level: national
     record_count: 40
+  - geo_level: region
+    record_count: 28
+  - geo_level: national
+    record_count: 4
   answer_unit: 条
   requires_calculator: false
 - id: 33
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
-  question: 按季度统计2024年全国层级的GDP支出记录数
-  sql: SELECT quarter, COUNT(*) AS record_count FROM gdp_expenditure WHERE year = 2024 AND geo_level = 'national' GROUP BY quarter ORDER BY quarter
+  question: 2024年各季度中GDP同比为正的省份数量分别是多少？
+  sql: "SELECT quarter, COUNT(*) AS record_count\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'province' AND gdp_yoy_pct > 0\nGROUP BY quarter\nORDER BY quarter"
   columns_used:
   - quarter
   - year
@@ -905,13 +905,13 @@ questions:
   answer_type: list
   answer:
   - quarter: 1
-    record_count: 1
+    record_count: 31
   - quarter: 2
-    record_count: 1
+    record_count: 31
   - quarter: 3
-    record_count: 1
+    record_count: 31
   - quarter: 4
-    record_count: 1
+    record_count: 31
   answer_unit: 条
   requires_calculator: false
 - id: 34
@@ -919,7 +919,7 @@ questions:
   sub_category: E3 多维度分组
   difficulty: hard
   question: 按年份和季度统计全国层级的平均GDP同比增速
-  sql: SELECT year, quarter, AVG(gdp_yoy_pct) AS avg_yoy FROM gdp_expenditure WHERE geo_level = 'national' GROUP BY year, quarter ORDER BY year, quarter
+  sql: "SELECT year, quarter, AVG(gdp_yoy_pct) AS avg_yoy\nFROM gdp_expenditure\nWHERE geo_level = 'national'\nGROUP BY year, quarter\nORDER BY year, quarter"
   columns_used:
   - year
   - quarter
@@ -1054,7 +1054,7 @@ questions:
   sub_category: E3 多维度分组
   difficulty: hard
   question: 按年份和区域统计2021-2023年的投资支出总额
-  sql: SELECT year, geo_name, SUM(investment_100m_cny) AS total_investment FROM gdp_expenditure WHERE year BETWEEN 2021 AND 2023 AND geo_level = 'region' GROUP BY year, geo_name ORDER BY year, total_investment DESC LIMIT 20
+  sql: "SELECT year, geo_name, SUM(investment_100m_cny) AS total_investment\nFROM gdp_expenditure\nWHERE year BETWEEN 2021 AND 2023 AND geo_level = 'region'\nGROUP BY year, geo_name\nORDER BY year, total_investment DESC\nLIMIT 20"
   columns_used:
   - year
   - geo_name
@@ -1129,7 +1129,7 @@ questions:
   sub_category: E4 GROUP BY+ORDER BY
   difficulty: medium
   question: 按省份统计2023年平均净出口额，按降序排列前10名
-  sql: SELECT geo_name, AVG(net_export_100m_cny) AS avg_net_export FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'province' GROUP BY geo_name ORDER BY avg_net_export DESC LIMIT 10
+  sql: "SELECT geo_name, AVG(net_export_100m_cny) AS avg_net_export\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_net_export DESC\nLIMIT 10"
   columns_used:
   - geo_name
   - year
@@ -1164,7 +1164,7 @@ questions:
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 查询2022年平均GDP同比增速超过4.5%的省份
-  sql: SELECT geo_name, AVG(gdp_yoy_pct) AS avg_yoy FROM gdp_expenditure WHERE year = 2022 AND geo_level = 'province' GROUP BY geo_name HAVING AVG(gdp_yoy_pct) > 4.5 ORDER BY avg_yoy DESC
+  sql: "SELECT geo_name, AVG(gdp_yoy_pct) AS avg_yoy\nFROM gdp_expenditure\nWHERE year = 2022 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(gdp_yoy_pct) > 4.5\nORDER BY avg_yoy DESC"
   columns_used:
   - geo_name
   - year
@@ -1241,7 +1241,7 @@ questions:
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 查询2023年平均消费贡献率超过55%的区域
-  sql: SELECT geo_name, AVG(consumption_contrib_pct) AS avg_contrib FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'region' GROUP BY geo_name HAVING AVG(consumption_contrib_pct) > 55 ORDER BY avg_contrib DESC
+  sql: "SELECT geo_name, AVG(consumption_contrib_pct) AS avg_contrib\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(consumption_contrib_pct) > 55\nORDER BY avg_contrib DESC"
   columns_used:
   - geo_name
   - year
@@ -1269,76 +1269,36 @@ questions:
   category: F. 分组过滤HAVING
   sub_category: F2 HAVING COUNT条件
   difficulty: hard
-  question: 查询在2020-2024年间GDP支出记录数超过15条的省份
-  sql: SELECT geo_name, COUNT(*) AS record_count FROM gdp_expenditure WHERE year BETWEEN 2020 AND 2024 AND geo_level = 'province' GROUP BY geo_name HAVING COUNT(*) > 15 ORDER BY record_count DESC
+  question: 2020-2024年间，哪些省份季度GDP同比低于6.5%的次数超过5次？
+  sql: "SELECT geo_name, COUNT(*) AS record_count\nFROM gdp_expenditure\nWHERE year BETWEEN 2020 AND 2024 AND geo_level = 'province' AND gdp_yoy_pct < 6.5\nGROUP BY geo_name\nHAVING COUNT(*) > 5\nORDER BY record_count DESC"
   columns_used:
   - geo_name
   - year
   - geo_level
   answer_type: list
   answer:
-  - geo_name: 黑龙江
-    record_count: 20
-  - geo_name: 青海
-    record_count: 20
-  - geo_name: 陕西
-    record_count: 20
-  - geo_name: 重庆
-    record_count: 20
-  - geo_name: 辽宁
-    record_count: 20
-  - geo_name: 贵州
-    record_count: 20
-  - geo_name: 西藏
-    record_count: 20
-  - geo_name: 福建
-    record_count: 20
-  - geo_name: 甘肃
-    record_count: 20
-  - geo_name: 湖南
-    record_count: 20
   - geo_name: 湖北
-    record_count: 20
+    record_count: 9
+  - geo_name: 贵州
+    record_count: 8
   - geo_name: 海南
-    record_count: 20
-  - geo_name: 浙江
-    record_count: 20
+    record_count: 7
   - geo_name: 河南
-    record_count: 20
-  - geo_name: 河北
-    record_count: 20
-  - geo_name: 江西
-    record_count: 20
-  - geo_name: 江苏
-    record_count: 20
-  - geo_name: 新疆
-    record_count: 20
-  - geo_name: 广西
-    record_count: 20
-  - geo_name: 广东
-    record_count: 20
-  - geo_name: 山西
-    record_count: 20
-  - geo_name: 山东
-    record_count: 20
+    record_count: 7
   - geo_name: 安徽
-    record_count: 20
-  - geo_name: 宁夏
-    record_count: 20
-  - geo_name: 天津
-    record_count: 20
-  - geo_name: 四川
-    record_count: 20
+    record_count: 7
+  - geo_name: 福建
+    record_count: 6
+  - geo_name: 广西
+    record_count: 6
+  - geo_name: 山东
+    record_count: 6
   - geo_name: 吉林
-    record_count: 20
+    record_count: 6
   - geo_name: 北京
-    record_count: 20
+    record_count: 6
   - geo_name: 内蒙古
-    record_count: 20
-  - geo_name: 云南
-    record_count: 20
-  - geo_name: 上海
-    record_count: 20
+    record_count: 6
   answer_unit: 条
   requires_calculator: false
 - id: 40
@@ -1346,7 +1306,7 @@ questions:
   sub_category: F3 HAVING SUM条件
   difficulty: hard
   question: 查询2023年全年出口总额超过10000亿元的省份
-  sql: SELECT geo_name, SUM(exports_100m_cny) AS total_exports FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'province' GROUP BY geo_name HAVING SUM(exports_100m_cny) > 10000 ORDER BY total_exports DESC
+  sql: "SELECT geo_name, SUM(exports_100m_cny) AS total_exports\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING SUM(exports_100m_cny) > 10000\nORDER BY total_exports DESC"
   columns_used:
   - geo_name
   - year
@@ -1375,7 +1335,7 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 查询2016-2025年全国层级GDP支出的年度趋势
-  sql: SELECT year, SUM(nominal_gdp_100m_cny) AS total_gdp FROM gdp_expenditure WHERE geo_level = 'national' GROUP BY year ORDER BY year
+  sql: "SELECT year, SUM(nominal_gdp_100m_cny) AS total_gdp\nFROM gdp_expenditure\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -1409,7 +1369,7 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 按年统计全国层级的投资贡献率变化趋势
-  sql: SELECT year, AVG(investment_contrib_pct) AS avg_contrib FROM gdp_expenditure WHERE geo_level = 'national' GROUP BY year ORDER BY year
+  sql: "SELECT year, AVG(investment_contrib_pct) AS avg_contrib\nFROM gdp_expenditure\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -1442,15 +1402,41 @@ questions:
   category: G. 时间趋势与子查询
   sub_category: G2 子查询对比
   difficulty: hard
-  question: 查询2024年消费支出高于全国平均水平的省份
-  sql: SELECT geo_name, AVG(consumption_100m_cny) AS avg_consumption FROM gdp_expenditure WHERE year = 2024 AND geo_level = 'province' GROUP BY geo_name HAVING AVG(consumption_100m_cny) > (SELECT AVG(consumption_100m_cny) FROM gdp_expenditure WHERE year = 2024 AND geo_level = 'national') ORDER BY avg_consumption DESC
+  question: 查询2024年消费支出高于各省平均水平的省份
+  sql: "SELECT geo_name, AVG(consumption_100m_cny) AS avg_consumption\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(consumption_100m_cny) > ( SELECT AVG(consumption_100m_cny)\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'province' )\nORDER BY avg_consumption DESC"
   columns_used:
   - geo_name
   - year
   - geo_level
   - consumption_100m_cny
   answer_type: list
-  answer: null
+  answer:
+  - geo_name: 广东
+    avg_consumption: 18514.8925
+  - geo_name: 江苏
+    avg_consumption: 17787.06
+  - geo_name: 山东
+    avg_consumption: 15294.51
+  - geo_name: 浙江
+    avg_consumption: 12255.115
+  - geo_name: 四川
+    avg_consumption: 8709.842499999999
+  - geo_name: 河南
+    avg_consumption: 8297.14
+  - geo_name: 湖北
+    avg_consumption: 7969.9725
+  - geo_name: 福建
+    avg_consumption: 7108.0175
+  - geo_name: 湖南
+    avg_consumption: 6936.265
+  - geo_name: 安徽
+    avg_consumption: 6721.485000000001
+  - geo_name: 上海
+    avg_consumption: 6465.075
+  - geo_name: 河北
+    avg_consumption: 6256.735000000001
+  - geo_name: 北京
+    avg_consumption: 6201.765
   answer_unit: 亿元
   requires_calculator: false
 - id: 44
@@ -1458,7 +1444,7 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 查询2023年GDP同比增速超过所有省份平均值的地区
-  sql: SELECT geo_name, AVG(gdp_yoy_pct) AS avg_yoy FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'province' GROUP BY geo_name HAVING AVG(gdp_yoy_pct) > (SELECT AVG(gdp_yoy_pct) FROM gdp_expenditure WHERE year = 2023 AND geo_level = 'province') ORDER BY avg_yoy DESC
+  sql: "SELECT geo_name, AVG(gdp_yoy_pct) AS avg_yoy\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(gdp_yoy_pct) > (SELECT AVG(gdp_yoy_pct)\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'province')\nORDER BY avg_yoy DESC"
   columns_used:
   - geo_name
   - year
@@ -1505,16 +1491,14 @@ questions:
   sub_category: G3 跨工具计算
   difficulty: hard
   question: 2024年全国消费支出总额是投资支出总额的多少倍？
-  sql: SELECT SUM(consumption_100m_cny) AS total_consumption, SUM(investment_100m_cny) AS total_investment FROM gdp_expenditure WHERE year = 2024 AND geo_level = 'national'
+  sql: "SELECT SUM(consumption_100m_cny) AS total_consumption, SUM(investment_100m_cny) AS total_investment\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
   - consumption_100m_cny
   - investment_100m_cny
-  answer_type: list
-  answer:
-  - total_consumption: 704235.03
-    total_investment: 559909.26
+  answer_type: scalar
+  answer: 1.2577663566414314
   answer_unit: 亿元
   requires_calculator: true
 - id: 46
@@ -1524,11 +1508,9 @@ questions:
   question: 查询2030年全国GDP支出数据
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
-  requires_calculator: false
 - id: 47
   category: H. 边界与容错
   sub_category: H1 数据不存在
@@ -1536,11 +1518,9 @@ questions:
   question: 查询2015年全国消费支出数据
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
-  requires_calculator: false
 - id: 48
   category: H. 边界与容错
   sub_category: H2 字段不存在
@@ -1548,11 +1528,9 @@ questions:
   question: 查询各省份的人均GDP支出数据
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 表中不包含人口字段，无法计算人均GDP
-  requires_calculator: false
 - id: 49
   category: H. 边界与容错
   sub_category: H3 逻辑矛盾
@@ -1560,11 +1538,9 @@ questions:
   question: 查询全国层级且地区为北京的GDP支出数据
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 逻辑冲突：geo_level='national'时geo_name固定为'中国'，不可能为'北京'
-  requires_calculator: false
 - id: 50
   category: H. 边界与容错
   sub_category: H4 极端值查询
@@ -1572,8 +1548,6 @@ questions:
   question: 查询GDP同比增速超过100%的记录
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: GDP同比增速合理范围通常为-20%至20%之间，不存在超过100%的情况
-  requires_calculator: false

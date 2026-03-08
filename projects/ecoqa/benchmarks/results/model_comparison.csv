@@ -1,0 +1,4 @@
+run_id,timestamp_utc,split,repeat_n,model_name,model_kind,model,base_url,num_trajectories,num_unique_questions,pass_at_1,pass_at_k,reward_mean,acc_scalar,acc_list,acc_error,acc_unknown,notes
+pending_baseline,,,,baseline_qwen3_4b_local,baseline,Qwen/Qwen3-4B-Instruct-2507,http://localhost:30000/v1,,,,,,,,,"pending: run run_ecoqa_benchmark.py"
+pending_trained,,,,trained_ecoqa_local,trained,YOUR_TRAINED_MODEL_OR_CHECKPOINT,http://localhost:30000/v1,,,,,,,,,"pending: enable profile and run benchmark"
+pending_online_api,,,,online_api_strong_model,online_api,gpt-4.1,https://api.openai.com/v1,,,,,,,,,"pending: set OPENAI_API_KEY and enable profile"

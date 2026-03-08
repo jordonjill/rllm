@@ -24,11 +24,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 2024年1月的上证综指月末收盘价是多少？
-  sql: 'SELECT shanghai_comp_close AS value
-
-    FROM stock_indices
-
-    WHERE year = 2024 AND month = 1'
+  sql: "SELECT shanghai_comp_close AS value\nFROM stock_indices\nWHERE year = 2024 AND month = 1"
   columns_used:
   - year
   - month
@@ -36,20 +32,13 @@ questions:
   answer_type: scalar
   answer_unit: 点
   answer: 4010.336
+  requires_calculator: false
 - id: 2
   category: A. 基础点查询
   sub_category: A1 单条件等值
   difficulty: easy
   question: 2023年全年沪深300指数的月末收盘价记录有哪些？
-  sql: 'SELECT ref_date, csi300_close
-
-    FROM stock_indices
-
-    WHERE year = 2023
-
-    ORDER BY month
-
-    LIMIT 12'
+  sql: "SELECT ref_date, csi300_close\nFROM stock_indices\nWHERE year = 2023\nORDER BY month\nLIMIT 12"
   columns_used:
   - year
   - ref_date
@@ -81,38 +70,30 @@ questions:
     csi300_close: 5046.146
   - ref_date: '2023-12-01'
     csi300_close: 4948.082
+  requires_calculator: false
 - id: 3
   category: A. 基础点查询
   sub_category: A2 多条件AND
   difficulty: easy
   question: 2022年12月的深证成指收盘价和创业板指收盘价分别是多少？
-  sql: 'SELECT shenzhen_comp_close, chinext_close
-
-    FROM stock_indices
-
-    WHERE year = 2022 AND month = 12'
+  sql: "SELECT shenzhen_comp_close, chinext_close\nFROM stock_indices\nWHERE year = 2022 AND month = 12"
   columns_used:
   - year
   - month
   - shenzhen_comp_close
   - chinext_close
-  answer_type: scalar
+  answer_type: list
   answer_unit: 点
   answer:
   - shenzhen_comp_close: 12128.093
     chinext_close: 3051.514
+  requires_calculator: false
 - id: 4
   category: A. 基础点查询
   sub_category: A2 多条件AND
   difficulty: easy
-  question: 2025年第一季度的沪深300市盈率(PE TTM)数据是多少？
-  sql: 'SELECT ref_date, pe_ttm_csi300
-
-    FROM stock_indices
-
-    WHERE year = 2025 AND month IN (1, 2, 3)
-
-    ORDER BY month'
+  question: 2025年第一季度的沪深300市盈率TTM数据是多少？
+  sql: "SELECT ref_date, pe_ttm_csi300\nFROM stock_indices\nWHERE year = 2025 AND month IN (1, 2, 3)\nORDER BY month"
   columns_used:
   - year
   - month
@@ -127,18 +108,13 @@ questions:
     pe_ttm_csi300: 15.198
   - ref_date: '2025-03-01'
     pe_ttm_csi300: 13.484
+  requires_calculator: false
 - id: 5
   category: A. 基础点查询
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 2020年1月、6月、12月的北向资金净流入额分别是多少？
-  sql: 'SELECT month, northbound_netflow_100m_cny
-
-    FROM stock_indices
-
-    WHERE year = 2020 AND month IN (1, 6, 12)
-
-    ORDER BY month'
+  sql: "SELECT month, northbound_netflow_100m_cny\nFROM stock_indices\nWHERE year = 2020 AND month IN (1, 6, 12)\nORDER BY month"
   columns_used:
   - year
   - month
@@ -152,18 +128,13 @@ questions:
     northbound_netflow_100m_cny: 429.85
   - month: 12
     northbound_netflow_100m_cny: -80.01
+  requires_calculator: false
 - id: 6
   category: A. 基础点查询
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 查询2021年或2022年上证综指超过3500点的月份数据
-  sql: 'SELECT year, month, shanghai_comp_close
-
-    FROM stock_indices
-
-    WHERE year IN (2021, 2022) AND shanghai_comp_close > 3500
-
-    ORDER BY year, month'
+  sql: "SELECT year, month, shanghai_comp_close\nFROM stock_indices\nWHERE year IN (2021, 2022) AND shanghai_comp_close > 3500\nORDER BY year, month"
   columns_used:
   - year
   - month
@@ -243,38 +214,28 @@ questions:
   - year: 2022
     month: 12
     shanghai_comp_close: 3890.205
+  requires_calculator: false
 - id: 7
   category: A. 基础点查询
   sub_category: A4 NULL检查
   difficulty: easy
-  question: 检查是否存在沪深300市盈率数据缺失的月份
-  sql: 'SELECT year, month, ref_date
-
-    FROM stock_indices
-
-    WHERE pe_ttm_csi300 IS NULL
-
-    LIMIT 10'
+  question: 沪深300市盈率为空值的数据有多少条？
+  sql: "SELECT COUNT(*) AS missing_count\nFROM stock_indices\nWHERE pe_ttm_csi300 IS NULL"
   columns_used:
   - year
   - month
   - ref_date
   - pe_ttm_csi300
-  answer_type: list
+  answer_type: scalar
   answer_unit: 条
-  answer: null
+  answer: 0
+  requires_calculator: false
 - id: 8
   category: B. 范围与比较过滤
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 2018年至2020年间，上证综指月末收盘价的所有记录
-  sql: 'SELECT year, month, shanghai_comp_close
-
-    FROM stock_indices
-
-    WHERE year BETWEEN 2018 AND 2020
-
-    ORDER BY year, month'
+  sql: "SELECT year, month, shanghai_comp_close\nFROM stock_indices\nWHERE year BETWEEN 2018 AND 2020\nORDER BY year, month"
   columns_used:
   - year
   - month
@@ -390,18 +351,13 @@ questions:
   - year: 2020
     month: 12
     shanghai_comp_close: 3745.749
+  requires_calculator: false
 - id: 9
   category: B. 范围与比较过滤
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 2019年到2021年间，创业板指收盘价的月度数据
-  sql: 'SELECT year, month, chinext_close
-
-    FROM stock_indices
-
-    WHERE year BETWEEN 2019 AND 2021
-
-    ORDER BY year, month'
+  sql: "SELECT year, month, chinext_close\nFROM stock_indices\nWHERE year BETWEEN 2019 AND 2021\nORDER BY year, month"
   columns_used:
   - year
   - month
@@ -517,18 +473,13 @@ questions:
   - year: 2021
     month: 12
     chinext_close: 2945.014
+  requires_calculator: false
 - id: 10
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
   question: 哪些月份的A股市场月度成交额超过30万亿元？
-  sql: 'SELECT year, month, market_turnover_100m_cny
-
-    FROM stock_indices
-
-    WHERE market_turnover_100m_cny > 300000
-
-    ORDER BY year, month'
+  sql: "SELECT year, month, market_turnover_100m_cny\nFROM stock_indices\nWHERE market_turnover_100m_cny > 300000\nORDER BY year, month"
   columns_used:
   - year
   - month
@@ -605,37 +556,72 @@ questions:
   - year: 2025
     month: 12
     market_turnover_100m_cny: 320000.0
+  requires_calculator: false
 - id: 11
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
-  question: 市场波动率指数超过25的月份有哪些？
-  sql: 'SELECT year, month, volatility_idx
-
-    FROM stock_indices
-
-    WHERE volatility_idx > 25
-
-    ORDER BY year, month'
+  question: 市场波动率指数超过22的月份有哪些？
+  sql: "SELECT year, month, volatility_idx\nFROM stock_indices\nWHERE volatility_idx > 22\nORDER BY year, month"
   columns_used:
   - year
   - month
   - volatility_idx
   answer_type: list
   answer_unit: ''
-  answer: null
+  answer:
+  - year: 2016
+    month: 2
+    volatility_idx: 22.524
+  - year: 2017
+    month: 12
+    volatility_idx: 23.462
+  - year: 2018
+    month: 11
+    volatility_idx: 23.48
+  - year: 2018
+    month: 12
+    volatility_idx: 22.525
+  - year: 2019
+    month: 3
+    volatility_idx: 23.632
+  - year: 2019
+    month: 4
+    volatility_idx: 23.399
+  - year: 2019
+    month: 12
+    volatility_idx: 23.246
+  - year: 2020
+    month: 2
+    volatility_idx: 22.127
+  - year: 2021
+    month: 7
+    volatility_idx: 22.469
+  - year: 2023
+    month: 8
+    volatility_idx: 22.764
+  - year: 2023
+    month: 10
+    volatility_idx: 22.536
+  - year: 2023
+    month: 11
+    volatility_idx: 22.904
+  - year: 2024
+    month: 12
+    volatility_idx: 22.189
+  - year: 2025
+    month: 10
+    volatility_idx: 22.191
+  - year: 2025
+    month: 11
+    volatility_idx: 22.55
+  requires_calculator: false
 - id: 12
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
   question: 北向资金月净流入超过1000亿元的月份统计
-  sql: 'SELECT year, month, northbound_netflow_100m_cny
-
-    FROM stock_indices
-
-    WHERE northbound_netflow_100m_cny > 1000
-
-    ORDER BY year, month'
+  sql: "SELECT year, month, northbound_netflow_100m_cny\nFROM stock_indices\nWHERE northbound_netflow_100m_cny > 1000\nORDER BY year, month"
   columns_used:
   - year
   - month
@@ -679,18 +665,13 @@ questions:
   - year: 2025
     month: 2
     northbound_netflow_100m_cny: 1325.85
+  requires_calculator: false
 - id: 13
   category: B. 范围与比较过滤
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2020年至2022年间，沪深300指数收盘价超过4500点的月份
-  sql: 'SELECT year, month, csi300_close
-
-    FROM stock_indices
-
-    WHERE year BETWEEN 2020 AND 2022 AND csi300_close > 4500
-
-    ORDER BY year, month'
+  sql: "SELECT year, month, csi300_close\nFROM stock_indices\nWHERE year BETWEEN 2020 AND 2022 AND csi300_close > 4500\nORDER BY year, month"
   columns_used:
   - year
   - month
@@ -785,14 +766,13 @@ questions:
   - year: 2022
     month: 12
     csi300_close: 4756.665
+  requires_calculator: false
 - id: 14
   category: B. 范围与比较过滤
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2023年上半年中，北向资金净流入为正且A股成交额超过20万亿的月份
-  sql: "SELECT year, month, northbound_netflow_100m_cny, market_turnover_100m_cny\n\
-    FROM stock_indices\nWHERE year = 2023 AND month <= 6\n  AND northbound_netflow_100m_cny\
-    \ > 0\n  AND market_turnover_100m_cny > 200000\nORDER BY month"
+  sql: "SELECT year, month, northbound_netflow_100m_cny, market_turnover_100m_cny\nFROM stock_indices\nWHERE year = 2023 AND month <= 6 AND northbound_netflow_100m_cny > 0 AND market_turnover_100m_cny > 200000\nORDER BY month"
   columns_used:
   - year
   - month
@@ -817,110 +797,83 @@ questions:
     month: 5
     northbound_netflow_100m_cny: 752.98
     market_turnover_100m_cny: 290859.89
+  requires_calculator: false
 - id: 15
   category: C. 排序与Top-N
   sub_category: C1 单指标最大值行
   difficulty: medium
   question: 历史上上证综指月末收盘价的最高点是哪个月？
-  sql: 'SELECT year, month, ref_date, shanghai_comp_close
-
-    FROM stock_indices
-
-    ORDER BY shanghai_comp_close DESC
-
-    LIMIT 1'
+  sql: "SELECT year, month, ref_date, shanghai_comp_close\nFROM stock_indices\nORDER BY shanghai_comp_close DESC\nLIMIT 1"
   columns_used:
   - year
   - month
   - ref_date
   - shanghai_comp_close
-  answer_type: scalar
+  answer_type: list
   answer_unit: 点
   answer:
   - year: 2025
     month: 12
     ref_date: '2025-12-01'
     shanghai_comp_close: 4333.823
+  requires_calculator: false
 - id: 16
   category: C. 排序与Top-N
   sub_category: C1 单指标最大值行
   difficulty: medium
   question: A股市场单月总成交额最高纪录出现在哪个月？
-  sql: 'SELECT year, month, market_turnover_100m_cny
-
-    FROM stock_indices
-
-    ORDER BY market_turnover_100m_cny DESC
-
-    LIMIT 1'
+  sql: "SELECT year, month, market_turnover_100m_cny\nFROM stock_indices\nORDER BY market_turnover_100m_cny DESC\nLIMIT 1"
   columns_used:
   - year
   - month
   - market_turnover_100m_cny
-  answer_type: scalar
+  answer_type: list
   answer_unit: 亿元
   answer:
   - year: 2024
     month: 9
     market_turnover_100m_cny: 320000.0
+  requires_calculator: false
 - id: 17
   category: C. 排序与Top-N
   sub_category: C2 单指标最小值行
   difficulty: medium
   question: 创业板指历史最低收盘价出现在哪个月？
-  sql: 'SELECT year, month, chinext_close
-
-    FROM stock_indices
-
-    ORDER BY chinext_close ASC
-
-    LIMIT 1'
+  sql: "SELECT year, month, chinext_close\nFROM stock_indices\nORDER BY chinext_close ASC\nLIMIT 1"
   columns_used:
   - year
   - month
   - chinext_close
-  answer_type: scalar
+  answer_type: list
   answer_unit: 点
   answer:
   - year: 2016
     month: 9
     chinext_close: 2029.613
+  requires_calculator: false
 - id: 18
   category: C. 排序与Top-N
   sub_category: C2 单指标最小值行
   difficulty: medium
   question: 沪深300市盈率历史最低值是哪个月？
-  sql: 'SELECT year, month, pe_ttm_csi300
-
-    FROM stock_indices
-
-    WHERE pe_ttm_csi300 IS NOT NULL
-
-    ORDER BY pe_ttm_csi300 ASC
-
-    LIMIT 1'
+  sql: "SELECT year, month, pe_ttm_csi300\nFROM stock_indices\nWHERE pe_ttm_csi300 IS NOT NULL\nORDER BY pe_ttm_csi300 ASC\nLIMIT 1"
   columns_used:
   - year
   - month
   - pe_ttm_csi300
-  answer_type: scalar
+  answer_type: list
   answer_unit: 倍
   answer:
   - year: 2016
     month: 4
     pe_ttm_csi300: 11.102
+  requires_calculator: false
 - id: 19
   category: C. 排序与Top-N
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 北向资金单月净流入前5名的月份分别是哪些？
-  sql: 'SELECT year, month, northbound_netflow_100m_cny
-
-    FROM stock_indices
-
-    ORDER BY northbound_netflow_100m_cny DESC
-
-    LIMIT 5'
+  sql: "SELECT year, month, northbound_netflow_100m_cny\nFROM stock_indices\nORDER BY northbound_netflow_100m_cny DESC\nLIMIT 5"
   columns_used:
   - year
   - month
@@ -943,18 +896,13 @@ questions:
   - year: 2025
     month: 2
     northbound_netflow_100m_cny: 1325.85
+  requires_calculator: false
 - id: 20
   category: C. 排序与Top-N
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 市场波动率指数最高的前3个月是哪些？
-  sql: 'SELECT year, month, volatility_idx
-
-    FROM stock_indices
-
-    ORDER BY volatility_idx DESC
-
-    LIMIT 3'
+  sql: "SELECT year, month, volatility_idx\nFROM stock_indices\nORDER BY volatility_idx DESC\nLIMIT 3"
   columns_used:
   - year
   - month
@@ -971,18 +919,13 @@ questions:
   - year: 2017
     month: 12
     volatility_idx: 23.462
+  requires_calculator: false
 - id: 21
   category: C. 排序与Top-N
   sub_category: C4 多列排序
   difficulty: medium
-  question: 按深证成指收盘价降序、创业板指收盘价升序排列，前10条记录
-  sql: 'SELECT year, month, shenzhen_comp_close, chinext_close
-
-    FROM stock_indices
-
-    ORDER BY shenzhen_comp_close DESC, chinext_close ASC
-
-    LIMIT 10'
+  question: 按深证成指收盘价降序、创业板指收盘价升序排列，取前10个月份数据
+  sql: "SELECT year, month, shenzhen_comp_close, chinext_close\nFROM stock_indices\nORDER BY shenzhen_comp_close DESC, chinext_close ASC\nLIMIT 10"
   columns_used:
   - year
   - month
@@ -1031,128 +974,112 @@ questions:
     month: 7
     shenzhen_comp_close: 13033.831
     chinext_close: 3252.022
+  requires_calculator: false
 - id: 22
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 股票指数月度数据表中总共有多少条记录？
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM stock_indices'
+  question: 2016-2025年波动率指数高于20的月份有多少个？
+  sql: "SELECT COUNT(*) AS value\nFROM stock_indices\nWHERE volatility_idx > 20"
   columns_used: []
   answer_type: scalar
   answer_unit: 条
-  answer: 120
+  answer: 35
+  requires_calculator: false
 - id: 23
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 股票指数数据覆盖了多少个不同的年份？
-  sql: 'SELECT COUNT(DISTINCT year) AS value
-
-    FROM stock_indices'
+  question: 2016-2025年中出现过波动率指数高于20的年份有多少个？
+  sql: "SELECT COUNT(DISTINCT year) AS value\nFROM stock_indices\nWHERE volatility_idx > 20"
   columns_used:
   - year
   answer_type: scalar
   answer_unit: 个
   answer: 10
+  requires_calculator: false
 - id: 24
   category: D. 聚合函数（无GROUP BY）
   sub_category: D2 SUM
   difficulty: medium
   question: 2016年至2025年全部月份的A股市场总成交额累计是多少？
-  sql: 'SELECT SUM(market_turnover_100m_cny) AS value
-
-    FROM stock_indices'
+  sql: "SELECT SUM(market_turnover_100m_cny) AS value\nFROM stock_indices"
   columns_used:
   - market_turnover_100m_cny
   answer_type: scalar
   answer_unit: 亿元
   answer: 30142272.1
+  requires_calculator: false
 - id: 25
   category: D. 聚合函数（无GROUP BY）
   sub_category: D2 SUM
   difficulty: medium
   question: 全时期北向资金的累计净流入总额是多少？
-  sql: 'SELECT SUM(northbound_netflow_100m_cny) AS value
-
-    FROM stock_indices'
+  sql: "SELECT SUM(northbound_netflow_100m_cny) AS value\nFROM stock_indices"
   columns_used:
   - northbound_netflow_100m_cny
   answer_type: scalar
   answer_unit: 亿元
   answer: 16072.369999999999
+  requires_calculator: false
 - id: 26
   category: D. 聚合函数（无GROUP BY）
   sub_category: D3 AVG
   difficulty: medium
   question: 历史上沪深300指数月末收盘价的平均值是多少？
-  sql: 'SELECT AVG(csi300_close) AS value
-
-    FROM stock_indices'
+  sql: "SELECT AVG(csi300_close) AS value\nFROM stock_indices"
   columns_used:
   - csi300_close
   answer_type: scalar
   answer_unit: 点
   answer: 4557.526033333333
+  requires_calculator: false
 - id: 27
   category: D. 聚合函数（无GROUP BY）
   sub_category: D3 AVG
   difficulty: medium
   question: 全时期沪深300市盈率的平均水平是多少倍？
-  sql: 'SELECT AVG(pe_ttm_csi300) AS value
-
-    FROM stock_indices
-
-    WHERE pe_ttm_csi300 IS NOT NULL'
+  sql: "SELECT AVG(pe_ttm_csi300) AS value\nFROM stock_indices\nWHERE pe_ttm_csi300 IS NOT NULL"
   columns_used:
   - pe_ttm_csi300
   answer_type: scalar
   answer_unit: 倍
   answer: 13.4535
+  requires_calculator: false
 - id: 28
   category: D. 聚合函数（无GROUP BY）
   sub_category: D4 MIN/MAX
   difficulty: medium
   question: 上证综指历史最低和最高收盘价分别是多少？
-  sql: 'SELECT MIN(shanghai_comp_close) AS min_value, MAX(shanghai_comp_close) AS
-    max_value
-
-    FROM stock_indices'
+  sql: "SELECT MIN(shanghai_comp_close) AS min_value, MAX(shanghai_comp_close) AS max_value\nFROM stock_indices"
   columns_used:
   - shanghai_comp_close
-  answer_type: scalar
+  answer_type: list
   answer_unit: 点
   answer:
   - min_value: 3119.971
     max_value: 4333.823
+  requires_calculator: false
 - id: 29
   category: D. 聚合函数（无GROUP BY）
   sub_category: D4 MIN/MAX
   difficulty: medium
   question: 市场波动率指数的最小值和最大值分别是多少？
-  sql: 'SELECT MIN(volatility_idx) AS min_value, MAX(volatility_idx) AS max_value
-
-    FROM stock_indices'
+  sql: "SELECT MIN(volatility_idx) AS min_value, MAX(volatility_idx) AS max_value\nFROM stock_indices"
   columns_used:
   - volatility_idx
-  answer_type: scalar
+  answer_type: list
   answer_unit: ''
   answer:
   - min_value: 13.983
     max_value: 23.632
+  requires_calculator: false
 - id: 30
   category: E. 分组聚合GROUP BY
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 各年度A股市场月度成交额的年度总和是多少？
-  sql: 'SELECT year, SUM(market_turnover_100m_cny) AS total_turnover
-
-    FROM stock_indices
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, SUM(market_turnover_100m_cny) AS total_turnover\nFROM stock_indices\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - market_turnover_100m_cny
@@ -1179,18 +1106,13 @@ questions:
     total_turnover: 3623874.11
   - year: 2025
     total_turnover: 3742824.15
+  requires_calculator: false
 - id: 31
   category: E. 分组聚合GROUP BY
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 各年度上证综指的平均收盘价是多少？
-  sql: 'SELECT year, AVG(shanghai_comp_close) AS avg_close
-
-    FROM stock_indices
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(shanghai_comp_close) AS avg_close\nFROM stock_indices\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - shanghai_comp_close
@@ -1217,61 +1139,49 @@ questions:
     avg_close: 4051.639333333333
   - year: 2025
     avg_close: 4177.8859999999995
+  requires_calculator: false
 - id: 32
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
-  question: 每个月份（1-12月）各有多少条股票指数月度记录？
-  sql: 'SELECT month, COUNT(*) AS record_count
-
-    FROM stock_indices
-
-    GROUP BY month
-
-    ORDER BY month'
+  question: 各月份中波动率指数高于20的次数分别是多少？
+  sql: "SELECT month, COUNT(*) AS count\nFROM stock_indices\nWHERE volatility_idx > 20\nGROUP BY month\nORDER BY month"
   columns_used:
   - month
   answer_type: list
   answer_unit: 条
   answer:
   - month: 1
-    record_count: 10
+    count: 2
   - month: 2
-    record_count: 10
+    count: 4
   - month: 3
-    record_count: 10
+    count: 3
   - month: 4
-    record_count: 10
+    count: 2
   - month: 5
-    record_count: 10
+    count: 2
   - month: 6
-    record_count: 10
+    count: 1
   - month: 7
-    record_count: 10
+    count: 3
   - month: 8
-    record_count: 10
+    count: 2
   - month: 9
-    record_count: 10
+    count: 4
   - month: 10
-    record_count: 10
+    count: 3
   - month: 11
-    record_count: 10
+    count: 4
   - month: 12
-    record_count: 10
+    count: 5
+  requires_calculator: false
 - id: 33
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
   question: 各年份北向资金净流入为正的月份数量统计
-  sql: 'SELECT year, COUNT(*) AS positive_months
-
-    FROM stock_indices
-
-    WHERE northbound_netflow_100m_cny > 0
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, COUNT(*) AS positive_months\nFROM stock_indices\nWHERE northbound_netflow_100m_cny > 0\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - northbound_netflow_100m_cny
@@ -1298,15 +1208,13 @@ questions:
     positive_months: 3
   - year: 2025
     positive_months: 7
+  requires_calculator: false
 - id: 34
   category: E. 分组聚合GROUP BY
   sub_category: E3 多维度分组
   difficulty: hard
   question: 各年各季度的沪深300指数平均收盘价
-  sql: "SELECT year,\n       CASE\n           WHEN month IN (1, 2, 3) THEN 1\n   \
-    \        WHEN month IN (4, 5, 6) THEN 2\n           WHEN month IN (7, 8, 9) THEN\
-    \ 3\n           ELSE 4\n       END AS quarter,\n       AVG(csi300_close) AS avg_close\n\
-    FROM stock_indices\nGROUP BY year, quarter\nORDER BY year, quarter"
+  sql: "SELECT year, CASE WHEN month IN (1, 2, 3) THEN 1 WHEN month IN (4, 5, 6) THEN 2 WHEN month IN (7, 8, 9) THEN 3 ELSE 4 END AS quarter, AVG(csi300_close) AS avg_close\nFROM stock_indices\nGROUP BY year, quarter\nORDER BY year, quarter"
   columns_used:
   - year
   - month
@@ -1434,16 +1342,13 @@ questions:
   - year: 2025
     quarter: 4
     avg_close: 5221.473333333333
+  requires_calculator: false
 - id: 35
   category: E. 分组聚合GROUP BY
   sub_category: E3 多维度分组
   difficulty: hard
   question: 各年各季度北向资金净流入总额统计
-  sql: "SELECT year,\n       CASE\n           WHEN month IN (1, 2, 3) THEN 1\n   \
-    \        WHEN month IN (4, 5, 6) THEN 2\n           WHEN month IN (7, 8, 9) THEN\
-    \ 3\n           ELSE 4\n       END AS quarter,\n       SUM(northbound_netflow_100m_cny)\
-    \ AS total_netflow\nFROM stock_indices\nGROUP BY year, quarter\nORDER BY year,\
-    \ quarter"
+  sql: "SELECT year, CASE WHEN month IN (1, 2, 3) THEN 1 WHEN month IN (4, 5, 6) THEN 2 WHEN month IN (7, 8, 9) THEN 3 ELSE 4 END AS quarter, SUM(northbound_netflow_100m_cny) AS total_netflow\nFROM stock_indices\nGROUP BY year, quarter\nORDER BY year, quarter"
   columns_used:
   - year
   - month
@@ -1571,64 +1476,47 @@ questions:
   - year: 2025
     quarter: 4
     total_netflow: -1041.18
+  requires_calculator: false
 - id: 36
   category: E. 分组聚合GROUP BY
   sub_category: E4 GROUP BY+ORDER BY
   difficulty: hard
   question: 哪一年的创业板指年平均收盘价最高？
-  sql: 'SELECT year, AVG(chinext_close) AS avg_close
-
-    FROM stock_indices
-
-    GROUP BY year
-
-    ORDER BY avg_close DESC
-
-    LIMIT 1'
+  sql: "SELECT year, AVG(chinext_close) AS avg_close\nFROM stock_indices\nGROUP BY year\nORDER BY avg_close DESC\nLIMIT 1"
   columns_used:
   - year
   - chinext_close
-  answer_type: scalar
+  answer_type: list
   answer_unit: 点
   answer:
   - year: 2025
     avg_close: 3413.44175
+  requires_calculator: false
 - id: 37
   category: F. 分组过滤HAVING
   sub_category: F1 HAVING AVG条件
   difficulty: hard
-  question: 哪些年份的沪深300市盈率年平均值超过15倍？
-  sql: 'SELECT year, AVG(pe_ttm_csi300) AS avg_pe
-
-    FROM stock_indices
-
-    WHERE pe_ttm_csi300 IS NOT NULL
-
-    GROUP BY year
-
-    HAVING AVG(pe_ttm_csi300) > 15
-
-    ORDER BY year'
+  question: 哪些年份的沪深300市盈率年平均值超过14倍？
+  sql: "SELECT year, AVG(pe_ttm_csi300) AS avg_pe\nFROM stock_indices\nWHERE pe_ttm_csi300 IS NOT NULL\nGROUP BY year\nHAVING AVG(pe_ttm_csi300) > 14\nORDER BY year"
   columns_used:
   - year
   - pe_ttm_csi300
   answer_type: list
   answer_unit: 倍
-  answer: null
+  answer:
+  - year: 2023
+    avg_pe: 14.4305
+  - year: 2024
+    avg_pe: 14.356916666666665
+  - year: 2025
+    avg_pe: 14.426333333333332
+  requires_calculator: false
 - id: 38
   category: F. 分组过滤HAVING
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 哪些年份的深证成指年平均收盘价超过12000点？
-  sql: 'SELECT year, AVG(shenzhen_comp_close) AS avg_close
-
-    FROM stock_indices
-
-    GROUP BY year
-
-    HAVING AVG(shenzhen_comp_close) > 12000
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(shenzhen_comp_close) AS avg_close\nFROM stock_indices\nGROUP BY year\nHAVING AVG(shenzhen_comp_close) > 12000\nORDER BY year"
   columns_used:
   - year
   - shenzhen_comp_close
@@ -1645,22 +1533,13 @@ questions:
     avg_close: 12849.419
   - year: 2025
     avg_close: 13124.867833333332
+  requires_calculator: false
 - id: 39
   category: F. 分组过滤HAVING
   sub_category: F2 HAVING COUNT条件
   difficulty: hard
   question: 哪些年份的市场波动率指数超过20的月份数量达到6个月以上？
-  sql: 'SELECT year, COUNT(*) AS high_volatility_months
-
-    FROM stock_indices
-
-    WHERE volatility_idx > 20
-
-    GROUP BY year
-
-    HAVING COUNT(*) >= 6
-
-    ORDER BY year'
+  sql: "SELECT year, COUNT(*) AS high_volatility_months\nFROM stock_indices\nWHERE volatility_idx > 20\nGROUP BY year\nHAVING COUNT(*) >= 6\nORDER BY year"
   columns_used:
   - year
   - volatility_idx
@@ -1669,20 +1548,13 @@ questions:
   answer:
   - year: 2019
     high_volatility_months: 6
+  requires_calculator: false
 - id: 40
   category: F. 分组过滤HAVING
   sub_category: F3 HAVING SUM条件
   difficulty: hard
   question: 哪些年份的北向资金年度累计净流入超过5000亿元？
-  sql: 'SELECT year, SUM(northbound_netflow_100m_cny) AS total_netflow
-
-    FROM stock_indices
-
-    GROUP BY year
-
-    HAVING SUM(northbound_netflow_100m_cny) > 5000
-
-    ORDER BY year'
+  sql: "SELECT year, SUM(northbound_netflow_100m_cny) AS total_netflow\nFROM stock_indices\nGROUP BY year\nHAVING SUM(northbound_netflow_100m_cny) > 5000\nORDER BY year"
   columns_used:
   - year
   - northbound_netflow_100m_cny
@@ -1691,18 +1563,13 @@ questions:
   answer:
   - year: 2023
     total_netflow: 6234.45
+  requires_calculator: false
 - id: 41
   category: G. 时间趋势与子查询
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 2016年至2025年各年度上证综指年末收盘价趋势
-  sql: 'SELECT year, shanghai_comp_close AS year_end_close
-
-    FROM stock_indices
-
-    WHERE month = 12
-
-    ORDER BY year'
+  sql: "SELECT year, shanghai_comp_close AS year_end_close\nFROM stock_indices\nWHERE month = 12\nORDER BY year"
   columns_used:
   - year
   - month
@@ -1730,18 +1597,13 @@ questions:
     year_end_close: 4056.509
   - year: 2025
     year_end_close: 4333.823
+  requires_calculator: false
 - id: 42
   category: G. 时间趋势与子查询
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 各年度A股市场的月均成交额变化趋势如何？
-  sql: 'SELECT year, AVG(market_turnover_100m_cny) AS avg_monthly_turnover
-
-    FROM stock_indices
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(market_turnover_100m_cny) AS avg_monthly_turnover\nFROM stock_indices\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - market_turnover_100m_cny
@@ -1768,18 +1630,13 @@ questions:
     avg_monthly_turnover: 301989.50916666666
   - year: 2025
     avg_monthly_turnover: 311902.0125
+  requires_calculator: false
 - id: 43
   category: G. 时间趋势与子查询
   sub_category: G2 子查询对比
   difficulty: hard
   question: 哪些月份的沪深300指数收盘价高于全时期平均值？
-  sql: 'SELECT year, month, csi300_close
-
-    FROM stock_indices
-
-    WHERE csi300_close > (SELECT AVG(csi300_close) FROM stock_indices)
-
-    ORDER BY year, month'
+  sql: "SELECT year, month, csi300_close\nFROM stock_indices\nWHERE csi300_close > (SELECT AVG(csi300_close)\nFROM stock_indices)\nORDER BY year, month"
   columns_used:
   - year
   - month
@@ -1970,18 +1827,13 @@ questions:
   - year: 2025
     month: 12
     csi300_close: 5202.648
+  requires_calculator: false
 - id: 44
   category: G. 时间趋势与子查询
   sub_category: G2 子查询对比
   difficulty: hard
   question: 市场波动率指数超过历史平均水平的月份有哪些？
-  sql: 'SELECT year, month, volatility_idx
-
-    FROM stock_indices
-
-    WHERE volatility_idx > (SELECT AVG(volatility_idx) FROM stock_indices)
-
-    ORDER BY year, month'
+  sql: "SELECT year, month, volatility_idx\nFROM stock_indices\nWHERE volatility_idx > (SELECT AVG(volatility_idx)\nFROM stock_indices)\nORDER BY year, month"
   columns_used:
   - year
   - month
@@ -2154,30 +2006,13 @@ questions:
   - year: 2025
     month: 11
     volatility_idx: 22.55
+  requires_calculator: false
 - id: 45
   category: G. 时间趋势与子查询
   sub_category: G3 跨工具计算
   difficulty: hard
   question: 2024年创业板指年末收盘价相比年初收盘价的涨跌幅是多少？
-  sql: '-- 步骤1: 查询年初收盘价
-
-    SELECT chinext_close AS start_value
-
-    FROM stock_indices
-
-    WHERE year = 2024 AND month = 1;
-
-
-    -- 步骤2: 查询年末收盘价
-
-    SELECT chinext_close AS end_value
-
-    FROM stock_indices
-
-    WHERE year = 2024 AND month = 12;
-
-
-    -- 步骤3: 使用 calculator 工具计算 (end_value - start_value) / start_value * 100'
+  sql: "SELECT MAX(CASE WHEN month = 1 THEN chinext_close END) AS start_value, MAX(CASE WHEN month = 12 THEN chinext_close END) AS end_value\nFROM stock_indices\nWHERE year = 2024"
   columns_used:
   - year
   - month
@@ -2185,7 +2020,7 @@ questions:
   answer_type: scalar
   answer_unit: '%'
   requires_calculator: true
-  answer: -4.99
+  answer: -4.9938291728763
 - id: 46
   category: H. 边界与容错
   sub_category: H1 数据不存在

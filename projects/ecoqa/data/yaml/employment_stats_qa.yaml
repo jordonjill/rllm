@@ -26,11 +26,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 2024年1月全国的失业率是多少？
-  sql: 'SELECT unemployment_rate_pct
-
-    FROM employment_stats
-
-    WHERE year = 2024 AND month = 1 AND geo_level = ''national'''
+  sql: "SELECT unemployment_rate_pct\nFROM employment_stats\nWHERE year = 2024 AND month = 1 AND geo_level = 'national'"
   columns_used:
   - year
   - month
@@ -45,11 +41,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 查询北京市2023年6月的劳动参与率
-  sql: 'SELECT participation_rate_pct
-
-    FROM employment_stats
-
-    WHERE geo_name = ''北京'' AND year = 2023 AND month = 6'
+  sql: "SELECT participation_rate_pct\nFROM employment_stats\nWHERE geo_name = '北京' AND year = 2023 AND month = 6"
   columns_used:
   - geo_name
   - year
@@ -64,13 +56,7 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 2022年全国青年失业率超过15%的月份有哪些？
-  sql: 'SELECT year, month, youth_unemp_rate_pct
-
-    FROM employment_stats
-
-    WHERE year = 2022 AND geo_level = ''national'' AND youth_unemp_rate_pct > 15
-
-    LIMIT 10'
+  sql: "SELECT year, month, youth_unemp_rate_pct\nFROM employment_stats\nWHERE year = 2022 AND geo_level = 'national' AND youth_unemp_rate_pct > 15\nLIMIT 10"
   columns_used:
   - year
   - month
@@ -94,13 +80,7 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 广东省2021年平均月薪超过8000元的月份的就业人数
-  sql: 'SELECT month, employed_10k, avg_monthly_wage_cny
-
-    FROM employment_stats
-
-    WHERE geo_name = ''广东'' AND year = 2021 AND avg_monthly_wage_cny > 8000
-
-    LIMIT 10'
+  sql: "SELECT month, employed_10k, avg_monthly_wage_cny\nFROM employment_stats\nWHERE geo_name = '广东' AND year = 2021 AND avg_monthly_wage_cny > 8000\nLIMIT 10"
   columns_used:
   - geo_name
   - year
@@ -146,11 +126,7 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 查询上海、北京、深圳三个城市2024年3月的失业率
-  sql: 'SELECT geo_name, unemployment_rate_pct
-
-    FROM employment_stats
-
-    WHERE geo_name IN (''上海'', ''北京'', ''深圳'') AND year = 2024 AND month = 3'
+  sql: "SELECT geo_name, unemployment_rate_pct\nFROM employment_stats\nWHERE geo_name IN ('上海', '北京', '深圳') AND year = 2024 AND month = 3"
   columns_used:
   - geo_name
   - year
@@ -170,12 +146,8 @@ questions:
   category: A. 基础点查询
   sub_category: A3 OR/IN条件
   difficulty: easy
-  question: 2023年第一季度（1-3月）全国的新增城镇就业岗位数
-  sql: 'SELECT month, new_urban_jobs_10k
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND month IN (1, 2, 3) AND geo_level = ''national'''
+  question: 2023年1月至3月全国的新增城镇就业岗位数是多少？
+  sql: "SELECT month, new_urban_jobs_10k\nFROM employment_stats\nWHERE year = 2023 AND month IN (1, 2, 3) AND geo_level = 'national'"
   columns_used:
   - year
   - month
@@ -195,12 +167,8 @@ questions:
   category: A. 基础点查询
   sub_category: A4 NULL检查
   difficulty: easy
-  question: 有多少条就业统计记录的青年失业率数据缺失？
-  sql: 'SELECT COUNT(*) AS missing_count
-
-    FROM employment_stats
-
-    WHERE youth_unemp_rate_pct IS NULL'
+  question: 青年失业率为空值的数据有多少条？
+  sql: "SELECT COUNT(*) AS missing_count\nFROM employment_stats\nWHERE youth_unemp_rate_pct IS NULL"
   columns_used:
   - youth_unemp_rate_pct
   answer_type: scalar
@@ -212,11 +180,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 2018年至2020年间全国的平均失业率是多少？
-  sql: 'SELECT AVG(unemployment_rate_pct) AS avg_rate
-
-    FROM employment_stats
-
-    WHERE year BETWEEN 2018 AND 2020 AND geo_level = ''national'''
+  sql: "SELECT AVG(unemployment_rate_pct) AS avg_rate\nFROM employment_stats\nWHERE year BETWEEN 2018 AND 2020 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -230,15 +194,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 北京市2019年至2021年期间劳动参与率最高的月份
-  sql: 'SELECT year, month, participation_rate_pct
-
-    FROM employment_stats
-
-    WHERE geo_name = ''北京'' AND year BETWEEN 2019 AND 2021
-
-    ORDER BY participation_rate_pct DESC
-
-    LIMIT 1'
+  sql: "SELECT year, month, participation_rate_pct\nFROM employment_stats\nWHERE geo_name = '北京' AND year BETWEEN 2019 AND 2021\nORDER BY participation_rate_pct DESC\nLIMIT 1"
   columns_used:
   - geo_name
   - year
@@ -256,15 +212,7 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 2023年哪些省份的平均月薪超过9000元？
-  sql: 'SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    HAVING AVG(avg_monthly_wage_cny) > 9000'
+  sql: "SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(avg_monthly_wage_cny) > 9000"
   columns_used:
   - year
   - geo_level
@@ -341,11 +289,7 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 全国青年失业率低于10%的月份有多少个？
-  sql: 'SELECT COUNT(*) AS count
-
-    FROM employment_stats
-
-    WHERE geo_level = ''national'' AND youth_unemp_rate_pct < 10'
+  sql: "SELECT COUNT(*) AS count\nFROM employment_stats\nWHERE geo_level = 'national' AND youth_unemp_rate_pct < 10"
   columns_used:
   - geo_level
   - youth_unemp_rate_pct
@@ -358,13 +302,7 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 2024年哪些城市的就业人数超过500万人？
-  sql: 'SELECT DISTINCT geo_name, employed_10k
-
-    FROM employment_stats
-
-    WHERE year = 2024 AND geo_level = ''city'' AND employed_10k > 500
-
-    LIMIT 10'
+  sql: "SELECT DISTINCT geo_name, employed_10k\nFROM employment_stats\nWHERE year = 2024 AND geo_level = 'city' AND employed_10k > 500\nLIMIT 10"
   columns_used:
   - year
   - geo_level
@@ -399,8 +337,7 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2020年至2022年间失业率超过5%且劳动参与率低于70%的记录
-  sql: "SELECT year, month, geo_name, unemployment_rate_pct, participation_rate_pct\nFROM employment_stats\nWHERE year BETWEEN\
-    \ 2020 AND 2022\n  AND unemployment_rate_pct > 5\n  AND participation_rate_pct < 70\nLIMIT 10"
+  sql: "SELECT year, month, geo_name, unemployment_rate_pct, participation_rate_pct\nFROM employment_stats\nWHERE year BETWEEN 2020 AND 2022 AND unemployment_rate_pct > 5 AND participation_rate_pct < 70\nLIMIT 10"
   columns_used:
   - year
   - month
@@ -466,8 +403,7 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2023年新增城镇就业岗位超过100万且平均月薪超过7500元的月份
-  sql: "SELECT month, new_urban_jobs_10k, avg_monthly_wage_cny\nFROM employment_stats\nWHERE year = 2023\n  AND geo_level\
-    \ = 'national'\n  AND new_urban_jobs_10k > 100\n  AND avg_monthly_wage_cny > 7500"
+  sql: "SELECT month, new_urban_jobs_10k, avg_monthly_wage_cny\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'national' AND new_urban_jobs_10k > 100 AND avg_monthly_wage_cny > 7500"
   columns_used:
   - year
   - month
@@ -519,15 +455,7 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: easy
   question: 历史上全国失业率最高的月份是哪个？
-  sql: 'SELECT year, month, unemployment_rate_pct
-
-    FROM employment_stats
-
-    WHERE geo_level = ''national''
-
-    ORDER BY unemployment_rate_pct DESC
-
-    LIMIT 1'
+  sql: "SELECT year, month, unemployment_rate_pct\nFROM employment_stats\nWHERE geo_level = 'national'\nORDER BY unemployment_rate_pct DESC\nLIMIT 1"
   columns_used:
   - year
   - month
@@ -545,17 +473,7 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: easy
   question: 2024年平均月薪最高的省份是哪个？
-  sql: 'SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage
-
-    FROM employment_stats
-
-    WHERE year = 2024 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_wage DESC
-
-    LIMIT 1'
+  sql: "SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage\nFROM employment_stats\nWHERE year = 2024 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_wage DESC\nLIMIT 1"
   columns_used:
   - year
   - geo_level
@@ -572,15 +490,7 @@ questions:
   sub_category: C2 单指标最小值行
   difficulty: easy
   question: 2023年全国青年失业率最低的月份
-  sql: 'SELECT year, month, youth_unemp_rate_pct
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''national''
-
-    ORDER BY youth_unemp_rate_pct ASC
-
-    LIMIT 1'
+  sql: "SELECT year, month, youth_unemp_rate_pct\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'national'\nORDER BY youth_unemp_rate_pct ASC\nLIMIT 1"
   columns_used:
   - year
   - month
@@ -598,17 +508,7 @@ questions:
   sub_category: C2 单指标最小值行
   difficulty: easy
   question: 哪个城市2022年的劳动参与率最低？
-  sql: 'SELECT geo_name, AVG(participation_rate_pct) AS avg_participation
-
-    FROM employment_stats
-
-    WHERE year = 2022 AND geo_level = ''city''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_participation ASC
-
-    LIMIT 1'
+  sql: "SELECT geo_name, AVG(participation_rate_pct) AS avg_participation\nFROM employment_stats\nWHERE year = 2022 AND geo_level = 'city'\nGROUP BY geo_name\nORDER BY avg_participation ASC\nLIMIT 1"
   columns_used:
   - year
   - geo_level
@@ -625,17 +525,7 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2023年就业人数最多的前5个省份
-  sql: 'SELECT geo_name, AVG(employed_10k) AS avg_employed
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_employed DESC
-
-    LIMIT 5'
+  sql: "SELECT geo_name, AVG(employed_10k) AS avg_employed\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_employed DESC\nLIMIT 5"
   columns_used:
   - year
   - geo_level
@@ -660,15 +550,7 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2024年新增城镇就业岗位最多的前3个月份
-  sql: 'SELECT month, new_urban_jobs_10k
-
-    FROM employment_stats
-
-    WHERE year = 2024 AND geo_level = ''national''
-
-    ORDER BY new_urban_jobs_10k DESC
-
-    LIMIT 3'
+  sql: "SELECT month, new_urban_jobs_10k\nFROM employment_stats\nWHERE year = 2024 AND geo_level = 'national'\nORDER BY new_urban_jobs_10k DESC\nLIMIT 3"
   columns_used:
   - year
   - month
@@ -689,9 +571,7 @@ questions:
   sub_category: C4 多列排序
   difficulty: medium
   question: 2022年各省份按失业率升序、劳动参与率降序排列的前5个
-  sql: "SELECT geo_name,\n       AVG(unemployment_rate_pct) AS avg_unemp,\n       AVG(participation_rate_pct) AS avg_participation\n\
-    FROM employment_stats\nWHERE year = 2022 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_unemp ASC, avg_participation\
-    \ DESC\nLIMIT 5"
+  sql: "SELECT geo_name, AVG(unemployment_rate_pct) AS avg_unemp, AVG(participation_rate_pct) AS avg_participation\nFROM employment_stats\nWHERE year = 2022 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_unemp ASC, avg_participation DESC\nLIMIT 5"
   columns_used:
   - year
   - geo_level
@@ -721,13 +601,11 @@ questions:
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 就业统计数据库中总共有多少条记录？
-  sql: 'SELECT COUNT(*) AS total_records
-
-    FROM employment_stats'
+  question: 2024年失业率高于5%的数据有多少条？
+  sql: "SELECT COUNT(*) AS total_records\nFROM employment_stats\nWHERE year = 2024 AND unemployment_rate_pct > 5.0"
   columns_used: []
   answer_type: scalar
-  answer: 5880
+  answer: 242
   answer_unit: 条
   requires_calculator: false
 - id: 23
@@ -735,11 +613,7 @@ questions:
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
   question: 数据库中包含多少个不同的省份就业数据？
-  sql: 'SELECT COUNT(DISTINCT geo_name) AS province_count
-
-    FROM employment_stats
-
-    WHERE geo_level = ''province'''
+  sql: "SELECT COUNT(DISTINCT geo_name) AS province_count\nFROM employment_stats\nWHERE geo_level = 'province'"
   columns_used:
   - geo_level
   - geo_name
@@ -752,11 +626,7 @@ questions:
   sub_category: D2 SUM
   difficulty: easy
   question: 2023年全国全年新增城镇就业岗位总数
-  sql: 'SELECT SUM(new_urban_jobs_10k) AS total_new_jobs
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''national'''
+  sql: "SELECT SUM(new_urban_jobs_10k) AS total_new_jobs\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -770,11 +640,7 @@ questions:
   sub_category: D2 SUM
   difficulty: easy
   question: 2022年广东省全年的失业人口总数
-  sql: 'SELECT SUM(unemployed_10k) AS total_unemployed
-
-    FROM employment_stats
-
-    WHERE year = 2022 AND geo_name = ''广东'''
+  sql: "SELECT SUM(unemployed_10k) AS total_unemployed\nFROM employment_stats\nWHERE year = 2022 AND geo_name = '广东'"
   columns_used:
   - year
   - geo_name
@@ -788,11 +654,7 @@ questions:
   sub_category: D3 AVG
   difficulty: easy
   question: 2024年全国的平均失业率是多少？
-  sql: 'SELECT AVG(unemployment_rate_pct) AS avg_rate
-
-    FROM employment_stats
-
-    WHERE year = 2024 AND geo_level = ''national'''
+  sql: "SELECT AVG(unemployment_rate_pct) AS avg_rate\nFROM employment_stats\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -806,11 +668,7 @@ questions:
   sub_category: D3 AVG
   difficulty: easy
   question: 2021年全国的平均月薪是多少？
-  sql: 'SELECT AVG(avg_monthly_wage_cny) AS avg_wage
-
-    FROM employment_stats
-
-    WHERE year = 2021 AND geo_level = ''national'''
+  sql: "SELECT AVG(avg_monthly_wage_cny) AS avg_wage\nFROM employment_stats\nWHERE year = 2021 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -824,8 +682,7 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: easy
   question: 历史数据中全国青年失业率的最高值和最低值
-  sql: "SELECT MIN(youth_unemp_rate_pct) AS min_rate,\n       MAX(youth_unemp_rate_pct) AS max_rate\nFROM employment_stats\n\
-    WHERE geo_level = 'national'"
+  sql: "SELECT MIN(youth_unemp_rate_pct) AS min_rate, MAX(youth_unemp_rate_pct) AS max_rate\nFROM employment_stats\nWHERE geo_level = 'national'"
   columns_used:
   - geo_level
   - youth_unemp_rate_pct
@@ -840,11 +697,7 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: easy
   question: 2023年所有省份中平均月薪的最大值
-  sql: 'SELECT MAX(avg_monthly_wage_cny) AS max_wage
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''province'''
+  sql: "SELECT MAX(avg_monthly_wage_cny) AS max_wage\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'"
   columns_used:
   - year
   - geo_level
@@ -858,13 +711,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 2016年至2025年每年全国的平均失业率
-  sql: 'SELECT year, AVG(unemployment_rate_pct) AS avg_rate
-
-    FROM employment_stats
-
-    WHERE geo_level = ''national''
-
-    GROUP BY year'
+  sql: "SELECT year, AVG(unemployment_rate_pct) AS avg_rate\nFROM employment_stats\nWHERE geo_level = 'national'\nGROUP BY year"
   columns_used:
   - year
   - geo_level
@@ -898,15 +745,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 2023年各省份的年度新增城镇就业岗位总数
-  sql: 'SELECT geo_name, SUM(new_urban_jobs_10k) AS total_new_jobs
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    LIMIT 10'
+  sql: "SELECT geo_name, SUM(new_urban_jobs_10k) AS total_new_jobs\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nLIMIT 10"
   columns_used:
   - year
   - geo_level
@@ -940,24 +779,20 @@ questions:
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
-  question: 每个地理层级分别有多少条就业统计记录？
-  sql: 'SELECT geo_level, COUNT(*) AS record_count
-
-    FROM employment_stats
-
-    GROUP BY geo_level'
+  question: 2024年各统计层级中失业率高于5%的数据数量分别是多少？
+  sql: "SELECT geo_level, COUNT(*) AS record_count\nFROM employment_stats\nWHERE year = 2024 AND unemployment_rate_pct > 5.0\nGROUP BY geo_level"
   columns_used:
   - geo_level
   answer_type: list
   answer:
   - geo_level: city
-    record_count: 1200
+    record_count: 47
   - geo_level: national
-    record_count: 120
+    record_count: 8
   - geo_level: province
-    record_count: 3720
+    record_count: 156
   - geo_level: region
-    record_count: 840
+    record_count: 31
   answer_unit: 条
   requires_calculator: false
 - id: 33
@@ -965,13 +800,7 @@ questions:
   sub_category: E2 单维度分组COUNT
   difficulty: medium
   question: 2024年每个月份有多少个地区的就业数据？
-  sql: 'SELECT month, COUNT(DISTINCT geo_name) AS region_count
-
-    FROM employment_stats
-
-    WHERE year = 2024
-
-    GROUP BY month'
+  sql: "SELECT month, COUNT(DISTINCT geo_name) AS region_count\nFROM employment_stats\nWHERE year = 2024\nGROUP BY month"
   columns_used:
   - year
   - month
@@ -1009,15 +838,7 @@ questions:
   sub_category: E3 多维度分组
   difficulty: hard
   question: 2022年和2023年各省份的平均劳动参与率对比
-  sql: 'SELECT year, geo_name, AVG(participation_rate_pct) AS avg_participation
-
-    FROM employment_stats
-
-    WHERE year IN (2022, 2023) AND geo_level = ''province''
-
-    GROUP BY year, geo_name
-
-    LIMIT 10'
+  sql: "SELECT year, geo_name, AVG(participation_rate_pct) AS avg_participation\nFROM employment_stats\nWHERE year IN (2022, 2023) AND geo_level = 'province'\nGROUP BY year, geo_name\nLIMIT 10"
   columns_used:
   - year
   - geo_level
@@ -1061,16 +882,8 @@ questions:
   category: E. 分组聚合GROUP BY
   sub_category: E3 多维度分组
   difficulty: hard
-  question: 2024年各地理层级每个月的平均失业率
-  sql: 'SELECT geo_level, month, AVG(unemployment_rate_pct) AS avg_rate
-
-    FROM employment_stats
-
-    WHERE year = 2024
-
-    GROUP BY geo_level, month
-
-    LIMIT 10'
+  question: 2024年各层级在各月份的平均失业率是多少？
+  sql: "SELECT geo_level, month, AVG(unemployment_rate_pct) AS avg_rate\nFROM employment_stats\nWHERE year = 2024\nGROUP BY geo_level, month\nLIMIT 10"
   columns_used:
   - year
   - geo_level
@@ -1115,17 +928,7 @@ questions:
   sub_category: E4 GROUP BY+ORDER BY
   difficulty: medium
   question: 2023年各省份按平均月薪降序排列
-  sql: 'SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_wage DESC
-
-    LIMIT 10'
+  sql: "SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nORDER BY avg_wage DESC\nLIMIT 10"
   columns_used:
   - year
   - geo_level
@@ -1160,15 +963,7 @@ questions:
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 2023年平均失业率超过4.5%的省份
-  sql: 'SELECT geo_name, AVG(unemployment_rate_pct) AS avg_rate
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    HAVING AVG(unemployment_rate_pct) > 4.5'
+  sql: "SELECT geo_name, AVG(unemployment_rate_pct) AS avg_rate\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(unemployment_rate_pct) > 4.5"
   columns_used:
   - year
   - geo_level
@@ -1244,25 +1039,31 @@ questions:
   category: F. 分组过滤HAVING
   sub_category: F1 HAVING AVG条件
   difficulty: hard
-  question: 2022年平均劳动参与率低于65%的城市
-  sql: 'SELECT geo_name, AVG(participation_rate_pct) AS avg_participation
-
-    FROM employment_stats
-
-    WHERE year = 2022 AND geo_level = ''city''
-
-    GROUP BY geo_name
-
-    HAVING AVG(participation_rate_pct) < 65
-
-    LIMIT 10'
+  question: 2022年平均劳动参与率低于67%的城市
+  sql: "SELECT geo_name, AVG(participation_rate_pct) AS avg_participation\nFROM employment_stats\nWHERE year = 2022 AND geo_level = 'city'\nGROUP BY geo_name\nHAVING AVG(participation_rate_pct) < 67\nLIMIT 10"
   columns_used:
   - year
   - geo_level
   - geo_name
   - participation_rate_pct
   answer_type: list
-  answer: []
+  answer:
+  - geo_name: 南京
+    avg_participation: 66.7175
+  - geo_name: 宁波
+    avg_participation: 66.74633333333334
+  - geo_name: 广州
+    avg_participation: 66.58875
+  - geo_name: 成都
+    avg_participation: 66.79358333333333
+  - geo_name: 武汉
+    avg_participation: 66.82691666666666
+  - geo_name: 深圳
+    avg_participation: 66.44466666666666
+  - geo_name: 西安
+    avg_participation: 66.42383333333333
+  - geo_name: 青岛
+    avg_participation: 66.73041666666667
   answer_unit: '%'
   requires_calculator: false
 - id: 39
@@ -1270,15 +1071,7 @@ questions:
   sub_category: F2 HAVING COUNT条件
   difficulty: hard
   question: 哪些省份在2023年有超过10个月的就业数据记录？
-  sql: 'SELECT geo_name, COUNT(*) AS month_count
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    HAVING COUNT(*) > 10'
+  sql: "SELECT geo_name, COUNT(*) AS month_count\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING COUNT(*) > 10"
   columns_used:
   - year
   - geo_level
@@ -1353,23 +1146,21 @@ questions:
   category: F. 分组过滤HAVING
   sub_category: F3 HAVING SUM条件
   difficulty: hard
-  question: 2023年全年新增城镇就业岗位超过1000万的省份
-  sql: 'SELECT geo_name, SUM(new_urban_jobs_10k) AS total_jobs
-
-    FROM employment_stats
-
-    WHERE year = 2023 AND geo_level = ''province''
-
-    GROUP BY geo_name
-
-    HAVING SUM(new_urban_jobs_10k) > 1000'
+  question: 2023年全年新增城镇就业岗位超过150万人的省份
+  sql: "SELECT geo_name, SUM(new_urban_jobs_10k) AS total_jobs\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING SUM(new_urban_jobs_10k) > 150\nORDER BY total_jobs DESC"
   columns_used:
   - year
   - geo_level
   - geo_name
   - new_urban_jobs_10k
   answer_type: list
-  answer: []
+  answer:
+  - geo_name: 广东
+    total_jobs: 186.81
+  - geo_name: 江苏
+    total_jobs: 176.78
+  - geo_name: 山东
+    total_jobs: 153.86
   answer_unit: 万个
   requires_calculator: false
 - id: 41
@@ -1377,15 +1168,7 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 全国历年平均失业率的变化趋势
-  sql: 'SELECT year, AVG(unemployment_rate_pct) AS avg_rate
-
-    FROM employment_stats
-
-    WHERE geo_level = ''national''
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(unemployment_rate_pct) AS avg_rate\nFROM employment_stats\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -1419,15 +1202,7 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 北京市2016年至2025年的平均月薪年度趋势
-  sql: 'SELECT year, AVG(avg_monthly_wage_cny) AS avg_wage
-
-    FROM employment_stats
-
-    WHERE geo_name = ''北京''
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(avg_monthly_wage_cny) AS avg_wage\nFROM employment_stats\nWHERE geo_name = '北京'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_name
@@ -1461,9 +1236,7 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 2024年哪些月份的全国失业率高于全年平均值？
-  sql: "SELECT month, unemployment_rate_pct\nFROM employment_stats\nWHERE year = 2024\n  AND geo_level = 'national'\n  AND\
-    \ unemployment_rate_pct > (\n    SELECT AVG(unemployment_rate_pct)\n    FROM employment_stats\n    WHERE year = 2024 AND\
-    \ geo_level = 'national'\n  )"
+  sql: "SELECT month, unemployment_rate_pct\nFROM employment_stats\nWHERE year = 2024 AND geo_level = 'national' AND unemployment_rate_pct > ( SELECT AVG(unemployment_rate_pct)\nFROM employment_stats\nWHERE year = 2024 AND geo_level = 'national' )"
   columns_used:
   - year
   - month
@@ -1490,9 +1263,7 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 2023年平均月薪高于全国平均水平的省份
-  sql: "SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\n\
-    GROUP BY geo_name\nHAVING AVG(avg_monthly_wage_cny) > (\n  SELECT AVG(avg_monthly_wage_cny)\n  FROM employment_stats\n\
-    \  WHERE year = 2023 AND geo_level = 'national'\n)"
+  sql: "SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(avg_monthly_wage_cny) > ( SELECT AVG(avg_monthly_wage_cny)\nFROM employment_stats\nWHERE year = 2023 AND geo_level = 'national' )"
   columns_used:
   - year
   - geo_level
@@ -1569,32 +1340,14 @@ questions:
   sub_category: G3 跨工具计算
   difficulty: hard
   question: 2024年全国青年失业率是整体失业率的多少倍？
-  sql: '-- 步骤1: 查询青年失业率
-
-    SELECT AVG(youth_unemp_rate_pct) AS youth_rate
-
-    FROM employment_stats
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤2: 查询整体失业率
-
-    SELECT AVG(unemployment_rate_pct) AS overall_rate
-
-    FROM employment_stats
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 youth_rate / overall_rate'
+  sql: "SELECT AVG(youth_unemp_rate_pct) AS youth_rate, AVG(unemployment_rate_pct) AS overall_rate\nFROM employment_stats\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
   - youth_unemp_rate_pct
   - unemployment_rate_pct
   answer_type: scalar
-  answer: null
+  answer: 2.6446161433503206
   answer_unit: 倍
   requires_calculator: true
 - id: 46
@@ -1606,7 +1359,6 @@ questions:
   columns_used: []
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
   answer: null
-  requires_calculator: false
 - id: 47
   category: H. 边界与容错
   sub_category: H2 字段不存在
@@ -1616,7 +1368,6 @@ questions:
   columns_used: []
   expected_error: 表中不包含企业名称字段，仅有地理区域聚合的就业统计数据
   answer: null
-  requires_calculator: false
 - id: 48
   category: H. 边界与容错
   sub_category: H3 逻辑矛盾
@@ -1626,7 +1377,6 @@ questions:
   columns_used: []
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不能同时为'北京'
   answer: null
-  requires_calculator: false
 - id: 49
   category: H. 边界与容错
   sub_category: H4 极端值查询
@@ -1636,7 +1386,6 @@ questions:
   columns_used: []
   expected_error: 失业率的合理范围为0-100%，不存在超过100%的情况
   answer: null
-  requires_calculator: false
 - id: 50
   category: H. 边界与容错
   sub_category: H1 数据不存在
@@ -1646,4 +1395,3 @@ questions:
   columns_used: []
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
-  requires_calculator: false

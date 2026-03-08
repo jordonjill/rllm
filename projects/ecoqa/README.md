@@ -1,69 +1,91 @@
 # EcoQA Single-Agent Training Framework
 
-This project mirrors the FinQA layout but targets **single-table numerical QA** over the CSV tables under `projects/ecoqa/data/csv`.
-
-It is intentionally a first runnable framework version so we can iterate in later steps on:
-- QA pair quality
-- SQL difficulty
-- reward shaping
-- training hyperparameters
+EcoQA mirrors the FinQA project structure, but focuses on **single-table economic QA** over CSV tables in `projects/ecoqa/data/csv`.
 
 ## Core Design
 
-`EcoQAAgent` is a single agent with 4 tools:
+`EcoQAAgent` uses 4 tools:
 
 1. `get_table_names`: list available tables
-2. `get_table_info`: inspect columns/types/samples for one table
-3. `sql_query`: execute SQL on in-memory SQLite tables
+2. `get_table_info`: inspect schema and sample values
+3. `sql_query`: run read-only SQL on in-memory SQLite tables
 4. `calculator`: evaluate arithmetic expressions
 
-## Important Note (FinQA comparison)
+All CSV tables are preloaded into one in-memory SQLite database, one SQL table per CSV.
 
-In FinQA, `sql_query` is a **SQL execution tool** (not a SQL generation tool). The model itself writes SQL and calls the execution tool.
+## What `run_ecoqa.py` does
 
-This EcoQA framework follows the same pattern because you requested a single-agent + multi-tool setup.
+`python -m projects.ecoqa.run_ecoqa` is a **full inference-eval chain** for one model:
+
+1. load/register `ecoqa` test split
+2. run agent + tool environment end-to-end
+3. score with EcoQA reward
+4. print pass@k metrics
+
+It is not training; it is for end-to-end evaluation/inference.
 
 ## Quick Start
 
-1. Install dependencies:
+1. Install project dependencies from root:
 
 ```bash
-uv pip install -r projects/ecoqa/requirements.txt
+uv pip install -e ".[dev]"
 ```
 
-2. Generate QA pairs (LLM + prompts + real SQL execution):
-
-```bash
-python -m projects.ecoqa.scripts.data_generation.generate_qa_pairs \
-  --mode llm \
-  --model Qwen/Qwen3-30B-A3B-Instruct-2507 \
-  --base_url http://localhost:30000/v1
-```
-
-3. Register datasets:
+2. Register pre-generated EcoQA datasets:
 
 ```bash
 python -m projects.ecoqa.prepare_ecoqa_data
 ```
 
-4. Run inference:
+3. Run single-model evaluation:
 
 ```bash
 python -m projects.ecoqa.run_ecoqa
 ```
 
-5. Train (verl backend baseline):
+4. Run GRPO training:
 
 ```bash
 bash projects/ecoqa/train_ecoqa.sh
 ```
 
-## Current Scope
+## Model Comparison (Baseline / Trained / Online API)
 
-This version is a baseline framework with LLM-based QA generation and deterministic reward.
-We can next iterate on harder SQL patterns, stricter rewards, and better training settings.
+Files are under `projects/ecoqa/benchmarks`:
+
+- `model_profiles.json`: baseline model, trained model, and online API model profiles
+- `results/model_comparison.csv`: aggregated comparison table
+- `results/*_details.jsonl`: per-trajectory details per run
+
+Run comparison:
+
+```bash
+python -m projects.ecoqa.run_ecoqa_benchmark \
+  --split test \
+  --repeat-n 1
+```
+
+Tips:
+
+- Enable/disable models in `projects/ecoqa/benchmarks/model_profiles.json`.
+- For online API models, set the env var referenced by `api_key_env` (for example `OPENAI_API_KEY`).
+- For trained checkpoints, update `model` in the `trained_ecoqa_local` profile and start a serving endpoint.
+
+## Tests
+
+EcoQA-specific tests are in `projects/ecoqa/tests`:
+
+- `test_reward_function.py`
+- `test_tools_basic.py`
+
+Run:
+
+```bash
+pytest -q projects/ecoqa/tests
+```
 
 ## Data Layout
 
 - Raw tables: `projects/ecoqa/data/csv/*.csv`
-- Generated QA pairs: `projects/ecoqa/data/qa_pairs/*.csv`
+- QA pairs: `projects/ecoqa/data/qa_pairs/*.csv`

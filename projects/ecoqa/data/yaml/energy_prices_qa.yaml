@@ -24,11 +24,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 2020年1月全国的煤炭价格是多少元每吨？
-  sql: 'SELECT coal_price_cny_per_ton AS value
-
-    FROM energy_prices
-
-    WHERE year = 2020 AND month = 1 AND geo_level = ''national'''
+  sql: "SELECT coal_price_cny_per_ton AS value\nFROM energy_prices\nWHERE year = 2020 AND month = 1 AND geo_level = 'national'"
   columns_used:
   - year
   - month
@@ -43,11 +39,7 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 华东地区2023年6月的WTI原油价格是多少美元每桶？
-  sql: 'SELECT wti_usd_per_bbl AS value
-
-    FROM energy_prices
-
-    WHERE geo_name = ''华东'' AND year = 2023 AND month = 6'
+  sql: "SELECT wti_usd_per_bbl AS value\nFROM energy_prices\nWHERE geo_name = '华东' AND year = 2023 AND month = 6"
   columns_used:
   - geo_name
   - year
@@ -62,20 +54,16 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 2022年12月全国的布伦特原油价格和LNG价格分别是多少？
-  sql: 'SELECT brent_usd_per_bbl, lng_price_usd_per_mmbtu
-
-    FROM energy_prices
-
-    WHERE year = 2022 AND month = 12 AND geo_level = ''national'''
+  sql: "SELECT brent_usd_per_bbl, lng_price_usd_per_mmbtu\nFROM energy_prices\nWHERE year = 2022 AND month = 12 AND geo_level = 'national'"
   columns_used:
   - year
   - month
   - geo_level
   - brent_usd_per_bbl
   - lng_price_usd_per_mmbtu
-  answer_type: dict
+  answer_type: list
   answer:
-    brent_usd_per_bbl: 79.565
+  - brent_usd_per_bbl: 79.565
     lng_price_usd_per_mmbtu: 11.459
   answer_unit: 美元/桶, 美元/百万英热单位
   requires_calculator: false
@@ -84,20 +72,16 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 西北地区2021年3月的电价和碳价各是多少？
-  sql: 'SELECT electricity_price_cny_per_kwh, carbon_price_cny_per_tco2
-
-    FROM energy_prices
-
-    WHERE geo_name = ''西北'' AND year = 2021 AND month = 3'
+  sql: "SELECT electricity_price_cny_per_kwh, carbon_price_cny_per_tco2\nFROM energy_prices\nWHERE geo_name = '西北' AND year = 2021 AND month = 3"
   columns_used:
   - geo_name
   - year
   - month
   - electricity_price_cny_per_kwh
   - carbon_price_cny_per_tco2
-  answer_type: dict
+  answer_type: list
   answer:
-    electricity_price_cny_per_kwh: 0.56
+  - electricity_price_cny_per_kwh: 0.56
     carbon_price_cny_per_tco2: 96.811
   answer_unit: 元/千瓦时, 元/吨CO₂
   requires_calculator: false
@@ -106,13 +90,7 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 2024年1月华北、华南、华东三个地区的煤炭价格分别是多少？
-  sql: 'SELECT geo_name, coal_price_cny_per_ton
-
-    FROM energy_prices
-
-    WHERE year = 2024 AND month = 1 AND geo_name IN (''华北'', ''华南'', ''华东'')
-
-    ORDER BY geo_name'
+  sql: "SELECT geo_name, coal_price_cny_per_ton\nFROM energy_prices\nWHERE year = 2024 AND month = 1 AND geo_name IN ('华北', '华南', '华东')\nORDER BY geo_name"
   columns_used:
   - year
   - month
@@ -133,13 +111,7 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 2019年和2020年全国1月份的可再生能源发电占比各是多少？
-  sql: 'SELECT year, renewable_generation_share_pct
-
-    FROM energy_prices
-
-    WHERE geo_level = ''national'' AND month = 1 AND year IN (2019, 2020)
-
-    ORDER BY year'
+  sql: "SELECT year, renewable_generation_share_pct\nFROM energy_prices\nWHERE geo_level = 'national' AND month = 1 AND year IN (2019, 2020)\nORDER BY year"
   columns_used:
   - geo_level
   - month
@@ -157,20 +129,14 @@ questions:
   category: A. 基础点查询
   sub_category: A4 NULL检查
   difficulty: easy
-  question: 有哪些月份的碳价数据缺失？
-  sql: 'SELECT ref_date, geo_name
-
-    FROM energy_prices
-
-    WHERE carbon_price_cny_per_tco2 IS NULL
-
-    LIMIT 10'
+  question: 碳价为空值的数据有多少条？
+  sql: "SELECT COUNT(*) AS missing_count\nFROM energy_prices\nWHERE carbon_price_cny_per_tco2 IS NULL"
   columns_used:
   - ref_date
   - geo_name
   - carbon_price_cny_per_tco2
-  answer_type: list
-  answer: null
+  answer_type: scalar
+  answer: 0
   answer_unit: 条
   requires_calculator: false
 - id: 8
@@ -178,11 +144,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: medium
   question: 2018年至2020年期间，全国煤炭价格的年度平均值是多少？
-  sql: 'SELECT AVG(coal_price_cny_per_ton) AS value
-
-    FROM energy_prices
-
-    WHERE year BETWEEN 2018 AND 2020 AND geo_level = ''national'''
+  sql: "SELECT AVG(coal_price_cny_per_ton) AS value\nFROM energy_prices\nWHERE year BETWEEN 2018 AND 2020 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -196,11 +158,7 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: medium
   question: 华东地区2021年到2023年期间的总发电量总和是多少亿千瓦时？
-  sql: 'SELECT SUM(power_generation_100m_kwh) AS value
-
-    FROM energy_prices
-
-    WHERE geo_name = ''华东'' AND year BETWEEN 2021 AND 2023'
+  sql: "SELECT SUM(power_generation_100m_kwh) AS value\nFROM energy_prices\nWHERE geo_name = '华东' AND year BETWEEN 2021 AND 2023"
   columns_used:
   - geo_name
   - year
@@ -213,20 +171,44 @@ questions:
   category: B. 范围与比较过滤
   sub_category: B2 数值阈值
   difficulty: medium
-  question: WTI原油价格超过100美元每桶的月份有哪些？
-  sql: 'SELECT ref_date, geo_name, wti_usd_per_bbl
-
-    FROM energy_prices
-
-    WHERE wti_usd_per_bbl > 100
-
-    LIMIT 10'
+  question: WTI原油价格超过80美元每桶的月份有哪些？
+  sql: "SELECT ref_date, geo_name, wti_usd_per_bbl\nFROM energy_prices\nWHERE wti_usd_per_bbl > 80\nLIMIT 10"
   columns_used:
   - ref_date
   - geo_name
   - wti_usd_per_bbl
   answer_type: list
-  answer: null
+  answer:
+  - ref_date: '2022-04-01'
+    geo_name: 中国
+    wti_usd_per_bbl: 80.165
+  - ref_date: '2022-04-01'
+    geo_name: 华北
+    wti_usd_per_bbl: 80.165
+  - ref_date: '2022-04-01'
+    geo_name: 东北
+    wti_usd_per_bbl: 80.165
+  - ref_date: '2022-04-01'
+    geo_name: 华东
+    wti_usd_per_bbl: 80.165
+  - ref_date: '2022-04-01'
+    geo_name: 华中
+    wti_usd_per_bbl: 80.165
+  - ref_date: '2022-04-01'
+    geo_name: 华南
+    wti_usd_per_bbl: 80.165
+  - ref_date: '2022-04-01'
+    geo_name: 西南
+    wti_usd_per_bbl: 80.165
+  - ref_date: '2022-04-01'
+    geo_name: 西北
+    wti_usd_per_bbl: 80.165
+  - ref_date: '2023-12-01'
+    geo_name: 中国
+    wti_usd_per_bbl: 80.13
+  - ref_date: '2023-12-01'
+    geo_name: 华北
+    wti_usd_per_bbl: 80.13
   answer_unit: 美元/桶
   requires_calculator: false
 - id: 11
@@ -234,11 +216,7 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 可再生能源发电占比超过35%的区域数据有多少条？
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM energy_prices
-
-    WHERE renewable_generation_share_pct > 35'
+  sql: "SELECT COUNT(*) AS value\nFROM energy_prices\nWHERE renewable_generation_share_pct > 35"
   columns_used:
   - renewable_generation_share_pct
   answer_type: scalar
@@ -250,13 +228,7 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 电价低于0.55元每千瓦时的地区和月份有哪些？
-  sql: 'SELECT ref_date, geo_name, electricity_price_cny_per_kwh
-
-    FROM energy_prices
-
-    WHERE electricity_price_cny_per_kwh < 0.55
-
-    LIMIT 10'
+  sql: "SELECT ref_date, geo_name, electricity_price_cny_per_kwh\nFROM energy_prices\nWHERE electricity_price_cny_per_kwh < 0.55\nLIMIT 10"
   columns_used:
   - ref_date
   - geo_name
@@ -300,11 +272,7 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2022年全国布伦特原油价格高于90美元每桶的月份有几个？
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM energy_prices
-
-    WHERE year = 2022 AND geo_level = ''national'' AND brent_usd_per_bbl > 90'
+  sql: "SELECT COUNT(*) AS value\nFROM energy_prices\nWHERE year = 2022 AND geo_level = 'national' AND brent_usd_per_bbl > 90"
   columns_used:
   - year
   - geo_level
@@ -318,8 +286,7 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2020年到2022年间，LNG价格超过15美元每百万英热单位且煤炭价格低于900元每吨的全国数据有多少条？
-  sql: "SELECT COUNT(*) AS value\nFROM energy_prices\nWHERE year BETWEEN 2020 AND 2022\n  AND geo_level = 'national'\n  AND\
-    \ lng_price_usd_per_mmbtu > 15\n  AND coal_price_cny_per_ton < 900"
+  sql: "SELECT COUNT(*) AS value\nFROM energy_prices\nWHERE year BETWEEN 2020 AND 2022 AND geo_level = 'national' AND lng_price_usd_per_mmbtu > 15 AND coal_price_cny_per_ton < 900"
   columns_used:
   - year
   - geo_level
@@ -334,22 +301,14 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: medium
   question: 全国煤炭价格的历史最高值出现在哪个月？价格是多少？
-  sql: 'SELECT ref_date, coal_price_cny_per_ton
-
-    FROM energy_prices
-
-    WHERE geo_level = ''national''
-
-    ORDER BY coal_price_cny_per_ton DESC
-
-    LIMIT 1'
+  sql: "SELECT ref_date, coal_price_cny_per_ton\nFROM energy_prices\nWHERE geo_level = 'national'\nORDER BY coal_price_cny_per_ton DESC\nLIMIT 1"
   columns_used:
   - ref_date
   - geo_level
   - coal_price_cny_per_ton
-  answer_type: dict
+  answer_type: list
   answer:
-    ref_date: '2017-12-01'
+  - ref_date: '2017-12-01'
     coal_price_cny_per_ton: 991.068
   answer_unit: 元/吨
   requires_calculator: false
@@ -358,23 +317,15 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: medium
   question: 哪个地区在哪个月的总发电量最高？
-  sql: 'SELECT ref_date, geo_name, power_generation_100m_kwh
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region''
-
-    ORDER BY power_generation_100m_kwh DESC
-
-    LIMIT 1'
+  sql: "SELECT ref_date, geo_name, power_generation_100m_kwh\nFROM energy_prices\nWHERE geo_level = 'region'\nORDER BY power_generation_100m_kwh DESC\nLIMIT 1"
   columns_used:
   - ref_date
   - geo_name
   - geo_level
   - power_generation_100m_kwh
-  answer_type: dict
+  answer_type: list
   answer:
-    ref_date: '2024-06-01'
+  - ref_date: '2024-06-01'
     geo_name: 华东
     power_generation_100m_kwh: 3388.98
   answer_unit: 亿千瓦时
@@ -384,22 +335,14 @@ questions:
   sub_category: C2 单指标最小值行
   difficulty: medium
   question: 全国WTI原油价格的历史最低值是多少？出现在哪个月？
-  sql: 'SELECT ref_date, wti_usd_per_bbl
-
-    FROM energy_prices
-
-    WHERE geo_level = ''national''
-
-    ORDER BY wti_usd_per_bbl ASC
-
-    LIMIT 1'
+  sql: "SELECT ref_date, wti_usd_per_bbl\nFROM energy_prices\nWHERE geo_level = 'national'\nORDER BY wti_usd_per_bbl ASC\nLIMIT 1"
   columns_used:
   - ref_date
   - geo_level
   - wti_usd_per_bbl
-  answer_type: dict
+  answer_type: list
   answer:
-    ref_date: '2017-09-01'
+  - ref_date: '2017-09-01'
     wti_usd_per_bbl: 61.969
   answer_unit: 美元/桶
   requires_calculator: false
@@ -408,23 +351,15 @@ questions:
   sub_category: C2 单指标最小值行
   difficulty: medium
   question: 各地区中电价最低的记录是哪个地区哪个月？
-  sql: 'SELECT ref_date, geo_name, electricity_price_cny_per_kwh
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region''
-
-    ORDER BY electricity_price_cny_per_kwh ASC
-
-    LIMIT 1'
+  sql: "SELECT ref_date, geo_name, electricity_price_cny_per_kwh\nFROM energy_prices\nWHERE geo_level = 'region'\nORDER BY electricity_price_cny_per_kwh ASC\nLIMIT 1"
   columns_used:
   - ref_date
   - geo_name
   - geo_level
   - electricity_price_cny_per_kwh
-  answer_type: dict
+  answer_type: list
   answer:
-    ref_date: '2024-10-01'
+  - ref_date: '2024-10-01'
     geo_name: 西南
     electricity_price_cny_per_kwh: 0.488
   answer_unit: 元/千瓦时
@@ -434,15 +369,7 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2024年全国可再生能源发电占比最高的前3个月是哪些？
-  sql: 'SELECT ref_date, renewable_generation_share_pct
-
-    FROM energy_prices
-
-    WHERE year = 2024 AND geo_level = ''national''
-
-    ORDER BY renewable_generation_share_pct DESC
-
-    LIMIT 3'
+  sql: "SELECT ref_date, renewable_generation_share_pct\nFROM energy_prices\nWHERE year = 2024 AND geo_level = 'national'\nORDER BY renewable_generation_share_pct DESC\nLIMIT 3"
   columns_used:
   - ref_date
   - year
@@ -463,15 +390,7 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2023年碳价最高的前5个区域月度记录有哪些？
-  sql: 'SELECT ref_date, geo_name, carbon_price_cny_per_tco2
-
-    FROM energy_prices
-
-    WHERE year = 2023
-
-    ORDER BY carbon_price_cny_per_tco2 DESC
-
-    LIMIT 5'
+  sql: "SELECT ref_date, geo_name, carbon_price_cny_per_tco2\nFROM energy_prices\nWHERE year = 2023\nORDER BY carbon_price_cny_per_tco2 DESC\nLIMIT 5"
   columns_used:
   - ref_date
   - geo_name
@@ -501,15 +420,7 @@ questions:
   sub_category: C4 多列排序
   difficulty: medium
   question: 按年份升序、煤炭价格降序排列，2020年全国前3条记录是什么？
-  sql: 'SELECT ref_date, coal_price_cny_per_ton
-
-    FROM energy_prices
-
-    WHERE year = 2020 AND geo_level = ''national''
-
-    ORDER BY year ASC, coal_price_cny_per_ton DESC
-
-    LIMIT 3'
+  sql: "SELECT ref_date, coal_price_cny_per_ton\nFROM energy_prices\nWHERE year = 2020 AND geo_level = 'national'\nORDER BY year ASC, coal_price_cny_per_ton DESC\nLIMIT 3"
   columns_used:
   - ref_date
   - year
@@ -529,25 +440,19 @@ questions:
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 数据集中总共包含多少条能源价格记录？
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM energy_prices'
+  question: 2024年WTI原油价格高于80美元/桶的数据有多少条？
+  sql: "SELECT COUNT(*) AS value\nFROM energy_prices\nWHERE year = 2024 AND wti_usd_per_bbl > 80"
   columns_used: []
   answer_type: scalar
-  answer: 960
+  answer: 32
   answer_unit: 条
   requires_calculator: false
 - id: 23
   category: D. 聚合函数（无GROUP BY）
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
-  question: 能源价格数据覆盖了多少个不同的地区？
-  sql: 'SELECT COUNT(DISTINCT geo_name) AS value
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region'''
+  question: 区域层级的能源价格统计涉及多少个地区？
+  sql: "SELECT COUNT(DISTINCT geo_name) AS value\nFROM energy_prices\nWHERE geo_level = 'region'"
   columns_used:
   - geo_name
   - geo_level
@@ -560,11 +465,7 @@ questions:
   sub_category: D2 SUM
   difficulty: medium
   question: 2023年全国全年的总发电量累计是多少亿千瓦时？
-  sql: 'SELECT SUM(power_generation_100m_kwh) AS value
-
-    FROM energy_prices
-
-    WHERE year = 2023 AND geo_level = ''national'''
+  sql: "SELECT SUM(power_generation_100m_kwh) AS value\nFROM energy_prices\nWHERE year = 2023 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -578,11 +479,7 @@ questions:
   sub_category: D2 SUM
   difficulty: medium
   question: 华南地区2022年的总发电量累计值是多少？
-  sql: 'SELECT SUM(power_generation_100m_kwh) AS value
-
-    FROM energy_prices
-
-    WHERE geo_name = ''华南'' AND year = 2022'
+  sql: "SELECT SUM(power_generation_100m_kwh) AS value\nFROM energy_prices\nWHERE geo_name = '华南' AND year = 2022"
   columns_used:
   - geo_name
   - year
@@ -596,11 +493,7 @@ questions:
   sub_category: D3 AVG
   difficulty: medium
   question: 2021年全国布伦特原油价格的年度平均值是多少？
-  sql: 'SELECT AVG(brent_usd_per_bbl) AS value
-
-    FROM energy_prices
-
-    WHERE year = 2021 AND geo_level = ''national'''
+  sql: "SELECT AVG(brent_usd_per_bbl) AS value\nFROM energy_prices\nWHERE year = 2021 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
@@ -614,11 +507,7 @@ questions:
   sub_category: D3 AVG
   difficulty: medium
   question: 东北地区历史上电价的平均水平是多少？
-  sql: 'SELECT AVG(electricity_price_cny_per_kwh) AS value
-
-    FROM energy_prices
-
-    WHERE geo_name = ''东北'''
+  sql: "SELECT AVG(electricity_price_cny_per_kwh) AS value\nFROM energy_prices\nWHERE geo_name = '东北'"
   columns_used:
   - geo_name
   - electricity_price_cny_per_kwh
@@ -631,17 +520,13 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: medium
   question: 全国LNG价格的历史最高值和最低值分别是多少？
-  sql: 'SELECT MIN(lng_price_usd_per_mmbtu) AS min_value, MAX(lng_price_usd_per_mmbtu) AS max_value
-
-    FROM energy_prices
-
-    WHERE geo_level = ''national'''
+  sql: "SELECT MIN(lng_price_usd_per_mmbtu) AS min_value, MAX(lng_price_usd_per_mmbtu) AS max_value\nFROM energy_prices\nWHERE geo_level = 'national'"
   columns_used:
   - geo_level
   - lng_price_usd_per_mmbtu
-  answer_type: dict
+  answer_type: list
   answer:
-    min_value: 5.454
+  - min_value: 5.454
     max_value: 17.792
   answer_unit: 美元/百万英热单位
   requires_calculator: false
@@ -650,17 +535,13 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: medium
   question: 华中地区可再生能源发电占比的最大值和最小值各是多少？
-  sql: 'SELECT MIN(renewable_generation_share_pct) AS min_value, MAX(renewable_generation_share_pct) AS max_value
-
-    FROM energy_prices
-
-    WHERE geo_name = ''华中'''
+  sql: "SELECT MIN(renewable_generation_share_pct) AS min_value, MAX(renewable_generation_share_pct) AS max_value\nFROM energy_prices\nWHERE geo_name = '华中'"
   columns_used:
   - geo_name
   - renewable_generation_share_pct
-  answer_type: dict
+  answer_type: list
   answer:
-    min_value: 27.653
+  - min_value: 27.653
     max_value: 45.341
   answer_unit: '%'
   requires_calculator: false
@@ -669,15 +550,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 各年度全国煤炭价格的平均值是多少？
-  sql: 'SELECT year, AVG(coal_price_cny_per_ton) AS avg_coal_price
-
-    FROM energy_prices
-
-    WHERE geo_level = ''national''
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(coal_price_cny_per_ton) AS avg_coal_price\nFROM energy_prices\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -711,15 +584,7 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 各地区2024年的总发电量累计值分别是多少？
-  sql: 'SELECT geo_name, SUM(power_generation_100m_kwh) AS total_generation
-
-    FROM energy_prices
-
-    WHERE year = 2024 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY geo_name'
+  sql: "SELECT geo_name, SUM(power_generation_100m_kwh) AS total_generation\nFROM energy_prices\nWHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY geo_name"
   columns_used:
   - geo_name
   - year
@@ -747,57 +612,43 @@ questions:
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
-  question: 每个地理层级各有多少条能源价格记录？
-  sql: 'SELECT geo_level, COUNT(*) AS record_count
-
-    FROM energy_prices
-
-    GROUP BY geo_level
-
-    ORDER BY geo_level'
+  question: 2024年各统计层级中WTI原油价格高于80美元/桶的数据数量分别是多少？
+  sql: "SELECT geo_level, COUNT(*) AS record_count\nFROM energy_prices\nWHERE year = 2024 AND wti_usd_per_bbl > 80\nGROUP BY geo_level\nORDER BY geo_level"
   columns_used:
   - geo_level
   answer_type: list
   answer:
   - geo_level: national
-    record_count: 120
+    record_count: 4
   - geo_level: region
-    record_count: 840
+    record_count: 28
   answer_unit: 条
   requires_calculator: false
 - id: 33
   category: E. 分组聚合GROUP BY
   sub_category: E2 单维度分组COUNT
   difficulty: medium
-  question: 每个地区的数据记录数量分别是多少？
-  sql: 'SELECT geo_name, COUNT(*) AS record_count
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY geo_name'
+  question: 2024年各区域WTI原油价格高于80美元/桶的月份数分别是多少？
+  sql: "SELECT geo_name, COUNT(*) AS record_count\nFROM energy_prices\nWHERE year = 2024 AND geo_level = 'region' AND wti_usd_per_bbl > 80\nGROUP BY geo_name\nORDER BY geo_name"
   columns_used:
   - geo_name
   - geo_level
   answer_type: list
   answer:
   - geo_name: 东北
-    record_count: 120
+    record_count: 4
   - geo_name: 华东
-    record_count: 120
+    record_count: 4
   - geo_name: 华中
-    record_count: 120
+    record_count: 4
   - geo_name: 华北
-    record_count: 120
+    record_count: 4
   - geo_name: 华南
-    record_count: 120
+    record_count: 4
   - geo_name: 西北
-    record_count: 120
+    record_count: 4
   - geo_name: 西南
-    record_count: 120
+    record_count: 4
   answer_unit: 条
   requires_calculator: false
 - id: 34
@@ -805,17 +656,7 @@ questions:
   sub_category: E3 多维度分组
   difficulty: hard
   question: 按年份和地区统计，各年各地区的平均电价是多少？
-  sql: 'SELECT year, geo_name, AVG(electricity_price_cny_per_kwh) AS avg_electricity_price
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region''
-
-    GROUP BY year, geo_name
-
-    ORDER BY year, geo_name
-
-    LIMIT 20'
+  sql: "SELECT year, geo_name, AVG(electricity_price_cny_per_kwh) AS avg_electricity_price\nFROM energy_prices\nWHERE geo_level = 'region'\nGROUP BY year, geo_name\nORDER BY year, geo_name\nLIMIT 20"
   columns_used:
   - year
   - geo_name
@@ -890,17 +731,7 @@ questions:
   sub_category: E3 多维度分组
   difficulty: hard
   question: 各地区各月份的平均可再生能源发电占比是多少？
-  sql: 'SELECT geo_name, month, AVG(renewable_generation_share_pct) AS avg_renewable_share
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region''
-
-    GROUP BY geo_name, month
-
-    ORDER BY geo_name, month
-
-    LIMIT 20'
+  sql: "SELECT geo_name, month, AVG(renewable_generation_share_pct) AS avg_renewable_share\nFROM energy_prices\nWHERE geo_level = 'region'\nGROUP BY geo_name, month\nORDER BY geo_name, month\nLIMIT 20"
   columns_used:
   - geo_name
   - month
@@ -975,15 +806,7 @@ questions:
   sub_category: E4 GROUP BY+ORDER BY
   difficulty: medium
   question: 按平均碳价从高到低排序，各地区的平均碳价是多少？
-  sql: 'SELECT geo_name, AVG(carbon_price_cny_per_tco2) AS avg_carbon_price
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region''
-
-    GROUP BY geo_name
-
-    ORDER BY avg_carbon_price DESC'
+  sql: "SELECT geo_name, AVG(carbon_price_cny_per_tco2) AS avg_carbon_price\nFROM energy_prices\nWHERE geo_level = 'region'\nGROUP BY geo_name\nORDER BY avg_carbon_price DESC"
   columns_used:
   - geo_name
   - geo_level
@@ -1011,17 +834,7 @@ questions:
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 哪些年份全国煤炭价格年均值超过800元每吨？
-  sql: 'SELECT year, AVG(coal_price_cny_per_ton) AS avg_coal_price
-
-    FROM energy_prices
-
-    WHERE geo_level = ''national''
-
-    GROUP BY year
-
-    HAVING AVG(coal_price_cny_per_ton) > 800
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(coal_price_cny_per_ton) AS avg_coal_price\nFROM energy_prices\nWHERE geo_level = 'national'\nGROUP BY year\nHAVING AVG(coal_price_cny_per_ton) > 800\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -1045,17 +858,7 @@ questions:
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 哪些地区的平均可再生能源发电占比超过32%？
-  sql: 'SELECT geo_name, AVG(renewable_generation_share_pct) AS avg_renewable_share
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region''
-
-    GROUP BY geo_name
-
-    HAVING AVG(renewable_generation_share_pct) > 32
-
-    ORDER BY avg_renewable_share DESC'
+  sql: "SELECT geo_name, AVG(renewable_generation_share_pct) AS avg_renewable_share\nFROM energy_prices\nWHERE geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(renewable_generation_share_pct) > 32\nORDER BY avg_renewable_share DESC"
   columns_used:
   - geo_name
   - geo_level
@@ -1082,24 +885,28 @@ questions:
   category: F. 分组过滤HAVING
   sub_category: F2 HAVING COUNT条件
   difficulty: hard
-  question: 哪些地区的WTI原油价格超过80美元每桶的月份数超过20个？
-  sql: 'SELECT geo_name, COUNT(*) AS high_price_months
-
-    FROM energy_prices
-
-    WHERE geo_level = ''region'' AND wti_usd_per_bbl > 80
-
-    GROUP BY geo_name
-
-    HAVING COUNT(*) > 20
-
-    ORDER BY high_price_months DESC'
+  question: 哪些地区的WTI原油价格超过80美元每桶的月份数超过5个？
+  sql: "SELECT geo_name, COUNT(*) AS high_price_months\nFROM energy_prices\nWHERE geo_level = 'region' AND wti_usd_per_bbl > 80\nGROUP BY geo_name\nHAVING COUNT(*) > 5\nORDER BY high_price_months DESC"
   columns_used:
   - geo_name
   - geo_level
   - wti_usd_per_bbl
   answer_type: list
-  answer: null
+  answer:
+  - geo_name: 西南
+    high_price_months: 9
+  - geo_name: 西北
+    high_price_months: 9
+  - geo_name: 华南
+    high_price_months: 9
+  - geo_name: 华北
+    high_price_months: 9
+  - geo_name: 华中
+    high_price_months: 9
+  - geo_name: 华东
+    high_price_months: 9
+  - geo_name: 东北
+    high_price_months: 9
   answer_unit: 个月
   requires_calculator: false
 - id: 40
@@ -1107,17 +914,7 @@ questions:
   sub_category: F3 HAVING SUM条件
   difficulty: hard
   question: 哪些地区2023年的总发电量累计超过30000亿千瓦时？
-  sql: 'SELECT geo_name, SUM(power_generation_100m_kwh) AS total_generation
-
-    FROM energy_prices
-
-    WHERE year = 2023 AND geo_level = ''region''
-
-    GROUP BY geo_name
-
-    HAVING SUM(power_generation_100m_kwh) > 30000
-
-    ORDER BY total_generation DESC'
+  sql: "SELECT geo_name, SUM(power_generation_100m_kwh) AS total_generation\nFROM energy_prices\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING SUM(power_generation_100m_kwh) > 30000\nORDER BY total_generation DESC"
   columns_used:
   - geo_name
   - year
@@ -1125,7 +922,7 @@ questions:
   - power_generation_100m_kwh
   answer_type: list
   answer:
-    geo_name: 华东
+  - geo_name: 华东
     total_generation: 37591.88
   answer_unit: 亿千瓦时
   requires_calculator: false
@@ -1134,15 +931,7 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 全国历年电价的年度平均值趋势如何？
-  sql: 'SELECT year, AVG(electricity_price_cny_per_kwh) AS avg_electricity_price
-
-    FROM energy_prices
-
-    WHERE geo_level = ''national''
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(electricity_price_cny_per_kwh) AS avg_electricity_price\nFROM energy_prices\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_level
@@ -1176,15 +965,7 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 华东地区历年可再生能源发电占比的年度平均值变化趋势？
-  sql: 'SELECT year, AVG(renewable_generation_share_pct) AS avg_renewable_share
-
-    FROM energy_prices
-
-    WHERE geo_name = ''华东''
-
-    GROUP BY year
-
-    ORDER BY year'
+  sql: "SELECT year, AVG(renewable_generation_share_pct) AS avg_renewable_share\nFROM energy_prices\nWHERE geo_name = '华东'\nGROUP BY year\nORDER BY year"
   columns_used:
   - year
   - geo_name
@@ -1218,9 +999,7 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 哪些月份的全国煤炭价格高于历史平均水平？
-  sql: "SELECT ref_date, coal_price_cny_per_ton\nFROM energy_prices\nWHERE geo_level = 'national'\n  AND coal_price_cny_per_ton\
-    \ > (\n    SELECT AVG(coal_price_cny_per_ton)\n    FROM energy_prices\n    WHERE geo_level = 'national'\n  )\nORDER BY\
-    \ ref_date\nLIMIT 10"
+  sql: "SELECT ref_date, coal_price_cny_per_ton\nFROM energy_prices\nWHERE geo_level = 'national' AND coal_price_cny_per_ton > ( SELECT AVG(coal_price_cny_per_ton)\nFROM energy_prices\nWHERE geo_level = 'national' )\nORDER BY ref_date\nLIMIT 10"
   columns_used:
   - ref_date
   - geo_level
@@ -1254,9 +1033,7 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 华南地区哪些月份的总发电量超过该地区的平均发电量？
-  sql: "SELECT ref_date, power_generation_100m_kwh\nFROM energy_prices\nWHERE geo_name = '华南'\n  AND power_generation_100m_kwh\
-    \ > (\n    SELECT AVG(power_generation_100m_kwh)\n    FROM energy_prices\n    WHERE geo_name = '华南'\n  )\nORDER BY ref_date\n\
-    LIMIT 10"
+  sql: "SELECT ref_date, power_generation_100m_kwh\nFROM energy_prices\nWHERE geo_name = '华南' AND power_generation_100m_kwh > ( SELECT AVG(power_generation_100m_kwh)\nFROM energy_prices\nWHERE geo_name = '华南' )\nORDER BY ref_date\nLIMIT 10"
   columns_used:
   - ref_date
   - geo_name
@@ -1290,32 +1067,14 @@ questions:
   sub_category: G3 跨工具计算
   difficulty: hard
   question: 2024年全国布伦特原油价格平均值是WTI原油价格平均值的多少倍？
-  sql: '-- 步骤1: 查询布伦特原油价格平均值
-
-    SELECT AVG(brent_usd_per_bbl) AS brent_avg
-
-    FROM energy_prices
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤2: 查询WTI原油价格平均值
-
-    SELECT AVG(wti_usd_per_bbl) AS wti_avg
-
-    FROM energy_prices
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 brent_avg / wti_avg'
+  sql: "SELECT AVG(brent_usd_per_bbl) AS brent_avg, AVG(wti_usd_per_bbl) AS wti_avg\nFROM energy_prices\nWHERE year = 2024 AND geo_level = 'national'"
   columns_used:
   - year
   - geo_level
   - brent_usd_per_bbl
   - wti_usd_per_bbl
   answer_type: scalar
-  answer: 1.04
+  answer: 1.040528822802428
   answer_unit: 倍
   requires_calculator: true
 - id: 46
@@ -1325,11 +1084,9 @@ questions:
   question: 2012年全国的煤炭价格是多少？
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2012年数据
-  requires_calculator: false
 - id: 47
   category: H. 边界与容错
   sub_category: H1 数据不存在
@@ -1337,11 +1094,9 @@ questions:
   question: 查询2015年的能源价格数据
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
-  requires_calculator: false
 - id: 48
   category: H. 边界与容错
   sub_category: H2 字段不存在
@@ -1349,11 +1104,9 @@ questions:
   question: 查询各地区的天然气价格和石油价格
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 表中不包含天然气价格字段，仅有LNG价格(lng_price_usd_per_mmbtu)和原油价格(wti/brent)
-  requires_calculator: false
 - id: 49
   category: H. 边界与容错
   sub_category: H3 逻辑矛盾
@@ -1361,11 +1114,9 @@ questions:
   question: 查询全国层级且地区为华北的煤炭价格
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不能同时指定为华北
-  requires_calculator: false
 - id: 50
   category: H. 边界与容错
   sub_category: H4 极端值查询
@@ -1373,8 +1124,6 @@ questions:
   question: 查询可再生能源发电占比超过100%的记录
   sql: null
   columns_used: []
-  answer_type: null
   answer: null
   answer_unit: null
   expected_error: 可再生能源发电占比的合理范围为0-100%，不存在超过100%的情况
-  requires_calculator: false

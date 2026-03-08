@@ -1,0 +1,38 @@
+{
+  "description": "EcoQA model profiles for baseline/trained/online-api comparison.",
+  "models": [
+    {
+      "name": "baseline_qwen3_4b_local",
+      "kind": "baseline",
+      "source": "local_openai_compatible",
+      "model": "Qwen/Qwen3-4B-Instruct-2507",
+      "tokenizer_model": "Qwen/Qwen3-4B-Instruct-2507",
+      "base_url": "http://localhost:30000/v1",
+      "api_key": "None",
+      "enabled": true,
+      "notes": "Baseline model before EcoQA RL training."
+    },
+    {
+      "name": "trained_ecoqa_local",
+      "kind": "trained",
+      "source": "local_openai_compatible",
+      "model": "YOUR_TRAINED_MODEL_OR_CHECKPOINT",
+      "tokenizer_model": "Qwen/Qwen3-4B-Instruct-2507",
+      "base_url": "http://localhost:30000/v1",
+      "api_key": "None",
+      "enabled": false,
+      "notes": "Enable after you start a server for your fine-tuned checkpoint."
+    },
+    {
+      "name": "online_api_strong_model",
+      "kind": "online_api",
+      "source": "openai_compatible_remote",
+      "model": "gpt-4.1",
+      "tokenizer_model": "Qwen/Qwen3-4B-Instruct-2507",
+      "base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY",
+      "enabled": false,
+      "notes": "Use an online API model as external reference."
+    }
+  ]
+}

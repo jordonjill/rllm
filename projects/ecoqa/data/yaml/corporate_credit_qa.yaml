@@ -1,85 +1,32 @@
 table_name: corporate_credit
 table_description: 中国企业信用债券市场数据，按行业、地区和季度分类，包含投资级/高收益债券收益率、信用利差、违约率、新发行量、降级比率、不良贷款率等指标
-table_unique_signals:
-- 企业信用
-- 债券
-- 违约率
-- 信用利差
-- 评级
-- 降级率
-- 不良率
-- 发行额
-- 投资级债券
-- 高收益债
-- 信用债
-schema_summary:
-  time_frequency: quarterly
-  geo_levels_available:
-  - national
-  - region
-  - province
-  row_count: 17160
-  data_range:
-    start_year: 2016
-    end_year: 2025
 questions:
 - id: 1
-  category: A. 基础点查询
-  sub_category: A1 单条件等值
-  difficulty: easy
   question: 2024年第1季度全国科技行业的企业债券投资级收益率是多少？
-  sql: 'SELECT inv_grade_yield_pct AS value
-
-    FROM corporate_credit
-
-    WHERE year = 2024 AND quarter = 1 AND geo_level = ''national'' AND sector = ''科技'''
-  columns_used:
-  - year
-  - quarter
-  - geo_level
-  - sector
-  - inv_grade_yield_pct
+  sql: |-
+    SELECT inv_grade_yield_pct AS value 
+    FROM corporate_credit 
+    WHERE year = 2024 AND quarter = 1 AND geo_level = 'national' AND sector = '科技'
   answer_type: scalar
   answer_unit: '%'
   answer: 3.858
   requires_calculator: false
 - id: 2
-  category: A. 基础点查询
-  sub_category: A1 单条件等值
-  difficulty: easy
   question: 华北地区2023年第3季度金融行业的企业债券违约率是多少？
-  sql: 'SELECT default_rate_pct AS value
-
-    FROM corporate_credit
-
-    WHERE year = 2023 AND quarter = 3 AND geo_name = ''华北'' AND sector = ''金融'''
-  columns_used:
-  - year
-  - quarter
-  - geo_name
-  - sector
-  - default_rate_pct
+  sql: |-
+    SELECT default_rate_pct AS value 
+    FROM corporate_credit 
+    WHERE year = 2023 AND quarter = 3 AND geo_name = '华北' AND sector = '金融'
   answer_type: scalar
   answer_unit: '%'
   answer: 1.025
   requires_calculator: false
 - id: 3
-  category: A. 基础点查询
-  sub_category: A2 多条件AND
-  difficulty: easy
   question: 查询2022年第4季度全国能源行业的投资级信用利差和高收益信用利差
-  sql: 'SELECT ig_spread_bps, hy_spread_bps
-
-    FROM corporate_credit
-
-    WHERE year = 2022 AND quarter = 4 AND geo_level = ''national'' AND sector = ''能源'''
-  columns_used:
-  - year
-  - quarter
-  - geo_level
-  - sector
-  - ig_spread_bps
-  - hy_spread_bps
+  sql: |-
+    SELECT ig_spread_bps, hy_spread_bps 
+    FROM corporate_credit 
+    WHERE year = 2022 AND quarter = 4 AND geo_level = 'national' AND sector = '能源'
   answer_type: list
   answer_unit: 基点
   answer:
@@ -87,22 +34,11 @@ questions:
     hy_spread_bps: 434
   requires_calculator: false
 - id: 4
-  category: A. 基础点查询
-  sub_category: A2 多条件AND
-  difficulty: easy
   question: 北京市2021年第2季度工业企业的债券新发行额和降级比率各是多少？
-  sql: 'SELECT new_issuance_100m_cny, downgrade_ratio_pct
-
-    FROM corporate_credit
-
-    WHERE year = 2021 AND quarter = 2 AND geo_name = ''北京'' AND sector = ''工业'''
-  columns_used:
-  - year
-  - quarter
-  - geo_name
-  - sector
-  - new_issuance_100m_cny
-  - downgrade_ratio_pct
+  sql: |-
+    SELECT new_issuance_100m_cny, downgrade_ratio_pct 
+    FROM corporate_credit 
+    WHERE year = 2021 AND quarter = 2 AND geo_name = '北京' AND sector = '工业'
   answer_type: list
   answer_unit: 亿元/%
   answer:
@@ -110,24 +46,12 @@ questions:
     downgrade_ratio_pct: 2.69
   requires_calculator: false
 - id: 5
-  category: A. 基础点查询
-  sub_category: A3 OR/IN条件
-  difficulty: easy
   question: 查询2024年第1季度全国科技、金融、能源三大行业的企业债券违约率
-  sql: 'SELECT sector, default_rate_pct
-
-    FROM corporate_credit
-
-    WHERE year = 2024 AND quarter = 1 AND geo_level = ''national'' AND sector IN (''科技'',
-    ''金融'', ''能源'')
-
-    ORDER BY sector'
-  columns_used:
-  - year
-  - quarter
-  - geo_level
-  - sector
-  - default_rate_pct
+  sql: |-
+    SELECT sector, default_rate_pct 
+    FROM corporate_credit 
+    WHERE year = 2024 AND quarter = 1 AND geo_level = 'national' AND sector IN ('科技', '金融', '能源') 
+    ORDER BY sector
   answer_type: list
   answer_unit: '%'
   answer:
@@ -139,24 +63,12 @@ questions:
     default_rate_pct: 1.21
   requires_calculator: false
 - id: 6
-  category: A. 基础点查询
-  sub_category: A3 OR/IN条件
-  difficulty: easy
   question: 华东和华南地区2023年第4季度消费行业的投资级债券收益率分别是多少？
-  sql: 'SELECT geo_name, inv_grade_yield_pct
-
-    FROM corporate_credit
-
-    WHERE year = 2023 AND quarter = 4 AND geo_name IN (''华东'', ''华南'') AND sector
-    = ''消费''
-
-    ORDER BY geo_name'
-  columns_used:
-  - year
-  - quarter
-  - geo_name
-  - sector
-  - inv_grade_yield_pct
+  sql: |-
+    SELECT geo_name, inv_grade_yield_pct 
+    FROM corporate_credit 
+    WHERE year = 2023 AND quarter = 4 AND geo_name IN ('华东', '华南') AND sector = '消费' 
+    ORDER BY geo_name
   answer_type: list
   answer_unit: '%'
   answer:
@@ -166,39 +78,22 @@ questions:
     inv_grade_yield_pct: 3.891
   requires_calculator: false
 - id: 7
-  category: A. 基础点查询
-  sub_category: A4 NULL检查
-  difficulty: easy
   question: 企业信用债中不良贷款率为空值的数据有多少条？
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM corporate_credit
-
-    WHERE npl_ratio_pct IS NULL'
-  columns_used:
-  - npl_ratio_pct
+  sql: |-
+    SELECT COUNT(*) AS value 
+    FROM corporate_credit 
+    WHERE npl_ratio_pct IS NULL
   answer_type: scalar
   answer_unit: 条
   answer: 0
   requires_calculator: false
 - id: 8
-  category: B. 范围与比较过滤
-  sub_category: B1 时间范围BETWEEN
-  difficulty: easy
   question: 2020年至2022年间全国地产行业各季度的企业债券违约率趋势如何？
-  sql: 'SELECT year, quarter, default_rate_pct
-
-    FROM corporate_credit
-
-    WHERE year BETWEEN 2020 AND 2022 AND geo_level = ''national'' AND sector = ''地产''
-
-    ORDER BY year, quarter'
-  columns_used:
-  - year
-  - quarter
-  - geo_level
-  - sector
-  - default_rate_pct
+  sql: |-
+    SELECT year, quarter, default_rate_pct 
+    FROM corporate_credit 
+    WHERE year BETWEEN 2020 AND 2022 AND geo_level = 'national' AND sector = '地产' 
+    ORDER BY year, quarter
   answer_type: list
   answer_unit: '%'
   answer:
@@ -240,85 +135,44 @@ questions:
     default_rate_pct: 2.082
   requires_calculator: false
 - id: 9
-  category: B. 范围与比较过滤
-  sub_category: B1 时间范围BETWEEN
-  difficulty: easy
   question: 上海市2018年至2020年间医疗健康行业的企业信用债新发行量总计多少？
-  sql: 'SELECT SUM(new_issuance_100m_cny) AS value
-
-    FROM corporate_credit
-
-    WHERE year BETWEEN 2018 AND 2020 AND geo_name = ''上海'' AND sector = ''医疗健康'''
-  columns_used:
-  - year
-  - geo_name
-  - sector
-  - new_issuance_100m_cny
+  sql: |-
+    SELECT SUM(new_issuance_100m_cny) AS value 
+    FROM corporate_credit 
+    WHERE year BETWEEN 2018 AND 2020 AND geo_name = '上海' AND sector = '医疗健康'
   answer_type: scalar
   answer_unit: 亿元
   answer: 21955.55
   requires_calculator: false
 - id: 10
-  category: B. 范围与比较过滤
-  sub_category: B2 数值阈值
-  difficulty: medium
   question: 查询2024年全国层级企业债券违约率超过2%的行业有哪些？
-  sql: 'SELECT DISTINCT sector, default_rate_pct
-
-    FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND default_rate_pct > 2.0
-
-    ORDER BY default_rate_pct DESC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
-  answer_type: list
-  answer_unit: '%'
-  answer:
-  - sector: 可选消费
-    default_rate_pct: 2.071
+  sql: |-
+    SELECT DISTINCT sector 
+    FROM corporate_credit 
+    WHERE year = 2024 AND geo_level = 'national' AND default_rate_pct > 2.0 
+    ORDER BY sector
+  answer_type: scalar
+  answer_unit: null
+  answer: 可选消费
   requires_calculator: false
 - id: 11
-  category: B. 范围与比较过滤
-  sub_category: B2 数值阈值
-  difficulty: medium
   question: 2023年高收益债券收益率低于7%的全国行业有多少个？
-  sql: 'SELECT COUNT(DISTINCT sector) AS value
-
-    FROM corporate_credit
-
-    WHERE year = 2023 AND geo_level = ''national'' AND high_yield_yield_pct < 7.0'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - high_yield_yield_pct
+  sql: |-
+    SELECT COUNT(DISTINCT sector) AS value 
+    FROM corporate_credit 
+    WHERE year = 2023 AND geo_level = 'national' AND high_yield_yield_pct < 7.0
   answer_type: scalar
   answer_unit: 个
   answer: 0
   requires_calculator: false
 - id: 12
-  category: B. 范围与比较过滤
-  sub_category: B2 数值阈值
-  difficulty: medium
   question: 查询2022年全国企业信用债降级比率超过3%的行业及其具体数值
-  sql: 'SELECT sector, AVG(downgrade_ratio_pct) AS avg_downgrade_ratio
-
-    FROM corporate_credit
-
-    WHERE year = 2022 AND geo_level = ''national'' AND downgrade_ratio_pct > 3.0
-
-    GROUP BY sector
-
-    ORDER BY avg_downgrade_ratio DESC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - downgrade_ratio_pct
+  sql: |-
+    SELECT sector, AVG(downgrade_ratio_pct) AS avg_downgrade_ratio 
+    FROM corporate_credit 
+    WHERE year = 2022 AND geo_level = 'national' AND downgrade_ratio_pct > 3.0 
+    GROUP BY sector 
+    ORDER BY avg_downgrade_ratio DESC
   answer_type: list
   answer_unit: '%'
   answer:
@@ -327,7 +181,7 @@ questions:
   - sector: 可选消费
     avg_downgrade_ratio: 4.62325
   - sector: 能源
-    avg_downgrade_ratio: 3.872666666666666
+    avg_downgrade_ratio: 3.87266
   - sector: 科技
     avg_downgrade_ratio: 3.846
   - sector: 医疗健康
@@ -342,507 +196,321 @@ questions:
     avg_downgrade_ratio: 3.3365
   requires_calculator: false
 - id: 13
-  category: B. 范围与比较过滤
-  sub_category: B3 复合范围条件
-  difficulty: medium
   question: 2021年至2023年间，全国工业企业债券违约率超过1.5%的季度有多少个？
-  sql: 'SELECT COUNT(*) AS value
-
-    FROM corporate_credit
-
-    WHERE year BETWEEN 2021 AND 2023 AND geo_level = ''national'' AND sector = ''工业''
-    AND default_rate_pct > 1.5'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+  sql: |-
+    SELECT COUNT(*) AS value 
+    FROM corporate_credit 
+    WHERE year BETWEEN 2021 AND 2023 AND geo_level = 'national' AND sector = '工业' AND default_rate_pct > 1.5
   answer_type: scalar
   answer_unit: 个
   answer: 0
   requires_calculator: false
 - id: 14
-  category: B. 范围与比较过滤
-  sub_category: B3 复合范围条件
-  difficulty: medium
   question: 2019年至2021年间，华中地区投资级信用利差超过120基点的行业和季度有哪些？
-  sql: 'SELECT year, quarter, sector, ig_spread_bps
-
-    FROM corporate_credit
-
-    WHERE year BETWEEN 2019 AND 2021 AND geo_name = ''华中'' AND ig_spread_bps > 120
-
-    ORDER BY year, quarter, ig_spread_bps DESC'
-  columns_used:
-  - year
-  - quarter
-  - geo_name
-  - sector
-  - ig_spread_bps
+  sql: |-
+    SELECT year, quarter, sector 
+    FROM corporate_credit 
+    WHERE year BETWEEN 2019 AND 2021 AND geo_name = '华中' AND ig_spread_bps > 120 
+    ORDER BY year, quarter, sector
   answer_type: list
-  answer_unit: 基点
+  answer_unit: null
   answer:
   - year: 2019
     quarter: 1
     sector: 工业
-    ig_spread_bps: 138
-  - year: 2019
-    quarter: 1
-    sector: 通信服务
-    ig_spread_bps: 136
   - year: 2019
     quarter: 1
     sector: 材料
-    ig_spread_bps: 131
-  - year: 2019
-    quarter: 1
-    sector: 科技
-    ig_spread_bps: 127
   - year: 2019
     quarter: 1
     sector: 消费
-    ig_spread_bps: 122
   - year: 2019
-    quarter: 2
-    sector: 可选消费
-    ig_spread_bps: 166
+    quarter: 1
+    sector: 科技
   - year: 2019
-    quarter: 2
-    sector: 地产
-    ig_spread_bps: 158
-  - year: 2019
-    quarter: 2
+    quarter: 1
     sector: 通信服务
-    ig_spread_bps: 142
   - year: 2019
     quarter: 2
     sector: 医疗健康
-    ig_spread_bps: 133
+  - year: 2019
+    quarter: 2
+    sector: 可选消费
+  - year: 2019
+    quarter: 2
+    sector: 地产
+  - year: 2019
+    quarter: 2
+    sector: 工业
+  - year: 2019
+    quarter: 2
+    sector: 材料
   - year: 2019
     quarter: 2
     sector: 科技
-    ig_spread_bps: 127
   - year: 2019
     quarter: 2
     sector: 能源
-    ig_spread_bps: 124
   - year: 2019
     quarter: 2
-    sector: 工业
-    ig_spread_bps: 124
-  - year: 2019
-    quarter: 2
-    sector: 材料
-    ig_spread_bps: 124
-  - year: 2019
-    quarter: 3
-    sector: 消费
-    ig_spread_bps: 144
+    sector: 通信服务
   - year: 2019
     quarter: 3
     sector: 地产
-    ig_spread_bps: 133
   - year: 2019
     quarter: 3
     sector: 工业
-    ig_spread_bps: 128
   - year: 2019
     quarter: 3
     sector: 材料
-    ig_spread_bps: 127
+  - year: 2019
+    quarter: 3
+    sector: 消费
   - year: 2019
     quarter: 3
     sector: 科技
-    ig_spread_bps: 123
   - year: 2019
     quarter: 3
     sector: 金融
-    ig_spread_bps: 123
+  - year: 2019
+    quarter: 4
+    sector: 医疗健康
   - year: 2019
     quarter: 4
     sector: 可选消费
-    ig_spread_bps: 160
   - year: 2019
     quarter: 4
     sector: 地产
-    ig_spread_bps: 154
   - year: 2019
     quarter: 4
     sector: 科技
-    ig_spread_bps: 144
-  - year: 2019
-    quarter: 4
+  - year: 2020
+    quarter: 1
     sector: 医疗健康
-    ig_spread_bps: 128
   - year: 2020
     quarter: 1
     sector: 地产
-    ig_spread_bps: 163
   - year: 2020
     quarter: 1
-    sector: 能源
-    ig_spread_bps: 144
+    sector: 工业
   - year: 2020
     quarter: 1
     sector: 材料
-    ig_spread_bps: 142
+  - year: 2020
+    quarter: 1
+    sector: 能源
   - year: 2020
     quarter: 1
     sector: 通信服务
-    ig_spread_bps: 139
   - year: 2020
-    quarter: 1
-    sector: 工业
-    ig_spread_bps: 131
-  - year: 2020
-    quarter: 1
+    quarter: 2
     sector: 医疗健康
-    ig_spread_bps: 123
+  - year: 2020
+    quarter: 2
+    sector: 可选消费
   - year: 2020
     quarter: 2
     sector: 地产
-    ig_spread_bps: 141
-  - year: 2020
-    quarter: 2
-    sector: 科技
-    ig_spread_bps: 132
-  - year: 2020
-    quarter: 2
-    sector: 能源
-    ig_spread_bps: 127
   - year: 2020
     quarter: 2
     sector: 工业
-    ig_spread_bps: 127
   - year: 2020
     quarter: 2
-    sector: 医疗健康
-    ig_spread_bps: 127
+    sector: 科技
+  - year: 2020
+    quarter: 2
+    sector: 能源
   - year: 2020
     quarter: 2
     sector: 金融
-    ig_spread_bps: 126
-  - year: 2020
-    quarter: 2
-    sector: 可选消费
-    ig_spread_bps: 125
-  - year: 2020
-    quarter: 3
-    sector: 消费
-    ig_spread_bps: 139
-  - year: 2020
-    quarter: 3
-    sector: 通信服务
-    ig_spread_bps: 131
   - year: 2020
     quarter: 3
     sector: 可选消费
-    ig_spread_bps: 131
-  - year: 2020
-    quarter: 3
-    sector: 科技
-    ig_spread_bps: 126
   - year: 2020
     quarter: 3
     sector: 地产
-    ig_spread_bps: 123
   - year: 2020
-    quarter: 4
-    sector: 可选消费
-    ig_spread_bps: 143
+    quarter: 3
+    sector: 消费
+  - year: 2020
+    quarter: 3
+    sector: 科技
+  - year: 2020
+    quarter: 3
+    sector: 通信服务
   - year: 2020
     quarter: 4
     sector: 医疗健康
-    ig_spread_bps: 136
+  - year: 2020
+    quarter: 4
+    sector: 可选消费
+  - year: 2020
+    quarter: 4
+    sector: 地产
+  - year: 2020
+    quarter: 4
+    sector: 材料
   - year: 2020
     quarter: 4
     sector: 科技
-    ig_spread_bps: 125
   - year: 2020
     quarter: 4
     sector: 能源
-    ig_spread_bps: 124
-  - year: 2020
-    quarter: 4
-    sector: 地产
-    ig_spread_bps: 124
-  - year: 2020
-    quarter: 4
-    sector: 材料
-    ig_spread_bps: 122
-  - year: 2021
-    quarter: 1
-    sector: 地产
-    ig_spread_bps: 163
   - year: 2021
     quarter: 1
     sector: 可选消费
-    ig_spread_bps: 153
+  - year: 2021
+    quarter: 1
+    sector: 地产
   - year: 2021
     quarter: 1
     sector: 工业
-    ig_spread_bps: 142
+  - year: 2021
+    quarter: 1
+    sector: 材料
   - year: 2021
     quarter: 1
     sector: 消费
-    ig_spread_bps: 140
   - year: 2021
     quarter: 1
     sector: 科技
-    ig_spread_bps: 131
-  - year: 2021
-    quarter: 1
-    sector: 材料
-    ig_spread_bps: 129
   - year: 2021
     quarter: 2
     sector: 可选消费
-    ig_spread_bps: 146
-  - year: 2021
-    quarter: 2
-    sector: 科技
-    ig_spread_bps: 140
   - year: 2021
     quarter: 2
     sector: 材料
-    ig_spread_bps: 137
+  - year: 2021
+    quarter: 2
+    sector: 消费
+  - year: 2021
+    quarter: 2
+    sector: 科技
+  - year: 2021
+    quarter: 2
+    sector: 通信服务
   - year: 2021
     quarter: 2
     sector: 金融
-    ig_spread_bps: 135
-  - year: 2021
-    quarter: 2
-    sector: 消费
-    ig_spread_bps: 134
-  - year: 2021
-    quarter: 2
-    sector: 通信服务
-    ig_spread_bps: 134
-  - year: 2021
-    quarter: 3
-    sector: 地产
-    ig_spread_bps: 156
-  - year: 2021
-    quarter: 3
-    sector: 科技
-    ig_spread_bps: 140
-  - year: 2021
-    quarter: 3
-    sector: 消费
-    ig_spread_bps: 138
   - year: 2021
     quarter: 3
     sector: 医疗健康
-    ig_spread_bps: 136
   - year: 2021
     quarter: 3
     sector: 可选消费
-    ig_spread_bps: 133
   - year: 2021
-    quarter: 4
-    sector: 通信服务
-    ig_spread_bps: 138
-  - year: 2021
-    quarter: 4
-    sector: 可选消费
-    ig_spread_bps: 137
-  - year: 2021
-    quarter: 4
+    quarter: 3
     sector: 地产
-    ig_spread_bps: 129
+  - year: 2021
+    quarter: 3
+    sector: 消费
+  - year: 2021
+    quarter: 3
+    sector: 科技
   - year: 2021
     quarter: 4
     sector: 公用事业
-    ig_spread_bps: 121
+  - year: 2021
+    quarter: 4
+    sector: 可选消费
+  - year: 2021
+    quarter: 4
+    sector: 地产
+  - year: 2021
+    quarter: 4
+    sector: 通信服务
   requires_calculator: false
 - id: 15
-  category: C. 排序与Top-N
-  sub_category: C1 单指标最大值行
-  difficulty: easy
   question: 2024年全国哪个行业的企业债券违约率最高？
-  sql: 'SELECT sector, default_rate_pct
-
-    FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national''
-
-    ORDER BY default_rate_pct DESC
-
-    LIMIT 1'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
-  answer_type: list
-  answer_unit: '%'
-  answer:
-  - sector: 可选消费
-    default_rate_pct: 2.071
+  sql: |-
+    SELECT sector 
+    FROM corporate_credit 
+    WHERE year = 2024 AND geo_level = 'national' 
+    ORDER BY default_rate_pct DESC 
+    LIMIT 1
+  answer_type: scalar
+  answer_unit: null
+  answer: 可选消费
   requires_calculator: false
 - id: 16
-  category: C. 排序与Top-N
-  sub_category: C1 单指标最大值行
-  difficulty: easy
   question: 2023年第4季度全国企业信用债新发行量最大的行业是哪个？
-  sql: 'SELECT sector, new_issuance_100m_cny
-
-    FROM corporate_credit
-
-    WHERE year = 2023 AND quarter = 4 AND geo_level = ''national''
-
-    ORDER BY new_issuance_100m_cny DESC
-
-    LIMIT 1'
-  columns_used:
-  - year
-  - quarter
-  - geo_level
-  - sector
-  - new_issuance_100m_cny
-  answer_type: list
-  answer_unit: 亿元
-  answer:
-  - sector: 科技
-    new_issuance_100m_cny: 57350.0
+  sql: |-
+    SELECT sector 
+    FROM corporate_credit 
+    WHERE year = 2023 AND quarter = 4 AND geo_level = 'national' 
+    ORDER BY new_issuance_100m_cny DESC 
+    LIMIT 1
+  answer_type: scalar
+  answer_unit: null
+  answer: 科技
   requires_calculator: false
 - id: 17
-  category: C. 排序与Top-N
-  sub_category: C2 单指标最小值行
-  difficulty: easy
   question: 2022年全国哪个行业的高收益债券收益率最低？
-  sql: 'SELECT sector, high_yield_yield_pct
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year = 2022 AND geo_level = ''national''
-
+    WHERE year = 2022 AND geo_level = 'national'
     ORDER BY high_yield_yield_pct ASC
-
-    LIMIT 1'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - high_yield_yield_pct
-  answer_type: list
-  answer_unit: '%'
-  answer:
-  - sector: 金融
-    high_yield_yield_pct: 7.406
+    LIMIT 1
+  answer_type: scalar
+  answer_unit: null
+  answer: 金融
   requires_calculator: false
 - id: 18
-  category: C. 排序与Top-N
-  sub_category: C2 单指标最小值行
-  difficulty: easy
   question: 2021年全国企业债券降级比率最低的行业是哪个？
-  sql: 'SELECT sector, AVG(downgrade_ratio_pct) AS avg_downgrade_ratio
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year = 2021 AND geo_level = ''national''
-
+    WHERE year = 2021 AND geo_level = 'national'
     GROUP BY sector
-
-    ORDER BY avg_downgrade_ratio ASC
-
-    LIMIT 1'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - downgrade_ratio_pct
-  answer_type: list
-  answer_unit: '%'
-  answer:
-  - sector: 金融
-    avg_downgrade_ratio: 2.392
+    ORDER BY AVG(downgrade_ratio_pct) ASC
+    LIMIT 1
+  answer_type: scalar
+  answer_unit: null
+  answer: 金融
   requires_calculator: false
 - id: 19
-  category: C. 排序与Top-N
-  sub_category: C3 Top3/Top5排名
-  difficulty: medium
   question: 2024年全国企业债券违约率最高的前5个行业是哪些？
-  sql: 'SELECT sector, AVG(default_rate_pct) AS avg_default_rate
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national''
-
+    WHERE year = 2024 AND geo_level = 'national'
     GROUP BY sector
-
-    ORDER BY avg_default_rate DESC
-
-    LIMIT 5'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    ORDER BY AVG(default_rate_pct) DESC
+    LIMIT 5
   answer_type: list
-  answer_unit: '%'
+  answer_unit: null
   answer:
   - sector: 可选消费
-    avg_default_rate: 1.4575
   - sector: 地产
-    avg_default_rate: 1.296
   - sector: 工业
-    avg_default_rate: 1.24675
   - sector: 通信服务
-    avg_default_rate: 1.21975
   - sector: 消费
-    avg_default_rate: 1.17325
   requires_calculator: false
 - id: 20
-  category: C. 排序与Top-N
-  sub_category: C3 Top3/Top5排名
-  difficulty: medium
   question: 2023年全国高收益债券信用利差最高的前3个行业是哪些？
-  sql: 'SELECT sector, AVG(hy_spread_bps) AS avg_hy_spread
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_level = ''national''
-
+    WHERE year = 2023 AND geo_level = 'national'
     GROUP BY sector
-
-    ORDER BY avg_hy_spread DESC
-
-    LIMIT 3'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - hy_spread_bps
+    ORDER BY AVG(hy_spread_bps) DESC
+    LIMIT 3
   answer_type: list
-  answer_unit: 基点
+  answer_unit: null
   answer:
   - sector: 可选消费
-    avg_hy_spread: 542.0
   - sector: 地产
-    avg_hy_spread: 512.5
   - sector: 医疗健康
-    avg_hy_spread: 479.25
   requires_calculator: false
 - id: 21
-  category: C. 排序与Top-N
-  sub_category: C4 多列排序
-  difficulty: medium
   question: 查询2024年全国各行业企业债券违约率，按违约率降序、行业名升序排列
-  sql: 'SELECT sector, AVG(default_rate_pct) AS avg_default_rate
-
+  sql: |-
+    SELECT sector, AVG(default_rate_pct) AS avg_default_rate
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national''
-
+    WHERE year = 2024 AND geo_level = 'national'
     GROUP BY sector
-
-    ORDER BY avg_default_rate DESC, sector ASC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    ORDER BY avg_default_rate DESC, sector ASC
   answer_type: list
   answer_unit: '%'
   answer:
@@ -870,125 +538,71 @@ questions:
     avg_default_rate: 0.837
   requires_calculator: false
 - id: 22
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D1 COUNT/COUNT DISTINCT
-  difficulty: easy
   question: 2024年全国层级中违约率高于1%的数据有多少条？
-  sql: 'SELECT COUNT(*) AS value
-
+  sql: |-
+    SELECT COUNT(*) AS value
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND default_rate_pct > 1.0'
-  columns_used:
-  - '*'
+    WHERE year = 2024 AND geo_level = 'national' AND default_rate_pct > 1.0
   answer_type: scalar
   answer_unit: 条
   answer: 28
   requires_calculator: false
 - id: 23
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D1 COUNT/COUNT DISTINCT
-  difficulty: easy
   question: 2024年全国层级中违约率高于1%的行业有多少个？
-  sql: 'SELECT COUNT(DISTINCT sector) AS value
-
+  sql: |-
+    SELECT COUNT(DISTINCT sector) AS value
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND default_rate_pct > 1.0'
-  columns_used:
-  - sector
+    WHERE year = 2024 AND geo_level = 'national' AND default_rate_pct > 1.0
   answer_type: scalar
   answer_unit: 个
   answer: 10
   requires_calculator: false
 - id: 24
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D2 SUM
-  difficulty: easy
   question: 2024年全国所有行业的企业信用债新发行总额是多少？
-  sql: 'SELECT SUM(new_issuance_100m_cny) AS value
-
+  sql: |-
+    SELECT SUM(new_issuance_100m_cny) AS value
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'''
-  columns_used:
-  - year
-  - geo_level
-  - new_issuance_100m_cny
+    WHERE year = 2024 AND geo_level = 'national'
   answer_type: scalar
   answer_unit: 亿元
   answer: 2559700.0
   requires_calculator: false
 - id: 25
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D2 SUM
-  difficulty: easy
   question: 2016年至2020年间全国科技行业企业债券累计新发行量是多少？
-  sql: 'SELECT SUM(new_issuance_100m_cny) AS value
-
+  sql: |-
+    SELECT SUM(new_issuance_100m_cny) AS value
     FROM corporate_credit
-
-    WHERE year BETWEEN 2016 AND 2020 AND geo_level = ''national'' AND sector = ''科技'''
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - new_issuance_100m_cny
+    WHERE year BETWEEN 2016 AND 2020 AND geo_level = 'national' AND sector = '科技'
   answer_type: scalar
   answer_unit: 亿元
   answer: 947500.0
   requires_calculator: false
 - id: 26
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D3 AVG
-  difficulty: easy
   question: 2023年全国所有行业的企业债券平均违约率是多少？
-  sql: 'SELECT AVG(default_rate_pct) AS value
-
+  sql: |-
+    SELECT AVG(default_rate_pct) AS value
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_level = ''national'''
-  columns_used:
-  - year
-  - geo_level
-  - default_rate_pct
+    WHERE year = 2023 AND geo_level = 'national'
   answer_type: scalar
   answer_unit: '%'
   answer: 1.1319772727272728
   requires_calculator: false
 - id: 27
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D3 AVG
-  difficulty: easy
   question: 2022年全国金融行业投资级债券的平均收益率是多少？
-  sql: 'SELECT AVG(inv_grade_yield_pct) AS value
-
+  sql: |-
+    SELECT AVG(inv_grade_yield_pct) AS value
     FROM corporate_credit
-
-    WHERE year = 2022 AND geo_level = ''national'' AND sector = ''金融'''
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - inv_grade_yield_pct
+    WHERE year = 2022 AND geo_level = 'national' AND sector = '金融'
   answer_type: scalar
   answer_unit: '%'
   answer: 3.9645
   requires_calculator: false
 - id: 28
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D4 MIN/MAX
-  difficulty: easy
   question: 2024年全国所有行业企业债券违约率的最小值和最大值分别是多少？
-  sql: 'SELECT MIN(default_rate_pct) AS min_rate, MAX(default_rate_pct) AS max_rate
-
+  sql: |-
+    SELECT MIN(default_rate_pct) AS min_rate, MAX(default_rate_pct) AS max_rate
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'''
-  columns_used:
-  - year
-  - geo_level
-  - default_rate_pct
+    WHERE year = 2024 AND geo_level = 'national'
   answer_type: list
   answer_unit: '%'
   answer:
@@ -996,42 +610,23 @@ questions:
     max_rate: 2.071
   requires_calculator: false
 - id: 29
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D4 MIN/MAX
-  difficulty: easy
   question: 2021年全国高收益债券信用利差的最大值是多少基点？
-  sql: 'SELECT MAX(hy_spread_bps) AS value
-
+  sql: |-
+    SELECT MAX(hy_spread_bps) AS value
     FROM corporate_credit
-
-    WHERE year = 2021 AND geo_level = ''national'''
-  columns_used:
-  - year
-  - geo_level
-  - hy_spread_bps
+    WHERE year = 2021 AND geo_level = 'national'
   answer_type: scalar
   answer_unit: 基点
   answer: 538
   requires_calculator: false
 - id: 30
-  category: E. 分组聚合GROUP BY
-  sub_category: E1 单维度分组SUM/AVG
-  difficulty: medium
   question: 按年份统计全国科技行业企业信用债累计新发行量的年度趋势
-  sql: 'SELECT year, SUM(new_issuance_100m_cny) AS total_issuance
-
+  sql: |-
+    SELECT year, SUM(new_issuance_100m_cny) AS total_issuance
     FROM corporate_credit
-
-    WHERE geo_level = ''national'' AND sector = ''科技''
-
+    WHERE geo_level = 'national' AND sector = '科技'
     GROUP BY year
-
-    ORDER BY year'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - new_issuance_100m_cny
+    ORDER BY year
   answer_type: list
   answer_unit: 亿元
   answer:
@@ -1057,24 +652,13 @@ questions:
     total_issuance: 239900.0
   requires_calculator: false
 - id: 31
-  category: E. 分组聚合GROUP BY
-  sub_category: E1 单维度分组SUM/AVG
-  difficulty: medium
   question: 各行业在2024年的企业债券平均违约率分别是多少？
-  sql: 'SELECT sector, AVG(default_rate_pct) AS avg_default_rate
-
+  sql: |-
+    SELECT sector, AVG(default_rate_pct) AS avg_default_rate
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national''
-
+    WHERE year = 2024 AND geo_level = 'national'
     GROUP BY sector
-
-    ORDER BY sector'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    ORDER BY sector
   answer_type: list
   answer_unit: '%'
   answer:
@@ -1102,21 +686,13 @@ questions:
     avg_default_rate: 0.996
   requires_calculator: false
 - id: 32
-  category: E. 分组聚合GROUP BY
-  sub_category: E2 单维度分组COUNT
-  difficulty: medium
   question: 2024年各统计层级中违约率高于1%的数据数量分别是多少？
-  sql: 'SELECT geo_level, COUNT(*) AS record_count
-
+  sql: |-
+    SELECT geo_level, COUNT(*) AS record_count
     FROM corporate_credit
-
     WHERE year = 2024 AND default_rate_pct > 1.0
-
     GROUP BY geo_level
-
-    ORDER BY record_count DESC'
-  columns_used:
-  - geo_level
+    ORDER BY record_count DESC
   answer_type: list
   answer_unit: 条
   answer:
@@ -1128,21 +704,13 @@ questions:
     record_count: 28
   requires_calculator: false
 - id: 33
-  category: E. 分组聚合GROUP BY
-  sub_category: E2 单维度分组COUNT
-  difficulty: medium
   question: 2024年全国层级各行业违约率高于1%的季度数据有多少条？
-  sql: 'SELECT sector, COUNT(*) AS record_count
-
+  sql: |-
+    SELECT sector, COUNT(*) AS record_count
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND default_rate_pct > 1.0
-
+    WHERE year = 2024 AND geo_level = 'national' AND default_rate_pct > 1.0
     GROUP BY sector
-
-    ORDER BY record_count DESC'
-  columns_used:
-  - sector
+    ORDER BY record_count DESC
   answer_type: list
   answer_unit: 条
   answer:
@@ -1168,25 +736,13 @@ questions:
     record_count: 1
   requires_calculator: false
 - id: 34
-  category: E. 分组聚合GROUP BY
-  sub_category: E3 多维度分组
-  difficulty: hard
   question: 按年份和季度统计全国地产行业企业债券的平均违约率趋势
-  sql: 'SELECT year, quarter, AVG(default_rate_pct) AS avg_default_rate
-
+  sql: |-
+    SELECT year, quarter, AVG(default_rate_pct) AS avg_default_rate
     FROM corporate_credit
-
-    WHERE geo_level = ''national'' AND sector = ''地产''
-
+    WHERE geo_level = 'national' AND sector = '地产'
     GROUP BY year, quarter
-
-    ORDER BY year, quarter'
-  columns_used:
-  - year
-  - quarter
-  - geo_level
-  - sector
-  - default_rate_pct
+    ORDER BY year, quarter
   answer_type: list
   answer_unit: '%'
   answer:
@@ -1312,26 +868,13 @@ questions:
     avg_default_rate: 2.184
   requires_calculator: false
 - id: 35
-  category: E. 分组聚合GROUP BY
-  sub_category: E3 多维度分组
-  difficulty: hard
   question: 2023年按层级和行业划分的平均新增发行量是多少？
-  sql: 'SELECT geo_level, sector, AVG(new_issuance_100m_cny) AS avg_issuance
-
+  sql: |-
+    SELECT geo_level, sector, AVG(new_issuance_100m_cny) AS avg_issuance
     FROM corporate_credit
-
     WHERE year = 2023
-
     GROUP BY geo_level, sector
-
     ORDER BY geo_level, avg_issuance DESC
-
-    LIMIT 10'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - new_issuance_100m_cny
   answer_type: list
   answer_unit: 亿元
   answer:
@@ -1365,26 +908,84 @@ questions:
   - geo_level: national
     sector: 医疗健康
     avg_issuance: 56375.0
+  - geo_level: national
+    sector: 公用事业
+    avg_issuance: 56375.0
+  - geo_level: province
+    sector: 公用事业
+    avg_issuance: 1818.5487903225805
+  - geo_level: province
+    sector: 科技
+    avg_issuance: 1818.5487096774193
+  - geo_level: province
+    sector: 通信服务
+    avg_issuance: 1818.5485483870966
+  - geo_level: province
+    sector: 医疗健康
+    avg_issuance: 1818.5484677419356
+  - geo_level: province
+    sector: 消费
+    avg_issuance: 1818.5483870967741
+  - geo_level: province
+    sector: 金融
+    avg_issuance: 1818.5482258064517
+  - geo_level: province
+    sector: 材料
+    avg_issuance: 1818.5482258064517
+  - geo_level: province
+    sector: 工业
+    avg_issuance: 1818.5481451612902
+  - geo_level: province
+    sector: 地产
+    avg_issuance: 1818.548064516129
+  - geo_level: province
+    sector: 可选消费
+    avg_issuance: 1818.5479838709678
+  - geo_level: province
+    sector: 能源
+    avg_issuance: 1818.5479032258065
+  - geo_level: region
+    sector: 公用事业
+    avg_issuance: 8053.572857142857
+  - geo_level: region
+    sector: 材料
+    avg_issuance: 8053.571785714286
+  - geo_level: region
+    sector: 金融
+    avg_issuance: 8053.571428571428
+  - geo_level: region
+    sector: 科技
+    avg_issuance: 8053.571428571428
+  - geo_level: region
+    sector: 通信服务
+    avg_issuance: 8053.5710714285715
+  - geo_level: region
+    sector: 能源
+    avg_issuance: 8053.5710714285715
+  - geo_level: region
+    sector: 工业
+    avg_issuance: 8053.5710714285715
+  - geo_level: region
+    sector: 医疗健康
+    avg_issuance: 8053.5710714285715
+  - geo_level: region
+    sector: 可选消费
+    avg_issuance: 8053.5707142857145
+  - geo_level: region
+    sector: 消费
+    avg_issuance: 8053.570357142858
+  - geo_level: region
+    sector: 地产
+    avg_issuance: 8053.570357142858
   requires_calculator: false
 - id: 36
-  category: E. 分组聚合GROUP BY
-  sub_category: E4 GROUP BY+ORDER BY
-  difficulty: medium
   question: 按行业统计2024年企业债券平均违约率，并按违约率降序排列
-  sql: 'SELECT sector, AVG(default_rate_pct) AS avg_default_rate
-
+  sql: |-
+    SELECT sector, AVG(default_rate_pct) AS avg_default_rate
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national''
-
+    WHERE year = 2024 AND geo_level = 'national'
     GROUP BY sector
-
-    ORDER BY avg_default_rate DESC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    ORDER BY avg_default_rate DESC
   answer_type: list
   answer_unit: '%'
   answer:
@@ -1412,179 +1013,94 @@ questions:
     avg_default_rate: 0.837
   requires_calculator: false
 - id: 37
-  category: F. 分组过滤HAVING
-  sub_category: F1 HAVING AVG条件
-  difficulty: hard
   question: 查询2023年全国平均企业债券违约率超过1.5%的行业
-  sql: 'SELECT sector, AVG(default_rate_pct) AS avg_default_rate
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_level = ''national''
-
+    WHERE year = 2023 AND geo_level = 'national'
     GROUP BY sector
-
     HAVING AVG(default_rate_pct) > 1.5
-
-    ORDER BY avg_default_rate DESC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    ORDER BY AVG(default_rate_pct) DESC
   answer_type: list
-  answer_unit: '%'
+  answer_unit: null
   answer:
   - sector: 地产
-    avg_default_rate: 1.9785
   - sector: 可选消费
-    avg_default_rate: 1.8405
   requires_calculator: false
 - id: 38
-  category: F. 分组过滤HAVING
-  sub_category: F1 HAVING AVG条件
-  difficulty: hard
   question: 查询2022年全国平均投资级债券收益率低于3.9%的行业
-  sql: 'SELECT sector, AVG(inv_grade_yield_pct) AS avg_ig_yield
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year = 2022 AND geo_level = ''national''
-
+    WHERE year = 2022 AND geo_level = 'national'
     GROUP BY sector
-
     HAVING AVG(inv_grade_yield_pct) < 3.9
-
-    ORDER BY avg_ig_yield ASC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - inv_grade_yield_pct
+    ORDER BY AVG(inv_grade_yield_pct) ASC
   answer_type: list
-  answer_unit: '%'
+  answer_unit: null
   answer:
   - sector: 消费
-    avg_ig_yield: 3.7565
   - sector: 医疗健康
-    avg_ig_yield: 3.76625
   - sector: 通信服务
-    avg_ig_yield: 3.8062500000000004
   - sector: 能源
-    avg_ig_yield: 3.829
   - sector: 材料
-    avg_ig_yield: 3.875
   requires_calculator: false
 - id: 39
-  category: F. 分组过滤HAVING
-  sub_category: F2 HAVING COUNT条件
-  difficulty: hard
   question: 哪些行业在样本期内违约率高于1%的季度数据超过100条？
-  sql: 'SELECT sector, COUNT(*) AS record_count
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
     WHERE default_rate_pct > 1.0
-
     GROUP BY sector
-
     HAVING COUNT(*) > 100
-
-    ORDER BY record_count DESC'
-  columns_used:
-  - sector
+    ORDER BY COUNT(*) DESC
   answer_type: list
-  answer_unit: 条
+  answer_unit: null
   answer:
   - sector: 地产
-    record_count: 1551
   - sector: 可选消费
-    record_count: 1546
   - sector: 能源
-    record_count: 860
   - sector: 材料
-    record_count: 847
   - sector: 科技
-    record_count: 844
   - sector: 工业
-    record_count: 825
   - sector: 通信服务
-    record_count: 824
   - sector: 医疗健康
-    record_count: 819
   - sector: 消费
-    record_count: 813
   - sector: 金融
-    record_count: 562
   - sector: 公用事业
-    record_count: 540
   requires_calculator: false
 - id: 40
-  category: F. 分组过滤HAVING
-  sub_category: F3 HAVING SUM条件
-  difficulty: hard
   question: 查询2020年至2023年间累计企业信用债新发行量超过500000亿元的行业
-  sql: 'SELECT sector, SUM(new_issuance_100m_cny) AS total_issuance
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year BETWEEN 2020 AND 2023 AND geo_level = ''national''
-
+    WHERE year BETWEEN 2020 AND 2023 AND geo_level = 'national'
     GROUP BY sector
-
     HAVING SUM(new_issuance_100m_cny) > 500000
-
-    ORDER BY total_issuance DESC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - new_issuance_100m_cny
+    ORDER BY SUM(new_issuance_100m_cny) DESC
   answer_type: list
-  answer_unit: 亿元
+  answer_unit: null
   answer:
   - sector: 金融
-    total_issuance: 858800.0
   - sector: 通信服务
-    total_issuance: 858800.0
   - sector: 能源
-    total_issuance: 858800.0
   - sector: 科技
-    total_issuance: 858800.0
   - sector: 消费
-    total_issuance: 858800.0
   - sector: 材料
-    total_issuance: 858800.0
   - sector: 工业
-    total_issuance: 858800.0
   - sector: 地产
-    total_issuance: 858800.0
   - sector: 可选消费
-    total_issuance: 858800.0
   - sector: 医疗健康
-    total_issuance: 858800.0
   - sector: 公用事业
-    total_issuance: 858800.0
   requires_calculator: false
 - id: 41
-  category: G. 时间趋势与子查询
-  sub_category: G1 按年聚合趋势
-  difficulty: medium
   question: 全国金融行业企业债券违约率从2016年到2024年的年度变化趋势如何？
-  sql: 'SELECT year, AVG(default_rate_pct) AS avg_default_rate
-
+  sql: |-
+    SELECT year, AVG(default_rate_pct) AS avg_default_rate
     FROM corporate_credit
-
-    WHERE geo_level = ''national'' AND sector = ''金融''
-
+    WHERE geo_level = 'national' AND sector = '金融' AND year BETWEEN 2016 AND 2024
     GROUP BY year
-
-    ORDER BY year'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    ORDER BY year
   answer_type: list
   answer_unit: '%'
   answer:
@@ -1606,28 +1122,15 @@ questions:
     avg_default_rate: 1.1977499999999999
   - year: 2024
     avg_default_rate: 0.996
-  - year: 2025
-    avg_default_rate: 0.68625
   requires_calculator: false
 - id: 42
-  category: G. 时间趋势与子查询
-  sub_category: G1 按年聚合趋势
-  difficulty: medium
   question: 全国能源行业企业信用债新发行量在2016年至2024年的年度趋势如何？
-  sql: 'SELECT year, SUM(new_issuance_100m_cny) AS total_issuance
-
+  sql: |-
+    SELECT year, SUM(new_issuance_100m_cny) AS total_issuance
     FROM corporate_credit
-
-    WHERE geo_level = ''national'' AND sector = ''能源'' AND year BETWEEN 2016 AND 2024
-
+    WHERE geo_level = 'national' AND sector = '能源' AND year BETWEEN 2016 AND 2024
     GROUP BY year
-
-    ORDER BY year'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - new_issuance_100m_cny
+    ORDER BY year
   answer_type: list
   answer_unit: 亿元
   answer:
@@ -1651,480 +1154,221 @@ questions:
     total_issuance: 232700.0
   requires_calculator: false
 - id: 43
-  category: G. 时间趋势与子查询
-  sub_category: G2 子查询对比
-  difficulty: hard
   question: 查询2024年全国企业债券违约率高于全行业平均水平的行业
-  sql: 'SELECT sector, AVG(default_rate_pct) AS avg_default_rate
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national''
-
+    WHERE year = 2024 AND geo_level = 'national'
     GROUP BY sector
-
-    HAVING AVG(default_rate_pct) > ( SELECT AVG(default_rate_pct)
-
-    FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' )
-
-    ORDER BY avg_default_rate DESC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    HAVING AVG(default_rate_pct) > (SELECT AVG(default_rate_pct) FROM corporate_credit WHERE year = 2024 AND geo_level = 'national')
+    ORDER BY AVG(default_rate_pct) DESC
   answer_type: list
-  answer_unit: '%'
+  answer_unit: null
   answer:
   - sector: 可选消费
-    avg_default_rate: 1.4575
   - sector: 地产
-    avg_default_rate: 1.296
   - sector: 工业
-    avg_default_rate: 1.24675
   - sector: 通信服务
-    avg_default_rate: 1.21975
   - sector: 消费
-    avg_default_rate: 1.17325
   requires_calculator: false
 - id: 44
-  category: G. 时间趋势与子查询
-  sub_category: G2 子查询对比
-  difficulty: hard
   question: 查询2023年高收益债券收益率超过全国平均水平的行业有哪些？
-  sql: 'SELECT sector, AVG(high_yield_yield_pct) AS avg_hy_yield
-
+  sql: |-
+    SELECT sector
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_level = ''national''
-
+    WHERE year = 2023 AND geo_level = 'national'
     GROUP BY sector
-
-    HAVING AVG(high_yield_yield_pct) > ( SELECT AVG(high_yield_yield_pct)
-
-    FROM corporate_credit
-
-    WHERE year = 2023 AND geo_level = ''national'' )
-
-    ORDER BY avg_hy_yield DESC'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - high_yield_yield_pct
+    HAVING AVG(high_yield_yield_pct) > (SELECT AVG(high_yield_yield_pct) FROM corporate_credit WHERE year = 2023 AND geo_level = 'national')
+    ORDER BY AVG(high_yield_yield_pct) DESC
   answer_type: list
-  answer_unit: '%'
+  answer_unit: null
   answer:
   - sector: 可选消费
-    avg_hy_yield: 9.23525
   - sector: 消费
-    avg_hy_yield: 9.12025
   - sector: 地产
-    avg_hy_yield: 8.758
   - sector: 材料
-    avg_hy_yield: 8.7125
   - sector: 医疗健康
-    avg_hy_yield: 8.6455
   requires_calculator: false
 - id: 45
-  category: G. 时间趋势与子查询
-  sub_category: G3 跨工具计算
-  difficulty: hard
   question: 2024年全国地产行业的企业债券违约率是金融行业的多少倍？
-  sql: 'SELECT AVG(CASE WHEN sector = ''地产'' THEN default_rate_pct END) AS estate_rate,
-    AVG(CASE WHEN sector = ''金融'' THEN default_rate_pct END) AS finance_rate
-
+  sql1: |-
+    SELECT AVG(default_rate_pct) AS estate_rate
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'''
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    WHERE year = 2024 AND geo_level = 'national' AND sector = '地产'
+  sql2: |-
+    SELECT AVG(default_rate_pct) AS finance_rate
+    FROM corporate_credit
+    WHERE year = 2024 AND geo_level = 'national' AND sector = '金融'
   answer_type: scalar
   answer_unit: 倍
   requires_calculator: true
   answer: 1.3012048192771084
 - id: 46
-  category: H. 边界与容错
-  sub_category: H1 数据不存在
-  difficulty: medium
   question: 2030年全国企业债券违约率是多少？
   sql: null
-  columns_used: []
   answer_unit: null
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
   answer: null
 - id: 47
-  category: H. 边界与容错
-  sub_category: H1 数据不存在
-  difficulty: medium
   question: 查询2015年的企业信用数据
   sql: null
-  columns_used: []
   answer_unit: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
 - id: 48
-  category: H. 边界与容错
-  sub_category: H2 字段不存在
-  difficulty: medium
   question: 查询各企业的公司名称和信用评级
   sql: null
-  columns_used: []
   answer_unit: null
   expected_error: 表中不包含企业名称字段，仅有行业(sector)聚合数据
   answer: null
 - id: 49
-  category: H. 边界与容错
-  sub_category: H3 逻辑矛盾
-  difficulty: hard
   question: 查询全国层级且地区为北京的企业债券违约率
   sql: null
-  columns_used: []
   answer_unit: null
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'
   answer: null
 - id: 50
-  category: H. 边界与容错
-  sub_category: H4 极端值查询
-  difficulty: hard
   question: 查询企业债券违约率超过100%的记录
   sql: null
-  columns_used: []
   answer_unit: null
   expected_error: 违约率的合理范围为0-100%，不存在超过100%的情况
   answer: null
 - id: 51
-  category: I. 跨工具复杂计算
-  sub_category: I1 跨行业倍数
-  difficulty: hard
   question: 2024年全国地产行业的企业信用债新发行量是公用事业行业的多少倍？
-  sql: '-- 步骤1: 查询地产行业2024年新发行总额
-
+  sql1: |-
     SELECT SUM(new_issuance_100m_cny) AS estate_issuance
-
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND sector = ''地产'';
-
-
-    -- 步骤2: 查询公用事业行业2024年新发行总额
-
+    WHERE year = 2024 AND geo_level = 'national' AND sector = '地产'
+  sql2: |-
     SELECT SUM(new_issuance_100m_cny) AS utility_issuance
-
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND sector = ''公用事业'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (estate_issuance / utility_issuance)'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - new_issuance_100m_cny
+    WHERE year = 2024 AND geo_level = 'national' AND sector = '公用事业'
   answer_type: scalar
   answer: 1.0
   answer_unit: 倍
   requires_calculator: true
 - id: 52
-  category: I. 跨工具复杂计算
-  sub_category: I2 跨地区差值
-  difficulty: hard
   question: 2023年华东地区的企业债券平均违约率比华北地区高出多少个百分点？
-  sql: '-- 步骤1: 查询华东地区2023年平均违约率
-
+  sql1: |-
     SELECT AVG(default_rate_pct) AS east_rate
-
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_name = ''华东'';
-
-
-    -- 步骤2: 查询华北地区2023年平均违约率
-
+    WHERE year = 2023 AND geo_name = '华东'
+  sql2: |-
     SELECT AVG(default_rate_pct) AS north_rate
-
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_name = ''华北'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (east_rate - north_rate)'
-  columns_used:
-  - year
-  - geo_name
-  - default_rate_pct
+    WHERE year = 2023 AND geo_name = '华北'
   answer_type: scalar
   answer: -0.0343
   answer_unit: 百分点
   requires_calculator: true
 - id: 53
-  category: I. 跨工具复杂计算
-  sub_category: I3 跨行业占比
-  difficulty: hard
   question: 2024年全国可选消费行业的高收益债券信用利差占全行业平均水平的百分比是多少？
-  sql: '-- 步骤1: 查询可选消费行业2024年平均高收益信用利差
-
+  sql1: |-
     SELECT AVG(hy_spread_bps) AS consumer_spread
-
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND sector = ''可选消费'';
-
-
-    -- 步骤2: 查询全行业2024年平均高收益信用利差
-
+    WHERE year = 2024 AND geo_level = 'national' AND sector = '可选消费'
+  sql2: |-
     SELECT AVG(hy_spread_bps) AS avg_spread
-
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (consumer_spread / avg_spread) * 100'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - hy_spread_bps
+    WHERE year = 2024 AND geo_level = 'national'
   answer_type: scalar
   answer: 109.11
   answer_unit: '%'
   requires_calculator: true
 - id: 54
-  category: I. 跨工具复杂计算
-  sub_category: I4 跨行业差值
-  difficulty: hard
   question: 2022年全国地产行业的企业债券降级比率比金融行业高出多少个百分点？
-  sql: '-- 步骤1: 查询地产行业2022年平均降级比率
-
+  sql1: |-
     SELECT AVG(downgrade_ratio_pct) AS estate_downgrade
-
     FROM corporate_credit
-
-    WHERE year = 2022 AND geo_level = ''national'' AND sector = ''地产'';
-
-
-    -- 步骤2: 查询金融行业2022年平均降级比率
-
+    WHERE year = 2022 AND geo_level = 'national' AND sector = '地产'
+  sql2: |-
     SELECT AVG(downgrade_ratio_pct) AS finance_downgrade
-
     FROM corporate_credit
-
-    WHERE year = 2022 AND geo_level = ''national'' AND sector = ''金融'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (estate_downgrade - finance_downgrade)'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - downgrade_ratio_pct
+    WHERE year = 2022 AND geo_level = 'national' AND sector = '金融'
   answer_type: scalar
   answer: 2.6057
   answer_unit: 百分点
   requires_calculator: true
 - id: 55
-  category: I. 跨工具复杂计算
-  sub_category: I5 跨地区倍数
-  difficulty: hard
   question: 2023年广东省科技行业的企业信用债新发行量是北京市的多少倍？
-  sql: '-- 步骤1: 查询广东省科技行业2023年新发行总额
-
+  sql1: |-
     SELECT SUM(new_issuance_100m_cny) AS gd_issuance
-
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_name = ''广东'' AND sector = ''科技'';
-
-
-    -- 步骤2: 查询北京市科技行业2023年新发行总额
-
+    WHERE year = 2023 AND geo_name = '广东' AND sector = '科技'
+  sql2: |-
     SELECT SUM(new_issuance_100m_cny) AS bj_issuance
-
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_name = ''北京'' AND sector = ''科技'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (gd_issuance / bj_issuance)'
-  columns_used:
-  - year
-  - geo_name
-  - sector
-  - new_issuance_100m_cny
+    WHERE year = 2023 AND geo_name = '北京' AND sector = '科技'
   answer_type: scalar
   answer: 2.9231
   answer_unit: 倍
   requires_calculator: true
 - id: 56
-  category: I. 跨工具复杂计算
-  sub_category: I6 跨期差值
-  difficulty: hard
   question: 2024年全国地产行业的企业债券违约率比2019年增加了多少个百分点？
-  sql: '-- 步骤1: 查询2024年地产行业平均违约率
-
+  sql1: |-
     SELECT AVG(default_rate_pct) AS rate_2024
-
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND sector = ''地产'';
-
-
-    -- 步骤2: 查询2019年地产行业平均违约率
-
+    WHERE year = 2024 AND geo_level = 'national' AND sector = '地产'
+  sql2: |-
     SELECT AVG(default_rate_pct) AS rate_2019
-
     FROM corporate_credit
-
-    WHERE year = 2019 AND geo_level = ''national'' AND sector = ''地产'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (rate_2024 - rate_2019)'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - default_rate_pct
+    WHERE year = 2019 AND geo_level = 'national' AND sector = '地产'
   answer_type: scalar
   answer: -0.2347
   answer_unit: 百分点
   requires_calculator: true
 - id: 57
-  category: I. 跨工具复杂计算
-  sub_category: I7 跨期倍数
-  difficulty: hard
   question: 2024年全国科技行业的企业信用债新发行量是2016年的多少倍？
-  sql: '-- 步骤1: 查询2024年科技行业新发行总额
-
+  sql1: |-
     SELECT SUM(new_issuance_100m_cny) AS issuance_2024
-
     FROM corporate_credit
-
-    WHERE year = 2024 AND geo_level = ''national'' AND sector = ''科技'';
-
-
-    -- 步骤2: 查询2016年科技行业新发行总额
-
+    WHERE year = 2024 AND geo_level = 'national' AND sector = '科技'
+  sql2: |-
     SELECT SUM(new_issuance_100m_cny) AS issuance_2016
-
     FROM corporate_credit
-
-    WHERE year = 2016 AND geo_level = ''national'' AND sector = ''科技'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (issuance_2024 / issuance_2016)'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - new_issuance_100m_cny
+    WHERE year = 2016 AND geo_level = 'national' AND sector = '科技'
   answer_type: scalar
   answer: 1.329
   answer_unit: 倍
   requires_calculator: true
 - id: 58
-  category: I. 跨工具复杂计算
-  sub_category: I8 跨期差值
-  difficulty: hard
   question: 2023年第4季度全国能源行业的投资级债券收益率比2018年同期增加了多少个百分点？
-  sql: '-- 步骤1: 查询2023年Q4能源行业投资级收益率
-
+  sql1: |-
     SELECT AVG(inv_grade_yield_pct) AS yield_2023
-
     FROM corporate_credit
-
-    WHERE year = 2023 AND quarter = 4 AND geo_level = ''national'' AND sector = ''能源'';
-
-
-    -- 步骤2: 查询2018年Q4能源行业投资级收益率
-
+    WHERE year = 2023 AND quarter = 4 AND geo_level = 'national' AND sector = '能源'
+  sql2: |-
     SELECT AVG(inv_grade_yield_pct) AS yield_2018
-
     FROM corporate_credit
-
-    WHERE year = 2018 AND quarter = 4 AND geo_level = ''national'' AND sector = ''能源'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (yield_2023 - yield_2018)'
-  columns_used:
-  - year
-  - quarter
-  - geo_level
-  - sector
-  - inv_grade_yield_pct
+    WHERE year = 2018 AND quarter = 4 AND geo_level = 'national' AND sector = '能源'
   answer_type: scalar
   answer: 0.068
   answer_unit: 百分点
   requires_calculator: true
 - id: 59
-  category: I. 跨工具复杂计算
-  sub_category: I9 跨期倍数
-  difficulty: hard
   question: 2024年第1季度全国可选消费行业的高收益债券信用利差是2017年同期的多少倍？
-  sql: '-- 步骤1: 查询2024年Q1可选消费行业高收益信用利差
-
+  sql1: |-
     SELECT AVG(hy_spread_bps) AS spread_2024
-
     FROM corporate_credit
-
-    WHERE year = 2024 AND quarter = 1 AND geo_level = ''national'' AND sector = ''可选消费'';
-
-
-    -- 步骤2: 查询2017年Q1可选消费行业高收益信用利差
-
+    WHERE year = 2024 AND quarter = 1 AND geo_level = 'national' AND sector = '可选消费'
+  sql2: |-
     SELECT AVG(hy_spread_bps) AS spread_2017
-
     FROM corporate_credit
-
-    WHERE year = 2017 AND quarter = 1 AND geo_level = ''national'' AND sector = ''可选消费'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (spread_2024 / spread_2017)'
-  columns_used:
-  - year
-  - quarter
-  - geo_level
-  - sector
-  - hy_spread_bps
+    WHERE year = 2017 AND quarter = 1 AND geo_level = 'national' AND sector = '可选消费'
   answer_type: scalar
   answer: 0.8518
   answer_unit: 倍
   requires_calculator: true
 - id: 60
-  category: I. 跨工具复杂计算
-  sub_category: I10 跨期差值
-  difficulty: hard
   question: 2023年全国工业企业的不良贷款率比2020年增加了多少个百分点？
-  sql: '-- 步骤1: 查询2023年工业企业平均不良贷款率
-
+  sql1: |-
     SELECT AVG(npl_ratio_pct) AS npl_2023
-
     FROM corporate_credit
-
-    WHERE year = 2023 AND geo_level = ''national'' AND sector = ''工业'';
-
-
-    -- 步骤2: 查询2020年工业企业平均不良贷款率
-
+    WHERE year = 2023 AND geo_level = 'national' AND sector = '工业'
+  sql2: |-
     SELECT AVG(npl_ratio_pct) AS npl_2020
-
     FROM corporate_credit
-
-    WHERE year = 2020 AND geo_level = ''national'' AND sector = ''工业'';
-
-
-    -- 步骤3: 使用 calculator 工具计算 (npl_2023 - npl_2020)'
-  columns_used:
-  - year
-  - geo_level
-  - sector
-  - npl_ratio_pct
+    WHERE year = 2020 AND geo_level = 'national' AND sector = '工业'
   answer_type: scalar
   answer: 0.2652
   answer_unit: 百分点

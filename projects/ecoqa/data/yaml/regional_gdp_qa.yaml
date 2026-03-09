@@ -1,105 +1,59 @@
 table_name: regional_gdp
 table_description: 中国分地区GDP年度核算数据，年频，多地理层级，包含GDP总量、增速、人均GDP、人口、GDP占全国比重、三次产业结构比重、工业增加值、服务业增加值
-table_unique_signals:
-- 地区生产总值
-- 省级GDP
-- 人均GDP
-- 三次产业结构
-- 工业增加值
-- 服务业增加值
-- 区域GDP
-- 地区经济
-- GDP占全国比重
-schema_summary:
-  time_frequency: annual
-  geo_levels_available:
-  - national
-  - region
-  - province
-  - city
-  row_count: 490
-  data_range:
-    start_year: 2016
-    end_year: 2025
 questions:
 - id: 1
-  category: A. 基础点查询
-  sub_category: A1 单条件等值
-  difficulty: easy
   question: 2024年全国层级的地区生产总值GDP是多少亿元？
-  sql: "SELECT gdp_100m_cny AS value\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'national'\nLIMIT 1"
-  columns_used:
-  - year
-  - geo_level
-  - gdp_100m_cny
+  sql: |-
+    SELECT gdp_100m_cny AS value
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'national'
   answer_type: scalar
-  answer_unit: 亿元
   answer: 1323000.0
+  answer_unit: 亿元
   requires_calculator: false
 - id: 2
-  category: A. 基础点查询
-  sub_category: A1 单条件等值
-  difficulty: easy
   question: 2023年广东省的人均GDP是多少元？
-  sql: "SELECT gdp_per_capita_cny AS value\nFROM regional_gdp\nWHERE year = 2023 AND geo_name = '广东'\nLIMIT 1"
-  columns_used:
-  - year
-  - geo_name
-  - gdp_per_capita_cny
+  sql: |-
+    SELECT gdp_per_capita_cny AS value
+    FROM regional_gdp
+    WHERE year = 2023 AND geo_name = '广东'
   answer_type: scalar
-  answer_unit: 元
   answer: 88038.06
+  answer_unit: 元
   requires_calculator: false
 - id: 3
-  category: A. 基础点查询
-  sub_category: A2 多条件AND
-  difficulty: easy
   question: 2022年华东区域的工业增加值和服务业增加值分别是多少亿元？
-  sql: "SELECT industry_value_added_100m_cny, services_value_added_100m_cny\nFROM regional_gdp\nWHERE year = 2022 AND geo_level = 'region' AND geo_name = '华东'\nLIMIT 1"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - industry_value_added_100m_cny
-  - services_value_added_100m_cny
+  sql: |-
+    SELECT industry_value_added_100m_cny, services_value_added_100m_cny
+    FROM regional_gdp
+    WHERE year = 2022 AND geo_level = 'region' AND geo_name = '华东'
   answer_type: list
-  answer_unit: 亿元
   answer:
   - industry_value_added_100m_cny: 161093.84
     services_value_added_100m_cny: 292786.26
+  answer_unit: 亿元
   requires_calculator: false
 - id: 4
-  category: A. 基础点查询
-  sub_category: A2 多条件AND
-  difficulty: easy
   question: 2021年省级层面北京市的三次产业结构占比是多少？
-  sql: "SELECT primary_share_pct, secondary_share_pct, tertiary_share_pct\nFROM regional_gdp\nWHERE year = 2021 AND geo_level = 'province' AND geo_name = '北京'\nLIMIT 1"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - primary_share_pct
-  - secondary_share_pct
-  - tertiary_share_pct
+  sql: |-
+    SELECT primary_share_pct, secondary_share_pct, tertiary_share_pct
+    FROM regional_gdp
+    WHERE year = 2021 AND geo_level = 'province' AND geo_name = '北京'
   answer_type: list
-  answer_unit: '%'
   answer:
   - primary_share_pct: 8.893
     secondary_share_pct: 45.46
     tertiary_share_pct: 45.647
+  answer_unit: '%'
   requires_calculator: false
 - id: 5
-  category: A. 基础点查询
-  sub_category: A3 OR/IN条件
-  difficulty: easy
   question: 2020年江苏、浙江、上海三省市的地区GDP总量各是多少亿元？
-  sql: "SELECT geo_name, gdp_100m_cny\nFROM regional_gdp\nWHERE year = 2020 AND geo_name IN ('江苏', '浙江', '上海')\nORDER BY gdp_100m_cny DESC"
-  columns_used:
-  - year
-  - geo_name
-  - gdp_100m_cny
+  sql: |-
+    SELECT geo_name, gdp_100m_cny
+    FROM regional_gdp
+    WHERE year = 2020 AND geo_name IN ('江苏', '浙江', '上海')
+    ORDER BY gdp_100m_cny DESC
   answer_type: list
-  answer_unit: 亿元
   answer:
   - geo_name: 江苏
     gdp_100m_cny: 102099.0
@@ -107,20 +61,16 @@ questions:
     gdp_100m_cny: 66244.62
   - geo_name: 上海
     gdp_100m_cny: 36425.44
+  answer_unit: 亿元
   requires_calculator: false
 - id: 6
-  category: A. 基础点查询
-  sub_category: A3 OR/IN条件
-  difficulty: easy
   question: 2024年华北、华南、西南三大区域的人均GDP分别是多少元？
-  sql: "SELECT geo_name, gdp_per_capita_cny\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'region' AND geo_name IN ('华北', '华南', '西南')\nORDER BY geo_name"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_per_capita_cny
+  sql: |-
+    SELECT geo_name, gdp_per_capita_cny
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'region' AND geo_name IN ('华北', '华南', '西南')
+    ORDER BY geo_name
   answer_type: list
-  answer_unit: 元
   answer:
   - geo_name: 华北
     gdp_per_capita_cny: 88592.28
@@ -128,31 +78,26 @@ questions:
     gdp_per_capita_cny: 97357.83
   - geo_name: 西南
     gdp_per_capita_cny: 92827.9
+  answer_unit: 元
   requires_calculator: false
 - id: 7
-  category: A. 基础点查询
-  sub_category: A4 NULL检查
-  difficulty: easy
   question: 区域GDP数据中是否存在服务业增加值缺失的记录？
-  sql: "SELECT COUNT(*) AS value\nFROM regional_gdp\nWHERE services_value_added_100m_cny IS NULL"
-  columns_used:
-  - services_value_added_100m_cny
+  sql: |-
+    SELECT COUNT(*) AS value
+    FROM regional_gdp
+    WHERE services_value_added_100m_cny IS NULL
   answer_type: scalar
-  answer_unit: 条
   answer: 0
+  answer_unit: 条
   requires_calculator: false
 - id: 8
-  category: B. 范围与比较过滤
-  sub_category: B1 时间范围BETWEEN
-  difficulty: easy
   question: 2018年至2020年期间，全国层级的GDP增速分别是多少？
-  sql: "SELECT year, gdp_growth_pct\nFROM regional_gdp\nWHERE year BETWEEN 2018 AND 2020 AND geo_level = 'national'\nORDER BY year"
-  columns_used:
-  - year
-  - geo_level
-  - gdp_growth_pct
+  sql: |-
+    SELECT year, gdp_growth_pct
+    FROM regional_gdp
+    WHERE year BETWEEN 2018 AND 2020 AND geo_level = 'national'
+    ORDER BY year
   answer_type: list
-  answer_unit: '%'
   answer:
   - year: 2018
     gdp_growth_pct: 5.041
@@ -160,19 +105,16 @@ questions:
     gdp_growth_pct: 6.389
   - year: 2020
     gdp_growth_pct: 5.603
+  answer_unit: '%'
   requires_calculator: false
 - id: 9
-  category: B. 范围与比较过滤
-  sub_category: B1 时间范围BETWEEN
-  difficulty: easy
   question: 2019年到2022年期间，上海市的地区GDP总量变化趋势如何？
-  sql: "SELECT year, gdp_100m_cny\nFROM regional_gdp\nWHERE year BETWEEN 2019 AND 2022 AND geo_name = '上海'\nORDER BY year"
-  columns_used:
-  - year
-  - geo_name
-  - gdp_100m_cny
+  sql: |-
+    SELECT year, gdp_100m_cny
+    FROM regional_gdp
+    WHERE year BETWEEN 2019 AND 2022 AND geo_name = '上海'
+    ORDER BY year
   answer_type: list
-  answer_unit: 亿元
   answer:
   - year: 2019
     gdp_100m_cny: 37761.67
@@ -182,477 +124,279 @@ questions:
     gdp_100m_cny: 42105.53
   - year: 2022
     gdp_100m_cny: 43383.16
+  answer_unit: 亿元
   requires_calculator: false
 - id: 10
-  category: B. 范围与比较过滤
-  sub_category: B2 数值阈值
-  difficulty: medium
   question: 2024年哪些省份的人均GDP超过9.5万元？
-  sql: "SELECT geo_name, gdp_per_capita_cny\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province' AND gdp_per_capita_cny > 95000\nORDER BY gdp_per_capita_cny DESC"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_per_capita_cny
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province' AND gdp_per_capita_cny > 95000
+    ORDER BY gdp_per_capita_cny DESC
   answer_type: list
-  answer_unit: 元
   answer:
   - geo_name: 湖北
-    gdp_per_capita_cny: 99704.19
   - geo_name: 广东
-    gdp_per_capita_cny: 98788.67
   - geo_name: 云南
-    gdp_per_capita_cny: 97641.83
   - geo_name: 江苏
-    gdp_per_capita_cny: 97469.16
   - geo_name: 上海
-    gdp_per_capita_cny: 97142.68
   - geo_name: 青海
-    gdp_per_capita_cny: 97117.34
   - geo_name: 辽宁
-    gdp_per_capita_cny: 95894.83
   - geo_name: 安徽
-    gdp_per_capita_cny: 95296.92
   - geo_name: 湖南
-    gdp_per_capita_cny: 95256.12
   - geo_name: 陕西
-    gdp_per_capita_cny: 95212.34
+  answer_unit: null
   requires_calculator: false
 - id: 11
-  category: B. 范围与比较过滤
-  sub_category: B2 数值阈值
-  difficulty: medium
   question: 2023年哪些省份的第三产业占GDP比重超过60%？
-  sql: "SELECT geo_name, tertiary_share_pct\nFROM regional_gdp\nWHERE year = 2023 AND geo_level = 'province' AND tertiary_share_pct > 60\nORDER BY tertiary_share_pct DESC"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - tertiary_share_pct
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2023 AND geo_level = 'province' AND tertiary_share_pct > 60
+    ORDER BY tertiary_share_pct DESC
   answer_type: list
-  answer_unit: '%'
   answer:
   - geo_name: 江西
-    tertiary_share_pct: 65.394
   - geo_name: 云南
-    tertiary_share_pct: 63.282
   - geo_name: 江苏
-    tertiary_share_pct: 61.714
   - geo_name: 内蒙古
-    tertiary_share_pct: 60.692
   - geo_name: 福建
-    tertiary_share_pct: 60.436
   - geo_name: 陕西
-    tertiary_share_pct: 60.206
+  answer_unit: null
   requires_calculator: false
 - id: 12
-  category: B. 范围与比较过滤
-  sub_category: B2 数值阈值
-  difficulty: medium
   question: 2024年哪些区域的GDP增速高于5%？
-  sql: "SELECT geo_name, gdp_growth_pct\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'region' AND gdp_growth_pct > 5.0\nORDER BY gdp_growth_pct DESC"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_growth_pct
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'region' AND gdp_growth_pct > 5.0
+    ORDER BY gdp_growth_pct DESC
   answer_type: list
-  answer_unit: '%'
   answer:
   - geo_name: 华北
-    gdp_growth_pct: 7.997
   - geo_name: 西北
-    gdp_growth_pct: 7.906
   - geo_name: 西南
-    gdp_growth_pct: 7.669
   - geo_name: 华南
-    gdp_growth_pct: 7.497
   - geo_name: 华中
-    gdp_growth_pct: 7.413
   - geo_name: 华东
-    gdp_growth_pct: 6.81
   - geo_name: 东北
-    gdp_growth_pct: 6.508
+  answer_unit: null
   requires_calculator: false
 - id: 13
-  category: B. 范围与比较过滤
-  sub_category: B3 复合范围条件
-  difficulty: medium
   question: 2020年至2023年期间，哪些省份的地区GDP总量始终超过5万亿元？
-  sql: "SELECT geo_name, year, gdp_100m_cny\nFROM regional_gdp\nWHERE year BETWEEN 2020 AND 2023 AND geo_level = 'province' AND gdp_100m_cny > 50000\nORDER BY geo_name, year"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_100m_cny
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year BETWEEN 2020 AND 2023 AND geo_level = 'province'
+    GROUP BY geo_name
+    HAVING COUNT(*) = 4 AND MIN(gdp_100m_cny) > 50000
+    ORDER BY geo_name
   answer_type: list
-  answer_unit: 亿元
   answer:
   - geo_name: 四川
-    year: 2020
-    gdp_100m_cny: 51389.33
-  - geo_name: 四川
-    year: 2021
-    gdp_100m_cny: 57599.49
-  - geo_name: 四川
-    year: 2022
-    gdp_100m_cny: 63518.81
-  - geo_name: 四川
-    year: 2023
-    gdp_100m_cny: 64115.1
   - geo_name: 山东
-    year: 2020
-    gdp_100m_cny: 88739.82
-  - geo_name: 山东
-    year: 2021
-    gdp_100m_cny: 108616.73
-  - geo_name: 山东
-    year: 2022
-    gdp_100m_cny: 104460.49
-  - geo_name: 山东
-    year: 2023
-    gdp_100m_cny: 111144.42
   - geo_name: 广东
-    year: 2020
-    gdp_100m_cny: 103593.72
-  - geo_name: 广东
-    year: 2021
-    gdp_100m_cny: 116670.67
-  - geo_name: 广东
-    year: 2022
-    gdp_100m_cny: 127806.07
-  - geo_name: 广东
-    year: 2023
-    gdp_100m_cny: 126712.21
   - geo_name: 江苏
-    year: 2020
-    gdp_100m_cny: 102099.0
-  - geo_name: 江苏
-    year: 2021
-    gdp_100m_cny: 114179.34
-  - geo_name: 江苏
-    year: 2022
-    gdp_100m_cny: 123598.44
-  - geo_name: 江苏
-    year: 2023
-    gdp_100m_cny: 130139.49
-  - geo_name: 河南
-    year: 2021
-    gdp_100m_cny: 53578.94
-  - geo_name: 河南
-    year: 2022
-    gdp_100m_cny: 57388.01
-  - geo_name: 河南
-    year: 2023
-    gdp_100m_cny: 63312.96
   - geo_name: 浙江
-    year: 2020
-    gdp_100m_cny: 66244.62
-  - geo_name: 浙江
-    year: 2021
-    gdp_100m_cny: 79844.54
-  - geo_name: 浙江
-    year: 2022
-    gdp_100m_cny: 82045.83
-  - geo_name: 浙江
-    year: 2023
-    gdp_100m_cny: 85331.61
-  - geo_name: 湖北
-    year: 2021
-    gdp_100m_cny: 52241.69
-  - geo_name: 湖北
-    year: 2022
-    gdp_100m_cny: 53045.88
-  - geo_name: 湖北
-    year: 2023
-    gdp_100m_cny: 56339.57
-  - geo_name: 福建
-    year: 2023
-    gdp_100m_cny: 51296.53
+  answer_unit: null
   requires_calculator: false
 - id: 14
-  category: B. 范围与比较过滤
-  sub_category: B3 复合范围条件
-  difficulty: medium
   question: 2021年到2024年期间，哪些区域的工业增加值超过18万亿元且服务业增加值也超过25万亿元？
-  sql: "SELECT year, geo_name, industry_value_added_100m_cny, services_value_added_100m_cny\nFROM regional_gdp\nWHERE year BETWEEN 2021 AND 2024 AND geo_level = 'region' AND industry_value_added_100m_cny > 180000 AND services_value_added_100m_cny > 250000\nORDER BY year, geo_name"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - industry_value_added_100m_cny
-  - services_value_added_100m_cny
-  answer_type: list
-  answer_unit: 亿元
-  answer:
-  - year: 2024
-    geo_name: 华东
-    industry_value_added_100m_cny: 196587.55
-    services_value_added_100m_cny: 280735.82
+  sql: |-
+    SELECT DISTINCT geo_name
+    FROM regional_gdp
+    WHERE year BETWEEN 2021 AND 2024 AND geo_level = 'region' AND industry_value_added_100m_cny > 180000 AND services_value_added_100m_cny > 250000
+    ORDER BY geo_name
+  answer_type: scalar
+  answer: 华东
+  answer_unit: null
   requires_calculator: false
 - id: 15
-  category: C. 排序与Top-N
-  sub_category: C1 单指标最大值行
-  difficulty: easy
   question: 2024年哪个省份的地区GDP总量最高？
-  sql: "SELECT geo_name, gdp_100m_cny\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province'\nORDER BY gdp_100m_cny DESC\nLIMIT 1"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_100m_cny
-  answer_type: list
-  answer_unit: 亿元
-  answer:
-  - geo_name: 广东
-    gdp_100m_cny: 144831.2
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province'
+    ORDER BY gdp_100m_cny DESC
+    LIMIT 1
+  answer_type: scalar
+  answer: 广东
+  answer_unit: null
   requires_calculator: false
 - id: 16
-  category: C. 排序与Top-N
-  sub_category: C1 单指标最大值行
-  difficulty: easy
   question: 2023年哪个区域的人均GDP最高？
-  sql: "SELECT geo_name, gdp_per_capita_cny\nFROM regional_gdp\nWHERE year = 2023 AND geo_level = 'region'\nORDER BY gdp_per_capita_cny DESC\nLIMIT 1"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_per_capita_cny
-  answer_type: list
-  answer_unit: 元
-  answer:
-  - geo_name: 西北
-    gdp_per_capita_cny: 92081.85
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2023 AND geo_level = 'region'
+    ORDER BY gdp_per_capita_cny DESC
+    LIMIT 1
+  answer_type: scalar
+  answer: 西北
+  answer_unit: null
   requires_calculator: false
 - id: 17
-  category: C. 排序与Top-N
-  sub_category: C2 单指标最小值行
-  difficulty: easy
   question: 2024年哪个省份的第一产业占GDP比重最低？
-  sql: "SELECT geo_name, primary_share_pct\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province'\nORDER BY primary_share_pct ASC\nLIMIT 1"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - primary_share_pct
-  answer_type: list
-  answer_unit: '%'
-  answer:
-  - geo_name: 云南
-    primary_share_pct: 2.939
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province'
+    ORDER BY primary_share_pct ASC
+    LIMIT 1
+  answer_type: scalar
+  answer: 云南
+  answer_unit: null
   requires_calculator: false
 - id: 18
-  category: C. 排序与Top-N
-  sub_category: C2 单指标最小值行
-  difficulty: easy
   question: 2022年哪个区域的GDP增速最低？
-  sql: "SELECT geo_name, gdp_growth_pct\nFROM regional_gdp\nWHERE year = 2022 AND geo_level = 'region'\nORDER BY gdp_growth_pct ASC\nLIMIT 1"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_growth_pct
-  answer_type: list
-  answer_unit: '%'
-  answer:
-  - geo_name: 华东
-    gdp_growth_pct: 5.961
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2022 AND geo_level = 'region'
+    ORDER BY gdp_growth_pct ASC
+    LIMIT 1
+  answer_type: scalar
+  answer: 华东
+  answer_unit: null
   requires_calculator: false
 - id: 19
-  category: C. 排序与Top-N
-  sub_category: C3 Top3/Top5排名
-  difficulty: medium
   question: 2024年地区GDP总量排名前5的省份是哪些？
-  sql: "SELECT geo_name, gdp_100m_cny\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province'\nORDER BY gdp_100m_cny DESC\nLIMIT 5"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_100m_cny
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province'
+    ORDER BY gdp_100m_cny DESC
+    LIMIT 5
   answer_type: list
-  answer_unit: 亿元
   answer:
   - geo_name: 广东
-    gdp_100m_cny: 144831.2
   - geo_name: 江苏
-    gdp_100m_cny: 135755.54
   - geo_name: 山东
-    gdp_100m_cny: 115582.24
   - geo_name: 浙江
-    gdp_100m_cny: 86445.84
   - geo_name: 四川
-    gdp_100m_cny: 66606.3
+  answer_unit: null
   requires_calculator: false
 - id: 20
-  category: C. 排序与Top-N
-  sub_category: C3 Top3/Top5排名
-  difficulty: medium
   question: 2023年人均GDP排名前3的省份是哪些？
-  sql: "SELECT geo_name, gdp_per_capita_cny\nFROM regional_gdp\nWHERE year = 2023 AND geo_level = 'province'\nORDER BY gdp_per_capita_cny DESC\nLIMIT 3"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_per_capita_cny
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2023 AND geo_level = 'province'
+    ORDER BY gdp_per_capita_cny DESC
+    LIMIT 3
   answer_type: list
-  answer_unit: 元
   answer:
   - geo_name: 宁夏
-    gdp_per_capita_cny: 95955.58
   - geo_name: 江苏
-    gdp_per_capita_cny: 94877.23
   - geo_name: 甘肃
-    gdp_per_capita_cny: 94786.84
+  answer_unit: null
   requires_calculator: false
 - id: 21
-  category: C. 排序与Top-N
-  sub_category: C4 多列排序
-  difficulty: medium
   question: 2024年省级层面，先按工业增加值降序，再按服务业增加值降序排列，前3名是哪些省份？
-  sql: "SELECT geo_name, industry_value_added_100m_cny, services_value_added_100m_cny\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province'\nORDER BY industry_value_added_100m_cny DESC, services_value_added_100m_cny DESC\nLIMIT 3"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - industry_value_added_100m_cny
-  - services_value_added_100m_cny
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province'
+    ORDER BY industry_value_added_100m_cny DESC, services_value_added_100m_cny DESC
+    LIMIT 3
   answer_type: list
-  answer_unit: 亿元
   answer:
   - geo_name: 江苏
-    industry_value_added_100m_cny: 60522.53
-    services_value_added_100m_cny: 57978.48
   - geo_name: 广东
-    industry_value_added_100m_cny: 48137.55
-    services_value_added_100m_cny: 81589.21
   - geo_name: 山东
-    industry_value_added_100m_cny: 34741.71
-    services_value_added_100m_cny: 72229.65
+  answer_unit: null
   requires_calculator: false
 - id: 22
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D1 COUNT/COUNT DISTINCT
-  difficulty: easy
   question: 省级层面纳入区域GDP统计的省份有多少个？
-  sql: "SELECT COUNT(DISTINCT geo_name) AS value\nFROM regional_gdp\nWHERE geo_level = 'province'"
-  columns_used:
-  - geo_level
-  - geo_name
+  sql: |-
+    SELECT COUNT(DISTINCT geo_name) AS value
+    FROM regional_gdp
+    WHERE geo_level = 'province'
   answer_type: scalar
-  answer_unit: 个
   answer: 31
+  answer_unit: 个
   requires_calculator: false
 - id: 23
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D1 COUNT/COUNT DISTINCT
-  difficulty: easy
   question: 2024年区域层级共有多少条地区GDP数据？
-  sql: "SELECT COUNT(*) AS value\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'region'"
-  columns_used:
-  - year
-  - geo_level
+  sql: |-
+    SELECT COUNT(*) AS value
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'region'
   answer_type: scalar
-  answer_unit: 条
   answer: 7
+  answer_unit: 条
   requires_calculator: false
 - id: 24
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D2 SUM
-  difficulty: medium
   question: 2024年所有省份的地区GDP总量加总是多少亿元？
-  sql: "SELECT SUM(gdp_100m_cny) AS value\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province'"
-  columns_used:
-  - year
-  - geo_level
-  - gdp_100m_cny
+  sql: |-
+    SELECT SUM(gdp_100m_cny) AS value
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province'
   answer_type: scalar
-  answer_unit: 亿元
   answer: 1323000.0
+  answer_unit: 亿元
   requires_calculator: false
 - id: 25
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D2 SUM
-  difficulty: medium
   question: 2023年所有区域的工业增加值总和是多少亿元？
-  sql: "SELECT SUM(industry_value_added_100m_cny) AS value\nFROM regional_gdp\nWHERE year = 2023 AND geo_level = 'region'"
-  columns_used:
-  - year
-  - geo_level
-  - industry_value_added_100m_cny
+  sql: |-
+    SELECT SUM(industry_value_added_100m_cny) AS value
+    FROM regional_gdp
+    WHERE year = 2023 AND geo_level = 'region'
   answer_type: scalar
-  answer_unit: 亿元
   answer: 435921.71
+  answer_unit: 亿元
   requires_calculator: false
 - id: 26
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D3 AVG
-  difficulty: medium
   question: 2024年所有省份的平均人均GDP是多少元？
-  sql: "SELECT AVG(gdp_per_capita_cny) AS value\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province'"
-  columns_used:
-  - year
-  - geo_level
-  - gdp_per_capita_cny
+  sql: |-
+    SELECT AVG(gdp_per_capita_cny) AS value
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province'
   answer_type: scalar
-  answer_unit: 元
   answer: 92906.92322580646
+  answer_unit: 元
   requires_calculator: false
 - id: 27
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D3 AVG
-  difficulty: medium
   question: 2022年所有区域的平均GDP增速是多少？
-  sql: "SELECT AVG(gdp_growth_pct) AS value\nFROM regional_gdp\nWHERE year = 2022 AND geo_level = 'region'"
-  columns_used:
-  - year
-  - geo_level
-  - gdp_growth_pct
+  sql: |-
+    SELECT AVG(gdp_growth_pct) AS value
+    FROM regional_gdp
+    WHERE year = 2022 AND geo_level = 'region'
   answer_type: scalar
-  answer_unit: '%'
   answer: 6.655285714285715
+  answer_unit: '%'
   requires_calculator: false
 - id: 28
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D4 MIN/MAX
-  difficulty: medium
   question: 2024年省级层面，第三产业占GDP比重的最小值和最大值分别是多少？
-  sql: "SELECT MIN(tertiary_share_pct) AS min_value, MAX(tertiary_share_pct) AS max_value\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province'"
-  columns_used:
-  - year
-  - geo_level
-  - tertiary_share_pct
+  sql: |-
+    SELECT MIN(tertiary_share_pct) AS min_value, MAX(tertiary_share_pct) AS max_value
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province'
   answer_type: list
-  answer_unit: '%'
   answer:
   - min_value: 42.708
     max_value: 66.437
+  answer_unit: '%'
   requires_calculator: false
 - id: 29
-  category: D. 聚合函数（无GROUP BY）
-  sub_category: D4 MIN/MAX
-  difficulty: medium
   question: 2023年全国所有区域中，地区GDP总量的最大值是多少亿元？
-  sql: "SELECT MAX(gdp_100m_cny) AS value\nFROM regional_gdp\nWHERE year = 2023 AND geo_level = 'region'"
-  columns_used:
-  - year
-  - geo_level
-  - gdp_100m_cny
+  sql: |-
+    SELECT MAX(gdp_100m_cny) AS value
+    FROM regional_gdp
+    WHERE year = 2023 AND geo_level = 'region'
   answer_type: scalar
-  answer_unit: 亿元
   answer: 502948.79
+  answer_unit: 亿元
   requires_calculator: false
 - id: 30
-  category: E. 分组聚合GROUP BY
-  sub_category: E1 单维度分组SUM/AVG
-  difficulty: medium
   question: 2016年至2025年期间，全国层级每年的地区GDP总量是多少亿元？
-  sql: "SELECT year, SUM(gdp_100m_cny) AS total_gdp\nFROM regional_gdp\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
-  columns_used:
-  - year
-  - geo_level
-  - gdp_100m_cny
+  sql: |-
+    SELECT year, SUM(gdp_100m_cny) AS total_gdp
+    FROM regional_gdp
+    WHERE geo_level = 'national'
+    GROUP BY year
+    ORDER BY year
   answer_type: list
-  answer_unit: 亿元
   answer:
   - year: 2016
     total_gdp: 744127.0
@@ -674,60 +418,53 @@ questions:
     total_gdp: 1323000.0
   - year: 2025
     total_gdp: 1388000.0
+  answer_unit: 亿元
   requires_calculator: false
 - id: 31
-  category: E. 分组聚合GROUP BY
-  sub_category: E1 单维度分组SUM/AVG
-  difficulty: medium
   question: 按全国/区域/省三个层级，人均GDP平均值分别是多少元？
-  sql: "SELECT geo_level, AVG(gdp_per_capita_cny) AS avg_gdp_per_capita\nFROM regional_gdp\nGROUP BY geo_level\nORDER BY avg_gdp_per_capita DESC"
-  columns_used:
-  - geo_level
-  - gdp_per_capita_cny
+  sql: |-
+    SELECT geo_level, AVG(gdp_per_capita_cny) AS avg_gdp_per_capita
+    FROM regional_gdp
+    WHERE geo_level IN ('national', 'region', 'province')
+    GROUP BY geo_level
+    ORDER BY CASE geo_level WHEN 'national' THEN 1 WHEN 'region' THEN 2 WHEN 'province' THEN 3 END
   answer_type: list
-  answer_unit: 元
   answer:
-  - geo_level: city
-    avg_gdp_per_capita: 76875.0617
   - geo_level: national
     avg_gdp_per_capita: 76791.225
   - geo_level: region
     avg_gdp_per_capita: 76701.77014285715
   - geo_level: province
     avg_gdp_per_capita: 76643.329
+  answer_unit: 元
   requires_calculator: false
 - id: 32
-  category: E. 分组聚合GROUP BY
-  sub_category: E2 单维度分组COUNT
-  difficulty: medium
   question: 全国、区域、省三个层级的区域GDP数据量分别是多少？
-  sql: "SELECT geo_level, COUNT(*) AS record_count\nFROM regional_gdp\nGROUP BY geo_level\nORDER BY record_count DESC"
-  columns_used:
-  - geo_level
+  sql: |-
+    SELECT geo_level, COUNT(*) AS record_count
+    FROM regional_gdp
+    WHERE geo_level IN ('national', 'region', 'province')
+    GROUP BY geo_level
+    ORDER BY CASE geo_level WHEN 'national' THEN 1 WHEN 'region' THEN 2 WHEN 'province' THEN 3 END
   answer_type: list
-  answer_unit: 条
   answer:
-  - geo_level: province
-    record_count: 310
-  - geo_level: city
-    record_count: 100
-  - geo_level: region
-    record_count: 70
   - geo_level: national
     record_count: 10
+  - geo_level: region
+    record_count: 70
+  - geo_level: province
+    record_count: 310
+  answer_unit: 条
   requires_calculator: false
 - id: 33
-  category: E. 分组聚合GROUP BY
-  sub_category: E2 单维度分组COUNT
-  difficulty: medium
   question: 2024年每个区域如华北、华东各包含多少个省份的GDP数据？
-  sql: "SELECT parent_geo_name, COUNT(*) AS province_count\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province' AND parent_geo_name IS NOT NULL\nGROUP BY parent_geo_name\nORDER BY province_count DESC"
-  columns_used:
-  - year
-  - geo_level
-  - parent_geo_name
+  sql: |-
+    SELECT parent_geo_name, COUNT(*) AS province_count
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province' AND parent_geo_name IS NOT NULL
+    GROUP BY parent_geo_name
+    ORDER BY province_count DESC
   answer_type: list
-  answer_unit: 个
   answer:
   - parent_geo_name: 华东
     province_count: 7
@@ -743,20 +480,17 @@ questions:
     province_count: 3
   - parent_geo_name: 东北
     province_count: 3
+  answer_unit: 个
   requires_calculator: false
 - id: 34
-  category: E. 分组聚合GROUP BY
-  sub_category: E3 多维度分组
-  difficulty: hard
   question: 2022年至2024年，每年每个区域的平均GDP增速是多少？
-  sql: "SELECT year, geo_name, AVG(gdp_growth_pct) AS avg_growth\nFROM regional_gdp\nWHERE year BETWEEN 2022 AND 2024 AND geo_level = 'region'\nGROUP BY year, geo_name\nORDER BY year, geo_name"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_growth_pct
+  sql: |-
+    SELECT year, geo_name, AVG(gdp_growth_pct) AS avg_growth
+    FROM regional_gdp
+    WHERE year BETWEEN 2022 AND 2024 AND geo_level = 'region'
+    GROUP BY year, geo_name
+    ORDER BY year, geo_name
   answer_type: list
-  answer_unit: '%'
   answer:
   - year: 2022
     geo_name: 东北
@@ -821,19 +555,17 @@ questions:
   - year: 2024
     geo_name: 西南
     avg_growth: 7.669
+  answer_unit: '%'
   requires_calculator: false
 - id: 35
-  category: E. 分组聚合GROUP BY
-  sub_category: E3 多维度分组
-  difficulty: hard
   question: 2020年至2023年，每年省级层面工业增加值的总和是多少亿元？
-  sql: "SELECT year, SUM(industry_value_added_100m_cny) AS total_industry\nFROM regional_gdp\nWHERE year BETWEEN 2020 AND 2023 AND geo_level = 'province'\nGROUP BY year\nORDER BY year"
-  columns_used:
-  - year
-  - geo_level
-  - industry_value_added_100m_cny
+  sql: |-
+    SELECT year, SUM(industry_value_added_100m_cny) AS total_industry
+    FROM regional_gdp
+    WHERE year BETWEEN 2020 AND 2023 AND geo_level = 'province'
+    GROUP BY year
+    ORDER BY year
   answer_type: list
-  answer_unit: 亿元
   answer:
   - year: 2020
     total_industry: 396854.67
@@ -843,180 +575,123 @@ questions:
     total_industry: 452413.96
   - year: 2023
     total_industry: 469814.79
+  answer_unit: 亿元
   requires_calculator: false
 - id: 36
-  category: E. 分组聚合GROUP BY
-  sub_category: E4 GROUP BY+ORDER BY
-  difficulty: hard
   question: 2024年各区域按地区GDP总量排序，从高到低是哪些区域？
-  sql: "SELECT geo_name, SUM(gdp_100m_cny) AS total_gdp\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY total_gdp DESC"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_100m_cny
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'region'
+    GROUP BY geo_name
+    ORDER BY SUM(gdp_100m_cny) DESC
   answer_type: list
-  answer_unit: 亿元
   answer:
   - geo_name: 华东
-    total_gdp: 525171.77
   - geo_name: 华南
-    total_gdp: 180303.87
   - geo_name: 华中
-    total_gdp: 173798.58
   - geo_name: 西南
-    total_gdp: 155663.02
   - geo_name: 华北
-    total_gdp: 152309.26
   - geo_name: 西北
-    total_gdp: 75156.48
   - geo_name: 东北
-    total_gdp: 60597.02
+  answer_unit: null
   requires_calculator: false
 - id: 37
-  category: F. 分组过滤HAVING
-  sub_category: F1 HAVING AVG条件
-  difficulty: hard
   question: 2016年至2025年期间，哪些省份的平均GDP增速超过6%？
-  sql: "SELECT geo_name, AVG(gdp_growth_pct) AS avg_growth\nFROM regional_gdp\nWHERE geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(gdp_growth_pct) > 6.0\nORDER BY avg_growth DESC"
-  columns_used:
-  - geo_level
-  - geo_name
-  - gdp_growth_pct
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE geo_level = 'province'
+    GROUP BY geo_name
+    HAVING AVG(gdp_growth_pct) > 6.0
+    ORDER BY AVG(gdp_growth_pct) DESC
   answer_type: list
-  answer_unit: '%'
   answer:
   - geo_name: 海南
-    avg_growth: 6.7139
   - geo_name: 辽宁
-    avg_growth: 6.644299999999999
   - geo_name: 江西
-    avg_growth: 6.622400000000001
   - geo_name: 湖北
-    avg_growth: 6.5506
   - geo_name: 宁夏
-    avg_growth: 6.533799999999999
   - geo_name: 上海
-    avg_growth: 6.4885
   - geo_name: 贵州
-    avg_growth: 6.4833
   - geo_name: 内蒙古
-    avg_growth: 6.463500000000001
   - geo_name: 河南
-    avg_growth: 6.430400000000001
   - geo_name: 北京
-    avg_growth: 6.4084
   - geo_name: 重庆
-    avg_growth: 6.4034
   - geo_name: 甘肃
-    avg_growth: 6.3957
   - geo_name: 天津
-    avg_growth: 6.3718
   - geo_name: 黑龙江
-    avg_growth: 6.3469
   - geo_name: 浙江
-    avg_growth: 6.346
   - geo_name: 安徽
-    avg_growth: 6.3339
   - geo_name: 福建
-    avg_growth: 6.2924
   - geo_name: 云南
-    avg_growth: 6.2724
   - geo_name: 江苏
-    avg_growth: 6.229699999999999
   - geo_name: 陕西
-    avg_growth: 6.1928
   - geo_name: 山西
-    avg_growth: 6.1926000000000005
   - geo_name: 河北
-    avg_growth: 6.1891
   - geo_name: 广西
-    avg_growth: 6.1855
   - geo_name: 湖南
-    avg_growth: 6.1753
   - geo_name: 吉林
-    avg_growth: 6.1378
   - geo_name: 广东
-    avg_growth: 6.0481
   - geo_name: 西藏
-    avg_growth: 6.0314
   - geo_name: 青海
-    avg_growth: 6.0209
+  answer_unit: null
   requires_calculator: false
 - id: 38
-  category: F. 分组过滤HAVING
-  sub_category: F1 HAVING AVG条件
-  difficulty: hard
   question: 哪些区域在2020年至2024年期间平均人均GDP超过7万元？
-  sql: "SELECT geo_name, AVG(gdp_per_capita_cny) AS avg_gdp_per_capita\nFROM regional_gdp\nWHERE year BETWEEN 2020 AND 2024 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(gdp_per_capita_cny) > 70000\nORDER BY avg_gdp_per_capita DESC"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_per_capita_cny
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year BETWEEN 2020 AND 2024 AND geo_level = 'region'
+    GROUP BY geo_name
+    HAVING AVG(gdp_per_capita_cny) > 70000
+    ORDER BY AVG(gdp_per_capita_cny) DESC
   answer_type: list
-  answer_unit: 元
   answer:
   - geo_name: 西北
-    avg_gdp_per_capita: 85084.312
   - geo_name: 华东
-    avg_gdp_per_capita: 84895.514
   - geo_name: 华南
-    avg_gdp_per_capita: 84654.36799999999
   - geo_name: 华中
-    avg_gdp_per_capita: 84507.434
   - geo_name: 东北
-    avg_gdp_per_capita: 84103.908
   - geo_name: 西南
-    avg_gdp_per_capita: 83784.176
   - geo_name: 华北
-    avg_gdp_per_capita: 83734.82800000001
+  answer_unit: null
   requires_calculator: false
 - id: 39
-  category: F. 分组过滤HAVING
-  sub_category: F2 HAVING COUNT条件
-  difficulty: hard
   question: 哪些区域下辖的省份数量超过5个？
-  sql: "SELECT parent_geo_name, COUNT(DISTINCT geo_name) AS province_count\nFROM regional_gdp\nWHERE geo_level = 'province' AND parent_geo_name IS NOT NULL\nGROUP BY parent_geo_name\nHAVING COUNT(DISTINCT geo_name) > 5\nORDER BY province_count DESC"
-  columns_used:
-  - geo_level
-  - geo_name
-  - parent_geo_name
-  answer_type: list
-  answer_unit: 个
-  answer:
-  - parent_geo_name: 华东
-    province_count: 7
+  sql: |-
+    SELECT parent_geo_name
+    FROM regional_gdp
+    WHERE geo_level = 'province' AND parent_geo_name IS NOT NULL
+    GROUP BY parent_geo_name
+    HAVING COUNT(DISTINCT geo_name) > 5
+    ORDER BY COUNT(DISTINCT geo_name) DESC
+  answer_type: scalar
+  answer: 华东
+  answer_unit: null
   requires_calculator: false
 - id: 40
-  category: F. 分组过滤HAVING
-  sub_category: F3 HAVING SUM条件
-  difficulty: hard
   question: 2024年哪些区域的服务业增加值总和超过25万亿元？
-  sql: "SELECT geo_name, SUM(services_value_added_100m_cny) AS total_services\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING SUM(services_value_added_100m_cny) > 250000\nORDER BY total_services DESC"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - services_value_added_100m_cny
-  answer_type: list
-  answer_unit: 亿元
-  answer:
-  - geo_name: 华东
-    total_services: 280735.82
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'region'
+    GROUP BY geo_name
+    HAVING SUM(services_value_added_100m_cny) > 250000
+    ORDER BY SUM(services_value_added_100m_cny) DESC
+  answer_type: scalar
+  answer: 华东
+  answer_unit: null
   requires_calculator: false
 - id: 41
-  category: G. 时间趋势与子查询
-  sub_category: G1 按年聚合趋势
-  difficulty: hard
   question: 2016年至2025年全国层级地区GDP总量的年度变化趋势如何？
-  sql: "SELECT year, gdp_100m_cny\nFROM regional_gdp\nWHERE geo_level = 'national'\nGROUP BY year\nORDER BY year"
-  columns_used:
-  - year
-  - geo_level
-  - gdp_100m_cny
+  sql: |-
+    SELECT year, gdp_100m_cny
+    FROM regional_gdp
+    WHERE geo_level = 'national'
+    GROUP BY year
+    ORDER BY year
   answer_type: list
-  answer_unit: 亿元
   answer:
   - year: 2016
     gdp_100m_cny: 744127.0
@@ -1038,20 +713,17 @@ questions:
     gdp_100m_cny: 1323000.0
   - year: 2025
     gdp_100m_cny: 1388000.0
+  answer_unit: 亿元
   requires_calculator: false
 - id: 42
-  category: G. 时间趋势与子查询
-  sub_category: G1 按年聚合趋势
-  difficulty: hard
   question: 广东省2016年至2025年人均GDP的年度增长趋势是怎样的？
-  sql: "SELECT year, gdp_per_capita_cny\nFROM regional_gdp\nWHERE geo_name = '广东' AND geo_level = 'province'\nGROUP BY year\nORDER BY year"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_per_capita_cny
+  sql: |-
+    SELECT year, gdp_per_capita_cny
+    FROM regional_gdp
+    WHERE geo_name = '广东' AND geo_level = 'province'
+    GROUP BY year
+    ORDER BY year
   answer_type: list
-  answer_unit: 元
   answer:
   - year: 2016
     gdp_per_capita_cny: 50983.36
@@ -1073,453 +745,237 @@ questions:
     gdp_per_capita_cny: 98788.67
   - year: 2025
     gdp_per_capita_cny: 97218.68
+  answer_unit: 元
   requires_calculator: false
 - id: 43
-  category: G. 时间趋势与子查询
-  sub_category: G2 子查询对比
-  difficulty: hard
   question: 2024年哪些省份的地区GDP总量高于所有省份的平均值？
-  sql: "SELECT geo_name, gdp_100m_cny\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province' AND gdp_100m_cny > ( SELECT AVG(gdp_100m_cny)\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'province' )\nORDER BY gdp_100m_cny DESC"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_100m_cny
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province' AND gdp_100m_cny > (
+    SELECT AVG(gdp_100m_cny)
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'province'
+    )
+    ORDER BY gdp_100m_cny DESC
   answer_type: list
-  answer_unit: 亿元
   answer:
   - geo_name: 广东
-    gdp_100m_cny: 144831.2
   - geo_name: 江苏
-    gdp_100m_cny: 135755.54
   - geo_name: 山东
-    gdp_100m_cny: 115582.24
   - geo_name: 浙江
-    gdp_100m_cny: 86445.84
   - geo_name: 四川
-    gdp_100m_cny: 66606.3
   - geo_name: 河南
-    gdp_100m_cny: 63566.54
   - geo_name: 湖北
-    gdp_100m_cny: 59587.41
   - geo_name: 福建
-    gdp_100m_cny: 52733.5
   - geo_name: 安徽
-    gdp_100m_cny: 50933.06
   - geo_name: 湖南
-    gdp_100m_cny: 50644.63
   - geo_name: 上海
-    gdp_100m_cny: 49984.67
   - geo_name: 北京
-    gdp_100m_cny: 46609.03
   - geo_name: 河北
-    gdp_100m_cny: 44284.98
+  answer_unit: null
   requires_calculator: false
 - id: 44
-  category: G. 时间趋势与子查询
-  sub_category: G2 子查询对比
-  difficulty: hard
   question: 2023年哪些区域的GDP增速超过了全国平均增速？
-  sql: "SELECT geo_name, gdp_growth_pct\nFROM regional_gdp\nWHERE year = 2023 AND geo_level = 'region' AND gdp_growth_pct > ( SELECT AVG(gdp_growth_pct)\nFROM regional_gdp\nWHERE year = 2023 AND geo_level = 'region' )\nORDER BY gdp_growth_pct DESC"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_growth_pct
+  sql: |-
+    SELECT geo_name
+    FROM regional_gdp
+    WHERE year = 2023 AND geo_level = 'region' AND gdp_growth_pct > (
+    SELECT gdp_growth_pct
+    FROM regional_gdp
+    WHERE year = 2023 AND geo_level = 'national'
+    )
+    ORDER BY gdp_growth_pct DESC
   answer_type: list
-  answer_unit: '%'
   answer:
   - geo_name: 华南
-    gdp_growth_pct: 7.605
   - geo_name: 华东
-    gdp_growth_pct: 6.947
   - geo_name: 西北
-    gdp_growth_pct: 6.904
   - geo_name: 东北
-    gdp_growth_pct: 6.855
+  - geo_name: 西南
+  answer_unit: null
   requires_calculator: false
 - id: 45
-  category: G. 时间趋势与子查询
-  sub_category: G3 跨工具计算
-  difficulty: hard
   question: 2024年华东区域的服务业增加值是华北区域的多少倍？
-  sql: "SELECT MAX(CASE WHEN geo_name = '华东' THEN services_value_added_100m_cny END) AS east_services, MAX(CASE WHEN geo_name = '华北' THEN services_value_added_100m_cny END) AS north_services\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'region'"
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - services_value_added_100m_cny
+  sql1: |-
+    SELECT services_value_added_100m_cny AS east_services
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'region' AND geo_name = '华东'
+  sql2: |-
+    SELECT services_value_added_100m_cny AS north_services
+    FROM regional_gdp
+    WHERE year = 2024 AND geo_level = 'region' AND geo_name = '华北'
   answer_type: scalar
+  answer: 3.327248812322548
   answer_unit: 倍
   requires_calculator: true
-  answer: 3.327248812322548
 - id: 46
-  category: H. 边界与容错
-  sub_category: H1 数据不存在
-  difficulty: medium
   question: 2030年全国层级的地区GDP总量是多少亿元？
   sql: null
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
   answer: null
+  answer_unit: null
 - id: 47
-  category: H. 边界与容错
-  sub_category: H2 字段不存在
-  difficulty: medium
   question: 查询各省份的企业数量和就业人数统计
   sql: null
   expected_error: 表中不包含企业数量和就业人数字段，仅有GDP相关指标
   answer: null
+  answer_unit: null
 - id: 48
-  category: H. 边界与容错
-  sub_category: H3 逻辑矛盾
-  difficulty: hard
   question: 查询全国层级且地区名称为江苏的地区GDP数据
   sql: null
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为江苏
   answer: null
+  answer_unit: null
 - id: 49
-  category: H. 边界与容错
-  sub_category: H4 极端值查询
-  difficulty: hard
   question: 查询第三产业占GDP比重超过150%的记录
   sql: null
   expected_error: 产业占比的合理范围为0-100%，不存在超过100%的情况
   answer: null
+  answer_unit: null
 - id: 50
-  category: H. 边界与容错
-  sub_category: H1 数据不存在
-  difficulty: medium
   question: 查询2010年的区域GDP数据
   sql: null
   expected_error: 数据起始年份为2016年，2010年数据不存在
   answer: null
+  answer_unit: null
 - id: 51
-  category: I. 跨工具复杂计算
-  sub_category: I1 跨类目倍数
-  difficulty: hard
   question: 2024年广东省的工业增加值是服务业增加值的多少倍？
-  sql: '-- 步骤1: 查询广东省2024年工业增加值
-
+  sql1: |-
     SELECT industry_value_added_100m_cny AS industry_value
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''广东''
-
-
-    -- 步骤2: 查询广东省2024年服务业增加值
-
+    WHERE year = 2024 AND geo_level = 'province' AND geo_name = '广东'
+  sql2: |-
     SELECT services_value_added_100m_cny AS services_value
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''广东''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (industry_value / services_value)'
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - industry_value_added_100m_cny
-  - services_value_added_100m_cny
+    WHERE year = 2024 AND geo_level = 'province' AND geo_name = '广东'
   answer_type: scalar
-  answer: 0.59
+  answer: 0.5899989716777501
   answer_unit: 倍
   requires_calculator: true
 - id: 52
-  category: I. 跨工具复杂计算
-  sub_category: I2 跨层级占比
-  difficulty: hard
   question: 2023年华东区域的地区生产总值占全国GDP的百分比是多少？
-  sql: '-- 步骤1: 查询华东区域2023年GDP总量
-
+  sql1: |-
     SELECT gdp_100m_cny AS east_gdp
-
     FROM regional_gdp
-
-    WHERE year = 2023 AND geo_level = ''region'' AND geo_name = ''华东''
-
-
-    -- 步骤2: 查询全国2023年GDP总量
-
+    WHERE year = 2023 AND geo_level = 'region' AND geo_name = '华东'
+  sql2: |-
     SELECT gdp_100m_cny AS national_gdp
-
     FROM regional_gdp
-
-    WHERE year = 2023 AND geo_level = ''national''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (east_gdp / national_gdp) * 100'
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_100m_cny
+    WHERE year = 2023 AND geo_level = 'national'
   answer_type: scalar
-  answer: 39.9
+  answer: 39.89814149337369
   answer_unit: '%'
   requires_calculator: true
 - id: 53
-  category: I. 跨工具复杂计算
-  sub_category: I3 跨地区差值
-  difficulty: hard
   question: 2024年江苏省的人均GDP比浙江省高出多少元？
-  sql: '-- 步骤1: 查询江苏省2024年人均GDP
-
+  sql1: |-
     SELECT gdp_per_capita_cny AS js_per_capita
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''江苏''
-
-
-    -- 步骤2: 查询浙江省2024年人均GDP
-
+    WHERE year = 2024 AND geo_level = 'province' AND geo_name = '江苏'
+  sql2: |-
     SELECT gdp_per_capita_cny AS zj_per_capita
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''浙江''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (js_per_capita - zj_per_capita)'
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_per_capita_cny
+    WHERE year = 2024 AND geo_level = 'province' AND geo_name = '浙江'
   answer_type: scalar
-  answer: 7095.22
+  answer: 7095.220000000001
   answer_unit: 元
   requires_calculator: true
 - id: 54
-  category: I. 跨工具复杂计算
-  sub_category: I4 跨地区产业结构对比
-  difficulty: hard
   question: 2023年深圳市的第三产业占GDP比重比广州市高出多少个百分点？
-  sql: '-- 步骤1: 查询深圳市2023年第三产业占比
-
+  sql1: |-
     SELECT tertiary_share_pct AS sz_tertiary
-
     FROM regional_gdp
-
-    WHERE year = 2023 AND geo_level = ''city'' AND geo_name = ''深圳''
-
-
-    -- 步骤2: 查询广州市2023年第三产业占比
-
+    WHERE year = 2023 AND geo_level = 'city' AND geo_name = '深圳'
+  sql2: |-
     SELECT tertiary_share_pct AS gz_tertiary
-
     FROM regional_gdp
-
-    WHERE year = 2023 AND geo_level = ''city'' AND geo_name = ''广州''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (sz_tertiary - gz_tertiary)'
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - tertiary_share_pct
+    WHERE year = 2023 AND geo_level = 'city' AND geo_name = '广州'
   answer_type: scalar
-  answer: 6.03
+  answer: 6.029999999999994
   answer_unit: 个百分点
   requires_calculator: true
 - id: 55
-  category: I. 跨工具复杂计算
-  sub_category: I5 跨区域服务业对比
-  difficulty: hard
   question: 2024年西南区域的服务业增加值占华东区域服务业增加值的百分比是多少？
-  sql: '-- 步骤1: 查询西南区域2024年服务业增加值
-
+  sql1: |-
     SELECT services_value_added_100m_cny AS sw_services
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''region'' AND geo_name = ''西南''
-
-
-    -- 步骤2: 查询华东区域2024年服务业增加值
-
+    WHERE year = 2024 AND geo_level = 'region' AND geo_name = '西南'
+  sql2: |-
     SELECT services_value_added_100m_cny AS east_services
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''region'' AND geo_name = ''华东''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (sw_services / east_services) * 100'
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - services_value_added_100m_cny
+    WHERE year = 2024 AND geo_level = 'region' AND geo_name = '华东'
   answer_type: scalar
-  answer: 27.34
+  answer: 27.339856381704337
   answer_unit: '%'
   requires_calculator: true
 - id: 56
-  category: I. 跨工具复杂计算
-  sub_category: I6 跨期GDP增量
-  difficulty: hard
   question: 2024年全国地区生产总值比2020年增加了多少亿元？
-  sql: '-- 步骤1: 查询2024年全国GDP总量
-
+  sql1: |-
     SELECT gdp_100m_cny AS gdp_2024
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''national''
-
-
-    -- 步骤2: 查询2020年全国GDP总量
-
+    WHERE year = 2024 AND geo_level = 'national'
+  sql2: |-
     SELECT gdp_100m_cny AS gdp_2020
-
     FROM regional_gdp
-
-    WHERE year = 2020 AND geo_level = ''national''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (gdp_2024 - gdp_2020)'
-  columns_used:
-  - year
-  - geo_level
-  - gdp_100m_cny
+    WHERE year = 2020 AND geo_level = 'national'
   answer_type: scalar
   answer: 307014.0
   answer_unit: 亿元
   requires_calculator: true
 - id: 57
-  category: I. 跨工具复杂计算
-  sub_category: I7 跨期人均GDP倍数
-  difficulty: hard
   question: 2023年广东省的人均GDP是2016年的多少倍？
-  sql: '-- 步骤1: 查询广东省2023年人均GDP
-
+  sql1: |-
     SELECT gdp_per_capita_cny AS per_capita_2023
-
     FROM regional_gdp
-
-    WHERE year = 2023 AND geo_level = ''province'' AND geo_name = ''广东''
-
-
-    -- 步骤2: 查询广东省2016年人均GDP
-
+    WHERE year = 2023 AND geo_level = 'province' AND geo_name = '广东'
+  sql2: |-
     SELECT gdp_per_capita_cny AS per_capita_2016
-
     FROM regional_gdp
-
-    WHERE year = 2016 AND geo_level = ''province'' AND geo_name = ''广东''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (per_capita_2023 / per_capita_2016)'
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - gdp_per_capita_cny
+    WHERE year = 2016 AND geo_level = 'province' AND geo_name = '广东'
   answer_type: scalar
-  answer: 1.7268
+  answer: 1.7267998813730596
   answer_unit: 倍
   requires_calculator: true
 - id: 58
-  category: I. 跨工具复杂计算
-  sub_category: I8 跨期工业增加值增量
-  difficulty: hard
   question: 2024年华北区域的工业增加值比2019年增长了多少亿元？
-  sql: '-- 步骤1: 查询华北区域2024年工业增加值
-
+  sql1: |-
     SELECT industry_value_added_100m_cny AS industry_2024
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''region'' AND geo_name = ''华北''
-
-
-    -- 步骤2: 查询华北区域2019年工业增加值
-
+    WHERE year = 2024 AND geo_level = 'region' AND geo_name = '华北'
+  sql2: |-
     SELECT industry_value_added_100m_cny AS industry_2019
-
     FROM regional_gdp
-
-    WHERE year = 2019 AND geo_level = ''region'' AND geo_name = ''华北''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (industry_2024 - industry_2019)'
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - industry_value_added_100m_cny
+    WHERE year = 2019 AND geo_level = 'region' AND geo_name = '华北'
   answer_type: scalar
-  answer: 27047.95
+  answer: 27047.949999999997
   answer_unit: 亿元
   requires_calculator: true
 - id: 59
-  category: I. 跨工具复杂计算
-  sub_category: I9 跨期人均GDP增长率
-  difficulty: hard
   question: 2025年全国人均GDP比2020年增长了百分之多少？
-  sql: '-- 步骤1: 查询2025年全国人均GDP
-
+  sql1: |-
     SELECT gdp_per_capita_cny AS per_capita_2025
-
     FROM regional_gdp
-
-    WHERE year = 2025 AND geo_level = ''national''
-
-
-    -- 步骤2: 查询2020年全国人均GDP
-
+    WHERE year = 2025 AND geo_level = 'national'
+  sql2: |-
     SELECT gdp_per_capita_cny AS per_capita_2020
-
     FROM regional_gdp
-
-    WHERE year = 2020 AND geo_level = ''national''
-
-
-    -- 步骤3: 使用 calculator 工具计算 ((per_capita_2025 - per_capita_2020) / per_capita_2020)
-    * 100'
-  columns_used:
-  - year
-  - geo_level
-  - gdp_per_capita_cny
+    WHERE year = 2020 AND geo_level = 'national'
   answer_type: scalar
-  answer: 36.98
+  answer: 36.98476235578181
   answer_unit: '%'
   requires_calculator: true
 - id: 60
-  category: I. 跨工具复杂计算
-  sub_category: I10 跨期服务业增加值倍数
-  difficulty: hard
   question: 2024年江苏省的服务业增加值是2018年的多少倍？
-  sql: '-- 步骤1: 查询江苏省2024年服务业增加值
-
+  sql1: |-
     SELECT services_value_added_100m_cny AS services_2024
-
     FROM regional_gdp
-
-    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''江苏''
-
-
-    -- 步骤2: 查询江苏省2018年服务业增加值
-
+    WHERE year = 2024 AND geo_level = 'province' AND geo_name = '江苏'
+  sql2: |-
     SELECT services_value_added_100m_cny AS services_2018
-
     FROM regional_gdp
-
-    WHERE year = 2018 AND geo_level = ''province'' AND geo_name = ''江苏''
-
-
-    -- 步骤3: 使用 calculator 工具计算 (services_2024 / services_2018)'
-  columns_used:
-  - year
-  - geo_level
-  - geo_name
-  - services_value_added_100m_cny
+    WHERE year = 2018 AND geo_level = 'province' AND geo_name = '江苏'
   answer_type: scalar
-  answer: 0.9837
+  answer: 0.9836941380947324
   answer_unit: 倍
   requires_calculator: true

@@ -1395,3 +1395,326 @@ questions:
   columns_used: []
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨地区占比
+  difficulty: hard
+  question: 2024年广东省的就业人数占全国就业人数的百分比是多少？
+  sql: '-- 步骤1: 查询广东省2024年平均就业人数
+
+    SELECT AVG(employed_10k) AS gd_employed
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_name = ''广东'';
+
+
+    -- 步骤2: 查询全国2024年平均就业人数
+
+    SELECT AVG(employed_10k) AS nat_employed
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (gd_employed / nat_employed) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - employed_10k
+  answer_type: scalar
+  answer: 10.5001
+  answer_unit: '%'
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区差值
+  difficulty: hard
+  question: 2023年北京市的平均月薪比上海市高出多少元？
+  sql: '-- 步骤1: 查询北京市2023年平均月薪
+
+    SELECT AVG(avg_monthly_wage_cny) AS bj_wage
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_name = ''北京'';
+
+
+    -- 步骤2: 查询上海市2023年平均月薪
+
+    SELECT AVG(avg_monthly_wage_cny) AS sh_wage
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_name = ''上海'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 bj_wage - sh_wage'
+  columns_used:
+  - year
+  - geo_name
+  - avg_monthly_wage_cny
+  answer_type: scalar
+  answer: 2935.31
+  answer_unit: 元
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨地区倍数
+  difficulty: hard
+  question: 2024年广东省的平均失业率是江苏省的多少倍？
+  sql: '-- 步骤1: 查询广东省2024年平均失业率
+
+    SELECT AVG(unemployment_rate_pct) AS gd_unemp
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_name = ''广东'';
+
+
+    -- 步骤2: 查询江苏省2024年平均失业率
+
+    SELECT AVG(unemployment_rate_pct) AS js_unemp
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_name = ''江苏'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 gd_unemp / js_unemp'
+  columns_used:
+  - year
+  - geo_name
+  - unemployment_rate_pct
+  answer_type: scalar
+  answer: 0.9814
+  answer_unit: 倍
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨地区占比
+  difficulty: hard
+  question: 2023年山东省的新增城镇就业岗位占全国新增城镇就业岗位的百分比是多少？
+  sql: '-- 步骤1: 查询山东省2023年新增城镇就业岗位总数
+
+    SELECT SUM(new_urban_jobs_10k) AS sd_jobs
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_name = ''山东'';
+
+
+    -- 步骤2: 查询全国2023年新增城镇就业岗位总数
+
+    SELECT SUM(new_urban_jobs_10k) AS nat_jobs
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (sd_jobs / nat_jobs) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - new_urban_jobs_10k
+  answer_type: scalar
+  answer: 8.959
+  answer_unit: '%'
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区差值
+  difficulty: hard
+  question: 2024年深圳市的平均劳动参与率比广州市高出多少个百分点？
+  sql: '-- 步骤1: 查询深圳市2024年平均劳动参与率
+
+    SELECT AVG(participation_rate_pct) AS sz_part
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_name = ''深圳'';
+
+
+    -- 步骤2: 查询广州市2024年平均劳动参与率
+
+    SELECT AVG(participation_rate_pct) AS gz_part
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_name = ''广州'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 sz_part - gz_part'
+  columns_used:
+  - year
+  - geo_name
+  - participation_rate_pct
+  answer_type: scalar
+  answer: 0.0037
+  answer_unit: 百分点
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期差值
+  difficulty: hard
+  question: 2024年全国平均失业率比2019年下降了多少个百分点？
+  sql: '-- 步骤1: 查询2024年全国平均失业率
+
+    SELECT AVG(unemployment_rate_pct) AS unemp_2024
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2019年全国平均失业率
+
+    SELECT AVG(unemployment_rate_pct) AS unemp_2019
+
+    FROM employment_stats
+
+    WHERE year = 2019 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 unemp_2024 - unemp_2019'
+  columns_used:
+  - year
+  - geo_level
+  - unemployment_rate_pct
+  answer_type: scalar
+  answer: -0.1242
+  answer_unit: 百分点
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨期倍数
+  difficulty: hard
+  question: 2023年全国平均月薪是2016年的多少倍？
+  sql: '-- 步骤1: 查询2023年全国平均月薪
+
+    SELECT AVG(avg_monthly_wage_cny) AS wage_2023
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2016年全国平均月薪
+
+    SELECT AVG(avg_monthly_wage_cny) AS wage_2016
+
+    FROM employment_stats
+
+    WHERE year = 2016 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 wage_2023 / wage_2016'
+  columns_used:
+  - year
+  - geo_level
+  - avg_monthly_wage_cny
+  answer_type: scalar
+  answer: 1.1339
+  answer_unit: 倍
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期差值
+  difficulty: hard
+  question: 2024年江苏省的平均就业人数比2020年增加了多少万人？
+  sql: '-- 步骤1: 查询江苏省2024年平均就业人数
+
+    SELECT AVG(employed_10k) AS employed_2024
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_name = ''江苏'';
+
+
+    -- 步骤2: 查询江苏省2020年平均就业人数
+
+    SELECT AVG(employed_10k) AS employed_2020
+
+    FROM employment_stats
+
+    WHERE year = 2020 AND geo_name = ''江苏'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 employed_2024 - employed_2020'
+  columns_used:
+  - year
+  - geo_name
+  - employed_10k
+  answer_type: scalar
+  answer: 16.72
+  answer_unit: 万人
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨期倍数
+  difficulty: hard
+  question: 2023年12月全国青年失业率是2018年同期的多少倍？
+  sql: '-- 步骤1: 查询2023年12月全国青年失业率
+
+    SELECT youth_unemp_rate_pct
+
+    FROM employment_stats
+
+    WHERE year = 2023 AND month = 12 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2018年12月全国青年失业率
+
+    SELECT youth_unemp_rate_pct
+
+    FROM employment_stats
+
+    WHERE year = 2018 AND month = 12 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 youth_2023_12 / youth_2018_12'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - youth_unemp_rate_pct
+  answer_type: scalar
+  answer: 0.9518
+  answer_unit: 倍
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期差值
+  difficulty: hard
+  question: 2024年全国新增城镇就业岗位总数比2021年增加了多少万个？
+  sql: '-- 步骤1: 查询2024年全国新增城镇就业岗位总数
+
+    SELECT SUM(new_urban_jobs_10k) AS jobs_2024
+
+    FROM employment_stats
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2021年全国新增城镇就业岗位总数
+
+    SELECT SUM(new_urban_jobs_10k) AS jobs_2021
+
+    FROM employment_stats
+
+    WHERE year = 2021 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 jobs_2024 - jobs_2021'
+  columns_used:
+  - year
+  - geo_level
+  - new_urban_jobs_10k
+  answer_type: scalar
+  answer: 201.51
+  answer_unit: 万个
+  requires_calculator: true

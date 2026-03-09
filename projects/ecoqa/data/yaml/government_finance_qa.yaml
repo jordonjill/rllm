@@ -28,7 +28,11 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 2024年全国财政总收入是多少？
-  sql: "SELECT total_revenue_100m_cny AS value\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'national'"
+  sql: 'SELECT total_revenue_100m_cny AS value
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''national'''
   columns_used:
   - year
   - geo_level
@@ -42,7 +46,11 @@ questions:
   sub_category: A1 单条件等值
   difficulty: easy
   question: 2023年华东地区的税收收入和非税收入分别是多少？
-  sql: "SELECT tax_revenue_100m_cny, non_tax_revenue_100m_cny\nFROM government_finance\nWHERE year = 2023 AND geo_name = '华东'"
+  sql: 'SELECT tax_revenue_100m_cny, non_tax_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_name = ''华东'''
   columns_used:
   - year
   - geo_name
@@ -59,7 +67,11 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 2022年北京市的政府债务余额和债务率分别是多少？
-  sql: "SELECT debt_balance_100m_cny, debt_to_gdp_pct\nFROM government_finance\nWHERE year = 2022 AND geo_level = 'province' AND geo_name = '北京'"
+  sql: 'SELECT debt_balance_100m_cny, debt_to_gdp_pct
+
+    FROM government_finance
+
+    WHERE year = 2022 AND geo_level = ''province'' AND geo_name = ''北京'''
   columns_used:
   - year
   - geo_level
@@ -77,7 +89,11 @@ questions:
   sub_category: A2 多条件AND
   difficulty: easy
   question: 2021年全国层级的转移支付和社会保障支出总额各是多少？
-  sql: "SELECT transfer_payment_100m_cny, social_security_100m_cny\nFROM government_finance\nWHERE year = 2021 AND geo_level = 'national'"
+  sql: 'SELECT transfer_payment_100m_cny, social_security_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2021 AND geo_level = ''national'''
   columns_used:
   - year
   - geo_level
@@ -94,7 +110,13 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 2023年上海、江苏、浙江三省市的财政总收入各是多少？
-  sql: "SELECT geo_name, total_revenue_100m_cny\nFROM government_finance\nWHERE year = 2023 AND geo_name IN ('上海', '江苏', '浙江')\nORDER BY total_revenue_100m_cny DESC"
+  sql: 'SELECT geo_name, total_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_name IN (''上海'', ''江苏'', ''浙江'')
+
+    ORDER BY total_revenue_100m_cny DESC'
   columns_used:
   - year
   - geo_name
@@ -114,7 +136,13 @@ questions:
   sub_category: A3 OR/IN条件
   difficulty: easy
   question: 2020年华北、华东、华南三大区域的财政赤字各是多少？
-  sql: "SELECT geo_name, deficit_100m_cny\nFROM government_finance\nWHERE year = 2020 AND geo_name IN ('华北', '华东', '华南')\nORDER BY deficit_100m_cny DESC"
+  sql: 'SELECT geo_name, deficit_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2020 AND geo_name IN (''华北'', ''华东'', ''华南'')
+
+    ORDER BY deficit_100m_cny DESC'
   columns_used:
   - year
   - geo_name
@@ -134,7 +162,11 @@ questions:
   sub_category: A4 NULL检查
   difficulty: easy
   question: 政府债务余额为空值的数据有多少条？
-  sql: "SELECT COUNT(*) AS missing_count\nFROM government_finance\nWHERE debt_balance_100m_cny IS NULL"
+  sql: 'SELECT COUNT(*) AS missing_count
+
+    FROM government_finance
+
+    WHERE debt_balance_100m_cny IS NULL'
   columns_used:
   - year
   - geo_level
@@ -149,7 +181,13 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 2018至2022年间，全国财政赤字的变化趋势如何？
-  sql: "SELECT year, deficit_100m_cny\nFROM government_finance\nWHERE year BETWEEN 2018 AND 2022 AND geo_level = 'national'\nORDER BY year"
+  sql: 'SELECT year, deficit_100m_cny
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2018 AND 2022 AND geo_level = ''national''
+
+    ORDER BY year'
   columns_used:
   - year
   - geo_level
@@ -173,7 +211,13 @@ questions:
   sub_category: B1 时间范围BETWEEN
   difficulty: easy
   question: 2019到2023年期间，广东省的税收收入历年数据是多少？
-  sql: "SELECT year, tax_revenue_100m_cny\nFROM government_finance\nWHERE year BETWEEN 2019 AND 2023 AND geo_name = '广东'\nORDER BY year"
+  sql: 'SELECT year, tax_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2019 AND 2023 AND geo_name = ''广东''
+
+    ORDER BY year'
   columns_used:
   - year
   - geo_name
@@ -197,7 +241,13 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 2024年哪些省份的政府债务率超过90%？
-  sql: "SELECT geo_name, debt_to_gdp_pct\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province' AND debt_to_gdp_pct > 90\nORDER BY debt_to_gdp_pct DESC"
+  sql: 'SELECT geo_name, debt_to_gdp_pct
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province'' AND debt_to_gdp_pct > 90
+
+    ORDER BY debt_to_gdp_pct DESC'
   columns_used:
   - year
   - geo_level
@@ -218,7 +268,13 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 2023年哪些省份的财政总收入超过20000亿元？
-  sql: "SELECT geo_name, total_revenue_100m_cny\nFROM government_finance\nWHERE year = 2023 AND geo_level = 'province' AND total_revenue_100m_cny > 20000\nORDER BY total_revenue_100m_cny DESC"
+  sql: 'SELECT geo_name, total_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''province'' AND total_revenue_100m_cny > 20000
+
+    ORDER BY total_revenue_100m_cny DESC'
   columns_used:
   - year
   - geo_level
@@ -239,7 +295,13 @@ questions:
   sub_category: B2 数值阈值
   difficulty: medium
   question: 2022年哪些地区的财政赤字少于5000亿元？
-  sql: "SELECT geo_name, deficit_100m_cny\nFROM government_finance\nWHERE year = 2022 AND geo_level = 'region' AND deficit_100m_cny < 5000\nORDER BY deficit_100m_cny"
+  sql: 'SELECT geo_name, deficit_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2022 AND geo_level = ''region'' AND deficit_100m_cny < 5000
+
+    ORDER BY deficit_100m_cny'
   columns_used:
   - year
   - geo_level
@@ -256,7 +318,13 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2020至2024年间，哪些省份的债务率持续高于95%？
-  sql: "SELECT geo_name, year, debt_to_gdp_pct\nFROM government_finance\nWHERE year BETWEEN 2020 AND 2024 AND geo_level = 'province' AND debt_to_gdp_pct > 95\nORDER BY geo_name, year"
+  sql: 'SELECT geo_name, year, debt_to_gdp_pct
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2020 AND 2024 AND geo_level = ''province'' AND debt_to_gdp_pct > 95
+
+    ORDER BY geo_name, year'
   columns_used:
   - year
   - geo_level
@@ -277,7 +345,13 @@ questions:
   sub_category: B3 复合范围条件
   difficulty: medium
   question: 2019到2023年期间，哪些省份的社会保障支出超过10000亿元？
-  sql: "SELECT year, geo_name, social_security_100m_cny\nFROM government_finance\nWHERE year BETWEEN 2019 AND 2023 AND geo_level = 'province' AND social_security_100m_cny > 10000\nORDER BY year, social_security_100m_cny DESC"
+  sql: 'SELECT year, geo_name, social_security_100m_cny
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2019 AND 2023 AND geo_level = ''province'' AND social_security_100m_cny > 10000
+
+    ORDER BY year, social_security_100m_cny DESC'
   columns_used:
   - year
   - geo_level
@@ -301,7 +375,15 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: easy
   question: 2024年哪个省份的财政总收入最高？
-  sql: "SELECT geo_name, total_revenue_100m_cny\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province'\nORDER BY total_revenue_100m_cny DESC\nLIMIT 1"
+  sql: 'SELECT geo_name, total_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province''
+
+    ORDER BY total_revenue_100m_cny DESC
+
+    LIMIT 1'
   columns_used:
   - year
   - geo_level
@@ -318,7 +400,15 @@ questions:
   sub_category: C1 单指标最大值行
   difficulty: easy
   question: 2023年哪个大区的政府债务余额最高？
-  sql: "SELECT geo_name, debt_balance_100m_cny\nFROM government_finance\nWHERE year = 2023 AND geo_level = 'region'\nORDER BY debt_balance_100m_cny DESC\nLIMIT 1"
+  sql: 'SELECT geo_name, debt_balance_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''region''
+
+    ORDER BY debt_balance_100m_cny DESC
+
+    LIMIT 1'
   columns_used:
   - year
   - geo_level
@@ -335,7 +425,15 @@ questions:
   sub_category: C2 单指标最小值行
   difficulty: easy
   question: 2022年哪个大区的转移支付金额最低？
-  sql: "SELECT geo_name, transfer_payment_100m_cny\nFROM government_finance\nWHERE year = 2022 AND geo_level = 'region'\nORDER BY transfer_payment_100m_cny ASC\nLIMIT 1"
+  sql: 'SELECT geo_name, transfer_payment_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2022 AND geo_level = ''region''
+
+    ORDER BY transfer_payment_100m_cny ASC
+
+    LIMIT 1'
   columns_used:
   - year
   - geo_level
@@ -352,7 +450,15 @@ questions:
   sub_category: C2 单指标最小值行
   difficulty: easy
   question: 2024年哪个省份的财政赤字最少？
-  sql: "SELECT geo_name, deficit_100m_cny\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province' AND deficit_100m_cny IS NOT NULL\nORDER BY deficit_100m_cny ASC\nLIMIT 1"
+  sql: 'SELECT geo_name, deficit_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province'' AND deficit_100m_cny IS NOT NULL
+
+    ORDER BY deficit_100m_cny ASC
+
+    LIMIT 1'
   columns_used:
   - year
   - geo_level
@@ -369,7 +475,15 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2023年税收收入最高的5个省份是哪些？
-  sql: "SELECT geo_name, tax_revenue_100m_cny\nFROM government_finance\nWHERE year = 2023 AND geo_level = 'province'\nORDER BY tax_revenue_100m_cny DESC\nLIMIT 5"
+  sql: 'SELECT geo_name, tax_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''province''
+
+    ORDER BY tax_revenue_100m_cny DESC
+
+    LIMIT 5'
   columns_used:
   - year
   - geo_level
@@ -394,7 +508,15 @@ questions:
   sub_category: C3 Top3/Top5排名
   difficulty: medium
   question: 2024年债务率最高的3个省份是哪些？
-  sql: "SELECT geo_name, debt_to_gdp_pct\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province'\nORDER BY debt_to_gdp_pct DESC\nLIMIT 3"
+  sql: 'SELECT geo_name, debt_to_gdp_pct
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province''
+
+    ORDER BY debt_to_gdp_pct DESC
+
+    LIMIT 3'
   columns_used:
   - year
   - geo_level
@@ -415,7 +537,15 @@ questions:
   sub_category: C4 多列排序
   difficulty: medium
   question: 按年份和财政总收入排序，列出2022-2024年全国财政总收入前3名的记录
-  sql: "SELECT year, geo_name, total_revenue_100m_cny\nFROM government_finance\nWHERE year BETWEEN 2022 AND 2024 AND geo_level = 'national'\nORDER BY year DESC, total_revenue_100m_cny DESC\nLIMIT 3"
+  sql: 'SELECT year, geo_name, total_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2022 AND 2024 AND geo_level = ''national''
+
+    ORDER BY year DESC, total_revenue_100m_cny DESC
+
+    LIMIT 3'
   columns_used:
   - year
   - geo_level
@@ -439,7 +569,11 @@ questions:
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
   question: 2024年省级层面财政赤字为正的数据有多少条？
-  sql: "SELECT COUNT(*) AS value\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province' AND deficit_100m_cny > 0"
+  sql: 'SELECT COUNT(*) AS value
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province'' AND deficit_100m_cny > 0'
   columns_used:
   - geo_level
   answer_type: scalar
@@ -451,7 +585,11 @@ questions:
   sub_category: D1 COUNT/COUNT DISTINCT
   difficulty: easy
   question: 全国层级债务率高于70%的年份有多少个？
-  sql: "SELECT COUNT(DISTINCT year) AS value\nFROM government_finance\nWHERE geo_level = 'national' AND debt_to_gdp_pct > 70"
+  sql: 'SELECT COUNT(DISTINCT year) AS value
+
+    FROM government_finance
+
+    WHERE geo_level = ''national'' AND debt_to_gdp_pct > 70'
   columns_used:
   - year
   answer_type: scalar
@@ -463,7 +601,11 @@ questions:
   sub_category: D2 SUM
   difficulty: medium
   question: 2023年所有省份的税收收入总和是多少？
-  sql: "SELECT SUM(tax_revenue_100m_cny) AS value\nFROM government_finance\nWHERE year = 2023 AND geo_level = 'province'"
+  sql: 'SELECT SUM(tax_revenue_100m_cny) AS value
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''province'''
   columns_used:
   - year
   - geo_level
@@ -477,7 +619,11 @@ questions:
   sub_category: D2 SUM
   difficulty: medium
   question: 2022年所有大区的财政支出总额是多少？
-  sql: "SELECT SUM(expenditure_100m_cny) AS value\nFROM government_finance\nWHERE year = 2022 AND geo_level = 'region'"
+  sql: 'SELECT SUM(expenditure_100m_cny) AS value
+
+    FROM government_finance
+
+    WHERE year = 2022 AND geo_level = ''region'''
   columns_used:
   - year
   - geo_level
@@ -491,7 +637,11 @@ questions:
   sub_category: D3 AVG
   difficulty: medium
   question: 2024年所有省份的平均债务率是多少？
-  sql: "SELECT AVG(debt_to_gdp_pct) AS value\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province'"
+  sql: 'SELECT AVG(debt_to_gdp_pct) AS value
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province'''
   columns_used:
   - year
   - geo_level
@@ -505,7 +655,11 @@ questions:
   sub_category: D3 AVG
   difficulty: medium
   question: 2023年所有大区的平均社会保障支出是多少？
-  sql: "SELECT AVG(social_security_100m_cny) AS value\nFROM government_finance\nWHERE year = 2023 AND geo_level = 'region'"
+  sql: 'SELECT AVG(social_security_100m_cny) AS value
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''region'''
   columns_used:
   - year
   - geo_level
@@ -519,7 +673,11 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: medium
   question: 2024年所有省份中，财政总收入的最高值和最低值分别是多少？
-  sql: "SELECT MAX(total_revenue_100m_cny) AS max_value, MIN(total_revenue_100m_cny) AS min_value\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province'"
+  sql: 'SELECT MAX(total_revenue_100m_cny) AS max_value, MIN(total_revenue_100m_cny) AS min_value
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province'''
   columns_used:
   - year
   - geo_level
@@ -535,7 +693,11 @@ questions:
   sub_category: D4 MIN/MAX
   difficulty: medium
   question: 2016-2025年间，全国层级的财政赤字最大值是多少？
-  sql: "SELECT MAX(deficit_100m_cny) AS value\nFROM government_finance\nWHERE geo_level = 'national'"
+  sql: 'SELECT MAX(deficit_100m_cny) AS value
+
+    FROM government_finance
+
+    WHERE geo_level = ''national'''
   columns_used:
   - geo_level
   - deficit_100m_cny
@@ -548,7 +710,13 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 按年份统计，历年全国财政总收入的变化趋势
-  sql: "SELECT year, total_revenue_100m_cny\nFROM government_finance\nWHERE geo_level = 'national'\nORDER BY year"
+  sql: 'SELECT year, total_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE geo_level = ''national''
+
+    ORDER BY year'
   columns_used:
   - year
   - geo_level
@@ -582,7 +750,15 @@ questions:
   sub_category: E1 单维度分组SUM/AVG
   difficulty: medium
   question: 2023年各大区的平均债务率是多少？
-  sql: "SELECT geo_name, AVG(debt_to_gdp_pct) AS avg_debt_ratio\nFROM government_finance\nWHERE year = 2023 AND geo_level = 'region'\nGROUP BY geo_name\nORDER BY avg_debt_ratio DESC"
+  sql: 'SELECT geo_name, AVG(debt_to_gdp_pct) AS avg_debt_ratio
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''region''
+
+    GROUP BY geo_name
+
+    ORDER BY avg_debt_ratio DESC'
   columns_used:
   - year
   - geo_level
@@ -611,7 +787,15 @@ questions:
   sub_category: E2 单维度分组COUNT
   difficulty: medium
   question: 2024年各统计层级中债务率高于70%的数据数量分别是多少？
-  sql: "SELECT geo_level, COUNT(*) AS record_count\nFROM government_finance\nWHERE year = 2024 AND debt_to_gdp_pct > 70\nGROUP BY geo_level\nORDER BY record_count DESC"
+  sql: 'SELECT geo_level, COUNT(*) AS record_count
+
+    FROM government_finance
+
+    WHERE year = 2024 AND debt_to_gdp_pct > 70
+
+    GROUP BY geo_level
+
+    ORDER BY record_count DESC'
   columns_used:
   - geo_level
   answer_type: list
@@ -629,7 +813,15 @@ questions:
   sub_category: E2 单维度分组COUNT
   difficulty: medium
   question: 每年省级层面财政赤字为正的数据有多少条？
-  sql: "SELECT year, COUNT(*) AS record_count\nFROM government_finance\nWHERE geo_level = 'province' AND deficit_100m_cny > 0\nGROUP BY year\nORDER BY year"
+  sql: 'SELECT year, COUNT(*) AS record_count
+
+    FROM government_finance
+
+    WHERE geo_level = ''province'' AND deficit_100m_cny > 0
+
+    GROUP BY year
+
+    ORDER BY year'
   columns_used:
   - year
   answer_type: list
@@ -661,7 +853,17 @@ questions:
   sub_category: E3 多维度分组
   difficulty: hard
   question: 按年份和统计层级分组，平均转移支付金额分别是多少？
-  sql: "SELECT year, geo_level, AVG(transfer_payment_100m_cny) AS avg_transfer\nFROM government_finance\nWHERE transfer_payment_100m_cny IS NOT NULL\nGROUP BY year, geo_level\nORDER BY year, geo_level\nLIMIT 15"
+  sql: 'SELECT year, geo_level, AVG(transfer_payment_100m_cny) AS avg_transfer
+
+    FROM government_finance
+
+    WHERE transfer_payment_100m_cny IS NOT NULL
+
+    GROUP BY year, geo_level
+
+    ORDER BY year, geo_level
+
+    LIMIT 15'
   columns_used:
   - year
   - geo_level
@@ -720,7 +922,15 @@ questions:
   sub_category: E3 多维度分组
   difficulty: hard
   question: 2022-2024年间，各大区每年的社会保障支出总和是多少？
-  sql: "SELECT year, geo_name, SUM(social_security_100m_cny) AS total_social_security\nFROM government_finance\nWHERE year BETWEEN 2022 AND 2024 AND geo_level = 'region'\nGROUP BY year, geo_name\nORDER BY year, total_social_security DESC"
+  sql: 'SELECT year, geo_name, SUM(social_security_100m_cny) AS total_social_security
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2022 AND 2024 AND geo_level = ''region''
+
+    GROUP BY year, geo_name
+
+    ORDER BY year, total_social_security DESC'
   columns_used:
   - year
   - geo_level
@@ -798,7 +1008,15 @@ questions:
   sub_category: E4 GROUP BY+ORDER BY
   difficulty: medium
   question: 2024年各省份按税收收入从高到低排序
-  sql: "SELECT geo_name, tax_revenue_100m_cny\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province'\nORDER BY tax_revenue_100m_cny DESC\nLIMIT 10"
+  sql: 'SELECT geo_name, tax_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province''
+
+    ORDER BY tax_revenue_100m_cny DESC
+
+    LIMIT 10'
   columns_used:
   - year
   - geo_level
@@ -833,7 +1051,17 @@ questions:
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 哪些大区在2020-2024年间的平均财政赤字超过10000亿元？
-  sql: "SELECT geo_name, AVG(deficit_100m_cny) AS avg_deficit\nFROM government_finance\nWHERE year BETWEEN 2020 AND 2024 AND geo_level = 'region'\nGROUP BY geo_name\nHAVING AVG(deficit_100m_cny) > 10000\nORDER BY avg_deficit DESC"
+  sql: 'SELECT geo_name, AVG(deficit_100m_cny) AS avg_deficit
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2020 AND 2024 AND geo_level = ''region''
+
+    GROUP BY geo_name
+
+    HAVING AVG(deficit_100m_cny) > 10000
+
+    ORDER BY avg_deficit DESC'
   columns_used:
   - year
   - geo_level
@@ -850,7 +1078,17 @@ questions:
   sub_category: F1 HAVING AVG条件
   difficulty: hard
   question: 哪些省份在2022-2024年间的平均债务率超过80%？
-  sql: "SELECT geo_name, AVG(debt_to_gdp_pct) AS avg_debt_ratio\nFROM government_finance\nWHERE year BETWEEN 2022 AND 2024 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING AVG(debt_to_gdp_pct) > 80\nORDER BY avg_debt_ratio DESC"
+  sql: 'SELECT geo_name, AVG(debt_to_gdp_pct) AS avg_debt_ratio
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2022 AND 2024 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    HAVING AVG(debt_to_gdp_pct) > 80
+
+    ORDER BY avg_debt_ratio DESC'
   columns_used:
   - year
   - geo_level
@@ -885,7 +1123,19 @@ questions:
   sub_category: F2 HAVING COUNT条件
   difficulty: hard
   question: 哪些地区社会保障支出超过10000亿元的年份次数超过5次？
-  sql: "SELECT geo_name, COUNT(*) AS appearance_count\nFROM government_finance\nWHERE social_security_100m_cny > 10000\nGROUP BY geo_name\nHAVING COUNT(*) > 5\nORDER BY appearance_count DESC\nLIMIT 10"
+  sql: 'SELECT geo_name, COUNT(*) AS appearance_count
+
+    FROM government_finance
+
+    WHERE social_security_100m_cny > 10000
+
+    GROUP BY geo_name
+
+    HAVING COUNT(*) > 5
+
+    ORDER BY appearance_count DESC
+
+    LIMIT 10'
   columns_used:
   - geo_name
   answer_type: list
@@ -901,7 +1151,17 @@ questions:
   sub_category: F3 HAVING SUM条件
   difficulty: hard
   question: 2020-2024年间，哪些省份的累计税收收入超过90000亿元？
-  sql: "SELECT geo_name, SUM(tax_revenue_100m_cny) AS total_tax\nFROM government_finance\nWHERE year BETWEEN 2020 AND 2024 AND geo_level = 'province'\nGROUP BY geo_name\nHAVING SUM(tax_revenue_100m_cny) > 90000\nORDER BY total_tax DESC"
+  sql: 'SELECT geo_name, SUM(tax_revenue_100m_cny) AS total_tax
+
+    FROM government_finance
+
+    WHERE year BETWEEN 2020 AND 2024 AND geo_level = ''province''
+
+    GROUP BY geo_name
+
+    HAVING SUM(tax_revenue_100m_cny) > 90000
+
+    ORDER BY total_tax DESC'
   columns_used:
   - year
   - geo_level
@@ -920,7 +1180,13 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 全国层级历年政府债务余额的变化趋势是怎样的？
-  sql: "SELECT year, debt_balance_100m_cny\nFROM government_finance\nWHERE geo_level = 'national'\nORDER BY year"
+  sql: 'SELECT year, debt_balance_100m_cny
+
+    FROM government_finance
+
+    WHERE geo_level = ''national''
+
+    ORDER BY year'
   columns_used:
   - year
   - geo_level
@@ -954,7 +1220,13 @@ questions:
   sub_category: G1 按年聚合趋势
   difficulty: medium
   question: 按年统计，全国社会保障支出的历年数据
-  sql: "SELECT year, social_security_100m_cny\nFROM government_finance\nWHERE geo_level = 'national'\nORDER BY year"
+  sql: 'SELECT year, social_security_100m_cny
+
+    FROM government_finance
+
+    WHERE geo_level = ''national''
+
+    ORDER BY year'
   columns_used:
   - year
   - geo_level
@@ -988,7 +1260,17 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 2024年哪些省份的税收收入高于所有省份的平均值？
-  sql: "SELECT geo_name, tax_revenue_100m_cny\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province' AND tax_revenue_100m_cny > ( SELECT AVG(tax_revenue_100m_cny)\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'province' )\nORDER BY tax_revenue_100m_cny DESC"
+  sql: 'SELECT geo_name, tax_revenue_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province'' AND tax_revenue_100m_cny > ( SELECT AVG(tax_revenue_100m_cny)
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''province'' )
+
+    ORDER BY tax_revenue_100m_cny DESC'
   columns_used:
   - year
   - geo_level
@@ -1029,7 +1311,17 @@ questions:
   sub_category: G2 子查询对比
   difficulty: hard
   question: 2023年哪些大区的财政支出低于所有大区的平均支出？
-  sql: "SELECT geo_name, expenditure_100m_cny\nFROM government_finance\nWHERE year = 2023 AND geo_level = 'region' AND expenditure_100m_cny < ( SELECT AVG(expenditure_100m_cny)\nFROM government_finance\nWHERE year = 2023 AND geo_level = 'region' )\nORDER BY expenditure_100m_cny"
+  sql: 'SELECT geo_name, expenditure_100m_cny
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''region'' AND expenditure_100m_cny < ( SELECT AVG(expenditure_100m_cny)
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''region'' )
+
+    ORDER BY expenditure_100m_cny'
   columns_used:
   - year
   - geo_level
@@ -1056,7 +1348,11 @@ questions:
   sub_category: G3 跨工具计算
   difficulty: hard
   question: 2024年全国的税收收入占财政总收入的比例是多少？
-  sql: "SELECT tax_revenue_100m_cny AS tax_revenue, total_revenue_100m_cny AS total_revenue\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'national'"
+  sql: 'SELECT tax_revenue_100m_cny AS tax_revenue, total_revenue_100m_cny AS total_revenue
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''national'''
   columns_used:
   - year
   - geo_level
@@ -1111,3 +1407,326 @@ questions:
   columns_used: []
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨地区占比
+  difficulty: hard
+  question: 2024年广东省的财政总收入占全国财政总收入的比例是多少？
+  sql: '-- 步骤1: 查询广东省2024年财政总收入
+
+    SELECT total_revenue_100m_cny AS gd_revenue
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_name = ''广东'';
+
+
+    -- 步骤2: 查询全国2024年财政总收入
+
+    SELECT total_revenue_100m_cny AS nat_revenue
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用calculator计算 (gd_revenue / nat_revenue) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - total_revenue_100m_cny
+  answer_type: scalar
+  answer: 10.4466
+  answer_unit: '%'
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨地区占比
+  difficulty: hard
+  question: 2023年华东地区的政府债务余额占全国政府债务余额的比例是多少？
+  sql: '-- 步骤1: 查询华东地区2023年政府债务余额
+
+    SELECT debt_balance_100m_cny AS hd_debt
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_name = ''华东'';
+
+
+    -- 步骤2: 查询全国2023年政府债务余额
+
+    SELECT debt_balance_100m_cny AS nat_debt
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用calculator计算 (hd_debt / nat_debt) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - debt_balance_100m_cny
+  answer_type: scalar
+  answer: 36.7182
+  answer_unit: '%'
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区倍数
+  difficulty: hard
+  question: 2024年北京市的社会保障支出是天津市的多少倍？
+  sql: '-- 步骤1: 查询北京市2024年社会保障支出
+
+    SELECT social_security_100m_cny AS bj_social
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_name = ''北京'';
+
+
+    -- 步骤2: 查询天津市2024年社会保障支出
+
+    SELECT social_security_100m_cny AS tj_social
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_name = ''天津'';
+
+
+    -- 步骤3: 使用calculator计算 bj_social / tj_social'
+  columns_used:
+  - year
+  - geo_name
+  - social_security_100m_cny
+  answer_type: scalar
+  answer: 2.6078
+  answer_unit: 倍
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨指标占比
+  difficulty: hard
+  question: 2023年全国的转移支付占财政支出的比例是多少？
+  sql: '-- 步骤1: 查询全国2023年转移支付
+
+    SELECT transfer_payment_100m_cny AS transfer
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询全国2023年财政支出
+
+    SELECT expenditure_100m_cny AS expenditure
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用calculator计算 (transfer / expenditure) * 100'
+  columns_used:
+  - year
+  - geo_level
+  - transfer_payment_100m_cny
+  - expenditure_100m_cny
+  answer_type: scalar
+  answer: 14.0563
+  answer_unit: '%'
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨地区差值
+  difficulty: hard
+  question: 2024年江苏省的税收收入比浙江省高出多少亿元？
+  sql: '-- 步骤1: 查询江苏省2024年税收收入
+
+    SELECT tax_revenue_100m_cny AS js_tax
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_name = ''江苏'';
+
+
+    -- 步骤2: 查询浙江省2024年税收收入
+
+    SELECT tax_revenue_100m_cny AS zj_tax
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_name = ''浙江'';
+
+
+    -- 步骤3: 使用calculator计算 js_tax - zj_tax'
+  columns_used:
+  - year
+  - geo_name
+  - tax_revenue_100m_cny
+  answer_type: scalar
+  answer: 7897.0
+  answer_unit: 亿元
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨期差值
+  difficulty: hard
+  question: 2024年全国财政赤字比2019年增加了多少亿元？
+  sql: '-- 步骤1: 查询2024年全国财政赤字
+
+    SELECT deficit_100m_cny AS deficit_2024
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2019年全国财政赤字
+
+    SELECT deficit_100m_cny AS deficit_2019
+
+    FROM government_finance
+
+    WHERE year = 2019 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用calculator计算 deficit_2024 - deficit_2019'
+  columns_used:
+  - year
+  - geo_level
+  - deficit_100m_cny
+  answer_type: scalar
+  answer: 8000.0
+  answer_unit: 亿元
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期倍数
+  difficulty: hard
+  question: 2025年全国政府债务余额是2016年的多少倍？
+  sql: '-- 步骤1: 查询2025年全国政府债务余额
+
+    SELECT debt_balance_100m_cny AS debt_2025
+
+    FROM government_finance
+
+    WHERE year = 2025 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2016年全国政府债务余额
+
+    SELECT debt_balance_100m_cny AS debt_2016
+
+    FROM government_finance
+
+    WHERE year = 2016 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用calculator计算 debt_2025 / debt_2016'
+  columns_used:
+  - year
+  - geo_level
+  - debt_balance_100m_cny
+  answer_type: scalar
+  answer: 1.5559
+  answer_unit: 倍
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨期差值
+  difficulty: hard
+  question: 2023年广东省的非税收入比2020年增长了多少亿元？
+  sql: '-- 步骤1: 查询2023年广东省非税收入
+
+    SELECT non_tax_revenue_100m_cny AS nontax_2023
+
+    FROM government_finance
+
+    WHERE year = 2023 AND geo_name = ''广东'';
+
+
+    -- 步骤2: 查询2020年广东省非税收入
+
+    SELECT non_tax_revenue_100m_cny AS nontax_2020
+
+    FROM government_finance
+
+    WHERE year = 2020 AND geo_name = ''广东'';
+
+
+    -- 步骤3: 使用calculator计算 nontax_2023 - nontax_2020'
+  columns_used:
+  - year
+  - geo_name
+  - non_tax_revenue_100m_cny
+  answer_type: scalar
+  answer: -1784.24
+  answer_unit: 亿元
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期倍数
+  difficulty: hard
+  question: 2022年华东地区的财政支出是2017年的多少倍？
+  sql: '-- 步骤1: 查询2022年华东地区财政支出
+
+    SELECT expenditure_100m_cny AS exp_2022
+
+    FROM government_finance
+
+    WHERE year = 2022 AND geo_name = ''华东'';
+
+
+    -- 步骤2: 查询2017年华东地区财政支出
+
+    SELECT expenditure_100m_cny AS exp_2017
+
+    FROM government_finance
+
+    WHERE year = 2017 AND geo_name = ''华东'';
+
+
+    -- 步骤3: 使用calculator计算 exp_2022 / exp_2017'
+  columns_used:
+  - year
+  - geo_name
+  - expenditure_100m_cny
+  answer_type: scalar
+  answer: 1.0552
+  answer_unit: 倍
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨期差值
+  difficulty: hard
+  question: 2024年全国社会保障支出比2018年减少了多少亿元？
+  sql: '-- 步骤1: 查询2024年全国社会保障支出
+
+    SELECT social_security_100m_cny AS social_2024
+
+    FROM government_finance
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2018年全国社会保障支出
+
+    SELECT social_security_100m_cny AS social_2018
+
+    FROM government_finance
+
+    WHERE year = 2018 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用calculator计算 social_2024 - social_2018'
+  columns_used:
+  - year
+  - geo_level
+  - social_security_100m_cny
+  answer_type: scalar
+  answer: -5774.89
+  answer_unit: 亿元
+  requires_calculator: true

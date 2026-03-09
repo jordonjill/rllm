@@ -1275,3 +1275,329 @@ questions:
   sql: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
+questions:
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标倍数
+  difficulty: hard
+  question: 2024年全国制造业指数年均值是采矿业指数年均值的多少倍？
+  sql: '-- 步骤1: 查询2024年全国制造业指数年均值
+
+    SELECT AVG(manufacturing_index) AS mfg_avg
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND geo_level = ''national''
+
+
+    -- 步骤2: 查询2024年全国采矿业指数年均值
+
+    SELECT AVG(mining_index) AS mining_avg
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 计算倍数 (mfg_avg / mining_avg)'
+  columns_used:
+  - year
+  - geo_level
+  - manufacturing_index
+  - mining_index
+  answer_type: scalar
+  answer: 1.0595
+  answer_unit: 倍
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区占比
+  difficulty: hard
+  question: 2023年广东省高技术产业指数年均值占全国同期的百分比是多少？
+  sql: '-- 步骤1: 查询2023年广东省高技术产业指数年均值
+
+    SELECT AVG(hightech_index) AS gd_hightech
+
+    FROM industrial_output
+
+    WHERE year = 2023 AND geo_name = ''广东''
+
+
+    -- 步骤2: 查询2023年全国高技术产业指数年均值
+
+    SELECT AVG(hightech_index) AS nat_hightech
+
+    FROM industrial_output
+
+    WHERE year = 2023 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 计算占比 (gd_hightech / nat_hightech) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - hightech_index
+  answer_type: scalar
+  answer: 100.41
+  answer_unit: '%'
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨地区差值
+  difficulty: hard
+  question: 2024年华东地区产能利用率年均值比西北地区高出多少个百分点？
+  sql: '-- 步骤1: 查询2024年华东地区产能利用率年均值
+
+    SELECT AVG(capacity_utilization_pct) AS east_capacity
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND geo_name = ''华东''
+
+
+    -- 步骤2: 查询2024年西北地区产能利用率年均值
+
+    SELECT AVG(capacity_utilization_pct) AS nw_capacity
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND geo_name = ''西北''
+
+
+    -- 步骤3: 使用 calculator 计算差值 (east_capacity - nw_capacity)'
+  columns_used:
+  - year
+  - geo_name
+  - capacity_utilization_pct
+  answer_type: scalar
+  answer: -0.14
+  answer_unit: 百分点
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨指标占比
+  difficulty: hard
+  question: 2023年全国装备制造业指数年均值占工业总产出指数年均值的比重是多少？
+  sql: '-- 步骤1: 查询2023年全国装备制造业指数年均值
+
+    SELECT AVG(equipment_mfg_index) AS equip_avg
+
+    FROM industrial_output
+
+    WHERE year = 2023 AND geo_level = ''national''
+
+
+    -- 步骤2: 查询2023年全国工业总产出指数年均值
+
+    SELECT AVG(total_index) AS total_avg
+
+    FROM industrial_output
+
+    WHERE year = 2023 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 计算比重 (equip_avg / total_avg) * 100'
+  columns_used:
+  - year
+  - geo_level
+  - equipment_mfg_index
+  - total_index
+  answer_type: scalar
+  answer: 107.02
+  answer_unit: '%'
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨省份倍数
+  difficulty: hard
+  question: 2024年山东省制造业指数年均值是黑龙江省的多少倍？
+  sql: '-- 步骤1: 查询2024年山东省制造业指数年均值
+
+    SELECT AVG(manufacturing_index) AS sd_mfg
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND geo_name = ''山东''
+
+
+    -- 步骤2: 查询2024年黑龙江省制造业指数年均值
+
+    SELECT AVG(manufacturing_index) AS hlj_mfg
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND geo_name = ''黑龙江''
+
+
+    -- 步骤3: 使用 calculator 计算倍数 (sd_mfg / hlj_mfg)'
+  columns_used:
+  - year
+  - geo_name
+  - manufacturing_index
+  answer_type: scalar
+  answer: 1.0069
+  answer_unit: 倍
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期倍数
+  difficulty: hard
+  question: 2024年全国工业总产出指数年均值是2016年的多少倍？
+  sql: '-- 步骤1: 查询2024年全国工业总产出指数年均值
+
+    SELECT AVG(total_index) AS total_2024
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND geo_level = ''national''
+
+
+    -- 步骤2: 查询2016年全国工业总产出指数年均值
+
+    SELECT AVG(total_index) AS total_2016
+
+    FROM industrial_output
+
+    WHERE year = 2016 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 计算倍数 (total_2024 / total_2016)'
+  columns_used:
+  - year
+  - geo_level
+  - total_index
+  answer_type: scalar
+  answer: 1.5756
+  answer_unit: 倍
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I7 跨期差值
+  difficulty: hard
+  question: 2023年全国产能利用率年均值比2019年提高了多少个百分点？
+  sql: '-- 步骤1: 查询2023年全国产能利用率年均值
+
+    SELECT AVG(capacity_utilization_pct) AS cap_2023
+
+    FROM industrial_output
+
+    WHERE year = 2023 AND geo_level = ''national''
+
+
+    -- 步骤2: 查询2019年全国产能利用率年均值
+
+    SELECT AVG(capacity_utilization_pct) AS cap_2019
+
+    FROM industrial_output
+
+    WHERE year = 2019 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 计算差值 (cap_2023 - cap_2019)'
+  columns_used:
+  - year
+  - geo_level
+  - capacity_utilization_pct
+  answer_type: scalar
+  answer: 1.79
+  answer_unit: 百分点
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I8 同月同比倍数
+  difficulty: hard
+  question: 2024年12月全国高技术产业指数是2020年同期的多少倍？
+  sql: '-- 步骤1: 查询2024年12月全国高技术产业指数
+
+    SELECT hightech_index AS ht_2024_12
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND month = 12 AND geo_level = ''national''
+
+
+    -- 步骤2: 查询2020年12月全国高技术产业指数
+
+    SELECT hightech_index AS ht_2020_12
+
+    FROM industrial_output
+
+    WHERE year = 2020 AND month = 12 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 计算倍数 (ht_2024_12 / ht_2020_12)'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - hightech_index
+  answer_type: scalar
+  answer: 1.2751
+  answer_unit: 倍
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I9 跨期增长量
+  difficulty: hard
+  question: 2022年至2024年期间，华南地区采矿业指数年均值累计增长了多少点？
+  sql: '-- 步骤1: 查询2024年华南地区采矿业指数年均值
+
+    SELECT AVG(mining_index) AS mining_2024
+
+    FROM industrial_output
+
+    WHERE year = 2024 AND geo_name = ''华南''
+
+
+    -- 步骤2: 查询2022年华南地区采矿业指数年均值
+
+    SELECT AVG(mining_index) AS mining_2022
+
+    FROM industrial_output
+
+    WHERE year = 2022 AND geo_name = ''华南''
+
+
+    -- 步骤3: 使用 calculator 计算增长量 (mining_2024 - mining_2022)'
+  columns_used:
+  - year
+  - geo_name
+  - mining_index
+  answer_type: scalar
+  answer: 17.03
+  answer_unit: 指数点
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I10 复合增长率
+  difficulty: hard
+  question: 2020年至2023年，全国公用事业指数的年均复合增长率是多少？
+  sql: '-- 步骤1: 查询2023年全国公用事业指数年均值
+
+    SELECT AVG(utilities_index) AS util_2023
+
+    FROM industrial_output
+
+    WHERE year = 2023 AND geo_level = ''national''
+
+
+    -- 步骤2: 查询2020年全国公用事业指数年均值
+
+    SELECT AVG(utilities_index) AS util_2020
+
+    FROM industrial_output
+
+    WHERE year = 2020 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 计算CAGR ((util_2023 / util_2020) ^ (1/3) - 1) * 100'
+  columns_used:
+  - year
+  - geo_level
+  - utilities_index
+  answer_type: scalar
+  answer: 5.4
+  answer_unit: '%'
+  requires_calculator: true
+

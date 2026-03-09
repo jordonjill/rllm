@@ -1706,3 +1706,272 @@ questions:
   columns_used: []
   expected_error: M2同比增速的合理范围通常在-50%到50%之间，不存在超过200%的情况
   answer: null
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标倍数
+  difficulty: hard
+  question: 2024年全国M2广义货币余额的年均值是M0流通中货币余额年均值的多少倍？
+  sql: |
+    -- 步骤1: 查询2024年全国M2年均值
+    SELECT AVG(m2_100m_cny) AS m2_avg
+    FROM money_supply
+    WHERE year = 2024 AND geo_level = 'national';
+
+    -- 步骤2: 查询2024年全国M0年均值
+    SELECT AVG(m0_100m_cny) AS m0_avg
+    FROM money_supply
+    WHERE year = 2024 AND geo_level = 'national';
+
+    -- 步骤3: 使用calculator工具计算 m2_avg / m0_avg
+  columns_used:
+  - year
+  - geo_level
+  - m2_100m_cny
+  - m0_100m_cny
+  answer_type: scalar
+  answer: 21.0079
+  answer_unit: 倍
+  requires_calculator: true
+
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区占比
+  difficulty: hard
+  question: 2023年广东省M2货币供应余额的年均值占全国M2年均值的百分比是多少？
+  sql: |
+    -- 步骤1: 查询广东省2023年M2年均值
+    SELECT AVG(m2_100m_cny) AS gd_m2
+    FROM money_supply
+    WHERE year = 2023 AND geo_level = 'province' AND geo_name = '广东';
+
+    -- 步骤2: 查询全国2023年M2年均值
+    SELECT AVG(m2_100m_cny) AS nat_m2
+    FROM money_supply
+    WHERE year = 2023 AND geo_level = 'national';
+
+    -- 步骤3: 使用calculator工具计算 (gd_m2 / nat_m2) * 100
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - m2_100m_cny
+  answer_type: scalar
+  answer: 10.3695
+  answer_unit: '%'
+  requires_calculator: true
+
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区差值
+  difficulty: hard
+  question: 2024年华东地区的人民币贷款余额年均值比华北地区高出多少亿元？
+  sql: |
+    -- 步骤1: 查询华东地区2024年贷款余额年均值
+    SELECT AVG(loan_balance_100m_cny) AS hd_loan
+    FROM money_supply
+    WHERE year = 2024 AND geo_level = 'region' AND geo_name = '华东';
+
+    -- 步骤2: 查询华北地区2024年贷款余额年均值
+    SELECT AVG(loan_balance_100m_cny) AS hb_loan
+    FROM money_supply
+    WHERE year = 2024 AND geo_level = 'region' AND geo_name = '华北';
+
+    -- 步骤3: 使用calculator工具计算 hd_loan - hb_loan
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - loan_balance_100m_cny
+  answer_type: scalar
+  answer: 916613.76
+  answer_unit: 亿元
+  requires_calculator: true
+
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I3 复合指标比率
+  difficulty: hard
+  question: 2023年全国社会融资规模流量的年度累计总额占当年12月M2货币余额的百分比是多少？
+  sql: |
+    -- 步骤1: 查询2023年全国社会融资规模流量累计
+    SELECT SUM(social_financing_flow_100m_cny) AS sf_total
+    FROM money_supply
+    WHERE year = 2023 AND geo_level = 'national';
+
+    -- 步骤2: 查询2023年12月全国M2余额
+    SELECT m2_100m_cny AS m2_dec
+    FROM money_supply
+    WHERE year = 2023 AND month = 12 AND geo_level = 'national';
+
+    -- 步骤3: 使用calculator工具计算 (sf_total / m2_dec) * 100
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - social_financing_flow_100m_cny
+  - m2_100m_cny
+  answer_type: scalar
+  answer: 11.097
+  answer_unit: '%'
+  requires_calculator: true
+
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区倍数
+  difficulty: hard
+  question: 2024年江苏省M1狭义货币余额的年均值是安徽省的多少倍？
+  sql: |
+    -- 步骤1: 查询江苏省2024年M1年均值
+    SELECT AVG(m1_100m_cny) AS js_m1
+    FROM money_supply
+    WHERE year = 2024 AND geo_level = 'province' AND geo_name = '江苏';
+
+    -- 步骤2: 查询安徽省2024年M1年均值
+    SELECT AVG(m1_100m_cny) AS ah_m1
+    FROM money_supply
+    WHERE year = 2024 AND geo_level = 'province' AND geo_name = '安徽';
+
+    -- 步骤3: 使用calculator工具计算 js_m1 / ah_m1
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - m1_100m_cny
+  answer_type: scalar
+  answer: 2.6548
+  answer_unit: 倍
+  requires_calculator: true
+
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期差值
+  difficulty: hard
+  question: 2024年12月全国M2广义货币余额比2020年同期增加了多少亿元？
+  sql: |
+    -- 步骤1: 查询2024年12月全国M2余额
+    SELECT m2_100m_cny AS m2_2024
+    FROM money_supply
+    WHERE year = 2024 AND month = 12 AND geo_level = 'national';
+
+    -- 步骤2: 查询2020年12月全国M2余额
+    SELECT m2_100m_cny AS m2_2020
+    FROM money_supply
+    WHERE year = 2020 AND month = 12 AND geo_level = 'national';
+
+    -- 步骤3: 使用calculator工具计算 m2_2024 - m2_2020
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - m2_100m_cny
+  answer_type: scalar
+  answer: 476567.84
+  answer_unit: 亿元
+  requires_calculator: true
+
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期倍数
+  difficulty: hard
+  question: 2024年全国社会融资规模流量的年度累计总额是2016年的多少倍？
+  sql: |
+    -- 步骤1: 查询2024年全国社会融资规模流量累计
+    SELECT SUM(social_financing_flow_100m_cny) AS sf_2024
+    FROM money_supply
+    WHERE year = 2024 AND geo_level = 'national';
+
+    -- 步骤2: 查询2016年全国社会融资规模流量累计
+    SELECT SUM(social_financing_flow_100m_cny) AS sf_2016
+    FROM money_supply
+    WHERE year = 2016 AND geo_level = 'national';
+
+    -- 步骤3: 使用calculator工具计算 sf_2024 / sf_2016
+  columns_used:
+  - year
+  - geo_level
+  - social_financing_flow_100m_cny
+  answer_type: scalar
+  answer: 0.9385
+  answer_unit: 倍
+  requires_calculator: true
+
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期差值
+  difficulty: hard
+  question: 2023年6月全国M1狭义货币余额比2019年同期增加了多少亿元？
+  sql: |
+    -- 步骤1: 查询2023年6月全国M1余额
+    SELECT m1_100m_cny AS m1_2023
+    FROM money_supply
+    WHERE year = 2023 AND month = 6 AND geo_level = 'national';
+
+    -- 步骤2: 查询2019年6月全国M1余额
+    SELECT m1_100m_cny AS m1_2019
+    FROM money_supply
+    WHERE year = 2019 AND month = 6 AND geo_level = 'national';
+
+    -- 步骤3: 使用calculator工具计算 m1_2023 - m1_2019
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - m1_100m_cny
+  answer_type: scalar
+  answer: 124180.38
+  answer_unit: 亿元
+  requires_calculator: true
+
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I5 增速差值计算
+  difficulty: hard
+  question: 2024年全国M2货币同比增速的年均值比2020年低多少个百分点？
+  sql: |
+    -- 步骤1: 查询2024年全国M2同比增速年均值
+    SELECT AVG(m2_yoy_pct) AS avg_2024
+    FROM money_supply
+    WHERE year = 2024 AND geo_level = 'national';
+
+    -- 步骤2: 查询2020年全国M2同比增速年均值
+    SELECT AVG(m2_yoy_pct) AS avg_2020
+    FROM money_supply
+    WHERE year = 2020 AND geo_level = 'national';
+
+    -- 步骤3: 使用calculator工具计算 avg_2024 - avg_2020
+  columns_used:
+  - year
+  - geo_level
+  - m2_yoy_pct
+  answer_type: scalar
+  answer: -0.1478
+  answer_unit: 百分点
+  requires_calculator: true
+
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期倍数
+  difficulty: hard
+  question: 2025年12月全国人民币贷款余额是2018年同期的多少倍？
+  sql: |
+    -- 步骤1: 查询2025年12月全国贷款余额
+    SELECT loan_balance_100m_cny AS loan_2025
+    FROM money_supply
+    WHERE year = 2025 AND month = 12 AND geo_level = 'national';
+
+    -- 步骤2: 查询2018年12月全国贷款余额
+    SELECT loan_balance_100m_cny AS loan_2018
+    FROM money_supply
+    WHERE year = 2018 AND month = 12 AND geo_level = 'national';
+
+    -- 步骤3: 使用calculator工具计算 loan_2025 / loan_2018
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - loan_balance_100m_cny
+  answer_type: scalar
+  answer: 1.2606
+  answer_unit: 倍
+  requires_calculator: true
+

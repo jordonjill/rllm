@@ -1302,3 +1302,293 @@ questions:
   expected_error: 出口同比增速超过1000%不符合经济常理，可能是数据异常
   answer: null
   answer_unit: ''
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨层级占比
+  difficulty: hard
+  question: 2024年广东省的出口额占全国出口额的百分比是多少？
+  sql: 'SELECT SUM(exports_musd) AS gd_exports
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_name = ''广东'' AND geo_level = ''province'';
+
+
+    SELECT SUM(exports_musd) AS nat_exports
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 计算 (gd_exports / nat_exports) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - exports_musd
+  answer_type: scalar
+  answer: 10.67
+  answer_unit: '%'
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区倍数
+  difficulty: hard
+  question: 2023年华东地区的贸易顺差是华南地区的多少倍？
+  sql: 'SELECT SUM(trade_balance_musd) AS ec_balance
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_name = ''华东'' AND geo_level = ''region'';
+
+
+    SELECT SUM(trade_balance_musd) AS sc_balance
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_name = ''华南'' AND geo_level = ''region'';
+
+
+    -- 步骤3: 使用 calculator 计算 ec_balance / sc_balance'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - trade_balance_musd
+  answer_type: scalar
+  answer: 2.96
+  answer_unit: 倍
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨地区差值
+  difficulty: hard
+  question: 2024年江苏省的进口额比浙江省高出多少百万美元？
+  sql: 'SELECT SUM(imports_musd) AS js_imports
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_name = ''江苏'' AND geo_level = ''province'';
+
+
+    SELECT SUM(imports_musd) AS zj_imports
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_name = ''浙江'' AND geo_level = ''province'';
+
+
+    -- 步骤3: 使用 calculator 计算 js_imports - zj_imports'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - imports_musd
+  answer_type: scalar
+  answer: 92110.71
+  answer_unit: 百万美元
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨层级占比
+  difficulty: hard
+  question: 2022年全国出口额中，前三大省份（广东、江苏、山东）的出口额合计占比是多少？
+  sql: 'SELECT SUM(exports_musd) AS top3_exports
+
+    FROM trade_balance
+
+    WHERE year = 2022 AND geo_level = ''province'' AND geo_name IN (''广东'', ''江苏'',
+    ''山东'');
+
+
+    SELECT SUM(exports_musd) AS nat_exports
+
+    FROM trade_balance
+
+    WHERE year = 2022 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 计算 (top3_exports / nat_exports) * 100'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - exports_musd
+  answer_type: scalar
+  answer: 29.19
+  answer_unit: '%'
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨层级占比
+  difficulty: hard
+  question: 2023年上海市的贸易顺差占华东地区贸易顺差的百分比是多少？
+  sql: 'SELECT SUM(trade_balance_musd) AS sh_balance
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_name = ''上海'' AND geo_level = ''province'';
+
+
+    SELECT SUM(trade_balance_musd) AS ec_balance
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_name = ''华东'' AND geo_level = ''region'';
+
+
+    -- 步骤3: 使用 calculator 计算 (sh_balance / ec_balance) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - trade_balance_musd
+  answer_type: scalar
+  answer: 8.99
+  answer_unit: '%'
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期差值
+  difficulty: hard
+  question: 2024年全国的出口额比2019年增加了多少百万美元？
+  sql: 'SELECT SUM(exports_musd) AS exports_2024
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    SELECT SUM(exports_musd) AS exports_2019
+
+    FROM trade_balance
+
+    WHERE year = 2019 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 计算 exports_2024 - exports_2019'
+  columns_used:
+  - year
+  - geo_level
+  - exports_musd
+  answer_type: scalar
+  answer: 71893.86
+  answer_unit: 百万美元
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨期倍数
+  difficulty: hard
+  question: 2023年12月全国的进口额是2018年同期的多少倍？
+  sql: 'SELECT imports_musd AS imports_2023_12
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND month = 12 AND geo_level = ''national'';
+
+
+    SELECT imports_musd AS imports_2018_12
+
+    FROM trade_balance
+
+    WHERE year = 2018 AND month = 12 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 计算 imports_2023_12 / imports_2018_12'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - imports_musd
+  answer_type: scalar
+  answer: 1.05
+  answer_unit: 倍
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期差值
+  difficulty: hard
+  question: 2024年全国层级的贸易顺差累计比2020年增长了多少百万美元？
+  sql: 'SELECT SUM(trade_balance_musd) AS balance_2024
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    SELECT SUM(trade_balance_musd) AS balance_2020
+
+    FROM trade_balance
+
+    WHERE year = 2020 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 计算 balance_2024 - balance_2020'
+  columns_used:
+  - year
+  - geo_level
+  - trade_balance_musd
+  answer_type: scalar
+  answer: 44708.9
+  answer_unit: 百万美元
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期增长率
+  difficulty: hard
+  question: 2024年广东省的出口额相比2020年增长了百分之多少？
+  sql: 'SELECT SUM(exports_musd) AS gd_exports_2024
+
+    FROM trade_balance
+
+    WHERE year = 2024 AND geo_name = ''广东'' AND geo_level = ''province'';
+
+
+    SELECT SUM(exports_musd) AS gd_exports_2020
+
+    FROM trade_balance
+
+    WHERE year = 2020 AND geo_name = ''广东'' AND geo_level = ''province'';
+
+
+    -- 步骤3: 使用 calculator 计算 ((gd_exports_2024 - gd_exports_2020) / gd_exports_2020)
+    * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - exports_musd
+  answer_type: scalar
+  answer: 3.7
+  answer_unit: '%'
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期差值
+  difficulty: hard
+  question: 2023年全年全国的进出口总额（出口额+进口额）比2019年增加了多少百万美元？
+  sql: 'SELECT SUM(exports_musd) + SUM(imports_musd) AS total_2023
+
+    FROM trade_balance
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    SELECT SUM(exports_musd) + SUM(imports_musd) AS total_2019
+
+    FROM trade_balance
+
+    WHERE year = 2019 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 计算 total_2023 - total_2019'
+  columns_used:
+  - year
+  - geo_level
+  - exports_musd
+  - imports_musd
+  answer_type: scalar
+  answer: 141131.07
+  answer_unit: 百万美元
+  requires_calculator: true

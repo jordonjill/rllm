@@ -1398,3 +1398,252 @@ questions:
   sql: null
   expected_error: 中国政策利率正常范围为0-10%，不存在超过20%的情况
   answer: null
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标倍数
+  difficulty: hard
+  question: 2023年全年，5年期LPR贷款利率的年均值是1年期LPR的多少倍？
+  sql: |
+    -- 步骤1: 查询2023年1年期LPR年均值
+    SELECT AVG(lpr_1y_pct) AS avg_lpr_1y
+    FROM interest_rates
+    WHERE year = 2023;
+    
+    -- 步骤2: 查询2023年5年期LPR年均值
+    SELECT AVG(lpr_5y_pct) AS avg_lpr_5y
+    FROM interest_rates
+    WHERE year = 2023;
+    
+    -- 步骤3: 使用calculator计算 avg_lpr_5y / avg_lpr_1y
+  columns_used:
+  - year
+  - lpr_1y_pct
+  - lpr_5y_pct
+  answer_type: scalar
+  answer: 1.112
+  answer_unit: 倍
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标差值
+  difficulty: hard
+  question: 2024年全年，10年期国债收益率比1年期国债收益率平均高出多少个百分点？
+  sql: |
+    -- 步骤1: 查询2024年10年期国债收益率年均值
+    SELECT AVG(bond_10y_pct) AS avg_bond_10y
+    FROM interest_rates
+    WHERE year = 2024;
+    
+    -- 步骤2: 查询2024年1年期国债收益率年均值
+    SELECT AVG(bond_1y_pct) AS avg_bond_1y
+    FROM interest_rates
+    WHERE year = 2024;
+    
+    -- 步骤3: 使用calculator计算 avg_bond_10y - avg_bond_1y
+  columns_used:
+  - year
+  - bond_10y_pct
+  - bond_1y_pct
+  answer_type: scalar
+  answer: 0.5574
+  answer_unit: 个百分点
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标倍数
+  difficulty: hard
+  question: 2022年全年，名义政策利率年均值是实际政策利率年均值的多少倍？
+  sql: |
+    -- 步骤1: 查询2022年名义政策利率年均值
+    SELECT AVG(policy_rate_pct) AS avg_nominal
+    FROM interest_rates
+    WHERE year = 2022;
+    
+    -- 步骤2: 查询2022年实际政策利率年均值
+    SELECT AVG(real_policy_rate_pct) AS avg_real
+    FROM interest_rates
+    WHERE year = 2022;
+    
+    -- 步骤3: 使用calculator计算 avg_nominal / avg_real
+  columns_used:
+  - year
+  - policy_rate_pct
+  - real_policy_rate_pct
+  answer_type: scalar
+  answer: 2.7469
+  answer_unit: 倍
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨指标占比
+  difficulty: hard
+  question: 2025年6月，5年期LPR与1年期LPR的利差占1年期LPR的百分比是多少？
+  sql: |
+    -- 步骤1: 查询2025年6月的1年期LPR
+    SELECT lpr_1y_pct
+    FROM interest_rates
+    WHERE year = 2025 AND month = 6;
+    
+    -- 步骤2: 查询2025年6月的5年期LPR
+    SELECT lpr_5y_pct
+    FROM interest_rates
+    WHERE year = 2025 AND month = 6;
+    
+    -- 步骤3: 使用calculator计算 ((lpr_5y - lpr_1y) / lpr_1y) * 100
+  columns_used:
+  - year
+  - month
+  - lpr_1y_pct
+  - lpr_5y_pct
+  answer_type: scalar
+  answer: 9.7066
+  answer_unit: %
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨指标占比
+  difficulty: hard
+  question: 2021年全年，政策利率年均值占7天逆回购利率年均值的比例是多少？
+  sql: |
+    -- 步骤1: 查询2021年政策利率年均值
+    SELECT AVG(policy_rate_pct) AS avg_policy
+    FROM interest_rates
+    WHERE year = 2021;
+    
+    -- 步骤2: 查询2021年7天逆回购利率年均值
+    SELECT AVG(repo_7d_pct) AS avg_repo
+    FROM interest_rates
+    WHERE year = 2021;
+    
+    -- 步骤3: 使用calculator计算 (avg_policy / avg_repo) * 100
+  columns_used:
+  - year
+  - policy_rate_pct
+  - repo_7d_pct
+  answer_type: scalar
+  answer: 127.3841
+  answer_unit: %
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨期差值
+  difficulty: hard
+  question: 2025年12月的1年期LPR贷款利率比2016年1月下降了多少个百分点？
+  sql: |
+    -- 步骤1: 查询2016年1月的1年期LPR
+    SELECT lpr_1y_pct AS lpr_2016_01
+    FROM interest_rates
+    WHERE year = 2016 AND month = 1;
+    
+    -- 步骤2: 查询2025年12月的1年期LPR
+    SELECT lpr_1y_pct AS lpr_2025_12
+    FROM interest_rates
+    WHERE year = 2025 AND month = 12;
+    
+    -- 步骤3: 使用calculator计算 lpr_2016_01 - lpr_2025_12
+  columns_used:
+  - year
+  - month
+  - lpr_1y_pct
+  answer_type: scalar
+  answer: 0.244
+  answer_unit: 个百分点
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨期倍数
+  difficulty: hard
+  question: 2024年的7天逆回购利率年均值是2019年的多少倍？
+  sql: |
+    -- 步骤1: 查询2019年7天逆回购利率年均值
+    SELECT AVG(repo_7d_pct) AS avg_repo_2019
+    FROM interest_rates
+    WHERE year = 2019;
+    
+    -- 步骤2: 查询2024年7天逆回购利率年均值
+    SELECT AVG(repo_7d_pct) AS avg_repo_2024
+    FROM interest_rates
+    WHERE year = 2024;
+    
+    -- 步骤3: 使用calculator计算 avg_repo_2024 / avg_repo_2019
+  columns_used:
+  - year
+  - repo_7d_pct
+  answer_type: scalar
+  answer: 1.0022
+  answer_unit: 倍
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨期差值
+  difficulty: hard
+  question: 2025年6月的10年期国债收益率比2020年6月增加了多少个百分点？
+  sql: |
+    -- 步骤1: 查询2020年6月的10年期国债收益率
+    SELECT bond_10y_pct AS bond_2020_06
+    FROM interest_rates
+    WHERE year = 2020 AND month = 6;
+    
+    -- 步骤2: 查询2025年6月的10年期国债收益率
+    SELECT bond_10y_pct AS bond_2025_06
+    FROM interest_rates
+    WHERE year = 2025 AND month = 6;
+    
+    -- 步骤3: 使用calculator计算 bond_2025_06 - bond_2020_06
+  columns_used:
+  - year
+  - month
+  - bond_10y_pct
+  answer_type: scalar
+  answer: 0.139
+  answer_unit: 个百分点
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨期差值
+  difficulty: hard
+  question: 2024年全年政策利率的最大值与最小值之差是多少个基点？
+  sql: |
+    -- 步骤1: 查询2024年政策利率的最大值
+    SELECT MAX(policy_rate_pct) AS max_rate
+    FROM interest_rates
+    WHERE year = 2024;
+    
+    -- 步骤2: 查询2024年政策利率的最小值
+    SELECT MIN(policy_rate_pct) AS min_rate
+    FROM interest_rates
+    WHERE year = 2024;
+    
+    -- 步骤3: 使用calculator计算 (max_rate - min_rate) * 100
+  columns_used:
+  - year
+  - policy_rate_pct
+  answer_type: scalar
+  answer: 4.5
+  answer_unit: 基点
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨期变化率
+  difficulty: hard
+  question: 2025年1月的5年期LPR相比2020年1月下降了百分之几？
+  sql: |
+    -- 步骤1: 查询2020年1月的5年期LPR
+    SELECT lpr_5y_pct AS lpr_2020_01
+    FROM interest_rates
+    WHERE year = 2020 AND month = 1;
+    
+    -- 步骤2: 查询2025年1月的5年期LPR
+    SELECT lpr_5y_pct AS lpr_2025_01
+    FROM interest_rates
+    WHERE year = 2025 AND month = 1;
+    
+    -- 步骤3: 使用calculator计算 ((lpr_2020_01 - lpr_2025_01) / lpr_2020_01) * 100
+  columns_used:
+  - year
+  - month
+  - lpr_5y_pct
+  answer_type: scalar
+  answer: 4.5089
+  answer_unit: %
+  requires_calculator: true

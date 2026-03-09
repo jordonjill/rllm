@@ -1193,3 +1193,333 @@ questions:
   sql: null
   expected_error: 数据起始年份为2016年，2010年数据不存在
   answer: null
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨类目倍数
+  difficulty: hard
+  question: 2024年广东省的工业增加值是服务业增加值的多少倍？
+  sql: '-- 步骤1: 查询广东省2024年工业增加值
+
+    SELECT industry_value_added_100m_cny AS industry_value
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''广东''
+
+
+    -- 步骤2: 查询广东省2024年服务业增加值
+
+    SELECT services_value_added_100m_cny AS services_value
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''广东''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (industry_value / services_value)'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - industry_value_added_100m_cny
+  - services_value_added_100m_cny
+  answer_type: scalar
+  answer: 0.59
+  answer_unit: 倍
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨层级占比
+  difficulty: hard
+  question: 2023年华东区域的地区生产总值占全国GDP的百分比是多少？
+  sql: '-- 步骤1: 查询华东区域2023年GDP总量
+
+    SELECT gdp_100m_cny AS east_gdp
+
+    FROM regional_gdp
+
+    WHERE year = 2023 AND geo_level = ''region'' AND geo_name = ''华东''
+
+
+    -- 步骤2: 查询全国2023年GDP总量
+
+    SELECT gdp_100m_cny AS national_gdp
+
+    FROM regional_gdp
+
+    WHERE year = 2023 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (east_gdp / national_gdp) * 100'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - gdp_100m_cny
+  answer_type: scalar
+  answer: 39.9
+  answer_unit: '%'
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨地区差值
+  difficulty: hard
+  question: 2024年江苏省的人均GDP比浙江省高出多少元？
+  sql: '-- 步骤1: 查询江苏省2024年人均GDP
+
+    SELECT gdp_per_capita_cny AS js_per_capita
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''江苏''
+
+
+    -- 步骤2: 查询浙江省2024年人均GDP
+
+    SELECT gdp_per_capita_cny AS zj_per_capita
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''浙江''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (js_per_capita - zj_per_capita)'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - gdp_per_capita_cny
+  answer_type: scalar
+  answer: 7095.22
+  answer_unit: 元
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨地区产业结构对比
+  difficulty: hard
+  question: 2023年深圳市的第三产业占GDP比重比广州市高出多少个百分点？
+  sql: '-- 步骤1: 查询深圳市2023年第三产业占比
+
+    SELECT tertiary_share_pct AS sz_tertiary
+
+    FROM regional_gdp
+
+    WHERE year = 2023 AND geo_level = ''city'' AND geo_name = ''深圳''
+
+
+    -- 步骤2: 查询广州市2023年第三产业占比
+
+    SELECT tertiary_share_pct AS gz_tertiary
+
+    FROM regional_gdp
+
+    WHERE year = 2023 AND geo_level = ''city'' AND geo_name = ''广州''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (sz_tertiary - gz_tertiary)'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - tertiary_share_pct
+  answer_type: scalar
+  answer: 6.03
+  answer_unit: 个百分点
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨区域服务业对比
+  difficulty: hard
+  question: 2024年西南区域的服务业增加值占华东区域服务业增加值的百分比是多少？
+  sql: '-- 步骤1: 查询西南区域2024年服务业增加值
+
+    SELECT services_value_added_100m_cny AS sw_services
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''region'' AND geo_name = ''西南''
+
+
+    -- 步骤2: 查询华东区域2024年服务业增加值
+
+    SELECT services_value_added_100m_cny AS east_services
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''region'' AND geo_name = ''华东''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (sw_services / east_services) * 100'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - services_value_added_100m_cny
+  answer_type: scalar
+  answer: 27.34
+  answer_unit: '%'
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期GDP增量
+  difficulty: hard
+  question: 2024年全国地区生产总值比2020年增加了多少亿元？
+  sql: '-- 步骤1: 查询2024年全国GDP总量
+
+    SELECT gdp_100m_cny AS gdp_2024
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''national''
+
+
+    -- 步骤2: 查询2020年全国GDP总量
+
+    SELECT gdp_100m_cny AS gdp_2020
+
+    FROM regional_gdp
+
+    WHERE year = 2020 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (gdp_2024 - gdp_2020)'
+  columns_used:
+  - year
+  - geo_level
+  - gdp_100m_cny
+  answer_type: scalar
+  answer: 307014.0
+  answer_unit: 亿元
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I7 跨期人均GDP倍数
+  difficulty: hard
+  question: 2023年广东省的人均GDP是2016年的多少倍？
+  sql: '-- 步骤1: 查询广东省2023年人均GDP
+
+    SELECT gdp_per_capita_cny AS per_capita_2023
+
+    FROM regional_gdp
+
+    WHERE year = 2023 AND geo_level = ''province'' AND geo_name = ''广东''
+
+
+    -- 步骤2: 查询广东省2016年人均GDP
+
+    SELECT gdp_per_capita_cny AS per_capita_2016
+
+    FROM regional_gdp
+
+    WHERE year = 2016 AND geo_level = ''province'' AND geo_name = ''广东''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (per_capita_2023 / per_capita_2016)'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - gdp_per_capita_cny
+  answer_type: scalar
+  answer: 1.7268
+  answer_unit: 倍
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I8 跨期工业增加值增量
+  difficulty: hard
+  question: 2024年华北区域的工业增加值比2019年增长了多少亿元？
+  sql: '-- 步骤1: 查询华北区域2024年工业增加值
+
+    SELECT industry_value_added_100m_cny AS industry_2024
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''region'' AND geo_name = ''华北''
+
+
+    -- 步骤2: 查询华北区域2019年工业增加值
+
+    SELECT industry_value_added_100m_cny AS industry_2019
+
+    FROM regional_gdp
+
+    WHERE year = 2019 AND geo_level = ''region'' AND geo_name = ''华北''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (industry_2024 - industry_2019)'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - industry_value_added_100m_cny
+  answer_type: scalar
+  answer: 27047.95
+  answer_unit: 亿元
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I9 跨期人均GDP增长率
+  difficulty: hard
+  question: 2025年全国人均GDP比2020年增长了百分之多少？
+  sql: '-- 步骤1: 查询2025年全国人均GDP
+
+    SELECT gdp_per_capita_cny AS per_capita_2025
+
+    FROM regional_gdp
+
+    WHERE year = 2025 AND geo_level = ''national''
+
+
+    -- 步骤2: 查询2020年全国人均GDP
+
+    SELECT gdp_per_capita_cny AS per_capita_2020
+
+    FROM regional_gdp
+
+    WHERE year = 2020 AND geo_level = ''national''
+
+
+    -- 步骤3: 使用 calculator 工具计算 ((per_capita_2025 - per_capita_2020) / per_capita_2020)
+    * 100'
+  columns_used:
+  - year
+  - geo_level
+  - gdp_per_capita_cny
+  answer_type: scalar
+  answer: 36.98
+  answer_unit: '%'
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I10 跨期服务业增加值倍数
+  difficulty: hard
+  question: 2024年江苏省的服务业增加值是2018年的多少倍？
+  sql: '-- 步骤1: 查询江苏省2024年服务业增加值
+
+    SELECT services_value_added_100m_cny AS services_2024
+
+    FROM regional_gdp
+
+    WHERE year = 2024 AND geo_level = ''province'' AND geo_name = ''江苏''
+
+
+    -- 步骤2: 查询江苏省2018年服务业增加值
+
+    SELECT services_value_added_100m_cny AS services_2018
+
+    FROM regional_gdp
+
+    WHERE year = 2018 AND geo_level = ''province'' AND geo_name = ''江苏''
+
+
+    -- 步骤3: 使用 calculator 工具计算 (services_2024 / services_2018)'
+  columns_used:
+  - year
+  - geo_level
+  - geo_name
+  - services_value_added_100m_cny
+  answer_type: scalar
+  answer: 0.9837
+  answer_unit: 倍
+  requires_calculator: true

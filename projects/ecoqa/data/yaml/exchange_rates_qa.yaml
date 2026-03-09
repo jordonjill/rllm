@@ -1331,3 +1331,249 @@ questions:
   sql: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指数比值
+  difficulty: hard
+  question: 2024年美元指数DXY的年度平均值是CFETS人民币汇率指数年度平均值的多少倍？
+  sql: |
+    -- 步骤1: 查询2024年美元指数DXY的年度平均值
+    SELECT AVG(dxy_index) AS avg_dxy
+    FROM exchange_rates
+    WHERE year = 2024;
+
+    -- 步骤2: 查询2024年CFETS人民币汇率指数的年度平均值
+    SELECT AVG(cfets_index) AS avg_cfets
+    FROM exchange_rates
+    WHERE year = 2024;
+
+    -- 步骤3: 使用 calculator 工具计算 avg_dxy / avg_cfets
+  columns_used:
+  - year
+  - dxy_index
+  - cfets_index
+  answer_type: scalar
+  answer: 1.0332947016540164
+  answer_unit: 倍
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨期极差
+  difficulty: hard
+  question: 2023年全年中国外汇储备的最高值与最低值相差多少亿美元？
+  sql: |
+    -- 步骤1: 查询2023年外汇储备的最大值
+    SELECT MAX(fx_reserve_100m_usd) AS max_reserve
+    FROM exchange_rates
+    WHERE year = 2023;
+
+    -- 步骤2: 查询2023年外汇储备的最小值
+    SELECT MIN(fx_reserve_100m_usd) AS min_reserve
+    FROM exchange_rates
+    WHERE year = 2023;
+
+    -- 步骤3: 使用 calculator 工具计算 max_reserve - min_reserve
+  columns_used:
+  - year
+  - fx_reserve_100m_usd
+  answer_type: scalar
+  answer: 736.2299999999996
+  answer_unit: 亿美元
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨币种汇率比值
+  difficulty: hard
+  question: 2022年欧元兑人民币的年度平均汇率是美元兑人民币年度平均汇率的多少倍？
+  sql: |
+    -- 步骤1: 查询2022年欧元兑人民币的年度平均汇率
+    SELECT AVG(eur_cny) AS avg_eur_cny
+    FROM exchange_rates
+    WHERE year = 2022;
+
+    -- 步骤2: 查询2022年美元兑人民币的年度平均汇率
+    SELECT AVG(usd_cny) AS avg_usd_cny
+    FROM exchange_rates
+    WHERE year = 2022;
+
+    -- 步骤3: 使用 calculator 工具计算 avg_eur_cny / avg_usd_cny
+  columns_used:
+  - year
+  - eur_cny
+  - usd_cny
+  answer_type: scalar
+  answer: 1.0973583342941244
+  answer_unit: 倍
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I4 占比计算
+  difficulty: hard
+  question: 2025年人民币汇率1个月波动率超过6%的月份占全年的百分比是多少？
+  sql: |
+    -- 步骤1: 查询2025年汇率波动率超过6%的月份数量
+    SELECT COUNT(*) AS high_vol_months
+    FROM exchange_rates
+    WHERE year = 2025 AND fx_vol_1m_pct > 6.0;
+
+    -- 步骤2: 使用 calculator 工具计算 (high_vol_months / 12) * 100
+  columns_used:
+  - year
+  - fx_vol_1m_pct
+  answer_type: scalar
+  answer: 33.33333333333333
+  answer_unit: '%'
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I5 变异系数计算
+  difficulty: hard
+  question: 2024年CFETS人民币汇率指数的波动幅度（最大值-最小值）占年度平均值的百分比是多少？
+  sql: |
+    -- 步骤1: 查询2024年CFETS指数的最大值
+    SELECT MAX(cfets_index) AS max_cfets
+    FROM exchange_rates
+    WHERE year = 2024;
+
+    -- 步骤2: 查询2024年CFETS指数的最小值
+    SELECT MIN(cfets_index) AS min_cfets
+    FROM exchange_rates
+    WHERE year = 2024;
+
+    -- 步骤3: 查询2024年CFETS指数的平均值
+    SELECT AVG(cfets_index) AS avg_cfets
+    FROM exchange_rates
+    WHERE year = 2024;
+
+    -- 步骤4: 使用 calculator 工具计算 ((max_cfets - min_cfets) / avg_cfets) * 100
+  columns_used:
+  - year
+  - cfets_index
+  answer_type: scalar
+  answer: 2.7081253810133044
+  answer_unit: '%'
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期绝对增量
+  difficulty: hard
+  question: 2025年12月的中国外汇储备比2016年1月增加了多少亿美元？
+  sql: |
+    -- 步骤1: 查询2025年12月的外汇储备
+    SELECT fx_reserve_100m_usd AS reserve_2025_12
+    FROM exchange_rates
+    WHERE year = 2025 AND month = 12;
+
+    -- 步骤2: 查询2016年1月的外汇储备
+    SELECT fx_reserve_100m_usd AS reserve_2016_01
+    FROM exchange_rates
+    WHERE year = 2016 AND month = 1;
+
+    -- 步骤3: 使用 calculator 工具计算 reserve_2025_12 - reserve_2016_01
+  columns_used:
+  - year
+  - month
+  - fx_reserve_100m_usd
+  answer_type: scalar
+  answer: 1624.479999999996
+  answer_unit: 亿美元
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I7 跨期倍数对比
+  difficulty: hard
+  question: 2024年美元兑人民币汇率的年度平均值是2020年年度平均值的多少倍？
+  sql: |
+    -- 步骤1: 查询2024年美元兑人民币汇率的年度平均值
+    SELECT AVG(usd_cny) AS avg_usd_2024
+    FROM exchange_rates
+    WHERE year = 2024;
+
+    -- 步骤2: 查询2020年美元兑人民币汇率的年度平均值
+    SELECT AVG(usd_cny) AS avg_usd_2020
+    FROM exchange_rates
+    WHERE year = 2020;
+
+    -- 步骤3: 使用 calculator 工具计算 avg_usd_2024 / avg_usd_2020
+  columns_used:
+  - year
+  - usd_cny
+  answer_type: scalar
+  answer: 0.997596421522985
+  answer_unit: 倍
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I8 同月同比差值
+  difficulty: hard
+  question: 2023年12月的CFETS人民币汇率指数比2019年同期下降了多少个指数点？
+  sql: |
+    -- 步骤1: 查询2023年12月的CFETS指数
+    SELECT cfets_index AS cfets_2023_12
+    FROM exchange_rates
+    WHERE year = 2023 AND month = 12;
+
+    -- 步骤2: 查询2019年12月的CFETS指数
+    SELECT cfets_index AS cfets_2019_12
+    FROM exchange_rates
+    WHERE year = 2019 AND month = 12;
+
+    -- 步骤3: 使用 calculator 工具计算 cfets_2023_12 - cfets_2019_12
+  columns_used:
+  - year
+  - month
+  - cfets_index
+  answer_type: scalar
+  answer: -1.358000000000004
+  answer_unit: 指数点
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I9 跨期波动率差异
+  difficulty: hard
+  question: 2016年人民币汇率1个月波动率的年度平均值比2025年高出多少个百分点？
+  sql: |
+    -- 步骤1: 查询2016年汇率波动率的年度平均值
+    SELECT AVG(fx_vol_1m_pct) AS avg_vol_2016
+    FROM exchange_rates
+    WHERE year = 2016;
+
+    -- 步骤2: 查询2025年汇率波动率的年度平均值
+    SELECT AVG(fx_vol_1m_pct) AS avg_vol_2025
+    FROM exchange_rates
+    WHERE year = 2025;
+
+    -- 步骤3: 使用 calculator 工具计算 avg_vol_2016 - avg_vol_2025
+  columns_used:
+  - year
+  - fx_vol_1m_pct
+  answer_type: scalar
+  answer: 0.303583333333334
+  answer_unit: 百分点
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I10 跨期增长率
+  difficulty: hard
+  question: 2024年6月的中国外汇储备相比2020年同期增长了百分之几？
+  sql: |
+    -- 步骤1: 查询2024年6月的外汇储备
+    SELECT fx_reserve_100m_usd AS reserve_2024_06
+    FROM exchange_rates
+    WHERE year = 2024 AND month = 6;
+
+    -- 步骤2: 查询2020年6月的外汇储备
+    SELECT fx_reserve_100m_usd AS reserve_2020_06
+    FROM exchange_rates
+    WHERE year = 2020 AND month = 6;
+
+    -- 步骤3: 使用 calculator 工具计算 ((reserve_2024_06 - reserve_2020_06) / reserve_2020_06) * 100
+  columns_used:
+  - year
+  - month
+  - fx_reserve_100m_usd
+  answer_type: scalar
+  answer: 1.2075868803152212
+  answer_unit: '%'
+  requires_calculator: true
+

@@ -44,6 +44,22 @@ python -m projects.ecoqa.prepare_ecoqa_data
 python -m projects.ecoqa.run_ecoqa
 ```
 
+Save full per-step traces to JSONL (tools/actions/outputs per step):
+
+```bash
+python -m projects.ecoqa.run_ecoqa \
+  --save-steps-jsonl projects/ecoqa/benchmarks/results/ecoqa_steps.jsonl
+```
+
+If you are using Ollama (OpenAI-compatible endpoint):
+
+```bash
+python -m projects.ecoqa.run_ecoqa \
+  --model qwen3-4b:latest \
+  --base-url http://localhost:11434/v1 \
+  --tokenizer-model Qwen/Qwen3-4B-Instruct-2507
+```
+
 4. Run GRPO training:
 
 ```bash

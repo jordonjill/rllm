@@ -1551,3 +1551,329 @@ questions:
   answer: null
   answer_unit: null
   expected_error: GDP同比增速合理范围通常为-20%至20%之间，不存在超过100%的情况
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨类目倍数对比
+  difficulty: hard
+  question: 2024年全国层级的消费支出总额是固定资本形成总额的多少倍？
+  sql: '-- 步骤1: 查询2024年全国消费支出总额
+
+    SELECT SUM(consumption_100m_cny) AS total_consumption
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2024年全国固定资本形成总额
+
+    SELECT SUM(investment_100m_cny) AS total_investment
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (total_consumption / total_investment)'
+  columns_used:
+  - year
+  - geo_level
+  - consumption_100m_cny
+  - investment_100m_cny
+  answer_type: scalar
+  answer: 1.2578
+  answer_unit: 倍
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区占比计算
+  difficulty: hard
+  question: 2023年广东省的名义GDP支出占全国层级的百分比是多少？
+  sql: '-- 步骤1: 查询2023年广东省名义GDP总额
+
+    SELECT SUM(nominal_gdp_100m_cny) AS gd_gdp
+
+    FROM gdp_expenditure
+
+    WHERE year = 2023 AND geo_name = ''广东'';
+
+
+    -- 步骤2: 查询2023年全国层级名义GDP总额
+
+    SELECT SUM(nominal_gdp_100m_cny) AS nat_gdp
+
+    FROM gdp_expenditure
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (gd_gdp / nat_gdp) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - nominal_gdp_100m_cny
+  answer_type: scalar
+  answer: 10.44
+  answer_unit: '%'
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨地区差值计算
+  difficulty: hard
+  question: 2024年华东地区的固定资本形成总额比华南地区高出多少亿元？
+  sql: '-- 步骤1: 查询2024年华东地区固定资本形成总额
+
+    SELECT SUM(investment_100m_cny) AS ec_investment
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND geo_name = ''华东'';
+
+
+    -- 步骤2: 查询2024年华南地区固定资本形成总额
+
+    SELECT SUM(investment_100m_cny) AS sc_investment
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND geo_name = ''华南'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (ec_investment - sc_investment)'
+  columns_used:
+  - year
+  - geo_name
+  - investment_100m_cny
+  answer_type: scalar
+  answer: 150008.36
+  answer_unit: 亿元
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨指标占比计算
+  difficulty: hard
+  question: 2023年全国层级的净出口额占名义GDP支出的百分比是多少？
+  sql: '-- 步骤1: 查询2023年全国净出口总额
+
+    SELECT SUM(net_export_100m_cny) AS total_net_export
+
+    FROM gdp_expenditure
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2023年全国名义GDP总额
+
+    SELECT SUM(nominal_gdp_100m_cny) AS total_gdp
+
+    FROM gdp_expenditure
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (total_net_export / total_gdp) * 100'
+  columns_used:
+  - year
+  - geo_level
+  - net_export_100m_cny
+  - nominal_gdp_100m_cny
+  answer_type: scalar
+  answer: -9.82
+  answer_unit: '%'
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨省份倍数对比
+  difficulty: hard
+  question: 2024年第2季度江苏省的实际GDP支出是浙江省的多少倍？
+  sql: '-- 步骤1: 查询2024年Q2江苏省实际GDP
+
+    SELECT SUM(real_gdp_100m_cny) AS js_gdp
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND quarter = 2 AND geo_name = ''江苏'';
+
+
+    -- 步骤2: 查询2024年Q2浙江省实际GDP
+
+    SELECT SUM(real_gdp_100m_cny) AS zj_gdp
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND quarter = 2 AND geo_name = ''浙江'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (js_gdp / zj_gdp)'
+  columns_used:
+  - year
+  - quarter
+  - geo_name
+  - real_gdp_100m_cny
+  answer_type: scalar
+  answer: 1.4176
+  answer_unit: 倍
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期绝对增量
+  difficulty: hard
+  question: 2024年全国层级的名义GDP支出比2019年增加了多少亿元？
+  sql: '-- 步骤1: 查询2024年全国名义GDP总额
+
+    SELECT SUM(nominal_gdp_100m_cny) AS gdp_2024
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2019年全国名义GDP总额
+
+    SELECT SUM(nominal_gdp_100m_cny) AS gdp_2019
+
+    FROM gdp_expenditure
+
+    WHERE year = 2019 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (gdp_2024 - gdp_2019)'
+  columns_used:
+  - year
+  - geo_level
+  - nominal_gdp_100m_cny
+  answer_type: scalar
+  answer: 327999.34
+  answer_unit: 亿元
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I7 跨期百分点变化
+  difficulty: hard
+  question: 2023年全国层级的平均消费贡献率比2020年提高了多少个百分点？
+  sql: '-- 步骤1: 查询2023年全国平均消费贡献率
+
+    SELECT AVG(consumption_contrib_pct) AS avg_contrib_2023
+
+    FROM gdp_expenditure
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2020年全国平均消费贡献率
+
+    SELECT AVG(consumption_contrib_pct) AS avg_contrib_2020
+
+    FROM gdp_expenditure
+
+    WHERE year = 2020 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (avg_contrib_2023 - avg_contrib_2020)'
+  columns_used:
+  - year
+  - geo_level
+  - consumption_contrib_pct
+  answer_type: scalar
+  answer: -9.41
+  answer_unit: 百分点
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I8 跨期倍数增长
+  difficulty: hard
+  question: 2024年第1季度全国层级的固定资本形成是2016年同期的多少倍？
+  sql: '-- 步骤1: 查询2024年Q1全国固定资本形成
+
+    SELECT SUM(investment_100m_cny) AS inv_2024q1
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND quarter = 1 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2016年Q1全国固定资本形成
+
+    SELECT SUM(investment_100m_cny) AS inv_2016q1
+
+    FROM gdp_expenditure
+
+    WHERE year = 2016 AND quarter = 1 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (inv_2024q1 / inv_2016q1)'
+  columns_used:
+  - year
+  - quarter
+  - geo_level
+  - investment_100m_cny
+  answer_type: scalar
+  answer: 1.8652
+  answer_unit: 倍
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I9 跨期减少量计算
+  difficulty: hard
+  question: 2022年广东省的净出口额比2021年减少了多少亿元？
+  sql: '-- 步骤1: 查询2022年广东省净出口总额
+
+    SELECT SUM(net_export_100m_cny) AS net_exp_2022
+
+    FROM gdp_expenditure
+
+    WHERE year = 2022 AND geo_name = ''广东'';
+
+
+    -- 步骤2: 查询2021年广东省净出口总额
+
+    SELECT SUM(net_export_100m_cny) AS net_exp_2021
+
+    FROM gdp_expenditure
+
+    WHERE year = 2021 AND geo_name = ''广东'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (net_exp_2021 - net_exp_2022)'
+  columns_used:
+  - year
+  - geo_name
+  - net_export_100m_cny
+  answer_type: scalar
+  answer: -407.52
+  answer_unit: 亿元
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I10 跨期增长率计算
+  difficulty: hard
+  question: 2024年全国层级的政府支出总额比2018年增长了百分之多少？
+  sql: '-- 步骤1: 查询2024年全国政府支出总额
+
+    SELECT SUM(government_spending_100m_cny) AS gov_2024
+
+    FROM gdp_expenditure
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2018年全国政府支出总额
+
+    SELECT SUM(government_spending_100m_cny) AS gov_2018
+
+    FROM gdp_expenditure
+
+    WHERE year = 2018 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 ((gov_2024 - gov_2018) / gov_2018) * 100'
+  columns_used:
+  - year
+  - geo_level
+  - government_spending_100m_cny
+  answer_type: scalar
+  answer: 40.88
+  answer_unit: '%'
+  requires_calculator: true
+

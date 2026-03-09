@@ -2061,3 +2061,257 @@ questions:
   sql: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
   answer: null
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标倍数对比
+  difficulty: hard
+  question: 2024年全年，上证综指的年平均月末收盘价是创业板指年平均月末收盘价的多少倍？
+  sql: |
+    -- 步骤1: 查询2024年上证综指的平均收盘价
+    SELECT AVG(shanghai_comp_close) AS avg_shanghai
+    FROM stock_indices
+    WHERE year = 2024;
+
+    -- 步骤2: 查询2024年创业板指的平均收盘价
+    SELECT AVG(chinext_close) AS avg_chinext
+    FROM stock_indices
+    WHERE year = 2024;
+
+    -- 步骤3: 使用calculator工具计算 avg_shanghai / avg_chinext
+  columns_used:
+    - year
+    - shanghai_comp_close
+    - chinext_close
+  answer_type: scalar
+  answer: 1.2456
+  answer_unit: 倍
+  requires_calculator: true
+
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标差值对比
+  difficulty: hard
+  question: 2023年全年，沪深300指数的最高月末收盘价比最低月末收盘价高出多少点？
+  sql: |
+    -- 步骤1: 查询2023年沪深300指数的最高收盘价
+    SELECT MAX(csi300_close) AS max_csi300
+    FROM stock_indices
+    WHERE year = 2023;
+
+    -- 步骤2: 查询2023年沪深300指数的最低收盘价
+    SELECT MIN(csi300_close) AS min_csi300
+    FROM stock_indices
+    WHERE year = 2023;
+
+    -- 步骤3: 使用calculator工具计算 max_csi300 - min_csi300
+  columns_used:
+    - year
+    - csi300_close
+  answer_type: scalar
+  answer: 357.949
+  answer_unit: 点
+  requires_calculator: true
+
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨指标占比计算
+  difficulty: hard
+  question: 2025年第一季度，北向资金净流入总额占同期A股市场总成交额的百分比是多少？
+  sql: |
+    -- 步骤1: 查询2025年第一季度北向资金净流入总额
+    SELECT SUM(northbound_netflow_100m_cny) AS q1_netflow
+    FROM stock_indices
+    WHERE year = 2025 AND month IN (1, 2, 3);
+
+    -- 步骤2: 查询2025年第一季度A股市场总成交额
+    SELECT SUM(market_turnover_100m_cny) AS q1_turnover
+    FROM stock_indices
+    WHERE year = 2025 AND month IN (1, 2, 3);
+
+    -- 步骤3: 使用calculator工具计算 (q1_netflow / q1_turnover) * 100
+  columns_used:
+    - year
+    - month
+    - northbound_netflow_100m_cny
+    - market_turnover_100m_cny
+  answer_type: scalar
+  answer: 0.3075
+  answer_unit: '%'
+  requires_calculator: true
+
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标比值计算
+  difficulty: hard
+  question: 2022年全年，深证成指的年平均收盘价与上证综指的年平均收盘价之比是多少？
+  sql: |
+    -- 步骤1: 查询2022年深证成指的平均收盘价
+    SELECT AVG(shenzhen_comp_close) AS avg_shenzhen
+    FROM stock_indices
+    WHERE year = 2022;
+
+    -- 步骤2: 查询2022年上证综指的平均收盘价
+    SELECT AVG(shanghai_comp_close) AS avg_shanghai
+    FROM stock_indices
+    WHERE year = 2022;
+
+    -- 步骤3: 使用calculator工具计算 avg_shenzhen / avg_shanghai
+  columns_used:
+    - year
+    - shenzhen_comp_close
+    - shanghai_comp_close
+  answer_type: scalar
+  answer: 3.1956
+  answer_unit: 倍
+  requires_calculator: true
+
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨月份北向资金占比
+  difficulty: hard
+  question: 2023年北向资金净流入最多的月份，其净流入额占当月A股市场成交额的百分比是多少？
+  sql: |
+    -- 步骤1: 查询2023年北向资金净流入最多的月份数据
+    SELECT northbound_netflow_100m_cny, market_turnover_100m_cny
+    FROM stock_indices
+    WHERE year = 2023
+    ORDER BY northbound_netflow_100m_cny DESC
+    LIMIT 1;
+
+    -- 步骤2: 使用calculator工具计算 (netflow / turnover) * 100
+  columns_used:
+    - year
+    - northbound_netflow_100m_cny
+    - market_turnover_100m_cny
+  answer_type: scalar
+  answer: 0.5214
+  answer_unit: '%'
+  requires_calculator: true
+
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨期差值计算
+  difficulty: hard
+  question: 2025年12月的上证综指月末收盘价比2020年1月高出多少点？
+  sql: |
+    -- 步骤1: 查询2025年12月上证综指收盘价
+    SELECT shanghai_comp_close AS close_2025_12
+    FROM stock_indices
+    WHERE year = 2025 AND month = 12;
+
+    -- 步骤2: 查询2020年1月上证综指收盘价
+    SELECT shanghai_comp_close AS close_2020_01
+    FROM stock_indices
+    WHERE year = 2020 AND month = 1;
+
+    -- 步骤3: 使用calculator工具计算 close_2025_12 - close_2020_01
+  columns_used:
+    - year
+    - month
+    - shanghai_comp_close
+  answer_type: scalar
+  answer: 616.454
+  answer_unit: 点
+  requires_calculator: true
+
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨月份市盈率倍数
+  difficulty: hard
+  question: 2024年全年，沪深300市盈率TTM的最高月份是最低月份的多少倍？
+  sql: |
+    -- 步骤1: 查询2024年沪深300市盈率的最高值
+    SELECT MAX(pe_ttm_csi300) AS max_pe
+    FROM stock_indices
+    WHERE year = 2024;
+
+    -- 步骤2: 查询2024年沪深300市盈率的最低值
+    SELECT MIN(pe_ttm_csi300) AS min_pe
+    FROM stock_indices
+    WHERE year = 2024;
+
+    -- 步骤3: 使用calculator工具计算 max_pe / min_pe
+  columns_used:
+    - year
+    - pe_ttm_csi300
+  answer_type: scalar
+  answer: 1.1763
+  answer_unit: 倍
+  requires_calculator: true
+
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨期倍数计算
+  difficulty: hard
+  question: 2021年12月的创业板指月末收盘价是同年1月的多少倍？
+  sql: |
+    -- 步骤1: 查询2021年12月创业板指收盘价
+    SELECT chinext_close AS close_dec
+    FROM stock_indices
+    WHERE year = 2021 AND month = 12;
+
+    -- 步骤2: 查询2021年1月创业板指收盘价
+    SELECT chinext_close AS close_jan
+    FROM stock_indices
+    WHERE year = 2021 AND month = 1;
+
+    -- 步骤3: 使用calculator工具计算 close_dec / close_jan
+  columns_used:
+    - year
+    - month
+    - chinext_close
+  answer_type: scalar
+  answer: 1.0032
+  answer_unit: 倍
+  requires_calculator: true
+
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I2 年度北向资金占比
+  difficulty: hard
+  question: 2019年全年北向资金累计净流入占当年A股市场总成交额的百分比是多少？
+  sql: |
+    -- 步骤1: 查询2019年全年北向资金累计净流入
+    SELECT SUM(northbound_netflow_100m_cny) AS annual_netflow
+    FROM stock_indices
+    WHERE year = 2019;
+
+    -- 步骤2: 查询2019年全年A股市场总成交额
+    SELECT SUM(market_turnover_100m_cny) AS annual_turnover
+    FROM stock_indices
+    WHERE year = 2019;
+
+    -- 步骤3: 使用calculator工具计算 (annual_netflow / annual_turnover) * 100
+  columns_used:
+    - year
+    - northbound_netflow_100m_cny
+    - market_turnover_100m_cny
+  answer_type: scalar
+  answer: 0.0472
+  answer_unit: '%'
+  requires_calculator: true
+
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨月份波动率倍数
+  difficulty: hard
+  question: 2023年全年，市场波动率指数的最高月份是最低月份的多少倍？
+  sql: |
+    -- 步骤1: 查询2023年市场波动率指数的最高值
+    SELECT MAX(volatility_idx) AS max_volatility
+    FROM stock_indices
+    WHERE year = 2023;
+
+    -- 步骤2: 查询2023年市场波动率指数的最低值
+    SELECT MIN(volatility_idx) AS min_volatility
+    FROM stock_indices
+    WHERE year = 2023;
+
+    -- 步骤3: 使用calculator工具计算 max_volatility / min_volatility
+  columns_used:
+    - year
+    - volatility_idx
+  answer_type: scalar
+  answer: 1.4930
+  answer_unit: 倍
+  requires_calculator: true

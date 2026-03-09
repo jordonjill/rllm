@@ -29,6 +29,35 @@ def test_list_requires_exact_match():
     assert wrong.reward == 0.0 and not wrong.is_correct
 
 
+def test_list_allows_alias_when_row_values_align():
+    gt = '[{"geo_name":"华中","avg_export_yoy":7.56}]'
+    task = _task(gt, "single_table", "list")
+    alias_only = eco_qa_reward_function(
+        task,
+        'FINAL ANSWER: {"type":"list","rows":[{"geo_name":"华中","avg_export_yoy_pct":"7.56"}]}',
+    )
+    assert alias_only.reward == 1.0 and alias_only.is_correct
+    assert alias_only.metadata.get("list_alias_value_match") is True
+
+
+def test_list_no_partial_reward_for_incomplete_structure():
+    gt = '[{"geo_name":"广东","m2_100m_cny":411709.31}]'
+    task = _task(gt, "single_table", "list")
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":411709.31}')
+    assert wrong.reward == 0.0 and not wrong.is_correct
+
+
+def test_list_allows_temporal_equivalence_between_ref_date_and_year_month():
+    gt = '[{"ref_date":"2017-09-01","wti_usd_per_bbl":61.969}]'
+    task = _task(gt, "single_table", "list")
+    pred = eco_qa_reward_function(
+        task,
+        'FINAL ANSWER: {"type":"list","rows":[{"year":2017,"month":9,"min_price":61.969}]}',
+    )
+    assert pred.reward == 1.0 and pred.is_correct
+    assert pred.metadata.get("list_temporal_value_match") is True
+
+
 def test_error_semantic_match_binary():
     task = _task("数据范围仅覆盖2016-2025年，无法查询2030年数据", "single_table_error", "")
     correct = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"error","reason":"无数据"}')

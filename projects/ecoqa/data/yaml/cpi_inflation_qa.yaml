@@ -1362,3 +1362,259 @@ questions:
   answer_unit: null
   expected_error: CPI同比涨幅合理范围通常在-5%至20%之间，不存在超过50%的情况
   answer: null
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨地区差值
+  difficulty: hard
+  question: 2024年广东省的总体CPI指数年均值比江苏省高出多少点？
+  sql: |
+    -- 步骤1: 查询广东省2024年总体CPI指数年均值
+    SELECT AVG(overall_cpi_idx) AS gd_avg
+    FROM cpi_inflation
+    WHERE year = 2024 AND geo_name = '广东';
+
+    -- 步骤2: 查询江苏省2024年总体CPI指数年均值
+    SELECT AVG(overall_cpi_idx) AS js_avg
+    FROM cpi_inflation
+    WHERE year = 2024 AND geo_name = '江苏';
+
+    -- 步骤3: 使用 calculator 工具计算 (gd_avg - js_avg)
+  columns_used:
+  - year
+  - geo_name
+  - overall_cpi_idx
+  answer_type: scalar
+  answer_unit: 指数点
+  requires_calculator: true
+  answer: 1.0905
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨类目倍数
+  difficulty: hard
+  question: 2023年全国服务类CPI指数年均值是食品类CPI指数年均值的多少倍？
+  sql: |
+    -- 步骤1: 查询2023年全国服务类CPI指数年均值
+    SELECT AVG(services_cpi_idx) AS services_avg
+    FROM cpi_inflation
+    WHERE year = 2023 AND geo_level = 'national';
+
+    -- 步骤2: 查询2023年全国食品类CPI指数年均值
+    SELECT AVG(food_cpi_idx) AS food_avg
+    FROM cpi_inflation
+    WHERE year = 2023 AND geo_level = 'national';
+
+    -- 步骤3: 使用 calculator 工具计算 (services_avg / food_avg)
+  columns_used:
+  - year
+  - geo_level
+  - services_cpi_idx
+  - food_cpi_idx
+  answer_type: scalar
+  answer_unit: 倍
+  requires_calculator: true
+  answer: 1.0033
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨层级占比
+  difficulty: hard
+  question: 2024年华东地区核心CPI指数年均值占全国核心CPI指数年均值的百分比是多少？
+  sql: |
+    -- 步骤1: 查询2024年华东地区核心CPI指数年均值
+    SELECT AVG(core_cpi_idx) AS east_avg
+    FROM cpi_inflation
+    WHERE year = 2024 AND geo_name = '华东';
+
+    -- 步骤2: 查询2024年全国核心CPI指数年均值
+    SELECT AVG(core_cpi_idx) AS nat_avg
+    FROM cpi_inflation
+    WHERE year = 2024 AND geo_level = 'national';
+
+    -- 步骤3: 使用 calculator 工具计算 (east_avg / nat_avg) * 100
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - core_cpi_idx
+  answer_type: scalar
+  answer_unit: '%'
+  requires_calculator: true
+  answer: 100.0634
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨类目差值
+  difficulty: hard
+  question: 2023年全国能源CPI指数年均值与核心CPI指数年均值相差多少点？
+  sql: |
+    -- 步骤1: 查询2023年全国能源CPI指数年均值
+    SELECT AVG(energy_cpi_idx) AS energy_avg
+    FROM cpi_inflation
+    WHERE year = 2023 AND geo_level = 'national';
+
+    -- 步骤2: 查询2023年全国核心CPI指数年均值
+    SELECT AVG(core_cpi_idx) AS core_avg
+    FROM cpi_inflation
+    WHERE year = 2023 AND geo_level = 'national';
+
+    -- 步骤3: 使用 calculator 工具计算 (energy_avg - core_avg)
+  columns_used:
+  - year
+  - geo_level
+  - energy_cpi_idx
+  - core_cpi_idx
+  answer_type: scalar
+  answer_unit: 指数点
+  requires_calculator: true
+  answer: 0.5287
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I5 跨地区倍数
+  difficulty: hard
+  question: 2024年北京市服务类CPI指数年均值是全国服务类CPI指数年均值的多少倍？
+  sql: |
+    -- 步骤1: 查询2024年北京市服务类CPI指数年均值
+    SELECT AVG(services_cpi_idx) AS bj_avg
+    FROM cpi_inflation
+    WHERE year = 2024 AND geo_name = '北京';
+
+    -- 步骤2: 查询2024年全国服务类CPI指数年均值
+    SELECT AVG(services_cpi_idx) AS nat_avg
+    FROM cpi_inflation
+    WHERE year = 2024 AND geo_level = 'national';
+
+    -- 步骤3: 使用 calculator 工具计算 (bj_avg / nat_avg)
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - services_cpi_idx
+  answer_type: scalar
+  answer_unit: 倍
+  requires_calculator: true
+  answer: 1.0069
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期差值
+  difficulty: hard
+  question: 2024年全国总体CPI指数年均值比2019年增长了多少点？
+  sql: |
+    -- 步骤1: 查询2024年全国总体CPI指数年均值
+    SELECT AVG(overall_cpi_idx) AS avg_2024
+    FROM cpi_inflation
+    WHERE year = 2024 AND geo_level = 'national';
+
+    -- 步骤2: 查询2019年全国总体CPI指数年均值
+    SELECT AVG(overall_cpi_idx) AS avg_2019
+    FROM cpi_inflation
+    WHERE year = 2019 AND geo_level = 'national';
+
+    -- 步骤3: 使用 calculator 工具计算 (avg_2024 - avg_2019)
+  columns_used:
+  - year
+  - geo_level
+  - overall_cpi_idx
+  answer_type: scalar
+  answer_unit: 指数点
+  requires_calculator: true
+  answer: 10.1686
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I7 跨期倍数
+  difficulty: hard
+  question: 2024年12月全国食品CPI指数是2016年同期的多少倍？
+  sql: |
+    -- 步骤1: 查询2024年12月全国食品CPI指数
+    SELECT food_cpi_idx AS food_2024
+    FROM cpi_inflation
+    WHERE year = 2024 AND month = 12 AND geo_level = 'national';
+
+    -- 步骤2: 查询2016年12月全国食品CPI指数
+    SELECT food_cpi_idx AS food_2016
+    FROM cpi_inflation
+    WHERE year = 2016 AND month = 12 AND geo_level = 'national';
+
+    -- 步骤3: 使用 calculator 工具计算 (food_2024 / food_2016)
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - food_cpi_idx
+  answer_type: scalar
+  answer_unit: 倍
+  requires_calculator: true
+  answer: 1.1615
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I8 跨期差值
+  difficulty: hard
+  question: 2023年全国能源CPI指数年均值比2020年增加了多少点？
+  sql: |
+    -- 步骤1: 查询2023年全国能源CPI指数年均值
+    SELECT AVG(energy_cpi_idx) AS avg_2023
+    FROM cpi_inflation
+    WHERE year = 2023 AND geo_level = 'national';
+
+    -- 步骤2: 查询2020年全国能源CPI指数年均值
+    SELECT AVG(energy_cpi_idx) AS avg_2020
+    FROM cpi_inflation
+    WHERE year = 2020 AND geo_level = 'national';
+
+    -- 步骤3: 使用 calculator 工具计算 (avg_2023 - avg_2020)
+  columns_used:
+  - year
+  - geo_level
+  - energy_cpi_idx
+  answer_type: scalar
+  answer_unit: 指数点
+  requires_calculator: true
+  answer: 5.2356
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I9 跨期倍数
+  difficulty: hard
+  question: 2025年全国核心CPI指数年均值是2018年的多少倍？
+  sql: |
+    -- 步骤1: 查询2025年全国核心CPI指数年均值
+    SELECT AVG(core_cpi_idx) AS avg_2025
+    FROM cpi_inflation
+    WHERE year = 2025 AND geo_level = 'national';
+
+    -- 步骤2: 查询2018年全国核心CPI指数年均值
+    SELECT AVG(core_cpi_idx) AS avg_2018
+    FROM cpi_inflation
+    WHERE year = 2018 AND geo_level = 'national';
+
+    -- 步骤3: 使用 calculator 工具计算 (avg_2025 / avg_2018)
+  columns_used:
+  - year
+  - geo_level
+  - core_cpi_idx
+  answer_type: scalar
+  answer_unit: 倍
+  requires_calculator: true
+  answer: 1.1343
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I10 跨期差值
+  difficulty: hard
+  question: 华南地区2024年服务类CPI指数年均值比2019年增加了多少点？
+  sql: |
+    -- 步骤1: 查询华南地区2024年服务类CPI指数年均值
+    SELECT AVG(services_cpi_idx) AS avg_2024
+    FROM cpi_inflation
+    WHERE year = 2024 AND geo_name = '华南';
+
+    -- 步骤2: 查询华南地区2019年服务类CPI指数年均值
+    SELECT AVG(services_cpi_idx) AS avg_2019
+    FROM cpi_inflation
+    WHERE year = 2019 AND geo_name = '华南';
+
+    -- 步骤3: 使用 calculator 工具计算 (avg_2024 - avg_2019)
+  columns_used:
+  - year
+  - geo_name
+  - services_cpi_idx
+  answer_type: scalar
+  answer_unit: 指数点
+  requires_calculator: true
+  answer: 10.0962
+

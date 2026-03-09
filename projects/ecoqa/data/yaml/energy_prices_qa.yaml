@@ -1127,3 +1127,328 @@ questions:
   answer: null
   answer_unit: null
   expected_error: 可再生能源发电占比的合理范围为0-100%，不存在超过100%的情况
+- id: 51
+  category: I. 跨工具复杂计算
+  sub_category: I1 跨指标倍数
+  difficulty: hard
+  question: 2024年全国布伦特原油价格年均值是煤炭价格年均值的多少倍？
+  sql: '-- 步骤1: 查询2024年全国布伦特原油价格年均值
+
+    SELECT AVG(brent_usd_per_bbl) AS brent_avg
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2024年全国煤炭价格年均值
+
+    SELECT AVG(coal_price_cny_per_ton) AS coal_avg
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (brent_avg / coal_avg)'
+  columns_used:
+  - year
+  - geo_level
+  - brent_usd_per_bbl
+  - coal_price_cny_per_ton
+  answer_type: scalar
+  answer: 0.113103
+  answer_unit: 倍
+  requires_calculator: true
+- id: 52
+  category: I. 跨工具复杂计算
+  sub_category: I2 跨地区占比
+  difficulty: hard
+  question: 2023年华东地区的总发电量占全国总发电量的百分比是多少？
+  sql: '-- 步骤1: 查询2023年华东地区总发电量
+
+    SELECT SUM(power_generation_100m_kwh) AS huadong_total
+
+    FROM energy_prices
+
+    WHERE year = 2023 AND geo_name = ''华东'';
+
+
+    -- 步骤2: 查询2023年全国总发电量
+
+    SELECT SUM(power_generation_100m_kwh) AS national_total
+
+    FROM energy_prices
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (huadong_total / national_total) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - geo_level
+  - power_generation_100m_kwh
+  answer_type: scalar
+  answer: 39.2284
+  answer_unit: '%'
+  requires_calculator: true
+- id: 53
+  category: I. 跨工具复杂计算
+  sub_category: I3 跨指标差值
+  difficulty: hard
+  question: 2024年全国布伦特原油价格与WTI原油价格的年均差值是多少美元每桶？
+  sql: '-- 步骤1: 查询2024年全国布伦特原油价格年均值
+
+    SELECT AVG(brent_usd_per_bbl) AS brent_avg
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2024年全国WTI原油价格年均值
+
+    SELECT AVG(wti_usd_per_bbl) AS wti_avg
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (brent_avg - wti_avg)'
+  columns_used:
+  - year
+  - geo_level
+  - brent_usd_per_bbl
+  - wti_usd_per_bbl
+  answer_type: scalar
+  answer: 3.2056
+  answer_unit: 美元/桶
+  requires_calculator: true
+- id: 54
+  category: I. 跨工具复杂计算
+  sub_category: I4 跨地区倍数
+  difficulty: hard
+  question: 2024年华南地区的可再生能源发电占比年均值是西北地区的多少倍？
+  sql: '-- 步骤1: 查询2024年华南地区可再生能源发电占比年均值
+
+    SELECT AVG(renewable_generation_share_pct) AS huanan_avg
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_name = ''华南'';
+
+
+    -- 步骤2: 查询2024年西北地区可再生能源发电占比年均值
+
+    SELECT AVG(renewable_generation_share_pct) AS xibei_avg
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_name = ''西北'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (huanan_avg / xibei_avg)'
+  columns_used:
+  - year
+  - geo_name
+  - renewable_generation_share_pct
+  answer_type: scalar
+  answer: 0.984002
+  answer_unit: 倍
+  requires_calculator: true
+- id: 55
+  category: I. 跨工具复杂计算
+  sub_category: I5 复合指标计算
+  difficulty: hard
+  question: 2023年全国可再生能源实际发电量是多少亿千瓦时？（根据可再生能源发电占比和总发电量计算）
+  sql: '-- 步骤1: 查询2023年全国可再生能源发电占比年均值
+
+    SELECT AVG(renewable_generation_share_pct) AS renewable_pct
+
+    FROM energy_prices
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2023年全国总发电量
+
+    SELECT SUM(power_generation_100m_kwh) AS total_gen
+
+    FROM energy_prices
+
+    WHERE year = 2023 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (renewable_pct / 100) * total_gen'
+  columns_used:
+  - year
+  - geo_level
+  - renewable_generation_share_pct
+  - power_generation_100m_kwh
+  answer_type: scalar
+  answer: 38323.97
+  answer_unit: 亿千瓦时
+  requires_calculator: true
+- id: 56
+  category: I. 跨工具复杂计算
+  sub_category: I6 跨期差值
+  difficulty: hard
+  question: 2024年全国煤炭价格年均值比2020年降低了多少元每吨？
+  sql: '-- 步骤1: 查询2020年全国煤炭价格年均值
+
+    SELECT AVG(coal_price_cny_per_ton) AS coal_2020
+
+    FROM energy_prices
+
+    WHERE year = 2020 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2024年全国煤炭价格年均值
+
+    SELECT AVG(coal_price_cny_per_ton) AS coal_2024
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (coal_2020 - coal_2024)'
+  columns_used:
+  - year
+  - geo_level
+  - coal_price_cny_per_ton
+  answer_type: scalar
+  answer: 102.3413
+  answer_unit: 元/吨
+  requires_calculator: true
+- id: 57
+  category: I. 跨工具复杂计算
+  sub_category: I7 跨期倍数
+  difficulty: hard
+  question: 2022年全国LNG价格年均值是2019年的多少倍？
+  sql: '-- 步骤1: 查询2022年全国LNG价格年均值
+
+    SELECT AVG(lng_price_usd_per_mmbtu) AS lng_2022
+
+    FROM energy_prices
+
+    WHERE year = 2022 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2019年全国LNG价格年均值
+
+    SELECT AVG(lng_price_usd_per_mmbtu) AS lng_2019
+
+    FROM energy_prices
+
+    WHERE year = 2019 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (lng_2022 / lng_2019)'
+  columns_used:
+  - year
+  - geo_level
+  - lng_price_usd_per_mmbtu
+  answer_type: scalar
+  answer: 0.930136
+  answer_unit: 倍
+  requires_calculator: true
+- id: 58
+  category: I. 跨工具复杂计算
+  sub_category: I8 跨期增长率
+  difficulty: hard
+  question: 华东地区2024年总发电量比2020年增长了百分之多少？
+  sql: '-- 步骤1: 查询2024年华东地区总发电量
+
+    SELECT SUM(power_generation_100m_kwh) AS gen_2024
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_name = ''华东'';
+
+
+    -- 步骤2: 查询2020年华东地区总发电量
+
+    SELECT SUM(power_generation_100m_kwh) AS gen_2020
+
+    FROM energy_prices
+
+    WHERE year = 2020 AND geo_name = ''华东'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 ((gen_2024 - gen_2020) / gen_2020) * 100'
+  columns_used:
+  - year
+  - geo_name
+  - power_generation_100m_kwh
+  answer_type: scalar
+  answer: 1.5618
+  answer_unit: '%'
+  requires_calculator: true
+- id: 59
+  category: I. 跨工具复杂计算
+  sub_category: I9 跨期月度差值
+  difficulty: hard
+  question: 2024年12月全国碳价比2020年1月上涨了多少元每吨CO₂？
+  sql: '-- 步骤1: 查询2024年12月全国碳价
+
+    SELECT carbon_price_cny_per_tco2 AS carbon_2024_12
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND month = 12 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2020年1月全国碳价
+
+    SELECT carbon_price_cny_per_tco2 AS carbon_2020_01
+
+    FROM energy_prices
+
+    WHERE year = 2020 AND month = 1 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (carbon_2024_12 - carbon_2020_01)'
+  columns_used:
+  - year
+  - month
+  - geo_level
+  - carbon_price_cny_per_tco2
+  answer_type: scalar
+  answer: 12.105
+  answer_unit: 元/吨CO₂
+  requires_calculator: true
+- id: 60
+  category: I. 跨工具复杂计算
+  sub_category: I10 跨期占比倍数
+  difficulty: hard
+  question: 2024年全国可再生能源发电占比年均值是2016年的多少倍？
+  sql: '-- 步骤1: 查询2024年全国可再生能源发电占比年均值
+
+    SELECT AVG(renewable_generation_share_pct) AS renewable_2024
+
+    FROM energy_prices
+
+    WHERE year = 2024 AND geo_level = ''national'';
+
+
+    -- 步骤2: 查询2016年全国可再生能源发电占比年均值
+
+    SELECT AVG(renewable_generation_share_pct) AS renewable_2016
+
+    FROM energy_prices
+
+    WHERE year = 2016 AND geo_level = ''national'';
+
+
+    -- 步骤3: 使用 calculator 工具计算 (renewable_2024 / renewable_2016)'
+  columns_used:
+  - year
+  - geo_level
+  - renewable_generation_share_pct
+  answer_type: scalar
+  answer: 1.29179
+  answer_unit: 倍
+  requires_calculator: true

@@ -46,8 +46,9 @@ questions:
     WHERE year = 2020 AND geo_level = 'national' AND top_export_partner = '美国'
     ORDER BY month
   requires_calculator: false
-  answer_type: scalar
-  answer: 10
+  answer_type: list
+  answer:
+  - month: 10
   answer_unit: 月
 - id: 5
   question: 2023年3月，北京、上海、深圳三市的出口额分别是多少？
@@ -331,7 +332,7 @@ questions:
   - geo_name: 华中
   answer_unit: null
 - id: 21
-  question: 2024年省级层面按出口额降序、进口额升序排序的前10个月份数据是哪些？
+  question: 2024年省级层面按出口额降序、进口额升序排序的前10条记录是哪些？
   sql: |-
     SELECT geo_name, month
     FROM trade_balance
@@ -510,6 +511,7 @@ questions:
     FROM trade_balance
     WHERE year = 2024 AND trade_balance_musd > 0
     GROUP BY geo_level
+    ORDER BY geo_level
   requires_calculator: false
   answer_type: list
   answer:
@@ -761,8 +763,9 @@ questions:
     HAVING SUM(trade_balance_musd) > 500000
     ORDER BY geo_name
   requires_calculator: false
-  answer_type: scalar
-  answer: 华东
+  answer_type: list
+  answer:
+  - geo_name: 华东
   answer_unit: null
 - id: 41
   question: 2016年至2025年，全国层级的年度平均贸易顺差趋势如何？

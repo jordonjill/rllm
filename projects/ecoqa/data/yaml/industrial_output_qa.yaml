@@ -1026,19 +1026,19 @@ questions:
   answer_unit: '%'
   answer: 100.40565971041619
 - id: 53
-  question: 2024年华东地区产能利用率年均值比西北地区高出多少个百分点？
+  question: 2024年华东地区产能利用率年均值比西北地区低多少个百分点？
   sql1: |-
-    SELECT AVG(capacity_utilization_pct) AS east_capacity
-    FROM industrial_output
-    WHERE year = 2024 AND geo_name = '华东'
-  sql2: |-
     SELECT AVG(capacity_utilization_pct) AS nw_capacity
     FROM industrial_output
     WHERE year = 2024 AND geo_name = '西北'
+  sql2: |-
+    SELECT AVG(capacity_utilization_pct) AS east_capacity
+    FROM industrial_output
+    WHERE year = 2024 AND geo_name = '华东'
   requires_calculator: true
   answer_type: scalar
   answer_unit: 百分点
-  answer: -0.14391666666666936
+  answer: 0.14391666666666936
 - id: 54
   question: 2023年全国装备制造业指数年均值占工业总产出指数年均值的比重是多少？
   sql1: |-

@@ -207,8 +207,9 @@ questions:
     FROM regional_gdp
     WHERE year BETWEEN 2021 AND 2024 AND geo_level = 'region' AND industry_value_added_100m_cny > 180000 AND services_value_added_100m_cny > 250000
     ORDER BY geo_name
-  answer_type: scalar
-  answer: 华东
+  answer_type: list
+  answer:
+  - geo_name: 华东
   answer_unit: null
   requires_calculator: false
 - id: 15
@@ -666,8 +667,9 @@ questions:
     GROUP BY parent_geo_name
     HAVING COUNT(DISTINCT geo_name) > 5
     ORDER BY COUNT(DISTINCT geo_name) DESC
-  answer_type: scalar
-  answer: 华东
+  answer_type: list
+  answer:
+  - parent_geo_name: 华东
   answer_unit: null
   requires_calculator: false
 - id: 40
@@ -679,8 +681,9 @@ questions:
     GROUP BY geo_name
     HAVING SUM(services_value_added_100m_cny) > 250000
     ORDER BY SUM(services_value_added_100m_cny) DESC
-  answer_type: scalar
-  answer: 华东
+  answer_type: list
+  answer:
+  - geo_name: 华东
   answer_unit: null
   requires_calculator: false
 - id: 41

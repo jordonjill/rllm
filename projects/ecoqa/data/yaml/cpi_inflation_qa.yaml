@@ -298,56 +298,35 @@ questions:
   requires_calculator: false
   answer: 0
 - id: 12
-  question: 查询2022年服务类CPI同比涨幅超过2%的省级地区
+  question: 查询2022年服务类CPI年均同比涨幅超过2%的省级地区
   sql: |-
-    SELECT DISTINCT c.geo_name
+    SELECT c.geo_name
     FROM cpi_inflation c
     JOIN cpi_inflation p
-    ON c.geo_name = p.geo_name AND c.geo_level = p.geo_level AND c.month = p.month AND c.year = 2022 AND p.year = 2021
-    WHERE c.geo_level = 'province' AND ((c.services_cpi_idx - p.services_cpi_idx) * 100.0 / p.services_cpi_idx) > 2.0
+    ON c.geo_name = p.geo_name AND c.geo_level = p.geo_level AND c.month = p.month AND c.year = p.year + 1
+    WHERE c.geo_level = 'province' AND c.year = 2022
+    GROUP BY c.geo_name
+    HAVING AVG((c.services_cpi_idx - p.services_cpi_idx) * 100.0 / p.services_cpi_idx) > 2.0
     ORDER BY c.geo_name
   answer_type: list
   answer_unit: null
   requires_calculator: false
   answer:
-  - geo_name: 上海
-  - geo_name: 云南
-  - geo_name: 内蒙古
-  - geo_name: 北京
   - geo_name: 吉林
-  - geo_name: 四川
-  - geo_name: 天津
-  - geo_name: 宁夏
-  - geo_name: 安徽
   - geo_name: 山东
   - geo_name: 山西
-  - geo_name: 广东
-  - geo_name: 广西
-  - geo_name: 新疆
-  - geo_name: 江苏
-  - geo_name: 江西
-  - geo_name: 河北
-  - geo_name: 河南
-  - geo_name: 浙江
-  - geo_name: 海南
-  - geo_name: 湖北
-  - geo_name: 湖南
-  - geo_name: 甘肃
-  - geo_name: 福建
-  - geo_name: 西藏
-  - geo_name: 贵州
-  - geo_name: 辽宁
-  - geo_name: 重庆
-  - geo_name: 陕西
-  - geo_name: 青海
   - geo_name: 黑龙江
 - id: 13
-  question: 查询2020年到2023年间能源CPI指数高于100且同比涨幅为正的全国月份记录
+  question: 查询2020年到2023年间能源CPI指数高于100且能源CPI同比涨幅为正的全国月份记录
   sql: |-
-    SELECT year, month, energy_cpi_idx, yoy_change_pct
-    FROM cpi_inflation
-    WHERE geo_level = 'national' AND year BETWEEN 2020 AND 2023 AND energy_cpi_idx > 100.0 AND yoy_change_pct > 0
-    ORDER BY year, month
+    SELECT c.year, c.month, c.energy_cpi_idx,
+           ROUND(((c.energy_cpi_idx - p.energy_cpi_idx) * 100.0 / p.energy_cpi_idx), 3) AS yoy_change_pct
+    FROM cpi_inflation c
+    JOIN cpi_inflation p
+    ON c.geo_level = p.geo_level AND c.month = p.month AND c.year = p.year + 1
+    WHERE c.geo_level = 'national' AND c.year BETWEEN 2020 AND 2023 AND c.energy_cpi_idx > 100.0
+      AND ((c.energy_cpi_idx - p.energy_cpi_idx) * 100.0 / p.energy_cpi_idx) > 0
+    ORDER BY c.year, c.month
   answer_type: list
   answer_unit: 指数/%
   requires_calculator: false
@@ -355,195 +334,159 @@ questions:
   - year: 2020
     month: 1
     energy_cpi_idx: 108.9
-    yoy_change_pct: 1.472
+    yoy_change_pct: 0.155
   - year: 2020
     month: 2
     energy_cpi_idx: 109.936
-    yoy_change_pct: 1.494
+    yoy_change_pct: 2.998
   - year: 2020
     month: 3
     energy_cpi_idx: 110.306
-    yoy_change_pct: 1.985
+    yoy_change_pct: 3.396
   - year: 2020
     month: 4
     energy_cpi_idx: 110.295
-    yoy_change_pct: 1.808
+    yoy_change_pct: 3.648
   - year: 2020
     month: 5
     energy_cpi_idx: 110.654
-    yoy_change_pct: 1.763
+    yoy_change_pct: 5.868
   - year: 2020
     month: 6
     energy_cpi_idx: 107.292
-    yoy_change_pct: 1.048
+    yoy_change_pct: 3.026
   - year: 2020
     month: 7
     energy_cpi_idx: 106.34
-    yoy_change_pct: 1.08
+    yoy_change_pct: 0.62
   - year: 2020
     month: 8
     energy_cpi_idx: 111.543
-    yoy_change_pct: 0.818
+    yoy_change_pct: 4.613
   - year: 2020
     month: 9
     energy_cpi_idx: 110.572
-    yoy_change_pct: 0.655
+    yoy_change_pct: 5.196
   - year: 2020
     month: 10
     energy_cpi_idx: 110.035
-    yoy_change_pct: 0.602
+    yoy_change_pct: 1.29
   - year: 2020
     month: 11
     energy_cpi_idx: 112.135
-    yoy_change_pct: 1.196
+    yoy_change_pct: 2.643
   - year: 2020
     month: 12
     energy_cpi_idx: 111.093
-    yoy_change_pct: 1.041
+    yoy_change_pct: 3.798
   - year: 2021
     month: 1
     energy_cpi_idx: 109.86
-    yoy_change_pct: 1.529
-  - year: 2021
-    month: 2
-    energy_cpi_idx: 107.708
-    yoy_change_pct: 2.071
-  - year: 2021
-    month: 3
-    energy_cpi_idx: 109.438
-    yoy_change_pct: 1.83
+    yoy_change_pct: 0.882
   - year: 2021
     month: 4
     energy_cpi_idx: 110.902
-    yoy_change_pct: 1.843
+    yoy_change_pct: 0.55
   - year: 2021
     month: 5
     energy_cpi_idx: 113.233
-    yoy_change_pct: 1.776
+    yoy_change_pct: 2.331
   - year: 2021
     month: 6
     energy_cpi_idx: 110.15
-    yoy_change_pct: 1.179
+    yoy_change_pct: 2.664
   - year: 2021
     month: 7
     energy_cpi_idx: 112.87
-    yoy_change_pct: 1.361
-  - year: 2021
-    month: 8
-    energy_cpi_idx: 108.672
-    yoy_change_pct: 0.797
-  - year: 2021
-    month: 9
-    energy_cpi_idx: 108.703
-    yoy_change_pct: 1.11
+    yoy_change_pct: 6.141
   - year: 2021
     month: 10
     energy_cpi_idx: 113.445
-    yoy_change_pct: 0.739
-  - year: 2021
-    month: 11
-    energy_cpi_idx: 110.965
-    yoy_change_pct: 1.123
+    yoy_change_pct: 3.099
   - year: 2021
     month: 12
     energy_cpi_idx: 115.413
-    yoy_change_pct: 1.49
+    yoy_change_pct: 3.889
   - year: 2022
     month: 1
     energy_cpi_idx: 114.272
-    yoy_change_pct: 1.89
+    yoy_change_pct: 4.016
   - year: 2022
     month: 2
     energy_cpi_idx: 114.861
-    yoy_change_pct: 1.815
+    yoy_change_pct: 6.641
   - year: 2022
     month: 3
     energy_cpi_idx: 112.227
-    yoy_change_pct: 1.84
+    yoy_change_pct: 2.548
   - year: 2022
     month: 4
     energy_cpi_idx: 112.186
-    yoy_change_pct: 2.07
-  - year: 2022
-    month: 5
-    energy_cpi_idx: 112.113
-    yoy_change_pct: 1.75
+    yoy_change_pct: 1.158
   - year: 2022
     month: 6
     energy_cpi_idx: 110.255
-    yoy_change_pct: 1.529
+    yoy_change_pct: 0.095
   - year: 2022
     month: 7
     energy_cpi_idx: 115.586
-    yoy_change_pct: 1.141
+    yoy_change_pct: 2.406
   - year: 2022
     month: 8
     energy_cpi_idx: 111.647
-    yoy_change_pct: 1.104
+    yoy_change_pct: 2.738
   - year: 2022
     month: 9
     energy_cpi_idx: 112.15
-    yoy_change_pct: 1.183
-  - year: 2022
-    month: 10
-    energy_cpi_idx: 111.398
-    yoy_change_pct: 0.97
+    yoy_change_pct: 3.171
   - year: 2022
     month: 11
     energy_cpi_idx: 113.115
-    yoy_change_pct: 1.055
+    yoy_change_pct: 1.938
   - year: 2022
     month: 12
     energy_cpi_idx: 116.809
-    yoy_change_pct: 1.403
+    yoy_change_pct: 1.21
   - year: 2023
     month: 1
     energy_cpi_idx: 116.107
-    yoy_change_pct: 1.959
-  - year: 2023
-    month: 2
-    energy_cpi_idx: 111.915
-    yoy_change_pct: 1.999
+    yoy_change_pct: 1.606
   - year: 2023
     month: 3
     energy_cpi_idx: 112.43
-    yoy_change_pct: 1.999
+    yoy_change_pct: 0.181
   - year: 2023
     month: 4
     energy_cpi_idx: 112.287
-    yoy_change_pct: 1.891
+    yoy_change_pct: 0.09
   - year: 2023
     month: 5
     energy_cpi_idx: 117.874
-    yoy_change_pct: 1.704
+    yoy_change_pct: 5.139
   - year: 2023
     month: 6
     energy_cpi_idx: 112.866
-    yoy_change_pct: 1.799
-  - year: 2023
-    month: 7
-    energy_cpi_idx: 112.624
-    yoy_change_pct: 1.215
+    yoy_change_pct: 2.368
   - year: 2023
     month: 8
     energy_cpi_idx: 117.89
-    yoy_change_pct: 1.036
+    yoy_change_pct: 5.592
   - year: 2023
     month: 9
     energy_cpi_idx: 115.173
-    yoy_change_pct: 1.041
+    yoy_change_pct: 2.695
   - year: 2023
     month: 10
     energy_cpi_idx: 116.976
-    yoy_change_pct: 1.446
+    yoy_change_pct: 5.007
   - year: 2023
     month: 11
     energy_cpi_idx: 117.132
-    yoy_change_pct: 1.254
+    yoy_change_pct: 3.551
   - year: 2023
     month: 12
     energy_cpi_idx: 118.654
-    yoy_change_pct: 1.724
+    yoy_change_pct: 1.58
 - id: 14
   question: 查询2021年6月至8月食品CPI指数超过101且环比上涨的区域记录
   sql: |-
@@ -654,24 +597,26 @@ questions:
   - month: 9
     value: -0.217
 - id: 19
-  question: 查询2023年区域层级中食品CPI同比涨幅最高的前3个区域
+  question: 查询2023年区域层级中食品CPI同比涨幅年均值最高的前3个区域
   sql: |-
-    SELECT geo_name, AVG(yoy_change_pct) AS avg_yoy
-    FROM cpi_inflation
-    WHERE year = 2023 AND geo_level = 'region'
-    GROUP BY geo_name
+    SELECT c.geo_name, AVG((c.food_cpi_idx - p.food_cpi_idx) * 100.0 / p.food_cpi_idx) AS avg_yoy
+    FROM cpi_inflation c
+    JOIN cpi_inflation p
+    ON c.geo_name = p.geo_name AND c.geo_level = p.geo_level AND c.month = p.month AND c.year = p.year + 1
+    WHERE c.year = 2023 AND c.geo_level = 'region'
+    GROUP BY c.geo_name
     ORDER BY avg_yoy DESC
     LIMIT 3
   answer_type: list
   answer_unit: '%'
   requires_calculator: false
   answer:
+  - geo_name: 华中
+    avg_yoy: 3.3681718206494207
   - geo_name: 华南
-    avg_yoy: 1.8141666666666667
-  - geo_name: 华北
-    avg_yoy: 1.6249166666666666
+    avg_yoy: 2.439227502780785
   - geo_name: 西南
-    avg_yoy: 1.5484166666666666
+    avg_yoy: 2.2538008854442904
 - id: 20
   question: 查询2020年服务类CPI指数最高的前5个省份
   sql: |-
@@ -1191,17 +1136,24 @@ questions:
   - month: 6
   - month: 12
 - id: 44
-  question: 查询2022年食品CPI指数超过全国平均水平的省份数量
+  question: 查询2022年食品CPI指数年均值超过全国年均水平的省份数量
   sql: |-
-    SELECT COUNT(DISTINCT geo_name) AS value
-    FROM cpi_inflation
-    WHERE year = 2022 AND geo_level = 'province' AND food_cpi_idx > ( SELECT AVG(food_cpi_idx)
-    FROM cpi_inflation
-    WHERE year = 2022 AND geo_level = 'national' )
+    SELECT COUNT(*) AS value
+    FROM (
+      SELECT geo_name, AVG(food_cpi_idx) AS avg_food_cpi
+      FROM cpi_inflation
+      WHERE year = 2022 AND geo_level = 'province'
+      GROUP BY geo_name
+      HAVING AVG(food_cpi_idx) > (
+        SELECT AVG(food_cpi_idx)
+        FROM cpi_inflation
+        WHERE year = 2022 AND geo_level = 'national'
+      )
+    )
   answer_type: scalar
   answer_unit: 个省份
   requires_calculator: false
-  answer: 31
+  answer: 17
 - id: 45
   question: 2023年全国食品CPI指数均值是能源CPI指数均值的多少倍？
   sql1: |-

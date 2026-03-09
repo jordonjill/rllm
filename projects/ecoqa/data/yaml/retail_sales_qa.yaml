@@ -437,8 +437,9 @@ questions:
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national' AND mom_change_sa_pct < 0
     ORDER BY month
-  answer_type: scalar
-  answer: 7
+  answer_type: list
+  answer:
+  - month: 7
   answer_unit: 月
   requires_calculator: false
 - id: 13
@@ -763,7 +764,7 @@ questions:
   answer_unit: null
   requires_calculator: false
 - id: 21
-  question: 2024年1月省级社零总额按金额降序、省份名升序排列的前10个月份数据是哪些？
+  question: 2024年1月省级社零总额按金额降序、省份名升序排列的前10个省份是哪些？
   sql: |-
     SELECT geo_name
     FROM retail_sales

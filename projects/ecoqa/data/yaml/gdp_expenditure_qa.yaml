@@ -1143,7 +1143,7 @@ questions:
 - id: 59
   question: 2022年广东省的净出口额相较2021年变化了多少亿元？
   answer_type: scalar
-  answer: -407.5199999999986
+  answer: 407.5199999999986
   answer_unit: 亿元
   requires_calculator: true
   sql1: |-

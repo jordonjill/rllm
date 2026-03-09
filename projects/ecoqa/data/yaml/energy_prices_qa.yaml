@@ -797,8 +797,9 @@ questions:
     GROUP BY geo_name
     HAVING SUM(power_generation_100m_kwh) > 30000
     ORDER BY geo_name
-  answer_type: scalar
-  answer: 华东
+  answer_type: list
+  answer:
+  - geo_name: 华东
   answer_unit: null
   requires_calculator: false
 - id: 41

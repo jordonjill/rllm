@@ -71,11 +71,16 @@ questions:
   answer_unit: 万人
   requires_calculator: false
 - id: 5
-  question: 查询上海、北京、深圳三个城市2024年3月的失业率
+  question: 查询上海、北京、深圳三个地区2024年3月的失业率
   sql: |-
     SELECT geo_name, unemployment_rate_pct
     FROM employment_stats
     WHERE geo_name IN ('上海', '北京', '深圳') AND year = 2024 AND month = 3
+    ORDER BY CASE geo_name
+      WHEN '北京' THEN 1
+      WHEN '上海' THEN 2
+      WHEN '深圳' THEN 3
+    END
   answer_type: list
   answer:
   - geo_name: 北京
@@ -92,6 +97,7 @@ questions:
     SELECT month, new_urban_jobs_10k
     FROM employment_stats
     WHERE year = 2023 AND month IN (1, 2, 3) AND geo_level = 'national'
+    ORDER BY month
   answer_type: list
   answer:
   - month: 1
@@ -504,11 +510,15 @@ questions:
 - id: 29
   question: 2023年所有省份中平均月薪的最大值
   sql: |-
-    SELECT MAX(avg_monthly_wage_cny) AS max_wage
-    FROM employment_stats
-    WHERE year = 2023 AND geo_level = 'province'
+    SELECT MAX(avg_wage) AS max_wage
+    FROM (
+      SELECT geo_name, AVG(avg_monthly_wage_cny) AS avg_wage
+      FROM employment_stats
+      WHERE year = 2023 AND geo_level = 'province'
+      GROUP BY geo_name
+    )
   answer_type: scalar
-  answer: 13997.17
+  answer: 13876.795833333332
   answer_unit: 元
   requires_calculator: false
 - id: 30
@@ -518,6 +528,7 @@ questions:
     FROM employment_stats
     WHERE geo_level = 'national'
     GROUP BY year
+    ORDER BY year
   answer_type: list
   answer:
   - year: 2016
@@ -623,6 +634,7 @@ questions:
     FROM employment_stats
     WHERE year = 2024 AND unemployment_rate_pct > 5.0
     GROUP BY geo_level
+    ORDER BY geo_level
   answer_type: list
   answer:
   - geo_level: city
@@ -642,6 +654,7 @@ questions:
     FROM employment_stats
     WHERE year = 2024
     GROUP BY month
+    ORDER BY month
   answer_type: list
   answer:
   - month: 1
@@ -1408,7 +1421,7 @@ questions:
 - id: 52
   question: 2023年北京市的平均月薪比上海市高出多少元？
   answer_type: scalar
-  answer: 2935.31
+  answer: 2935.3066666666673
   answer_unit: 元
   requires_calculator: true
   sql1: |-
@@ -1492,7 +1505,7 @@ questions:
 - id: 58
   question: 2024年江苏省的平均就业人数比2020年增加了多少万人？
   answer_type: scalar
-  answer: 16.72
+  answer: 16.71666666666715
   answer_unit: 万人
   requires_calculator: true
   sql1: |-

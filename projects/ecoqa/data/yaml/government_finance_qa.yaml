@@ -168,10 +168,11 @@ questions:
     FROM government_finance
     WHERE year = 2022 AND geo_level = 'region' AND deficit_100m_cny < 5000
     ORDER BY deficit_100m_cny
-  answer_type: scalar
+  answer_type: list
   answer_unit: null
   requires_calculator: false
-  answer: 东北
+  answer:
+  - geo_name: 东北
 - id: 13
   question: 2020至2024年间，哪些省份的债务率在每一年都高于95%？
   sql: |-
@@ -630,10 +631,11 @@ questions:
     GROUP BY geo_name
     HAVING AVG(deficit_100m_cny) > 10000
     ORDER BY AVG(deficit_100m_cny) DESC
-  answer_type: scalar
+  answer_type: list
   answer_unit: null
   requires_calculator: false
-  answer: 华东
+  answer:
+  - geo_name: 华东
 - id: 38
   question: 哪些省份在2022-2024年间的平均债务率超过80%？
   sql: |-
@@ -666,10 +668,11 @@ questions:
     GROUP BY geo_name
     HAVING COUNT(*) > 5
     ORDER BY COUNT(*) DESC, geo_name
-  answer_type: scalar
+  answer_type: list
   answer_unit: null
   requires_calculator: false
-  answer: 华东
+  answer:
+  - geo_name: 华东
 - id: 40
   question: 2020-2024年间，哪些省份的累计税收收入超过90000亿元？
   sql: |-

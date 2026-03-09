@@ -1291,8 +1291,9 @@ questions:
     GROUP BY year
     HAVING COUNT(*) >= 6
     ORDER BY year
-  answer_type: scalar
-  answer: 2019
+  answer_type: list
+  answer:
+  - year: 2019
   answer_unit: 年
   requires_calculator: false
 - id: 40
@@ -1303,8 +1304,9 @@ questions:
     GROUP BY year
     HAVING SUM(northbound_netflow_100m_cny) > 5000
     ORDER BY year
-  answer_type: scalar
-  answer: 2023
+  answer_type: list
+  answer:
+  - year: 2023
   answer_unit: 年
   requires_calculator: false
 - id: 41

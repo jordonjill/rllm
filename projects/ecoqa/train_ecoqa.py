@@ -96,12 +96,14 @@ def main(config):
 
     config.rllm.workflow.use_workflow = True
 
+    max_steps = int(getattr(config.rllm.agent, "max_steps", 12))
+
     trainer = AgentTrainer(
         workflow_class=EcoQAWorkflow,
         workflow_args={
             "agent_cls": EcoQAAgent,
             "env_cls": EcoQAEnvironment,
-            "max_steps": 12,
+            "max_steps": max_steps,
         },
         config=config,
         train_dataset=train_dataset,

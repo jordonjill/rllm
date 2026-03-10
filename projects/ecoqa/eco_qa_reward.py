@@ -12,9 +12,9 @@ _NUMBER_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?%?")
 _FULL_NUMBER_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?%?")
 _NO_DATA_KEYWORDS = (
     "无数据",
-    "查不到",
-    "无法查询",
-    "数据范围仅覆盖",
+    "no_data",
+    "No Data",
+    "null",
     "超出数据范围",
     "数据不存在",
     "no data",
@@ -22,12 +22,6 @@ _NO_DATA_KEYWORDS = (
     "no matching data",
     "empty result",
 )
-_ERROR_CLASS_KEYWORDS = {
-    "out_of_range": ("数据范围仅覆盖", "数据起始年份", "无法查询", "年份不存在", "数据不存在", "out of range", "outside"),
-    "logical_conflict": ("逻辑冲突", "不能同时", "不可能", "conflict"),
-    "unrealistic_condition": ("合理范围", "不存在超过", "异常记录不存在", "unrealistic"),
-    "no_data": _NO_DATA_KEYWORDS,
-}
 _TEMPORAL_KEY_HINTS = ("date", "year", "month", "day", "quarter", "qtr", "period", "ref_date", "week")
 _DATE_YMD_RE = re.compile(r"^\s*(\d{4})[-/年](\d{1,2})(?:[-/月](\d{1,2}))?(?:日)?\s*$")
 _YEAR_QUARTER_RE = re.compile(r"^\s*(\d{4})\s*[-_/ ]?q([1-4])\s*$", re.IGNORECASE)
@@ -112,12 +106,25 @@ def _is_no_data_text(text: str) -> bool:
     return any(keyword in normalized for keyword in _NO_DATA_KEYWORDS)
 
 
-def _classify_error_text(text: str) -> str:
+def _is_no_data_prediction(text: str) -> bool:
+    if not isinstance(text, str) or not text.strip():
+        return False
+
+    parsed = _try_parse_json(text)
+    if isinstance(parsed, dict):
+        pred_type = _normalize_text(str(parsed.get("type", "")))
+        if pred_type in {"no_data", "nodata"}:
+            return True
+
+        for key in ("reason", "message", "value", "answer"):
+            value = parsed.get(key)
+            if isinstance(value, str) and _is_no_data_prediction(value):
+                return True
+
     normalized = _normalize_text(text)
-    for klass, keywords in _ERROR_CLASS_KEYWORDS.items():
-        if any(keyword in normalized for keyword in keywords):
-            return klass
-    return ""
+    if "无数据" in normalized:
+        return True
+    return bool(re.search(r"\bno[\s_]*data\b", normalized))
 
 
 def _coerce_numeric_string(value: str) -> float | None:
@@ -365,7 +372,7 @@ def _determine_target_kind(task_info: dict, ground_truth: str) -> str:
     answer_type = str(task_info.get("answer_type", "")).strip().lower()
 
     if question_type == "single_table_error":
-        return "error"
+        return "no_data"
     if answer_type in {"list", "scalar"}:
         return answer_type
 
@@ -376,7 +383,7 @@ def _determine_target_kind(task_info: dict, ground_truth: str) -> str:
     if gt_num is not None:
         return "scalar"
     if _is_no_data_text(ground_truth):
-        return "error"
+        return "no_data"
     return "text"
 
 
@@ -414,13 +421,9 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     list_temporal_value_match = False
 
     if target_kind == "scalar":
-        pred_num, pred_pct = _extract_pred_scalar(final_answer)
-        gt_num, gt_pct = _parse_number(ground_truth_text)
+        pred_num, _ = _extract_pred_scalar(final_answer)
+        gt_num, _ = _parse_number(ground_truth_text)
         if pred_num is not None and gt_num is not None:
-            if pred_pct and not gt_pct:
-                pred_num /= 100.0
-            if gt_pct and not pred_pct:
-                gt_num /= 100.0
             tol = max(1e-4, 1e-3 * max(abs(gt_num), 1.0))
             is_correct = abs(pred_num - gt_num) <= tol
     elif target_kind == "list":
@@ -438,17 +441,8 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
             list_alias_value_match = _list_alias_value_match(pred_rows, gt_rows)
             list_temporal_value_match = _list_temporal_value_match(pred_rows, gt_rows)
             is_correct = list_exact_match or list_alias_value_match or list_temporal_value_match
-    elif target_kind == "error":
-        pred_text = _extract_pred_text(final_answer)
-        if _normalize_text(pred_text) == _normalize_text(ground_truth_text):
-            is_correct = True
-        else:
-            gt_class = _classify_error_text(ground_truth_text)
-            pred_class = _classify_error_text(pred_text)
-            if gt_class and gt_class == pred_class:
-                is_correct = True
-            elif _is_no_data_text(pred_text) and _is_no_data_text(ground_truth_text):
-                is_correct = True
+    elif target_kind == "no_data":
+        is_correct = _is_no_data_prediction(final_answer)
     else:
         pred_text = _extract_pred_text(final_answer)
         is_correct = _normalize_text(pred_text) == _normalize_text(ground_truth_text)

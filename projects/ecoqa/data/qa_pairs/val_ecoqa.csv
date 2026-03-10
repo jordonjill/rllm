@@ -1,288 +1,326 @@
-id,source_id,table_name,question_type,user_query,question,ground_truth_sql,columns_used_json,rows_used_json,answer,answer_type,requires_calculator,explanation,source_yaml
-4,4,corporate_credit,single_table,北京市2021年第2季度工业企业的债券新发行额和降级比率各是多少？,北京市2021年第2季度工业企业的债券新发行额和降级比率各是多少？,"SELECT new_issuance_100m_cny, downgrade_ratio_pct
-FROM corporate_credit
-WHERE year = 2021 AND quarter = 2 AND geo_name = '北京' AND sector = '工业'","[""year"", ""quarter"", ""geo_name"", ""sector"", ""new_issuance_100m_cny"", ""downgrade_ratio_pct""]",[],"[{""new_issuance_100m_cny"": 1724.53, ""downgrade_ratio_pct"": 2.69}]",list,False,,corporate_credit_qa.yaml
-679,29,stock_indices,single_table,市场波动率指数的最小值和最大值分别是多少？,市场波动率指数的最小值和最大值分别是多少？,"SELECT MIN(volatility_idx) AS min_value, MAX(volatility_idx) AS max_value
-FROM stock_indices","[""volatility_idx""]",[],"[{""min_value"": 13.983, ""max_value"": 23.632}]",list,False,,stock_indices_qa.yaml
-162,12,energy_prices,single_table,电价低于0.55元每千瓦时的地区和月份有哪些？,电价低于0.55元每千瓦时的地区和月份有哪些？,"SELECT ref_date, geo_name, electricity_price_cny_per_kwh
+id,source_id,table_name,question_type,question,ground_truth_sql,answer,answer_type,requires_calculator,source_yaml
+721,6,energy_prices,single_table,2019年和2020年全国1月份的可再生能源发电占比各是多少？,"SELECT year, renewable_generation_share_pct
 FROM energy_prices
-WHERE electricity_price_cny_per_kwh < 0.55
-LIMIT 10","[""ref_date"", ""geo_name"", ""electricity_price_cny_per_kwh""]",[],"[{""ref_date"": ""2016-01-01"", ""geo_name"": ""西北"", ""electricity_price_cny_per_kwh"": 0.541}, {""ref_date"": ""2016-02-01"", ""geo_name"": ""华北"", ""electricity_price_cny_per_kwh"": 0.545}, {""ref_date"": ""2016-02-01"", ""geo_name"": ""华南"", ""electricity_price_cny_per_kwh"": 0.533}, {""ref_date"": ""2016-02-01"", ""geo_name"": ""西南"", ""electricity_price_cny_per_kwh"": 0.509}, {""ref_date"": ""2016-03-01"", ""geo_name"": ""东北"", ""electricity_price_cny_per_kwh"": 0.535}, {""ref_date"": ""2016-03-01"", ""geo_name"": ""华东"", ""electricity_price_cny_per_kwh"": 0.531}, {""ref_date"": ""2016-04-01"", ""geo_name"": ""西南"", ""electricity_price_cny_per_kwh"": 0.533}, {""ref_date"": ""2016-05-01"", ""geo_name"": ""中国"", ""electricity_price_cny_per_kwh"": 0.54}, {""ref_date"": ""2016-05-01"", ""geo_name"": ""华北"", ""electricity_price_cny_per_kwh"": 0.531}, {""ref_date"": ""2016-06-01"", ""geo_name"": ""东北"", ""electricity_price_cny_per_kwh"": 0.53}]",list,False,,energy_prices_qa.yaml
-446,46,interest_rates,single_table_error,2030年1月的政策利率是多少？,2030年1月的政策利率是多少？,,[],[],数据范围仅覆盖2016-2025年，无法查询2030年数据,,,数据范围仅覆盖2016-2025年，无法查询2030年数据,interest_rates_qa.yaml
-695,45,stock_indices,single_table,2024年创业板指年末收盘价相比年初收盘价的涨跌幅是多少？,2024年创业板指年末收盘价相比年初收盘价的涨跌幅是多少？,"SELECT MAX(CASE WHEN month = 1 THEN chinext_close END) AS start_value, MAX(CASE WHEN month = 12 THEN chinext_close END) AS end_value
-FROM stock_indices
-WHERE year = 2024","[""year"", ""month"", ""chinext_close""]",[],-4.9938291728763,scalar,True,,stock_indices_qa.yaml
-749,49,trade_balance,single_table_error,查询全国层级且地理名称为广东省的贸易数据,查询全国层级且地理名称为广东省的贸易数据,,[],[],逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为省份名称,,,逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为省份名称,trade_balance_qa.yaml
-717,17,trade_balance,single_table,2020年全国层级中，哪个月的进口额最低？,2020年全国层级中，哪个月的进口额最低？,"SELECT month, imports_musd
-FROM trade_balance
-WHERE year = 2020 AND geo_level = 'national'
-ORDER BY imports_musd ASC
-LIMIT 1","[""year"", ""geo_level"", ""month"", ""imports_musd""]",[],"[{""month"": 9, ""imports_musd"": 238541.69}]",list,False,,trade_balance_qa.yaml
-672,22,stock_indices,single_table,2016-2025年波动率指数高于20的月份有多少个？,2016-2025年波动率指数高于20的月份有多少个？,"SELECT COUNT(*) AS value
-FROM stock_indices
-WHERE volatility_idx > 20",[],[],35,scalar,False,,stock_indices_qa.yaml
-700,50,stock_indices,single_table_error,查询2015年全年的创业板指数据,查询2015年全年的创业板指数据,,[],[],数据起始年份为2016年，2015年数据不存在,,,数据起始年份为2016年，2015年数据不存在,stock_indices_qa.yaml
-118,18,employment_stats,single_table,哪个城市2022年的劳动参与率最低？,哪个城市2022年的劳动参与率最低？,"SELECT geo_name, AVG(participation_rate_pct) AS avg_participation
+WHERE geo_level = 'national' AND month = 1 AND year IN (2019, 2020)
+ORDER BY year","[{""year"": 2019, ""renewable_generation_share_pct"": 35.683}, {""year"": 2020, ""renewable_generation_share_pct"": 34.081}]",list,False,energy_prices_qa.yaml
+722,28,employment_stats,single_table,历史数据中全国青年失业率的最高值和最低值,"SELECT MIN(youth_unemp_rate_pct) AS min_rate, MAX(youth_unemp_rate_pct) AS max_rate
 FROM employment_stats
-WHERE year = 2022 AND geo_level = 'city'
-GROUP BY geo_name
-ORDER BY avg_participation ASC
-LIMIT 1","[""year"", ""geo_level"", ""geo_name"", ""participation_rate_pct""]",[],"[{""geo_name"": ""西安"", ""avg_participation"": 66.42383333333333}]",list,False,,employment_stats_qa.yaml
-12,12,corporate_credit,single_table,查询2022年全国企业信用债降级比率超过3%的行业及其具体数值,查询2022年全国企业信用债降级比率超过3%的行业及其具体数值,"SELECT sector, AVG(downgrade_ratio_pct) AS avg_downgrade_ratio
-FROM corporate_credit
-WHERE year = 2022 AND geo_level = 'national' AND downgrade_ratio_pct > 3.0
-GROUP BY sector
-ORDER BY avg_downgrade_ratio DESC","[""year"", ""geo_level"", ""sector"", ""downgrade_ratio_pct""]",[],"[{""sector"": ""地产"", ""avg_downgrade_ratio"": 4.63575}, {""sector"": ""可选消费"", ""avg_downgrade_ratio"": 4.62325}, {""sector"": ""能源"", ""avg_downgrade_ratio"": 3.872666666666666}, {""sector"": ""科技"", ""avg_downgrade_ratio"": 3.846}, {""sector"": ""医疗健康"", ""avg_downgrade_ratio"": 3.7875}, {""sector"": ""材料"", ""avg_downgrade_ratio"": 3.718}, {""sector"": ""通信服务"", ""avg_downgrade_ratio"": 3.569}, {""sector"": ""消费"", ""avg_downgrade_ratio"": 3.348}, {""sector"": ""工业"", ""avg_downgrade_ratio"": 3.3365}]",list,False,,corporate_credit_qa.yaml
-567,17,regional_gdp,single_table,2024年哪个省份的第一产业占GDP比重最低？,2024年哪个省份的第一产业占GDP比重最低？,"SELECT geo_name, primary_share_pct
-FROM regional_gdp
-WHERE year = 2024 AND geo_level = 'province'
-ORDER BY primary_share_pct ASC
-LIMIT 1","[""year"", ""geo_level"", ""geo_name"", ""primary_share_pct""]",[],"[{""geo_name"": ""云南"", ""primary_share_pct"": 2.939}]",list,False,,regional_gdp_qa.yaml
-258,8,gdp_expenditure,single_table,查询2020年至2022年全国层级的年度名义GDP支出总额,查询2020年至2022年全国层级的年度名义GDP支出总额,"SELECT year, SUM(nominal_gdp_100m_cny) AS total_gdp
-FROM gdp_expenditure
-WHERE year BETWEEN 2020 AND 2022 AND geo_level = 'national'
+WHERE geo_level = 'national'","[{""min_rate"": 11.278, ""max_rate"": 17.921}]",list,False,employment_stats_qa.yaml
+723,42,stock_indices,single_table,各年度A股市场的月均成交额变化趋势如何？,"SELECT year, AVG(market_turnover_100m_cny) AS avg_monthly_turnover
+FROM stock_indices
 GROUP BY year
-ORDER BY year","[""year"", ""geo_level"", ""nominal_gdp_100m_cny""]",[],"[{""year"": 2020, ""total_gdp"": 1016886.6599999999}, {""year"": 2021, ""total_gdp"": 1150944.05}, {""year"": 2022, ""total_gdp"": 1209756.41}]",list,False,,gdp_expenditure_questions.yaml
-542,42,real_estate,single_table,查询华东地区2018-2024年房贷利率的年度趋势,查询华东地区2018-2024年房贷利率的年度趋势,"SELECT year, AVG(mortgage_rate_pct) AS avg_rate
-FROM real_estate
-WHERE geo_code = 'CN-R-EC'
-GROUP BY year
-ORDER BY year","[""year"", ""geo_code"", ""mortgage_rate_pct""]",[],"[{""year"": 2016, ""avg_rate"": 4.093583333333333}, {""year"": 2017, ""avg_rate"": 3.8956666666666666}, {""year"": 2018, ""avg_rate"": 3.72025}, {""year"": 2019, ""avg_rate"": 3.5180000000000002}, {""year"": 2020, ""avg_rate"": 3.4000833333333333}, {""year"": 2021, ""avg_rate"": 3.157666666666666}, {""year"": 2022, ""avg_rate"": 3.162333333333333}, {""year"": 2023, ""avg_rate"": 3.2113333333333336}, {""year"": 2024, ""avg_rate"": 3.2710000000000004}, {""year"": 2025, ""avg_rate"": 3.16075}]",list,False,,real_estate_qa.yaml
-480,30,money_supply,single_table,各年份全国社会融资规模流量的年度总额趋势如何？,各年份全国社会融资规模流量的年度总额趋势如何？,"SELECT year, SUM(social_financing_flow_100m_cny) AS annual_total
+ORDER BY year","[{""year"": 2016, ""avg_monthly_turnover"": 185802.04833333334}, {""year"": 2017, ""avg_monthly_turnover"": 199465.03333333333}, {""year"": 2018, ""avg_monthly_turnover"": 217661.46083333332}, {""year"": 2019, ""avg_monthly_turnover"": 230830.06166666668}, {""year"": 2020, ""avg_monthly_turnover"": 239564.97083333333}, {""year"": 2021, ""avg_monthly_turnover"": 264685.56166666665}, {""year"": 2022, ""avg_monthly_turnover"": 278335.9191666667}, {""year"": 2023, ""avg_monthly_turnover"": 281619.43083333335}, {""year"": 2024, ""avg_monthly_turnover"": 301989.50916666666}, {""year"": 2025, ""avg_monthly_turnover"": 311902.0125}]",list,False,stock_indices_qa.yaml
+724,56,government_finance,single_table,2024年全国财政赤字比2019年增加了多少亿元？,"{""sql1"": ""SELECT deficit_100m_cny AS deficit_2024\nFROM government_finance\nWHERE year = 2024 AND geo_level = 'national'"", ""sql2"": ""SELECT deficit_100m_cny AS deficit_2019\nFROM government_finance\nWHERE year = 2019 AND geo_level = 'national'""}",8000.0,scalar,True,government_finance_qa.yaml
+725,60,trade_balance,single_table,2023年全年全国的进出口总额（出口额+进口额）比2019年增加了多少百万美元？,"{""sql1"": ""SELECT SUM(exports_musd) + SUM(imports_musd) AS total_2023\nFROM trade_balance\nWHERE year = 2023 AND geo_level = 'national'"", ""sql2"": ""SELECT SUM(exports_musd) + SUM(imports_musd) AS total_2019\nFROM trade_balance\nWHERE year = 2019 AND geo_level = 'national'""}",141131.0700000003,scalar,True,trade_balance_qa.yaml
+726,36,money_supply,single_table,按M1货币同比增速平均值降序，2024年各省份的排名如何？,"SELECT geo_name
 FROM money_supply
+WHERE year = 2024 AND geo_level = 'province'
+GROUP BY geo_name
+ORDER BY AVG(m1_yoy_pct) DESC","[{""geo_name"": ""江苏""}, {""geo_name"": ""甘肃""}, {""geo_name"": ""上海""}, {""geo_name"": ""辽宁""}, {""geo_name"": ""北京""}, {""geo_name"": ""宁夏""}, {""geo_name"": ""广东""}, {""geo_name"": ""天津""}, {""geo_name"": ""海南""}, {""geo_name"": ""河南""}, {""geo_name"": ""重庆""}, {""geo_name"": ""浙江""}, {""geo_name"": ""陕西""}, {""geo_name"": ""云南""}, {""geo_name"": ""广西""}, {""geo_name"": ""江西""}, {""geo_name"": ""山西""}, {""geo_name"": ""四川""}, {""geo_name"": ""内蒙古""}, {""geo_name"": ""湖南""}, {""geo_name"": ""青海""}, {""geo_name"": ""山东""}, {""geo_name"": ""福建""}, {""geo_name"": ""吉林""}, {""geo_name"": ""安徽""}, {""geo_name"": ""湖北""}, {""geo_name"": ""西藏""}, {""geo_name"": ""黑龙江""}, {""geo_name"": ""新疆""}, {""geo_name"": ""贵州""}, {""geo_name"": ""河北""}]",list,False,money_supply_qa.yaml
+727,56,real_estate,single_table,2024年全国房价指数年均值相比2019年下降了多少个百分点？,"{""sql1"": ""SELECT AVG(home_price_idx) AS idx_2019\nFROM real_estate\nWHERE year = 2019 AND geo_level = 'national'"", ""sql2"": ""SELECT AVG(home_price_idx) AS idx_2024\nFROM real_estate\nWHERE year = 2024 AND geo_level = 'national'""}",0.1974999999999909,scalar,True,real_estate_qa.yaml
+728,26,money_supply,single_table,2024年全国M2货币同比增速的年均值是多少？,"SELECT AVG(m2_yoy_pct) AS value
+FROM money_supply
+WHERE year = 2024 AND geo_level = 'national'",8.10725,scalar,False,money_supply_qa.yaml
+729,33,stock_indices,single_table,各年份北向资金净流入为正的月份数量统计,"SELECT year, COUNT(*) AS positive_months
+FROM stock_indices
+WHERE northbound_netflow_100m_cny > 0
+GROUP BY year
+ORDER BY year","[{""year"": 2016, ""positive_months"": 9}, {""year"": 2017, ""positive_months"": 9}, {""year"": 2018, ""positive_months"": 6}, {""year"": 2019, ""positive_months"": 8}, {""year"": 2020, ""positive_months"": 9}, {""year"": 2021, ""positive_months"": 6}, {""year"": 2022, ""positive_months"": 5}, {""year"": 2023, ""positive_months"": 8}, {""year"": 2024, ""positive_months"": 3}, {""year"": 2025, ""positive_months"": 7}]",list,False,stock_indices_qa.yaml
+730,43,gdp_expenditure,single_table,查询2024年消费支出高于各省平均水平的省份,"SELECT geo_name
+FROM gdp_expenditure
+WHERE year = 2024 AND geo_level = 'province'
+GROUP BY geo_name
+HAVING AVG(consumption_100m_cny) > (
+  SELECT AVG(consumption_100m_cny)
+  FROM gdp_expenditure
+  WHERE year = 2024 AND geo_level = 'province'
+)
+ORDER BY AVG(consumption_100m_cny) DESC","[{""geo_name"": ""广东""}, {""geo_name"": ""江苏""}, {""geo_name"": ""山东""}, {""geo_name"": ""浙江""}, {""geo_name"": ""四川""}, {""geo_name"": ""河南""}, {""geo_name"": ""湖北""}, {""geo_name"": ""福建""}, {""geo_name"": ""湖南""}, {""geo_name"": ""安徽""}, {""geo_name"": ""上海""}, {""geo_name"": ""河北""}, {""geo_name"": ""北京""}]",list,False,gdp_expenditure_qa.yaml
+731,49,regional_gdp,single_table_error,查询第三产业占GDP比重超过150%的记录,,产业占比的合理范围为0-100%，不存在超过100%的情况,error,False,regional_gdp_qa.yaml
+732,15,employment_stats,single_table,历史上全国失业率最高的月份是哪个？,"SELECT year, month
+FROM employment_stats
+WHERE geo_level = 'national'
+ORDER BY unemployment_rate_pct DESC
+LIMIT 1","[{""year"": 2018, ""month"": 5}]",list,False,employment_stats_qa.yaml
+733,2,regional_gdp,single_table,2023年广东省的人均GDP是多少元？,"SELECT gdp_per_capita_cny AS value
+FROM regional_gdp
+WHERE year = 2023 AND geo_name = '广东'",88038.06,scalar,False,regional_gdp_qa.yaml
+734,45,gdp_expenditure,single_table,2024年全国消费支出总额是投资支出总额的多少倍？,"{""sql1"": ""SELECT SUM(consumption_100m_cny) AS total_consumption\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'national'"", ""sql2"": ""SELECT SUM(investment_100m_cny) AS total_investment\nFROM gdp_expenditure\nWHERE year = 2024 AND geo_level = 'national'""}",1.2577663566414314,scalar,True,gdp_expenditure_qa.yaml
+735,13,exchange_rates,single_table,查询2019-2021年期间汇率波动率超过6%的所有记录,"SELECT year, month, fx_vol_1m_pct
+FROM exchange_rates
+WHERE year BETWEEN 2019 AND 2021 AND fx_vol_1m_pct > 6.0
+ORDER BY fx_vol_1m_pct DESC","[{""year"": 2021, ""month"": 4, ""fx_vol_1m_pct"": 6.374}, {""year"": 2019, ""month"": 1, ""fx_vol_1m_pct"": 6.311}, {""year"": 2021, ""month"": 9, ""fx_vol_1m_pct"": 6.269}, {""year"": 2020, ""month"": 4, ""fx_vol_1m_pct"": 6.183}, {""year"": 2019, ""month"": 7, ""fx_vol_1m_pct"": 6.075}, {""year"": 2019, ""month"": 8, ""fx_vol_1m_pct"": 6.07}, {""year"": 2021, ""month"": 2, ""fx_vol_1m_pct"": 6.033}, {""year"": 2020, ""month"": 10, ""fx_vol_1m_pct"": 6.015}, {""year"": 2021, ""month"": 5, ""fx_vol_1m_pct"": 6.003}]",list,False,exchange_rates_qa.yaml
+736,22,interest_rates,single_table,政策利率高于2.4%的月份有多少个？,"SELECT COUNT(*) AS total_records
+FROM interest_rates
+WHERE policy_rate_pct > 2.4",40,scalar,False,interest_rates_qa.yaml
+737,24,industrial_output,single_table,2023年全国12个月的工业同比增速累计和是多少？,"SELECT SUM(yoy_growth_pct) AS value
+FROM industrial_output
+WHERE year = 2023 AND geo_level = 'national'",76.563,scalar,False,industrial_output_qa.yaml
+738,23,retail_sales,single_table,社零统计覆盖了多少个省级行政区？,"SELECT COUNT(DISTINCT geo_name) AS value
+FROM retail_sales
+WHERE geo_level = 'province'",31,scalar,False,retail_sales_qa.yaml
+739,36,gdp_expenditure,single_table,按省份统计2023年平均净出口额，按降序排列前10名,"SELECT geo_name
+FROM gdp_expenditure
+WHERE year = 2023 AND geo_level = 'province'
+GROUP BY geo_name
+ORDER BY AVG(net_export_100m_cny) DESC
+LIMIT 10","[{""geo_name"": ""西藏""}, {""geo_name"": ""青海""}, {""geo_name"": ""宁夏""}, {""geo_name"": ""海南""}, {""geo_name"": ""甘肃""}, {""geo_name"": ""吉林""}, {""geo_name"": ""黑龙江""}, {""geo_name"": ""内蒙古""}, {""geo_name"": ""新疆""}, {""geo_name"": ""天津""}]",list,False,gdp_expenditure_qa.yaml
+740,22,stock_indices,single_table,2016-2025年波动率指数高于20的月份有多少个？,"SELECT COUNT(*) AS value
+FROM stock_indices
+WHERE volatility_idx > 20",35,scalar,False,stock_indices_qa.yaml
+741,48,retail_sales,single_table_error,查询各零售企业的公司名称和社零销售额,,表中不包含企业名称字段，仅有地理维度（geo_name）聚合数据,error,False,retail_sales_qa.yaml
+742,5,cpi_inflation,single_table,查询2023年华北、东北、华东三大区域1月份的总体CPI同比变化率,"SELECT geo_name, yoy_change_pct
+FROM cpi_inflation
+WHERE year = 2023 AND month = 1 AND geo_level = 'region' AND geo_name IN ('华北', '东北', '华东')
+ORDER BY geo_name","[{""geo_name"": ""东北"", ""yoy_change_pct"": 1.114}, {""geo_name"": ""华东"", ""yoy_change_pct"": 1.508}, {""geo_name"": ""华北"", ""yoy_change_pct"": 1.486}]",list,False,cpi_inflation_qa.yaml
+743,3,industrial_output,single_table,2022年6月华北地区的工业产能利用率是多少？,"SELECT capacity_utilization_pct AS value
+FROM industrial_output
+WHERE year = 2022 AND month = 6 AND geo_name = '华北'",74.501,scalar,False,industrial_output_qa.yaml
+744,57,corporate_credit,single_table,2024年全国科技行业的企业信用债新发行量是2016年的多少倍？,"{""sql1"": ""SELECT SUM(new_issuance_100m_cny) AS issuance_2024\nFROM corporate_credit\nWHERE year = 2024 AND geo_level = 'national' AND sector = '科技'"", ""sql2"": ""SELECT SUM(new_issuance_100m_cny) AS issuance_2016\nFROM corporate_credit\nWHERE year = 2016 AND geo_level = 'national' AND sector = '科技'""}",1.329,scalar,True,corporate_credit_qa.yaml
+745,28,gdp_expenditure,single_table,查询2024年省级层级的最高和最低实际GDP支出值,"SELECT MAX(real_gdp_100m_cny) AS max_gdp, MIN(real_gdp_100m_cny) AS min_gdp
+FROM gdp_expenditure
+WHERE year = 2024 AND geo_level = 'province'","[{""max_gdp"": 38036.31, ""min_gdp"": 630.5}]",list,False,gdp_expenditure_qa.yaml
+746,5,industrial_output,single_table,2024年1月采矿业指数在华东、华南、华北三大区域的分布情况,"SELECT geo_name, mining_index
+FROM industrial_output
+WHERE year = 2024 AND month = 1 AND geo_name IN ('华东', '华南', '华北')
+ORDER BY mining_index DESC","[{""geo_name"": ""华北"", ""mining_index"": 159.152}, {""geo_name"": ""华东"", ""mining_index"": 149.391}, {""geo_name"": ""华南"", ""mining_index"": 141.49}]",list,False,industrial_output_qa.yaml
+747,16,exchange_rates,single_table,历史上中国外汇储备最高的月份及储备金额是多少？,"SELECT year, month, fx_reserve_100m_usd
+FROM exchange_rates
+ORDER BY fx_reserve_100m_usd DESC
+LIMIT 1","[{""year"": 2025, ""month"": 12, ""fx_reserve_100m_usd"": 33308.09}]",list,False,exchange_rates_qa.yaml
+748,51,real_estate,single_table,2024年全国新房销售面积是二手房销售面积的多少倍？,"{""sql1"": ""SELECT SUM(new_home_sales_10k_sqm) AS new_sales\nFROM real_estate\nWHERE year = 2024 AND geo_level = 'national'"", ""sql2"": ""SELECT SUM(existing_home_sales_10k_sqm) AS existing_sales\nFROM real_estate\nWHERE year = 2024 AND geo_level = 'national'""}",0.7325678062646748,scalar,True,real_estate_qa.yaml
+749,54,exchange_rates,single_table,2025年人民币汇率1个月波动率超过6%的月份占全年的百分比是多少？,"{""sql1"": ""SELECT COUNT(*) AS high_vol_months\nFROM exchange_rates\nWHERE year = 2025 AND fx_vol_1m_pct > 6.0"", ""sql2"": ""SELECT 12 AS total_months""}",33.33333333333333,scalar,True,exchange_rates_qa.yaml
+750,4,retail_sales,single_table,2022年12月北京的食品类零售额和服务零售额各是多少？,"SELECT food_sales_100m_cny, service_retail_100m_cny
+FROM retail_sales
+WHERE year = 2022 AND month = 12 AND geo_level = 'province' AND geo_name = '北京'","[{""food_sales_100m_cny"": 444.54, ""service_retail_100m_cny"": 823.99}]",list,False,retail_sales_qa.yaml
+751,37,cpi_inflation,single_table,查询2023年平均CPI同比涨幅超过1.5%的区域,"SELECT geo_name
+FROM cpi_inflation
+WHERE year = 2023 AND geo_level = 'region'
+GROUP BY geo_name
+HAVING AVG(yoy_change_pct) > 1.5
+ORDER BY AVG(yoy_change_pct) DESC","[{""geo_name"": ""华南""}, {""geo_name"": ""华北""}, {""geo_name"": ""西南""}]",list,False,cpi_inflation_qa.yaml
+752,6,trade_balance,single_table,2021年5月全国层级的第一大进口来源地是日本、韩国还是东盟？,"SELECT top_import_partner
+FROM trade_balance
+WHERE year = 2021 AND month = 5 AND geo_level = 'national' AND top_import_partner IN ('日本', '韩国', '东盟')",韩国,scalar,False,trade_balance_qa.yaml
+753,9,employment_stats,single_table,北京市2019年至2021年期间劳动参与率最高的月份,"SELECT year, month
+FROM employment_stats
+WHERE geo_name = '北京' AND year BETWEEN 2019 AND 2021
+ORDER BY participation_rate_pct DESC
+LIMIT 1","[{""year"": 2021, ""month"": 3}]",list,False,employment_stats_qa.yaml
+754,37,government_finance,single_table,哪些大区在2020-2024年间的平均财政赤字超过10000亿元？,"SELECT geo_name
+FROM government_finance
+WHERE year BETWEEN 2020 AND 2024 AND geo_level = 'region'
+GROUP BY geo_name
+HAVING AVG(deficit_100m_cny) > 10000
+ORDER BY AVG(deficit_100m_cny) DESC","[{""geo_name"": ""华东""}]",list,False,government_finance_qa.yaml
+755,31,retail_sales,single_table,2024年全国各月社零名义同比增速的平均值是多少？,"SELECT month, AVG(yoy_change_pct) AS avg_yoy
+FROM retail_sales
+WHERE year = 2024 AND geo_level = 'national'
+GROUP BY month
+ORDER BY month","[{""month"": 1, ""avg_yoy"": 10.12}, {""month"": 2, ""avg_yoy"": 8.229}, {""month"": 3, ""avg_yoy"": 9.809}, {""month"": 4, ""avg_yoy"": 7.708}, {""month"": 5, ""avg_yoy"": 9.598}, {""month"": 6, ""avg_yoy"": 8.101}, {""month"": 7, ""avg_yoy"": 6.012}, {""month"": 8, ""avg_yoy"": 7.12}, {""month"": 9, ""avg_yoy"": 8.733}, {""month"": 10, ""avg_yoy"": 6.066}, {""month"": 11, ""avg_yoy"": 7.449}, {""month"": 12, ""avg_yoy"": 6.466}]",list,False,retail_sales_qa.yaml
+756,3,cpi_inflation,single_table,查询2022年全年北京市已剔除食品和能源因素的核心CPI指数记录,"SELECT year, month, core_cpi_idx
+FROM cpi_inflation
+WHERE year = 2022 AND geo_level = 'province' AND geo_name = '北京'
+ORDER BY year, month","[{""year"": 2022, ""month"": 1, ""core_cpi_idx"": 112.196}, {""year"": 2022, ""month"": 2, ""core_cpi_idx"": 112.763}, {""year"": 2022, ""month"": 3, ""core_cpi_idx"": 113.202}, {""year"": 2022, ""month"": 4, ""core_cpi_idx"": 113.457}, {""year"": 2022, ""month"": 5, ""core_cpi_idx"": 113.856}, {""year"": 2022, ""month"": 6, ""core_cpi_idx"": 112.917}, {""year"": 2022, ""month"": 7, ""core_cpi_idx"": 113.588}, {""year"": 2022, ""month"": 8, ""core_cpi_idx"": 113.173}, {""year"": 2022, ""month"": 9, ""core_cpi_idx"": 113.555}, {""year"": 2022, ""month"": 10, ""core_cpi_idx"": 113.881}, {""year"": 2022, ""month"": 11, ""core_cpi_idx"": 114.066}, {""year"": 2022, ""month"": 12, ""core_cpi_idx"": 114.59}]",list,False,cpi_inflation_qa.yaml
+757,57,gdp_expenditure,single_table,2023年全国层级的平均消费贡献率相较2020年变化了多少个百分点？,"{""sql1"": ""SELECT AVG(consumption_contrib_pct) AS avg_contrib_2023\nFROM gdp_expenditure\nWHERE year = 2023 AND geo_level = 'national'"", ""sql2"": ""SELECT AVG(consumption_contrib_pct) AS avg_contrib_2020\nFROM gdp_expenditure\nWHERE year = 2020 AND geo_level = 'national'""}",-9.412000000000006,scalar,True,gdp_expenditure_qa.yaml
+758,9,corporate_credit,single_table,上海市2018年至2020年间医疗健康行业的企业信用债新发行量总计多少？,"SELECT SUM(new_issuance_100m_cny) AS value 
+FROM corporate_credit 
+WHERE year BETWEEN 2018 AND 2020 AND geo_name = '上海' AND sector = '医疗健康'",21955.55,scalar,False,corporate_credit_qa.yaml
+759,37,money_supply,single_table,2023年哪些省份的M2货币同比增速年均值超过8.3%？,"SELECT geo_name
+FROM money_supply
+WHERE year = 2023 AND geo_level = 'province'
+GROUP BY geo_name
+HAVING AVG(m2_yoy_pct) > 8.3
+ORDER BY geo_name","[{""geo_name"": ""内蒙古""}, {""geo_name"": ""宁夏""}, {""geo_name"": ""山西""}, {""geo_name"": ""广东""}, {""geo_name"": ""河南""}, {""geo_name"": ""福建""}, {""geo_name"": ""贵州""}, {""geo_name"": ""辽宁""}, {""geo_name"": ""黑龙江""}]",list,False,money_supply_qa.yaml
+760,42,trade_balance,single_table,华东地区2018年至2024年每年的进口额变化趋势是什么？,"SELECT year, SUM(imports_musd) AS annual_imports
+FROM trade_balance
+WHERE geo_name = '华东' AND year BETWEEN 2018 AND 2024
+GROUP BY year
+ORDER BY year","[{""year"": 2018, ""annual_imports"": 1152737.58}, {""year"": 2019, ""annual_imports"": 1192252.51}, {""year"": 2020, ""annual_imports"": 1230681.81}, {""year"": 2021, ""annual_imports"": 1215675.64}, {""year"": 2022, ""annual_imports"": 1269047.28}, {""year"": 2023, ""annual_imports"": 1214577.45}, {""year"": 2024, ""annual_imports"": 1222307.4}]",list,False,trade_balance_qa.yaml
+761,27,stock_indices,single_table,全时期沪深300市盈率的平均水平是多少倍？,"SELECT AVG(pe_ttm_csi300) AS value
+FROM stock_indices
+WHERE pe_ttm_csi300 IS NOT NULL",13.4535,scalar,False,stock_indices_qa.yaml
+762,4,energy_prices,single_table,西北地区2021年3月的电价和碳价各是多少？,"SELECT electricity_price_cny_per_kwh, carbon_price_cny_per_tco2
+FROM energy_prices
+WHERE geo_name = '西北' AND year = 2021 AND month = 3","[{""electricity_price_cny_per_kwh"": 0.56, ""carbon_price_cny_per_tco2"": 96.811}]",list,False,energy_prices_qa.yaml
+763,37,energy_prices,single_table,哪些年份全国煤炭价格年均值超过800元每吨？,"SELECT year
+FROM energy_prices
 WHERE geo_level = 'national'
 GROUP BY year
-ORDER BY year","[""year"", ""geo_level"", ""social_financing_flow_100m_cny""]",[],"[{""year"": 2016, ""annual_total"": 426216.64}, {""year"": 2017, ""annual_total"": 402142.08}, {""year"": 2018, ""annual_total"": 410556.88}, {""year"": 2019, ""annual_total"": 411167.41000000003}, {""year"": 2020, ""annual_total"": 417951.83}, {""year"": 2021, ""annual_total"": 408508.49}, {""year"": 2022, ""annual_total"": 404920.83}, {""year"": 2023, ""annual_total"": 422695.84}, {""year"": 2024, ""annual_total"": 400019.36}, {""year"": 2025, ""annual_total"": 425660.47}]",list,False,,money_supply_qa.yaml
-620,20,retail_sales,single_table,2023年12月网络零售额最高的前3个省份分别是哪些？,2023年12月网络零售额最高的前3个省份分别是哪些？,"SELECT geo_name, ecommerce_sales_100m_cny
-FROM retail_sales
-WHERE year = 2023 AND month = 12 AND geo_level = 'province'
-ORDER BY ecommerce_sales_100m_cny DESC
-LIMIT 3","[""year"", ""month"", ""geo_level"", ""geo_name"", ""ecommerce_sales_100m_cny""]",[],"[{""geo_name"": ""广东"", ""ecommerce_sales_100m_cny"": 1871.49}, {""geo_name"": ""山东"", ""ecommerce_sales_100m_cny"": 1733.14}, {""geo_name"": ""江苏"", ""ecommerce_sales_100m_cny"": 1541.9}]",list,False,,retail_sales_qa.yaml
-391,41,industrial_output,single_table,全国工业产能利用率在2016年至2025年的年均值变化趋势如何？,全国工业产能利用率在2016年至2025年的年均值变化趋势如何？,"SELECT year, AVG(capacity_utilization_pct) AS avg_capacity
-FROM industrial_output
-WHERE geo_level = 'national' AND year BETWEEN 2016 AND 2025
-GROUP BY year
-ORDER BY year","[""year"", ""geo_level"", ""capacity_utilization_pct""]",[],"[{""year"": 2016, ""avg_capacity"": 76.30116666666667}, {""year"": 2017, ""avg_capacity"": 75.21025}, {""year"": 2018, ""avg_capacity"": 75.22083333333333}, {""year"": 2019, ""avg_capacity"": 74.7075}, {""year"": 2020, ""avg_capacity"": 75.83266666666667}, {""year"": 2021, ""avg_capacity"": 75.34516666666667}, {""year"": 2022, ""avg_capacity"": 76.47175}, {""year"": 2023, ""avg_capacity"": 76.49783333333333}, {""year"": 2024, ""avg_capacity"": 76.26891666666667}, {""year"": 2025, ""avg_capacity"": 77.16725}]",list,False,,industrial_output_qa.yaml
-395,45,industrial_output,single_table,2024年全国制造业指数年均值是采矿业指数年均值的多少倍？,2024年全国制造业指数年均值是采矿业指数年均值的多少倍？,"SELECT AVG(manufacturing_index) AS mfg_avg, AVG(mining_index) AS mining_avg
-FROM industrial_output
-WHERE year = 2024 AND geo_level = 'national'","[""year"", ""geo_level"", ""manufacturing_index"", ""mining_index""]",[],1.0595279498838552,scalar,True,,industrial_output_qa.yaml
-66,16,cpi_inflation,single_table,查询2022年能源CPI指数最高的省级地区及其指数值,查询2022年能源CPI指数最高的省级地区及其指数值,"SELECT geo_name, MAX(energy_cpi_idx) AS value
-FROM cpi_inflation
-WHERE year = 2022 AND geo_level = 'province'
-GROUP BY geo_name
-ORDER BY value DESC
-LIMIT 1","[""year"", ""geo_level"", ""geo_name"", ""energy_cpi_idx""]",[],"[{""geo_name"": ""陕西"", ""value"": 117.827}]",list,False,,cpi_inflation_qa.yaml
-611,11,retail_sales,single_table,2023年全国汽车类零售额超过4000亿元的月份有哪些？,2023年全国汽车类零售额超过4000亿元的月份有哪些？,"SELECT year, month, auto_sales_100m_cny
-FROM retail_sales
-WHERE year = 2023 AND geo_level = 'national' AND auto_sales_100m_cny > 4000
-ORDER BY month","[""year"", ""month"", ""geo_level"", ""auto_sales_100m_cny""]",[],"[{""year"": 2023, ""month"": 1, ""auto_sales_100m_cny"": 7325.52}, {""year"": 2023, ""month"": 2, ""auto_sales_100m_cny"": 8677.97}, {""year"": 2023, ""month"": 3, ""auto_sales_100m_cny"": 6127.11}, {""year"": 2023, ""month"": 4, ""auto_sales_100m_cny"": 9360.69}, {""year"": 2023, ""month"": 5, ""auto_sales_100m_cny"": 5920.86}, {""year"": 2023, ""month"": 6, ""auto_sales_100m_cny"": 6023.23}, {""year"": 2023, ""month"": 7, ""auto_sales_100m_cny"": 5492.71}, {""year"": 2023, ""month"": 8, ""auto_sales_100m_cny"": 8391.33}, {""year"": 2023, ""month"": 9, ""auto_sales_100m_cny"": 9138.99}, {""year"": 2023, ""month"": 10, ""auto_sales_100m_cny"": 9058.8}, {""year"": 2023, ""month"": 11, ""auto_sales_100m_cny"": 8547.81}, {""year"": 2023, ""month"": 12, ""auto_sales_100m_cny"": 7143.68}]",list,False,,retail_sales_qa.yaml
-716,16,trade_balance,single_table,2023年所有省份中，哪个省份某月的贸易顺差最大？,2023年所有省份中，哪个省份某月的贸易顺差最大？,"SELECT geo_name, year, month, trade_balance_musd
-FROM trade_balance
-WHERE year = 2023 AND geo_level = 'province'
-ORDER BY trade_balance_musd DESC
-LIMIT 1","[""geo_name"", ""year"", ""month"", ""geo_level"", ""trade_balance_musd""]",[],"[{""geo_name"": ""江苏"", ""year"": 2023, ""month"": 9, ""trade_balance_musd"": 11981.62}]",list,False,,trade_balance_qa.yaml
-718,18,trade_balance,single_table,2022年所有区域层级中，哪个区域哪个月的出口同比增速最低？,2022年所有区域层级中，哪个区域哪个月的出口同比增速最低？,"SELECT geo_name, month, export_yoy_pct
-FROM trade_balance
-WHERE year = 2022 AND geo_level = 'region'
-ORDER BY export_yoy_pct ASC
-LIMIT 1","[""geo_name"", ""year"", ""month"", ""geo_level"", ""export_yoy_pct""]",[],"[{""geo_name"": ""华中"", ""month"": 12, ""export_yoy_pct"": -2.22}]",list,False,,trade_balance_qa.yaml
-157,7,energy_prices,single_table,碳价为空值的数据有多少条？,碳价为空值的数据有多少条？,"SELECT COUNT(*) AS missing_count
-FROM energy_prices
-WHERE carbon_price_cny_per_tco2 IS NULL","[""ref_date"", ""geo_name"", ""carbon_price_cny_per_tco2""]",[],0,scalar,False,,energy_prices_qa.yaml
-113,13,employment_stats,single_table,2020年至2022年间失业率超过5%且劳动参与率低于70%的记录,2020年至2022年间失业率超过5%且劳动参与率低于70%的记录,"SELECT year, month, geo_name, unemployment_rate_pct, participation_rate_pct
-FROM employment_stats
-WHERE year BETWEEN 2020 AND 2022 AND unemployment_rate_pct > 5 AND participation_rate_pct < 70
-LIMIT 10","[""year"", ""month"", ""geo_name"", ""unemployment_rate_pct"", ""participation_rate_pct""]",[],"[{""year"": 2020, ""month"": 1, ""geo_name"": ""华北"", ""unemployment_rate_pct"": 5.421, ""participation_rate_pct"": 65.425}, {""year"": 2020, ""month"": 1, ""geo_name"": ""华东"", ""unemployment_rate_pct"": 5.135, ""participation_rate_pct"": 66.261}, {""year"": 2020, ""month"": 1, ""geo_name"": ""华中"", ""unemployment_rate_pct"": 5.139, ""participation_rate_pct"": 67.583}, {""year"": 2020, ""month"": 1, ""geo_name"": ""北京"", ""unemployment_rate_pct"": 5.577, ""participation_rate_pct"": 65.941}, {""year"": 2020, ""month"": 1, ""geo_name"": ""河北"", ""unemployment_rate_pct"": 5.41, ""participation_rate_pct"": 67.248}, {""year"": 2020, ""month"": 1, ""geo_name"": ""山西"", ""unemployment_rate_pct"": 5.514, ""participation_rate_pct"": 66.118}, {""year"": 2020, ""month"": 1, ""geo_name"": ""吉林"", ""unemployment_rate_pct"": 5.439, ""participation_rate_pct"": 65.999}, {""year"": 2020, ""month"": 1, ""geo_name"": ""黑龙江"", ""unemployment_rate_pct"": 5.139, ""participation_rate_pct"": 67.469}, {""year"": 2020, ""month"": 1, ""geo_name"": ""浙江"", ""unemployment_rate_pct"": 5.059, ""participation_rate_pct"": 67.608}, {""year"": 2020, ""month"": 1, ""geo_name"": ""江西"", ""unemployment_rate_pct"": 5.26, ""participation_rate_pct"": 67.439}]",list,False,,employment_stats_qa.yaml
-49,49,corporate_credit,single_table_error,查询全国层级且地区为北京的企业债券违约率,查询全国层级且地区为北京的企业债券违约率,,[],[],逻辑冲突：geo_level='national' 时 geo_name 固定为'中国',,,逻辑冲突：geo_level='national' 时 geo_name 固定为'中国',corporate_credit_qa.yaml
-94,44,cpi_inflation,single_table,查询2022年食品CPI指数超过全国平均水平的省份数量,查询2022年食品CPI指数超过全国平均水平的省份数量,"SELECT COUNT(DISTINCT geo_name) AS value
-FROM cpi_inflation
-WHERE year = 2022 AND geo_level = 'province' AND food_cpi_idx > ( SELECT AVG(food_cpi_idx)
-FROM cpi_inflation
-WHERE year = 2022 AND geo_level = 'national' )","[""year"", ""geo_level"", ""geo_name"", ""food_cpi_idx""]",[],31,scalar,False,,cpi_inflation_qa.yaml
-506,6,real_estate,single_table,查询华北、东北、华南三大区域2023年7月的住宅空置率,查询华北、东北、华南三大区域2023年7月的住宅空置率,"SELECT geo_name, vacancy_rate_pct, inventory_months
+HAVING AVG(coal_price_cny_per_ton) > 800
+ORDER BY year","[{""year"": 2016}, {""year"": 2017}, {""year"": 2018}, {""year"": 2019}, {""year"": 2020}]",list,False,energy_prices_qa.yaml
+764,45,industrial_output,single_table,2024年全国制造业指数年均值是采矿业指数年均值的多少倍？,"{""sql1"": ""SELECT AVG(manufacturing_index) AS mfg_avg\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'national'"", ""sql2"": ""SELECT AVG(mining_index) AS mining_avg\nFROM industrial_output\nWHERE year = 2024 AND geo_level = 'national'""}",1.0595279498838552,scalar,True,industrial_output_qa.yaml
+765,26,interest_rates,single_table,2016年至2025年全部数据期间，政策利率的平均水平是多少？,"SELECT AVG(policy_rate_pct) AS avg_policy_rate
+FROM interest_rates",2.3594166666666667,scalar,False,interest_rates_qa.yaml
+766,47,gdp_expenditure,single_table_error,查询2015年全国消费支出数据,,数据起始年份为2016年，2015年数据不存在,error,False,gdp_expenditure_qa.yaml
+767,27,exchange_rates,single_table,2024年CFETS人民币汇率指数的年度平均值,"SELECT AVG(cfets_index) AS avg_cfets
+FROM exchange_rates
+WHERE year = 2024",99.51533333333333,scalar,False,exchange_rates_qa.yaml
+768,36,real_estate,single_table,按省份分组统计2024年二手房销售面积，按总量降序排列取前10,"SELECT geo_name, SUM(existing_home_sales_10k_sqm) AS total_existing_sales
 FROM real_estate
-WHERE geo_code IN ('CN-R-NC', 'CN-R-NE', 'CN-R-SC') AND year = 2023 AND month = 7
-ORDER BY vacancy_rate_pct DESC","[""geo_code"", ""geo_name"", ""year"", ""month"", ""vacancy_rate_pct"", ""inventory_months""]",[],"[{""geo_name"": ""华北"", ""vacancy_rate_pct"": 16.751, ""inventory_months"": 16.123}, {""geo_name"": ""东北"", ""vacancy_rate_pct"": 16.356, ""inventory_months"": 16.613}, {""geo_name"": ""华南"", ""vacancy_rate_pct"": 13.479, ""inventory_months"": 14.364}]",list,False,,real_estate_qa.yaml
-522,22,real_estate,single_table,房地产统计涉及多少个省级行政区？,房地产统计涉及多少个省级行政区？,"SELECT COUNT(DISTINCT geo_code) AS value
-FROM real_estate
-WHERE geo_level = 'province'","[""geo_level"", ""geo_code""]",[],31,scalar,False,,real_estate_qa.yaml
-142,42,employment_stats,single_table,北京市2016年至2025年的平均月薪年度趋势,北京市2016年至2025年的平均月薪年度趋势,"SELECT year, AVG(avg_monthly_wage_cny) AS avg_wage
-FROM employment_stats
-WHERE geo_name = '北京'
-GROUP BY year
-ORDER BY year","[""year"", ""geo_name"", ""avg_monthly_wage_cny""]",[],"[{""year"": 2016, ""avg_wage"": 10764.428333333333}, {""year"": 2017, ""avg_wage"": 10970.301666666666}, {""year"": 2018, ""avg_wage"": 11176.18}, {""year"": 2019, ""avg_wage"": 11382.058333333334}, {""year"": 2020, ""avg_wage"": 11587.931666666665}, {""year"": 2021, ""avg_wage"": 11793.811666666666}, {""year"": 2022, ""avg_wage"": 11999.688333333334}, {""year"": 2023, ""avg_wage"": 12205.5625}, {""year"": 2024, ""avg_wage"": 12411.441666666666}, {""year"": 2025, ""avg_wage"": 12617.318333333335}]",list,False,,employment_stats_qa.yaml
-658,8,stock_indices,single_table,2018年至2020年间，上证综指月末收盘价的所有记录,2018年至2020年间，上证综指月末收盘价的所有记录,"SELECT year, month, shanghai_comp_close
-FROM stock_indices
-WHERE year BETWEEN 2018 AND 2020
-ORDER BY year, month","[""year"", ""month"", ""shanghai_comp_close""]",[],"[{""year"": 2018, ""month"": 1, ""shanghai_comp_close"": 3293.441}, {""year"": 2018, ""month"": 2, ""shanghai_comp_close"": 3482.816}, {""year"": 2018, ""month"": 3, ""shanghai_comp_close"": 3479.109}, {""year"": 2018, ""month"": 4, ""shanghai_comp_close"": 3345.525}, {""year"": 2018, ""month"": 5, ""shanghai_comp_close"": 3451.878}, {""year"": 2018, ""month"": 6, ""shanghai_comp_close"": 3434.522}, {""year"": 2018, ""month"": 7, ""shanghai_comp_close"": 3469.856}, {""year"": 2018, ""month"": 8, ""shanghai_comp_close"": 3401.406}, {""year"": 2018, ""month"": 9, ""shanghai_comp_close"": 3331.423}, {""year"": 2018, ""month"": 10, ""shanghai_comp_close"": 3329.939}, {""year"": 2018, ""month"": 11, ""shanghai_comp_close"": 3469.571}, {""year"": 2018, ""month"": 12, ""shanghai_comp_close"": 3417.433}, {""year"": 2019, ""month"": 1, ""shanghai_comp_close"": 3499.705}, {""year"": 2019, ""month"": 2, ""shanghai_comp_close"": 3669.174}, {""year"": 2019, ""month"": 3, ""shanghai_comp_close"": 3655.295}, {""year"": 2019, ""month"": 4, ""shanghai_comp_close"": 3637.165}, {""year"": 2019, ""month"": 5, ""shanghai_comp_close"": 3661.79}, {""year"": 2019, ""month"": 6, ""shanghai_comp_close"": 3598.73}, {""year"": 2019, ""month"": 7, ""shanghai_comp_close"": 3461.784}, {""year"": 2019, ""month"": 8, ""shanghai_comp_close"": 3562.509}, {""year"": 2019, ""month"": 9, ""shanghai_comp_close"": 3487.89}, {""year"": 2019, ""month"": 10, ""shanghai_comp_close"": 3534.628}, {""year"": 2019, ""month"": 11, ""shanghai_comp_close"": 3594.318}, {""year"": 2019, ""month"": 12, ""shanghai_comp_close"": 3570.477}, {""year"": 2020, ""month"": 1, ""shanghai_comp_close"": 3717.369}, {""year"": 2020, ""month"": 2, ""shanghai_comp_close"": 3691.162}, {""year"": 2020, ""month"": 3, ""shanghai_comp_close"": 3637.33}, {""year"": 2020, ""month"": 4, ""shanghai_comp_close"": 3635.629}, {""year"": 2020, ""month"": 5, ""shanghai_comp_close"": 3723.838}, {""year"": 2020, ""month"": 6, ""shanghai_comp_close"": 3678.536}, {""year"": 2020, ""month"": 7, ""shanghai_comp_close"": 3540.136}, {""year"": 2020, ""month"": 8, ""shanghai_comp_close"": 3671.668}, {""year"": 2020, ""month"": 9, ""shanghai_comp_close"": 3506.287}, {""year"": 2020, ""month"": 10, ""shanghai_comp_close"": 3691.598}, {""year"": 2020, ""month"": 11, ""shanghai_comp_close"": 3725.306}, {""year"": 2020, ""month"": 12, ""shanghai_comp_close"": 3745.749}]",list,False,,stock_indices_qa.yaml
-692,42,stock_indices,single_table,各年度A股市场的月均成交额变化趋势如何？,各年度A股市场的月均成交额变化趋势如何？,"SELECT year, AVG(market_turnover_100m_cny) AS avg_monthly_turnover
-FROM stock_indices
-GROUP BY year
-ORDER BY year","[""year"", ""market_turnover_100m_cny""]",[],"[{""year"": 2016, ""avg_monthly_turnover"": 185802.04833333334}, {""year"": 2017, ""avg_monthly_turnover"": 199465.03333333333}, {""year"": 2018, ""avg_monthly_turnover"": 217661.46083333332}, {""year"": 2019, ""avg_monthly_turnover"": 230830.06166666668}, {""year"": 2020, ""avg_monthly_turnover"": 239564.97083333333}, {""year"": 2021, ""avg_monthly_turnover"": 264685.56166666665}, {""year"": 2022, ""avg_monthly_turnover"": 278335.9191666667}, {""year"": 2023, ""avg_monthly_turnover"": 281619.43083333335}, {""year"": 2024, ""avg_monthly_turnover"": 301989.50916666666}, {""year"": 2025, ""avg_monthly_turnover"": 311902.0125}]",list,False,,stock_indices_qa.yaml
-409,9,interest_rates,single_table,2019年全年的5年期LPR平均值是多少？,2019年全年的5年期LPR平均值是多少？,"SELECT AVG(lpr_5y_pct) AS avg_lpr_5y
-FROM interest_rates
-WHERE year = 2019","[""year"", ""lpr_5y_pct""]",[],3.7899166666666666,scalar,False,,interest_rates_qa.yaml
-598,48,regional_gdp,single_table_error,查询全国层级且地区名称为江苏的地区GDP数据,查询全国层级且地区名称为江苏的地区GDP数据,,[],[],逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为江苏,,,逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为江苏,regional_gdp_qa.yaml
-439,39,interest_rates,single_table,哪些年份有完整的12个月度政策利率记录？,哪些年份有完整的12个月度政策利率记录？,"SELECT year, COUNT(*) AS month_count
-FROM interest_rates
-GROUP BY year
-HAVING COUNT(*) = 12
-ORDER BY year","[""year""]",[],"[{""year"": 2016, ""month_count"": 12}, {""year"": 2017, ""month_count"": 12}, {""year"": 2018, ""month_count"": 12}, {""year"": 2019, ""month_count"": 12}, {""year"": 2020, ""month_count"": 12}, {""year"": 2021, ""month_count"": 12}, {""year"": 2022, ""month_count"": 12}, {""year"": 2023, ""month_count"": 12}, {""year"": 2024, ""month_count"": 12}, {""year"": 2025, ""month_count"": 12}]",list,False,,interest_rates_qa.yaml
-599,49,regional_gdp,single_table_error,查询第三产业占GDP比重超过150%的记录,查询第三产业占GDP比重超过150%的记录,,[],[],产业占比的合理范围为0-100%，不存在超过100%的情况,,,产业占比的合理范围为0-100%，不存在超过100%的情况,regional_gdp_qa.yaml
-270,20,gdp_expenditure,single_table,查询2023年投资贡献率最高的前3个区域,查询2023年投资贡献率最高的前3个区域,"SELECT geo_name, year, AVG(investment_contrib_pct) AS avg_contrib
-FROM gdp_expenditure
-WHERE year = 2023 AND geo_level = 'region'
-GROUP BY geo_name, year
-ORDER BY avg_contrib DESC
-LIMIT 3","[""geo_name"", ""year"", ""geo_level"", ""investment_contrib_pct""]",[],"[{""geo_name"": ""华北"", ""year"": 2023, ""avg_contrib"": 34.106}, {""geo_name"": ""华南"", ""year"": 2023, ""avg_contrib"": 32.074}, {""geo_name"": ""华东"", ""year"": 2023, ""avg_contrib"": 31.45925}]",list,False,,gdp_expenditure_questions.yaml
-552,2,regional_gdp,single_table,2023年广东省的人均GDP是多少元？,2023年广东省的人均GDP是多少元？,"SELECT gdp_per_capita_cny AS value
-FROM regional_gdp
-WHERE year = 2023 AND geo_name = '广东'
-LIMIT 1","[""year"", ""geo_name"", ""gdp_per_capita_cny""]",[],88038.06,scalar,False,,regional_gdp_qa.yaml
-729,29,trade_balance,single_table,2021年所有区域层级中，进口同比增速的最大值和最小值是多少？,2021年所有区域层级中，进口同比增速的最大值和最小值是多少？,"SELECT MAX(import_yoy_pct) AS max_import_yoy, MIN(import_yoy_pct) AS min_import_yoy
-FROM trade_balance
-WHERE year = 2021 AND geo_level = 'region'","[""year"", ""geo_level"", ""import_yoy_pct""]",[],"[{""max_import_yoy"": 11.453, ""min_import_yoy"": -2.432}]",list,False,,trade_balance_qa.yaml
-253,3,gdp_expenditure,single_table,查询2022年第2季度北京市的GDP同比增速和消费贡献率,查询2022年第2季度北京市的GDP同比增速和消费贡献率,"SELECT geo_name, year, quarter, gdp_yoy_pct, consumption_contrib_pct
-FROM gdp_expenditure
-WHERE geo_name = '北京' AND year = 2022 AND quarter = 2
-LIMIT 10","[""geo_name"", ""year"", ""quarter"", ""gdp_yoy_pct"", ""consumption_contrib_pct""]",[],"[{""geo_name"": ""北京"", ""year"": 2022, ""quarter"": 2, ""gdp_yoy_pct"": 6.646, ""consumption_contrib_pct"": 60.39}]",list,False,,gdp_expenditure_questions.yaml
-744,44,trade_balance,single_table,2022年所有省份中，哪些省份的年度平均出口同比增速高于所有省份的总体平均值？,2022年所有省份中，哪些省份的年度平均出口同比增速高于所有省份的总体平均值？,"SELECT geo_name, AVG(export_yoy_pct) AS avg_export_yoy
-FROM trade_balance
-WHERE year = 2022 AND geo_level = 'province'
-GROUP BY geo_name
-HAVING AVG(export_yoy_pct) > ( SELECT AVG(export_yoy_pct)
-FROM trade_balance
-WHERE year = 2022 AND geo_level = 'province' )
-ORDER BY avg_export_yoy DESC","[""year"", ""geo_level"", ""geo_name"", ""export_yoy_pct""]",[],"[{""geo_name"": ""上海"", ""avg_export_yoy"": 8.113}, {""geo_name"": ""吉林"", ""avg_export_yoy"": 7.749416666666666}, {""geo_name"": ""山东"", ""avg_export_yoy"": 7.428166666666666}, {""geo_name"": ""江苏"", ""avg_export_yoy"": 7.311583333333334}, {""geo_name"": ""内蒙古"", ""avg_export_yoy"": 7.236}, {""geo_name"": ""青海"", ""avg_export_yoy"": 7.1475}, {""geo_name"": ""江西"", ""avg_export_yoy"": 7.111999999999999}, {""geo_name"": ""甘肃"", ""avg_export_yoy"": 7.043583333333333}, {""geo_name"": ""安徽"", ""avg_export_yoy"": 7.034}, {""geo_name"": ""辽宁"", ""avg_export_yoy"": 6.926416666666667}, {""geo_name"": ""海南"", ""avg_export_yoy"": 6.866166666666666}, {""geo_name"": ""湖北"", ""avg_export_yoy"": 6.833333333333333}, {""geo_name"": ""新疆"", ""avg_export_yoy"": 6.769749999999999}, {""geo_name"": ""重庆"", ""avg_export_yoy"": 6.726666666666667}, {""geo_name"": ""四川"", ""avg_export_yoy"": 6.678333333333334}, {""geo_name"": ""浙江"", ""avg_export_yoy"": 6.6745833333333335}]",list,False,,trade_balance_qa.yaml
-272,22,gdp_expenditure,single_table,GDP支出法统计涉及多少个层级？,GDP支出法统计涉及多少个层级？,"SELECT COUNT(DISTINCT geo_level) AS level_count
-FROM gdp_expenditure","[""geo_level""]",[],4,scalar,False,,gdp_expenditure_questions.yaml
-147,47,employment_stats,single_table_error,查询各企业的公司名称和就业人数,查询各企业的公司名称和就业人数,,[],[],表中不包含企业名称字段，仅有地理区域聚合的就业统计数据,,,表中不包含企业名称字段，仅有地理区域聚合的就业统计数据,employment_stats_qa.yaml
-470,20,money_supply,single_table,2022年全年社会融资规模流量累计最高的前3个大区是哪些？,2022年全年社会融资规模流量累计最高的前3个大区是哪些？,"SELECT geo_name, SUM(social_financing_flow_100m_cny) AS total_flow
-FROM money_supply
-WHERE year = 2022 AND geo_level = 'region'
-GROUP BY geo_name
-ORDER BY total_flow DESC
-LIMIT 3","[""year"", ""geo_level"", ""geo_name"", ""social_financing_flow_100m_cny""]",[],"[{""geo_name"": ""华东"", ""total_flow"": 159189.39}, {""geo_name"": ""华中"", ""total_flow"": 55498.03}, {""geo_name"": ""华南"", ""total_flow"": 51991.15}]",list,False,,money_supply_qa.yaml
-406,6,interest_rates,single_table,2019年和2021年各年1月的10年期国债收益率对比,2019年和2021年各年1月的10年期国债收益率对比,"SELECT year, bond_10y_pct
-FROM interest_rates
-WHERE year IN (2019, 2021) AND month = 1
-ORDER BY year","[""year"", ""month"", ""bond_10y_pct""]",[],"[{""year"": 2019, ""bond_10y_pct"": 2.582}, {""year"": 2021, ""bond_10y_pct"": 2.576}]",list,False,,interest_rates_qa.yaml
-512,12,real_estate,single_table,查询2022年房贷利率超过3.2%的省份及其对应的房价同比增速，按利率降序排列,查询2022年房贷利率超过3.2%的省份及其对应的房价同比增速，按利率降序排列,"SELECT geo_name, AVG(mortgage_rate_pct) AS avg_rate, AVG(home_price_yoy_pct) AS avg_yoy
-FROM real_estate
-WHERE year = 2022 AND geo_level = 'province' AND mortgage_rate_pct > 3.2
-GROUP BY geo_name
-ORDER BY avg_rate DESC
-LIMIT 10","[""year"", ""geo_level"", ""geo_name"", ""mortgage_rate_pct"", ""home_price_yoy_pct""]",[],"[{""geo_name"": ""浙江"", ""avg_rate"": 3.4339999999999997, ""avg_yoy"": -3.2241666666666666}, {""geo_name"": ""安徽"", ""avg_rate"": 3.4265555555555554, ""avg_yoy"": -2.479}, {""geo_name"": ""西藏"", ""avg_rate"": 3.4246000000000003, ""avg_yoy"": -3.6122}, {""geo_name"": ""贵州"", ""avg_rate"": 3.41425, ""avg_yoy"": -3.3315}, {""geo_name"": ""宁夏"", ""avg_rate"": 3.4098571428571427, ""avg_yoy"": -3.391428571428571}, {""geo_name"": ""海南"", ""avg_rate"": 3.4055, ""avg_yoy"": -3.5860000000000003}, {""geo_name"": ""内蒙古"", ""avg_rate"": 3.404833333333333, ""avg_yoy"": -3.587666666666667}, {""geo_name"": ""上海"", ""avg_rate"": 3.404, ""avg_yoy"": -3.5105}, {""geo_name"": ""湖南"", ""avg_rate"": 3.40375, ""avg_yoy"": -2.54025}, {""geo_name"": ""山西"", ""avg_rate"": 3.394714285714286, ""avg_yoy"": -3.3841428571428573}]",list,False,,real_estate_qa.yaml
-218,18,exchange_rates,single_table,历史上人民币汇率波动率最低的月份及波动率数值,历史上人民币汇率波动率最低的月份及波动率数值,"SELECT ref_date, fx_vol_1m_pct
-FROM exchange_rates
-ORDER BY fx_vol_1m_pct ASC
-LIMIT 1","[""ref_date"", ""fx_vol_1m_pct""]",[],"[{""ref_date"": ""2022-10-01"", ""fx_vol_1m_pct"": 4.144}]",list,False,,exchange_rates_qa.yaml
-323,23,government_finance,single_table,全国层级债务率高于70%的年份有多少个？,全国层级债务率高于70%的年份有多少个？,"SELECT COUNT(DISTINCT year) AS value
-FROM government_finance
-WHERE geo_level = 'national' AND debt_to_gdp_pct > 70","[""year""]",[],10,scalar,False,,government_finance_qa.yaml
-581,31,regional_gdp,single_table,按全国/区域/省三个层级，人均GDP平均值分别是多少元？,按全国/区域/省三个层级，人均GDP平均值分别是多少元？,"SELECT geo_level, AVG(gdp_per_capita_cny) AS avg_gdp_per_capita
-FROM regional_gdp
-GROUP BY geo_level
-ORDER BY avg_gdp_per_capita DESC","[""geo_level"", ""gdp_per_capita_cny""]",[],"[{""geo_level"": ""city"", ""avg_gdp_per_capita"": 76875.0617}, {""geo_level"": ""national"", ""avg_gdp_per_capita"": 76791.225}, {""geo_level"": ""region"", ""avg_gdp_per_capita"": 76701.77014285715}, {""geo_level"": ""province"", ""avg_gdp_per_capita"": 76643.329}]",list,False,,regional_gdp_qa.yaml
-217,17,exchange_rates,single_table,历史上美元兑人民币汇率最低的月份及对应汇率是多少？,历史上美元兑人民币汇率最低的月份及对应汇率是多少？,"SELECT ref_date, usd_cny
-FROM exchange_rates
-ORDER BY usd_cny ASC
-LIMIT 1","[""ref_date"", ""usd_cny""]",[],"[{""ref_date"": ""2016-09-01"", ""usd_cny"": 6.8992}]",list,False,,exchange_rates_qa.yaml
-68,18,cpi_inflation,single_table,查询2019年全国CPI环比跌幅最大的月份，即环比变化率最小的月份,查询2019年全国CPI环比跌幅最大的月份，即环比变化率最小的月份,"SELECT month, overall_cpi_idx, mom_change_pct AS value
-FROM cpi_inflation
-WHERE year = 2019 AND geo_level = 'national'
-ORDER BY mom_change_pct ASC
-LIMIT 1","[""year"", ""geo_level"", ""month"", ""overall_cpi_idx"", ""mom_change_pct""]",[],"[{""month"": 9, ""overall_cpi_idx"": 106.758, ""value"": -0.217}]",list,False,,cpi_inflation_qa.yaml
-275,25,gdp_expenditure,single_table,计算2022年省级层级的政府支出总和,计算2022年省级层级的政府支出总和,"SELECT SUM(government_spending_100m_cny) AS total_gov_spending
-FROM gdp_expenditure
-WHERE year = 2022 AND geo_level = 'province'","[""year"", ""geo_level"", ""government_spending_100m_cny""]",[],184336.62,scalar,False,,gdp_expenditure_questions.yaml
-411,11,interest_rates,single_table,10年期与1年期国债收益率利差超过60个基点的月份有多少？,10年期与1年期国债收益率利差超过60个基点的月份有多少？,"SELECT COUNT(*) AS count
-FROM interest_rates
-WHERE yield_spread_10y_1y_bps > 60","[""yield_spread_10y_1y_bps""]",[],36,scalar,False,,interest_rates_qa.yaml
-324,24,government_finance,single_table,2023年所有省份的税收收入总和是多少？,2023年所有省份的税收收入总和是多少？,"SELECT SUM(tax_revenue_100m_cny) AS value
-FROM government_finance
-WHERE year = 2023 AND geo_level = 'province'","[""year"", ""geo_level"", ""tax_revenue_100m_cny""]",[],197209.73,scalar,False,,government_finance_qa.yaml
-737,37,trade_balance,single_table,2023年哪些区域的平均出口同比增速超过4%？,2023年哪些区域的平均出口同比增速超过4%？,"SELECT geo_name, AVG(export_yoy_pct) AS avg_export_yoy
-FROM trade_balance
-WHERE year = 2023 AND geo_level = 'region'
-GROUP BY geo_name
-HAVING AVG(export_yoy_pct) > 4
-ORDER BY avg_export_yoy DESC","[""year"", ""geo_level"", ""geo_name"", ""export_yoy_pct""]",[],"[{""geo_name"": ""华中"", ""avg_export_yoy"": 7.831250000000001}, {""geo_name"": ""西北"", ""avg_export_yoy"": 6.767250000000001}, {""geo_name"": ""东北"", ""avg_export_yoy"": 6.3999999999999995}, {""geo_name"": ""华北"", ""avg_export_yoy"": 6.3445}, {""geo_name"": ""华东"", ""avg_export_yoy"": 5.601}, {""geo_name"": ""西南"", ""avg_export_yoy"": 5.0601666666666665}, {""geo_name"": ""华南"", ""avg_export_yoy"": 5.03975}]",list,False,,trade_balance_qa.yaml
-235,35,exchange_rates,single_table,按年份和汇率区间统计美元兑人民币汇率的月份数量,按年份和汇率区间统计美元兑人民币汇率的月份数量,"SELECT year, CASE WHEN usd_cny < 6.5 THEN '<6.5' WHEN usd_cny >= 6.5 AND usd_cny < 7.0 THEN '6.5-7.0' WHEN usd_cny >= 7.0 AND usd_cny < 7.5 THEN '7.0-7.5' ELSE '>7.5' END AS rate_range, COUNT(*) AS count
-FROM exchange_rates
-GROUP BY year, rate_range
-ORDER BY year, rate_range","[""year"", ""usd_cny""]",[],"[{""year"": 2016, ""rate_range"": ""6.5-7.0"", ""count"": 3}, {""year"": 2016, ""rate_range"": ""7.0-7.5"", ""count"": 9}, {""year"": 2017, ""rate_range"": ""6.5-7.0"", ""count"": 2}, {""year"": 2017, ""rate_range"": ""7.0-7.5"", ""count"": 10}, {""year"": 2018, ""rate_range"": ""6.5-7.0"", ""count"": 3}, {""year"": 2018, ""rate_range"": ""7.0-7.5"", ""count"": 9}, {""year"": 2019, ""rate_range"": ""6.5-7.0"", ""count"": 4}, {""year"": 2019, ""rate_range"": ""7.0-7.5"", ""count"": 8}, {""year"": 2020, ""rate_range"": ""6.5-7.0"", ""count"": 5}, {""year"": 2020, ""rate_range"": ""7.0-7.5"", ""count"": 7}, {""year"": 2021, ""rate_range"": ""6.5-7.0"", ""count"": 5}, {""year"": 2021, ""rate_range"": ""7.0-7.5"", ""count"": 7}, {""year"": 2022, ""rate_range"": ""6.5-7.0"", ""count"": 2}, {""year"": 2022, ""rate_range"": ""7.0-7.5"", ""count"": 10}, {""year"": 2023, ""rate_range"": ""6.5-7.0"", ""count"": 4}, {""year"": 2023, ""rate_range"": ""7.0-7.5"", ""count"": 8}, {""year"": 2024, ""rate_range"": ""6.5-7.0"", ""count"": 6}, {""year"": 2024, ""rate_range"": ""7.0-7.5"", ""count"": 6}, {""year"": 2025, ""rate_range"": ""6.5-7.0"", ""count"": 7}, {""year"": 2025, ""rate_range"": ""7.0-7.5"", ""count"": 5}]",list,False,,exchange_rates_qa.yaml
-58,8,cpi_inflation,single_table,查询2018年至2020年间全国CPI同比涨幅超过3%的月份数量,查询2018年至2020年间全国CPI同比涨幅超过3%的月份数量,"SELECT COUNT(*) AS value
-FROM cpi_inflation
-WHERE geo_level = 'national' AND year BETWEEN 2018 AND 2020 AND yoy_change_pct > 3.0","[""geo_level"", ""year"", ""yoy_change_pct""]",[],0,scalar,False,,cpi_inflation_qa.yaml
-333,33,government_finance,single_table,每年省级层面财政赤字为正的数据有多少条？,每年省级层面财政赤字为正的数据有多少条？,"SELECT year, COUNT(*) AS record_count
-FROM government_finance
-WHERE geo_level = 'province' AND deficit_100m_cny > 0
-GROUP BY year
-ORDER BY year","[""year""]",[],"[{""year"": 2016, ""record_count"": 31}, {""year"": 2017, ""record_count"": 31}, {""year"": 2018, ""record_count"": 31}, {""year"": 2019, ""record_count"": 31}, {""year"": 2020, ""record_count"": 31}, {""year"": 2021, ""record_count"": 31}, {""year"": 2022, ""record_count"": 31}, {""year"": 2023, ""record_count"": 31}, {""year"": 2024, ""record_count"": 31}, {""year"": 2025, ""record_count"": 31}]",list,False,,government_finance_qa.yaml
-225,25,exchange_rates,single_table,2020年全年人民币汇率波动率的累计总和,2020年全年人民币汇率波动率的累计总和,"SELECT SUM(fx_vol_1m_pct) AS total_volatility
-FROM exchange_rates
-WHERE year = 2020","[""year"", ""fx_vol_1m_pct""]",[],63.297,scalar,False,,exchange_rates_qa.yaml
-571,21,regional_gdp,single_table,2024年省级层面，先按工业增加值降序，再按服务业增加值降序排列，前3名是哪些省份？,2024年省级层面，先按工业增加值降序，再按服务业增加值降序排列，前3名是哪些省份？,"SELECT geo_name, industry_value_added_100m_cny, services_value_added_100m_cny
-FROM regional_gdp
 WHERE year = 2024 AND geo_level = 'province'
-ORDER BY industry_value_added_100m_cny DESC, services_value_added_100m_cny DESC
-LIMIT 3","[""year"", ""geo_level"", ""geo_name"", ""industry_value_added_100m_cny"", ""services_value_added_100m_cny""]",[],"[{""geo_name"": ""江苏"", ""industry_value_added_100m_cny"": 60522.53, ""services_value_added_100m_cny"": 57978.48}, {""geo_name"": ""广东"", ""industry_value_added_100m_cny"": 48137.55, ""services_value_added_100m_cny"": 81589.21}, {""geo_name"": ""山东"", ""industry_value_added_100m_cny"": 34741.71, ""services_value_added_100m_cny"": 72229.65}]",list,False,,regional_gdp_qa.yaml
-656,6,stock_indices,single_table,查询2021年或2022年上证综指超过3500点的月份数据,查询2021年或2022年上证综指超过3500点的月份数据,"SELECT year, month, shanghai_comp_close
-FROM stock_indices
-WHERE year IN (2021, 2022) AND shanghai_comp_close > 3500
-ORDER BY year, month","[""year"", ""month"", ""shanghai_comp_close""]",[],"[{""year"": 2021, ""month"": 1, ""shanghai_comp_close"": 3780.322}, {""year"": 2021, ""month"": 2, ""shanghai_comp_close"": 3676.84}, {""year"": 2021, ""month"": 3, ""shanghai_comp_close"": 3852.798}, {""year"": 2021, ""month"": 4, ""shanghai_comp_close"": 3899.668}, {""year"": 2021, ""month"": 5, ""shanghai_comp_close"": 3810.669}, {""year"": 2021, ""month"": 6, ""shanghai_comp_close"": 3704.869}, {""year"": 2021, ""month"": 7, ""shanghai_comp_close"": 3805.139}, {""year"": 2021, ""month"": 8, ""shanghai_comp_close"": 3657.037}, {""year"": 2021, ""month"": 9, ""shanghai_comp_close"": 3751.744}, {""year"": 2021, ""month"": 10, ""shanghai_comp_close"": 3801.845}, {""year"": 2021, ""month"": 11, ""shanghai_comp_close"": 3715.132}, {""year"": 2021, ""month"": 12, ""shanghai_comp_close"": 3832.69}, {""year"": 2022, ""month"": 1, ""shanghai_comp_close"": 3820.938}, {""year"": 2022, ""month"": 2, ""shanghai_comp_close"": 3945.636}, {""year"": 2022, ""month"": 3, ""shanghai_comp_close"": 3859.249}, {""year"": 2022, ""month"": 4, ""shanghai_comp_close"": 3883.89}, {""year"": 2022, ""month"": 5, ""shanghai_comp_close"": 3843.311}, {""year"": 2022, ""month"": 6, ""shanghai_comp_close"": 3791.941}, {""year"": 2022, ""month"": 7, ""shanghai_comp_close"": 3723.104}, {""year"": 2022, ""month"": 8, ""shanghai_comp_close"": 3879.229}, {""year"": 2022, ""month"": 9, ""shanghai_comp_close"": 3764.72}, {""year"": 2022, ""month"": 10, ""shanghai_comp_close"": 3742.872}, {""year"": 2022, ""month"": 11, ""shanghai_comp_close"": 3914.355}, {""year"": 2022, ""month"": 12, ""shanghai_comp_close"": 3890.205}]",list,False,,stock_indices_qa.yaml
-277,27,gdp_expenditure,single_table,计算2021-2023年区域层级的平均消费贡献率,计算2021-2023年区域层级的平均消费贡献率,"SELECT AVG(consumption_contrib_pct) AS avg_contrib
-FROM gdp_expenditure
-WHERE year BETWEEN 2021 AND 2023 AND geo_level = 'region'","[""year"", ""geo_level"", ""consumption_contrib_pct""]",[],58.46429761904762,scalar,False,,gdp_expenditure_questions.yaml
-389,39,industrial_output,single_table,2023年哪些省份产能利用率高于75%的月份达到10个月以上？,2023年哪些省份产能利用率高于75%的月份达到10个月以上？,"SELECT geo_name, COUNT(*) AS month_count
-FROM industrial_output
-WHERE year = 2023 AND geo_level = 'province' AND capacity_utilization_pct > 75
 GROUP BY geo_name
-HAVING COUNT(*) >= 10
-ORDER BY month_count DESC","[""year"", ""geo_level"", ""geo_name""]",[],"[{""geo_name"": ""西藏"", ""month_count"": 12}, {""geo_name"": ""湖北"", ""month_count"": 12}, {""geo_name"": ""浙江"", ""month_count"": 12}, {""geo_name"": ""辽宁"", ""month_count"": 11}, {""geo_name"": ""新疆"", ""month_count"": 11}, {""geo_name"": ""宁夏"", ""month_count"": 11}, {""geo_name"": ""四川"", ""month_count"": 11}, {""geo_name"": ""内蒙古"", ""month_count"": 11}, {""geo_name"": ""重庆"", ""month_count"": 10}, {""geo_name"": ""湖南"", ""month_count"": 10}, {""geo_name"": ""江苏"", ""month_count"": 10}, {""geo_name"": ""吉林"", ""month_count"": 10}, {""geo_name"": ""上海"", ""month_count"": 10}]",list,False,,industrial_output_qa.yaml
-474,24,money_supply,single_table,2023年全年全国社会融资规模流量的累计总额是多少？,2023年全年全国社会融资规模流量的累计总额是多少？,"SELECT SUM(social_financing_flow_100m_cny) AS value
+ORDER BY total_existing_sales DESC
+LIMIT 10","[{""geo_name"": ""广东"", ""total_existing_sales"": 14824.29}, {""geo_name"": ""江苏"", ""total_existing_sales"": 14573.800000000001}, {""geo_name"": ""山东"", ""total_existing_sales"": 12773.98}, {""geo_name"": ""浙江"", ""total_existing_sales"": 9839.22}, {""geo_name"": ""四川"", ""total_existing_sales"": 7130.49}, {""geo_name"": ""河南"", ""total_existing_sales"": 6748.07}, {""geo_name"": ""湖北"", ""total_existing_sales"": 6376.21}, {""geo_name"": ""福建"", ""total_existing_sales"": 5629.53}, {""geo_name"": ""湖南"", ""total_existing_sales"": 5443.8}, {""geo_name"": ""安徽"", ""total_existing_sales"": 5414.68}]",list,False,real_estate_qa.yaml
+769,32,stock_indices,single_table,各月份中波动率指数高于20的次数分别是多少？,"SELECT month, COUNT(*) AS count
+FROM stock_indices
+WHERE volatility_idx > 20
+GROUP BY month
+ORDER BY month","[{""month"": 1, ""count"": 2}, {""month"": 2, ""count"": 4}, {""month"": 3, ""count"": 3}, {""month"": 4, ""count"": 2}, {""month"": 5, ""count"": 2}, {""month"": 6, ""count"": 1}, {""month"": 7, ""count"": 3}, {""month"": 8, ""count"": 2}, {""month"": 9, ""count"": 4}, {""month"": 10, ""count"": 3}, {""month"": 11, ""count"": 4}, {""month"": 12, ""count"": 5}]",list,False,stock_indices_qa.yaml
+770,46,trade_balance,single_table_error,2030年全国层级的进出口贸易数据是多少？,,数据范围仅覆盖2016-2025年，无法查询2030年数据,error,False,trade_balance_qa.yaml
+771,43,cpi_inflation,single_table,查询2023年CPI同比涨幅高于全年平均水平的月份,"SELECT month
+FROM cpi_inflation
+WHERE year = 2023 AND geo_level = 'national' AND yoy_change_pct > (SELECT AVG(yoy_change_pct)
+FROM cpi_inflation
+WHERE year = 2023 AND geo_level = 'national')
+ORDER BY month","[{""month"": 1}, {""month"": 2}, {""month"": 3}, {""month"": 4}, {""month"": 5}, {""month"": 6}, {""month"": 12}]",list,False,cpi_inflation_qa.yaml
+772,51,exchange_rates,single_table,2024年美元指数DXY的年度平均值是CFETS人民币汇率指数年度平均值的多少倍？,"{""sql1"": ""SELECT AVG(dxy_index) AS avg_dxy\nFROM exchange_rates\nWHERE year = 2024"", ""sql2"": ""SELECT AVG(cfets_index) AS avg_cfets\nFROM exchange_rates\nWHERE year = 2024""}",1.0332947016540164,scalar,True,exchange_rates_qa.yaml
+773,35,retail_sales,single_table,2024年各层级在各月份的平均社零总额分别是多少？,"SELECT geo_level, month, AVG(total_sales_100m_cny) AS avg_sales
+FROM retail_sales
+WHERE year = 2024
+GROUP BY geo_level, month
+ORDER BY geo_level, month","[{""geo_level"": ""city"", ""month"": 1, ""avg_sales"": 1041.199}, {""geo_level"": ""city"", ""month"": 2, ""avg_sales"": 1077.337}, {""geo_level"": ""city"", ""month"": 3, ""avg_sales"": 1070.855}, {""geo_level"": ""city"", ""month"": 4, ""avg_sales"": 1107.433}, {""geo_level"": ""city"", ""month"": 5, ""avg_sales"": 1074.8899999999999}, {""geo_level"": ""city"", ""month"": 6, ""avg_sales"": 1072.423}, {""geo_level"": ""city"", ""month"": 7, ""avg_sales"": 1047.708}, {""geo_level"": ""city"", ""month"": 8, ""avg_sales"": 1023.7180000000001}, {""geo_level"": ""city"", ""month"": 9, ""avg_sales"": 1046.5030000000002}, {""geo_level"": ""city"", ""month"": 10, ""avg_sales"": 1067.319}, {""geo_level"": ""city"", ""month"": 11, ""avg_sales"": 1081.7379999999998}, {""geo_level"": ""city"", ""month"": 12, ""avg_sales"": 1111.05}, {""geo_level"": ""national"", ""month"": 1, ""avg_sales"": 71807.11}, {""geo_level"": ""national"", ""month"": 2, ""avg_sales"": 73313.68}, {""geo_level"": ""national"", ""month"": 3, ""avg_sales"": 74137.37}, {""geo_level"": ""national"", ""month"": 4, ""avg_sales"": 75288.78}, {""geo_level"": ""national"", ""month"": 5, ""avg_sales"": 73918.62}, {""geo_level"": ""national"", ""month"": 6, ""avg_sales"": 73387.03}, {""geo_level"": ""national"", ""month"": 7, ""avg_sales"": 71660.33}, {""geo_level"": ""national"", ""month"": 8, ""avg_sales"": 71116.65}, {""geo_level"": ""national"", ""month"": 9, ""avg_sales"": 71997.4}, {""geo_level"": ""national"", ""month"": 10, ""avg_sales"": 73318.32}, {""geo_level"": ""national"", ""month"": 11, ""avg_sales"": 73665.13}, {""geo_level"": ""national"", ""month"": 12, ""avg_sales"": 75963.59}, {""geo_level"": ""province"", ""month"": 1, ""avg_sales"": 2316.358387096774}, {""geo_level"": ""province"", ""month"": 2, ""avg_sales"": 2364.9570967741934}, {""geo_level"": ""province"", ""month"": 3, ""avg_sales"": 2391.528064516129}, {""geo_level"": ""province"", ""month"": 4, ""avg_sales"": 2428.6693548387098}, {""geo_level"": ""province"", ""month"": 5, ""avg_sales"": 2384.472258064516}, {""geo_level"": ""province"", ""month"": 6, ""avg_sales"": 2367.3235483870967}, {""geo_level"": ""province"", ""month"": 7, ""avg_sales"": 2311.623225806452}, {""geo_level"": ""province"", ""month"": 8, ""avg_sales"": 2294.086129032258}, {""geo_level"": ""province"", ""month"": 9, ""avg_sales"": 2322.497096774194}, {""geo_level"": ""province"", ""month"": 10, ""avg_sales"": 2365.107419354839}, {""geo_level"": ""province"", ""month"": 11, ""avg_sales"": 2376.294516129032}, {""geo_level"": ""province"", ""month"": 12, ""avg_sales"": 2450.4390322580643}, {""geo_level"": ""region"", ""month"": 1, ""avg_sales"": 10258.157142857144}, {""geo_level"": ""region"", ""month"": 2, ""avg_sales"": 10473.382857142857}, {""geo_level"": ""region"", ""month"": 3, ""avg_sales"": 10591.052857142857}, {""geo_level"": ""region"", ""month"": 4, ""avg_sales"": 10755.539999999999}, {""geo_level"": ""region"", ""month"": 5, ""avg_sales"": 10559.802857142857}, {""geo_level"": ""region"", ""month"": 6, ""avg_sales"": 10483.861428571428}, {""geo_level"": ""region"", ""month"": 7, ""avg_sales"": 10237.188571428573}, {""geo_level"": ""region"", ""month"": 8, ""avg_sales"": 10159.521428571428}, {""geo_level"": ""region"", ""month"": 9, ""avg_sales"": 10285.342857142856}, {""geo_level"": ""region"", ""month"": 10, ""avg_sales"": 10474.045714285714}, {""geo_level"": ""region"", ""month"": 11, ""avg_sales"": 10523.58857142857}, {""geo_level"": ""region"", ""month"": 12, ""avg_sales"": 10851.941428571428}]",list,False,retail_sales_qa.yaml
+774,20,energy_prices,single_table,2023年碳价最高的前5个区域月度记录有哪些？,"SELECT geo_name, year, month
+FROM energy_prices
+WHERE year = 2023 AND geo_level = 'region'
+ORDER BY carbon_price_cny_per_tco2 DESC
+LIMIT 5","[{""geo_name"": ""华中"", ""year"": 2023, ""month"": 3}, {""geo_name"": ""华南"", ""year"": 2023, ""month"": 3}, {""geo_name"": ""华北"", ""year"": 2023, ""month"": 12}, {""geo_name"": ""华东"", ""year"": 2023, ""month"": 3}, {""geo_name"": ""东北"", ""year"": 2023, ""month"": 12}]",list,False,energy_prices_qa.yaml
+775,35,industrial_output,single_table,2022-2024年各年度华东地区的工业同比增速季度平均,"SELECT year, CASE WHEN month IN (1,2,3) THEN 'Q1' WHEN month IN (4,5,6) THEN 'Q2' WHEN month IN (7,8,9) THEN 'Q3' ELSE 'Q4' END AS quarter, AVG(yoy_growth_pct) AS avg_growth
+FROM industrial_output
+WHERE year BETWEEN 2022 AND 2024 AND geo_name = '华东'
+GROUP BY year, quarter
+ORDER BY year, quarter","[{""year"": 2022, ""quarter"": ""Q1"", ""avg_growth"": 7.653666666666666}, {""year"": 2022, ""quarter"": ""Q2"", ""avg_growth"": 8.181333333333333}, {""year"": 2022, ""quarter"": ""Q3"", ""avg_growth"": 4.708666666666667}, {""year"": 2022, ""quarter"": ""Q4"", ""avg_growth"": 5.997333333333333}, {""year"": 2023, ""quarter"": ""Q1"", ""avg_growth"": 6.178999999999999}, {""year"": 2023, ""quarter"": ""Q2"", ""avg_growth"": 7.134}, {""year"": 2023, ""quarter"": ""Q3"", ""avg_growth"": 5.8806666666666665}, {""year"": 2023, ""quarter"": ""Q4"", ""avg_growth"": 5.7203333333333335}, {""year"": 2024, ""quarter"": ""Q1"", ""avg_growth"": 7.339333333333333}, {""year"": 2024, ""quarter"": ""Q2"", ""avg_growth"": 6.255}, {""year"": 2024, ""quarter"": ""Q3"", ""avg_growth"": 6.187666666666666}, {""year"": 2024, ""quarter"": ""Q4"", ""avg_growth"": 6.692333333333333}]",list,False,industrial_output_qa.yaml
+776,31,regional_gdp,single_table,按全国/区域/省三个层级，人均GDP平均值分别是多少元？,"SELECT geo_level, AVG(gdp_per_capita_cny) AS avg_gdp_per_capita
+FROM regional_gdp
+WHERE geo_level IN ('national', 'region', 'province')
+GROUP BY geo_level
+ORDER BY CASE geo_level WHEN 'national' THEN 1 WHEN 'region' THEN 2 WHEN 'province' THEN 3 END","[{""geo_level"": ""national"", ""avg_gdp_per_capita"": 76791.225}, {""geo_level"": ""region"", ""avg_gdp_per_capita"": 76701.77014285715}, {""geo_level"": ""province"", ""avg_gdp_per_capita"": 76643.329}]",list,False,regional_gdp_qa.yaml
+777,1,stock_indices,single_table,2024年1月的上证综指月末收盘价是多少？,"SELECT shanghai_comp_close AS value
+FROM stock_indices
+WHERE year = 2024 AND month = 1",4010.336,scalar,False,stock_indices_qa.yaml
+778,1,government_finance,single_table,2024年全国财政总收入是多少？,"SELECT total_revenue_100m_cny AS value
+FROM government_finance
+WHERE year = 2024 AND geo_level = 'national'",257600.0,scalar,False,government_finance_qa.yaml
+779,29,trade_balance,single_table,2021年所有区域层级中，进口同比增速的最大值和最小值是多少？,"SELECT MAX(import_yoy_pct) AS max_import_yoy, MIN(import_yoy_pct) AS min_import_yoy
+FROM trade_balance
+WHERE year = 2021 AND geo_level = 'region'","[{""max_import_yoy"": 11.453, ""min_import_yoy"": -2.432}]",list,False,trade_balance_qa.yaml
+780,13,cpi_inflation,single_table,查询2020年到2023年间能源CPI指数高于100且能源CPI同比涨幅为正的全国月份记录,"SELECT c.year, c.month, c.energy_cpi_idx,
+       ROUND(((c.energy_cpi_idx - p.energy_cpi_idx) * 100.0 / p.energy_cpi_idx), 3) AS yoy_change_pct
+FROM cpi_inflation c
+JOIN cpi_inflation p
+ON c.geo_level = p.geo_level AND c.month = p.month AND c.year = p.year + 1
+WHERE c.geo_level = 'national' AND c.year BETWEEN 2020 AND 2023 AND c.energy_cpi_idx > 100.0
+  AND ((c.energy_cpi_idx - p.energy_cpi_idx) * 100.0 / p.energy_cpi_idx) > 0
+ORDER BY c.year, c.month","[{""year"": 2020, ""month"": 1, ""energy_cpi_idx"": 108.9, ""yoy_change_pct"": 0.155}, {""year"": 2020, ""month"": 2, ""energy_cpi_idx"": 109.936, ""yoy_change_pct"": 2.998}, {""year"": 2020, ""month"": 3, ""energy_cpi_idx"": 110.306, ""yoy_change_pct"": 3.396}, {""year"": 2020, ""month"": 4, ""energy_cpi_idx"": 110.295, ""yoy_change_pct"": 3.648}, {""year"": 2020, ""month"": 5, ""energy_cpi_idx"": 110.654, ""yoy_change_pct"": 5.868}, {""year"": 2020, ""month"": 6, ""energy_cpi_idx"": 107.292, ""yoy_change_pct"": 3.026}, {""year"": 2020, ""month"": 7, ""energy_cpi_idx"": 106.34, ""yoy_change_pct"": 0.62}, {""year"": 2020, ""month"": 8, ""energy_cpi_idx"": 111.543, ""yoy_change_pct"": 4.613}, {""year"": 2020, ""month"": 9, ""energy_cpi_idx"": 110.572, ""yoy_change_pct"": 5.196}, {""year"": 2020, ""month"": 10, ""energy_cpi_idx"": 110.035, ""yoy_change_pct"": 1.29}, {""year"": 2020, ""month"": 11, ""energy_cpi_idx"": 112.135, ""yoy_change_pct"": 2.643}, {""year"": 2020, ""month"": 12, ""energy_cpi_idx"": 111.093, ""yoy_change_pct"": 3.798}, {""year"": 2021, ""month"": 1, ""energy_cpi_idx"": 109.86, ""yoy_change_pct"": 0.882}, {""year"": 2021, ""month"": 4, ""energy_cpi_idx"": 110.902, ""yoy_change_pct"": 0.55}, {""year"": 2021, ""month"": 5, ""energy_cpi_idx"": 113.233, ""yoy_change_pct"": 2.331}, {""year"": 2021, ""month"": 6, ""energy_cpi_idx"": 110.15, ""yoy_change_pct"": 2.664}, {""year"": 2021, ""month"": 7, ""energy_cpi_idx"": 112.87, ""yoy_change_pct"": 6.141}, {""year"": 2021, ""month"": 10, ""energy_cpi_idx"": 113.445, ""yoy_change_pct"": 3.099}, {""year"": 2021, ""month"": 12, ""energy_cpi_idx"": 115.413, ""yoy_change_pct"": 3.889}, {""year"": 2022, ""month"": 1, ""energy_cpi_idx"": 114.272, ""yoy_change_pct"": 4.016}, {""year"": 2022, ""month"": 2, ""energy_cpi_idx"": 114.861, ""yoy_change_pct"": 6.641}, {""year"": 2022, ""month"": 3, ""energy_cpi_idx"": 112.227, ""yoy_change_pct"": 2.548}, {""year"": 2022, ""month"": 4, ""energy_cpi_idx"": 112.186, ""yoy_change_pct"": 1.158}, {""year"": 2022, ""month"": 6, ""energy_cpi_idx"": 110.255, ""yoy_change_pct"": 0.095}, {""year"": 2022, ""month"": 7, ""energy_cpi_idx"": 115.586, ""yoy_change_pct"": 2.406}, {""year"": 2022, ""month"": 8, ""energy_cpi_idx"": 111.647, ""yoy_change_pct"": 2.738}, {""year"": 2022, ""month"": 9, ""energy_cpi_idx"": 112.15, ""yoy_change_pct"": 3.171}, {""year"": 2022, ""month"": 11, ""energy_cpi_idx"": 113.115, ""yoy_change_pct"": 1.938}, {""year"": 2022, ""month"": 12, ""energy_cpi_idx"": 116.809, ""yoy_change_pct"": 1.21}, {""year"": 2023, ""month"": 1, ""energy_cpi_idx"": 116.107, ""yoy_change_pct"": 1.606}, {""year"": 2023, ""month"": 3, ""energy_cpi_idx"": 112.43, ""yoy_change_pct"": 0.181}, {""year"": 2023, ""month"": 4, ""energy_cpi_idx"": 112.287, ""yoy_change_pct"": 0.09}, {""year"": 2023, ""month"": 5, ""energy_cpi_idx"": 117.874, ""yoy_change_pct"": 5.139}, {""year"": 2023, ""month"": 6, ""energy_cpi_idx"": 112.866, ""yoy_change_pct"": 2.368}, {""year"": 2023, ""month"": 8, ""energy_cpi_idx"": 117.89, ""yoy_change_pct"": 5.592}, {""year"": 2023, ""month"": 9, ""energy_cpi_idx"": 115.173, ""yoy_change_pct"": 2.695}, {""year"": 2023, ""month"": 10, ""energy_cpi_idx"": 116.976, ""yoy_change_pct"": 5.007}, {""year"": 2023, ""month"": 11, ""energy_cpi_idx"": 117.132, ""yoy_change_pct"": 3.551}, {""year"": 2023, ""month"": 12, ""energy_cpi_idx"": 118.654, ""yoy_change_pct"": 1.58}]",list,False,cpi_inflation_qa.yaml
+781,53,energy_prices,single_table,2024年全国布伦特原油价格与WTI原油价格的年均差值是多少美元每桶？,"{""sql1"": ""SELECT AVG(brent_usd_per_bbl) AS brent_avg\nFROM energy_prices\nWHERE year = 2024 AND geo_level = 'national'"", ""sql2"": ""SELECT AVG(wti_usd_per_bbl) AS wti_avg\nFROM energy_prices\nWHERE year = 2024 AND geo_level = 'national'""}",3.2056,scalar,True,energy_prices_qa.yaml
+782,9,real_estate,single_table,查询2018-2021年间华东地区房地产开发投资额的季度平均值,"SELECT year, CASE WHEN month BETWEEN 1 AND 3 THEN 'Q1' WHEN month BETWEEN 4 AND 6 THEN 'Q2' WHEN month BETWEEN 7 AND 9 THEN 'Q3' ELSE 'Q4' END AS quarter, AVG(real_estate_investment_100m_cny) AS avg_investment
+FROM real_estate
+WHERE geo_code = 'CN-R-EC' AND year BETWEEN 2018 AND 2021
+GROUP BY year, quarter
+ORDER BY year, quarter","[{""year"": 2018, ""quarter"": ""Q1"", ""avg_investment"": 3441.7466666666664}, {""year"": 2018, ""quarter"": ""Q2"", ""avg_investment"": 3246.44}, {""year"": 2018, ""quarter"": ""Q3"", ""avg_investment"": 3494.153333333333}, {""year"": 2018, ""quarter"": ""Q4"", ""avg_investment"": 3627.626666666667}, {""year"": 2019, ""quarter"": ""Q1"", ""avg_investment"": 3479.103333333333}, {""year"": 2019, ""quarter"": ""Q2"", ""avg_investment"": 3617.0266666666666}, {""year"": 2019, ""quarter"": ""Q3"", ""avg_investment"": 3243.5433333333335}, {""year"": 2019, ""quarter"": ""Q4"", ""avg_investment"": 3358.9}, {""year"": 2020, ""quarter"": ""Q1"", ""avg_investment"": 3544.263333333334}, {""year"": 2020, ""quarter"": ""Q2"", ""avg_investment"": 3418.3766666666666}, {""year"": 2020, ""quarter"": ""Q3"", ""avg_investment"": 3639.763333333334}, {""year"": 2020, ""quarter"": ""Q4"", ""avg_investment"": 3481.4166666666665}, {""year"": 2021, ""quarter"": ""Q1"", ""avg_investment"": 3435.9133333333334}, {""year"": 2021, ""quarter"": ""Q2"", ""avg_investment"": 3450.3566666666666}, {""year"": 2021, ""quarter"": ""Q3"", ""avg_investment"": 3346.17}, {""year"": 2021, ""quarter"": ""Q4"", ""avg_investment"": 3378.22}]",list,False,real_estate_qa.yaml
+783,44,corporate_credit,single_table,查询2023年高收益债券收益率超过全国平均水平的行业有哪些？,"SELECT sector
+FROM corporate_credit
+WHERE year = 2023 AND geo_level = 'national'
+GROUP BY sector
+HAVING AVG(high_yield_yield_pct) > (SELECT AVG(high_yield_yield_pct) FROM corporate_credit WHERE year = 2023 AND geo_level = 'national')
+ORDER BY AVG(high_yield_yield_pct) DESC","[{""sector"": ""可选消费""}, {""sector"": ""消费""}, {""sector"": ""地产""}, {""sector"": ""材料""}, {""sector"": ""医疗健康""}]",list,False,corporate_credit_qa.yaml
+784,57,regional_gdp,single_table,2023年广东省的人均GDP是2016年的多少倍？,"{""sql1"": ""SELECT gdp_per_capita_cny AS per_capita_2023\nFROM regional_gdp\nWHERE year = 2023 AND geo_level = 'province' AND geo_name = '广东'"", ""sql2"": ""SELECT gdp_per_capita_cny AS per_capita_2016\nFROM regional_gdp\nWHERE year = 2016 AND geo_level = 'province' AND geo_name = '广东'""}",1.7267998813730596,scalar,True,regional_gdp_qa.yaml
+785,24,employment_stats,single_table,2023年全国全年新增城镇就业岗位总数,"SELECT SUM(new_urban_jobs_10k) AS total_new_jobs
+FROM employment_stats
+WHERE year = 2023 AND geo_level = 'national'",1717.38,scalar,False,employment_stats_qa.yaml
+786,40,government_finance,single_table,2020-2024年间，哪些省份的累计税收收入超过90000亿元？,"SELECT geo_name
+FROM government_finance
+WHERE year BETWEEN 2020 AND 2024 AND geo_level = 'province'
+GROUP BY geo_name
+HAVING SUM(tax_revenue_100m_cny) > 90000
+ORDER BY SUM(tax_revenue_100m_cny) DESC","[{""geo_name"": ""广东""}, {""geo_name"": ""江苏""}]",list,False,government_finance_qa.yaml
+787,33,interest_rates,single_table,按年份统计，实际政策利率为正的月份数量分别是多少？,"SELECT year, COUNT(*) AS count
+FROM interest_rates
+WHERE real_policy_rate_pct > 0
+GROUP BY year
+ORDER BY year","[{""year"": 2016, ""count"": 12}, {""year"": 2017, ""count"": 12}, {""year"": 2018, ""count"": 12}, {""year"": 2019, ""count"": 12}, {""year"": 2020, ""count"": 12}, {""year"": 2021, ""count"": 12}, {""year"": 2022, ""count"": 12}, {""year"": 2023, ""count"": 12}, {""year"": 2024, ""count"": 10}, {""year"": 2025, ""count"": 10}]",list,False,interest_rates_qa.yaml
+788,44,interest_rates,single_table,找出国债收益率利差大于2023年平均利差的月份,"SELECT year, month
+FROM interest_rates
+WHERE yield_spread_10y_1y_bps > (
+  SELECT AVG(yield_spread_10y_1y_bps)
+  FROM interest_rates
+  WHERE year = 2023
+)
+ORDER BY year, month","[{""year"": 2016, ""month"": 2}, {""year"": 2016, ""month"": 7}, {""year"": 2016, ""month"": 8}, {""year"": 2017, ""month"": 2}, {""year"": 2017, ""month"": 4}, {""year"": 2017, ""month"": 7}, {""year"": 2017, ""month"": 10}, {""year"": 2018, ""month"": 3}, {""year"": 2018, ""month"": 8}, {""year"": 2018, ""month"": 9}, {""year"": 2018, ""month"": 12}, {""year"": 2019, ""month"": 1}, {""year"": 2019, ""month"": 4}, {""year"": 2019, ""month"": 10}, {""year"": 2020, ""month"": 4}, {""year"": 2020, ""month"": 9}, {""year"": 2020, ""month"": 11}, {""year"": 2020, ""month"": 12}, {""year"": 2021, ""month"": 7}, {""year"": 2021, ""month"": 8}, {""year"": 2021, ""month"": 10}, {""year"": 2022, ""month"": 3}, {""year"": 2022, ""month"": 8}, {""year"": 2022, ""month"": 9}, {""year"": 2022, ""month"": 10}, {""year"": 2022, ""month"": 12}, {""year"": 2023, ""month"": 2}, {""year"": 2023, ""month"": 3}, {""year"": 2023, ""month"": 5}, {""year"": 2023, ""month"": 6}, {""year"": 2023, ""month"": 8}, {""year"": 2023, ""month"": 9}, {""year"": 2023, ""month"": 11}, {""year"": 2024, ""month"": 1}, {""year"": 2024, ""month"": 9}, {""year"": 2024, ""month"": 10}, {""year"": 2024, ""month"": 11}, {""year"": 2025, ""month"": 1}, {""year"": 2025, ""month"": 3}, {""year"": 2025, ""month"": 4}, {""year"": 2025, ""month"": 9}, {""year"": 2025, ""month"": 10}, {""year"": 2025, ""month"": 12}]",list,False,interest_rates_qa.yaml
+789,53,money_supply,single_table,2024年华东地区的人民币贷款余额年均值比华北地区高出多少亿元？,"{""sql1"": ""SELECT AVG(loan_balance_100m_cny) AS hd_loan\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'region' AND geo_name = '华东'"", ""sql2"": ""SELECT AVG(loan_balance_100m_cny) AS hb_loan\nFROM money_supply\nWHERE year = 2024 AND geo_level = 'region' AND geo_name = '华北'""}",916613.7583333333,scalar,True,money_supply_qa.yaml
+790,5,government_finance,single_table,2023年上海、江苏、浙江三省市的财政总收入各是多少？,"SELECT geo_name, total_revenue_100m_cny
+FROM government_finance
+WHERE year = 2023 AND geo_name IN ('上海', '江苏', '浙江')
+ORDER BY total_revenue_100m_cny DESC","[{""geo_name"": ""江苏"", ""total_revenue_100m_cny"": 24873.65}, {""geo_name"": ""浙江"", ""total_revenue_100m_cny"": 16491.23}, {""geo_name"": ""上海"", ""total_revenue_100m_cny"": 9172.22}]",list,False,government_finance_qa.yaml
+791,2,retail_sales,single_table,2023年全国汽车类商品社会消费品零售额全年月度数据有哪些？,"SELECT month, auto_sales_100m_cny
+FROM retail_sales
+WHERE year = 2023 AND geo_level = 'national'
+ORDER BY month","[{""month"": 1, ""auto_sales_100m_cny"": 7325.52}, {""month"": 2, ""auto_sales_100m_cny"": 8677.97}, {""month"": 3, ""auto_sales_100m_cny"": 6127.11}, {""month"": 4, ""auto_sales_100m_cny"": 9360.69}, {""month"": 5, ""auto_sales_100m_cny"": 5920.86}, {""month"": 6, ""auto_sales_100m_cny"": 6023.23}, {""month"": 7, ""auto_sales_100m_cny"": 5492.71}, {""month"": 8, ""auto_sales_100m_cny"": 8391.33}, {""month"": 9, ""auto_sales_100m_cny"": 9138.99}, {""month"": 10, ""auto_sales_100m_cny"": 9058.8}, {""month"": 11, ""auto_sales_100m_cny"": 8547.81}, {""month"": 12, ""auto_sales_100m_cny"": 7143.68}]",list,False,retail_sales_qa.yaml
+792,20,money_supply,single_table,2022年全年社会融资规模流量累计最高的前3个大区是哪些？,"SELECT geo_name
 FROM money_supply
-WHERE year = 2023 AND geo_level = 'national'","[""year"", ""geo_level"", ""social_financing_flow_100m_cny""]",[],422695.84,scalar,False,,money_supply_qa.yaml
-168,18,energy_prices,single_table,各地区中电价最低的记录是哪个地区哪个月？,各地区中电价最低的记录是哪个地区哪个月？,"SELECT ref_date, geo_name, electricity_price_cny_per_kwh
+WHERE year = 2022 AND geo_level = 'region'
+GROUP BY geo_name
+ORDER BY SUM(social_financing_flow_100m_cny) DESC
+LIMIT 3","[{""geo_name"": ""华东""}, {""geo_name"": ""华中""}, {""geo_name"": ""华南""}]",list,False,money_supply_qa.yaml
+793,7,corporate_credit,single_table,企业信用债中不良贷款率为空值的数据有多少条？,"SELECT COUNT(*) AS value 
+FROM corporate_credit 
+WHERE npl_ratio_pct IS NULL",0,scalar,False,corporate_credit_qa.yaml
+794,2,trade_balance,single_table,查询华东地区2023年6月的第一大出口商品类别和第一大进口商品类别,"SELECT top_export_category, top_import_category
+FROM trade_balance
+WHERE geo_name = '华东' AND year = 2023 AND month = 6","[{""top_export_category"": ""高新技术产品"", ""top_import_category"": ""集成电路""}]",list,False,trade_balance_qa.yaml
+795,15,corporate_credit,single_table,2024年全国哪个行业的企业债券违约率最高？,"SELECT sector
+FROM corporate_credit 
+WHERE year = 2024 AND geo_level = 'national' 
+GROUP BY sector
+ORDER BY AVG(default_rate_pct) DESC 
+LIMIT 1",可选消费,scalar,False,corporate_credit_qa.yaml
+796,35,interest_rates,single_table,2022年和2023年各年每季度的平均政策利率,"SELECT year, CASE WHEN month BETWEEN 1 AND 3 THEN 1 WHEN month BETWEEN 4 AND 6 THEN 2 WHEN month BETWEEN 7 AND 9 THEN 3 ELSE 4 END AS quarter, AVG(policy_rate_pct) AS avg_policy_rate
+FROM interest_rates
+WHERE year IN (2022, 2023)
+GROUP BY year, quarter
+ORDER BY year, quarter","[{""year"": 2022, ""quarter"": 1, ""avg_policy_rate"": 2.326333333333333}, {""year"": 2022, ""quarter"": 2, ""avg_policy_rate"": 2.3193333333333332}, {""year"": 2022, ""quarter"": 3, ""avg_policy_rate"": 2.3223333333333334}, {""year"": 2022, ""quarter"": 4, ""avg_policy_rate"": 2.335666666666667}, {""year"": 2023, ""quarter"": 1, ""avg_policy_rate"": 2.3303333333333334}, {""year"": 2023, ""quarter"": 2, ""avg_policy_rate"": 2.3043333333333336}, {""year"": 2023, ""quarter"": 3, ""avg_policy_rate"": 2.3056666666666668}, {""year"": 2023, ""quarter"": 4, ""avg_policy_rate"": 2.297}]",list,False,interest_rates_qa.yaml
+797,46,cpi_inflation,single_table_error,查询2030年全国CPI总体指数,,数据范围仅覆盖2016-2025年，无法查询2030年数据,error,False,cpi_inflation_qa.yaml
+798,10,industrial_output,single_table,2016-2020年全国工业同比增速超过7%的月份有哪些？,"SELECT year, month
+FROM industrial_output
+WHERE geo_level = 'national' AND yoy_growth_pct > 7 AND year BETWEEN 2016 AND 2020
+ORDER BY year, month","[{""year"": 2017, ""month"": 4}, {""year"": 2019, ""month"": 1}, {""year"": 2019, ""month"": 3}, {""year"": 2020, ""month"": 3}]",list,False,industrial_output_qa.yaml
+799,45,regional_gdp,single_table,2024年华东区域的服务业增加值是华北区域的多少倍？,"{""sql1"": ""SELECT services_value_added_100m_cny AS east_services\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'region' AND geo_name = '华东'"", ""sql2"": ""SELECT services_value_added_100m_cny AS north_services\nFROM regional_gdp\nWHERE year = 2024 AND geo_level = 'region' AND geo_name = '华北'""}",3.327248812322548,scalar,True,regional_gdp_qa.yaml
+800,16,real_estate,single_table,查询2023年省级地区中房地产投资额最高的省份,"SELECT geo_name
+FROM real_estate
+WHERE year = 2023 AND geo_level = 'province'
+GROUP BY geo_name
+ORDER BY SUM(real_estate_investment_100m_cny) DESC
+LIMIT 1",广东,scalar,False,real_estate_qa.yaml
+801,31,exchange_rates,single_table,按年份统计人民币汇率波动率的年度平均值,"SELECT year, AVG(fx_vol_1m_pct) AS avg_volatility
+FROM exchange_rates
+GROUP BY year
+ORDER BY year","[{""year"": 2016, ""avg_volatility"": 5.577500000000001}, {""year"": 2017, ""avg_volatility"": 5.352666666666667}, {""year"": 2018, ""avg_volatility"": 5.30525}, {""year"": 2019, ""avg_volatility"": 5.261}, {""year"": 2020, ""avg_volatility"": 5.27475}, {""year"": 2021, ""avg_volatility"": 5.272083333333334}, {""year"": 2022, ""avg_volatility"": 5.10875}, {""year"": 2023, ""avg_volatility"": 5.467833333333334}, {""year"": 2024, ""avg_volatility"": 5.664416666666667}, {""year"": 2025, ""avg_volatility"": 5.273916666666667}]",list,False,exchange_rates_qa.yaml
+802,37,regional_gdp,single_table,2016年至2025年期间，哪些省份的平均GDP增速超过6%？,"SELECT geo_name
+FROM regional_gdp
+WHERE geo_level = 'province'
+GROUP BY geo_name
+HAVING AVG(gdp_growth_pct) > 6.0
+ORDER BY AVG(gdp_growth_pct) DESC","[{""geo_name"": ""海南""}, {""geo_name"": ""辽宁""}, {""geo_name"": ""江西""}, {""geo_name"": ""湖北""}, {""geo_name"": ""宁夏""}, {""geo_name"": ""上海""}, {""geo_name"": ""贵州""}, {""geo_name"": ""内蒙古""}, {""geo_name"": ""河南""}, {""geo_name"": ""北京""}, {""geo_name"": ""重庆""}, {""geo_name"": ""甘肃""}, {""geo_name"": ""天津""}, {""geo_name"": ""黑龙江""}, {""geo_name"": ""浙江""}, {""geo_name"": ""安徽""}, {""geo_name"": ""福建""}, {""geo_name"": ""云南""}, {""geo_name"": ""江苏""}, {""geo_name"": ""陕西""}, {""geo_name"": ""山西""}, {""geo_name"": ""河北""}, {""geo_name"": ""广西""}, {""geo_name"": ""湖南""}, {""geo_name"": ""吉林""}, {""geo_name"": ""广东""}, {""geo_name"": ""西藏""}, {""geo_name"": ""青海""}]",list,False,regional_gdp_qa.yaml
+803,2,interest_rates,single_table,2023年全年的政策利率数据有哪些月份记录？,"SELECT month
+FROM interest_rates
+WHERE year = 2023
+ORDER BY month","[{""month"": 1}, {""month"": 2}, {""month"": 3}, {""month"": 4}, {""month"": 5}, {""month"": 6}, {""month"": 7}, {""month"": 8}, {""month"": 9}, {""month"": 10}, {""month"": 11}, {""month"": 12}]",list,False,interest_rates_qa.yaml
+804,55,employment_stats,single_table,2024年深圳市的平均劳动参与率比广州市高出多少个百分点？,"{""sql1"": ""SELECT AVG(participation_rate_pct) AS sz_part\nFROM employment_stats\nWHERE year = 2024 AND geo_name = '深圳'"", ""sql2"": ""SELECT AVG(participation_rate_pct) AS gz_part\nFROM employment_stats\nWHERE year = 2024 AND geo_name = '广州'""}",0.0037,scalar,True,employment_stats_qa.yaml
+805,16,energy_prices,single_table,哪个地区在哪个月的总发电量最高？,"SELECT geo_name, year, month
 FROM energy_prices
 WHERE geo_level = 'region'
-ORDER BY electricity_price_cny_per_kwh ASC
-LIMIT 1","[""ref_date"", ""geo_name"", ""geo_level"", ""electricity_price_cny_per_kwh""]",[],"[{""ref_date"": ""2024-10-01"", ""geo_name"": ""西南"", ""electricity_price_cny_per_kwh"": 0.488}]",list,False,,energy_prices_qa.yaml
-746,46,trade_balance,single_table_error,2030年全国层级的进出口贸易数据是多少？,2030年全国层级的进出口贸易数据是多少？,,[],[],数据范围仅覆盖2016-2025年，无法查询2030年数据,,,数据范围仅覆盖2016-2025年，无法查询2030年数据,trade_balance_qa.yaml
-547,47,real_estate,single_table_error,查询各城市的房地产开发商企业名称和信用评级,查询各城市的房地产开发商企业名称和信用评级,,[],[],表中不包含开发商名称和评级字段，仅有地区聚合统计数据,,,表中不包含开发商名称和评级字段，仅有地区聚合统计数据,real_estate_qa.yaml
-176,26,energy_prices,single_table,2021年全国布伦特原油价格的年度平均值是多少？,2021年全国布伦特原油价格的年度平均值是多少？,"SELECT AVG(brent_usd_per_bbl) AS value
-FROM energy_prices
-WHERE year = 2021 AND geo_level = 'national'","[""year"", ""geo_level"", ""brent_usd_per_bbl""]",[],76.46374999999999,scalar,False,,energy_prices_qa.yaml
-687,37,stock_indices,single_table,哪些年份的沪深300市盈率年平均值超过14倍？,哪些年份的沪深300市盈率年平均值超过14倍？,"SELECT year, AVG(pe_ttm_csi300) AS avg_pe
-FROM stock_indices
-WHERE pe_ttm_csi300 IS NOT NULL
+ORDER BY power_generation_100m_kwh DESC
+LIMIT 1","[{""geo_name"": ""华东"", ""year"": 2024, ""month"": 6}]",list,False,energy_prices_qa.yaml
+806,1,money_supply,single_table,2024年1月全国M2货币供应余额是多少？,"SELECT m2_100m_cny AS value
+FROM money_supply
+WHERE year = 2024 AND month = 1 AND geo_level = 'national'",3818555.67,scalar,False,money_supply_qa.yaml
+807,8,real_estate,single_table,查询全国2020-2022年间新房销售面积的年度总和,"SELECT year, SUM(new_home_sales_10k_sqm) AS total_sales
+FROM real_estate
+WHERE geo_level = 'national' AND year BETWEEN 2020 AND 2022
 GROUP BY year
-HAVING AVG(pe_ttm_csi300) > 14
-ORDER BY year","[""year"", ""pe_ttm_csi300""]",[],"[{""year"": 2023, ""avg_pe"": 14.4305}, {""year"": 2024, ""avg_pe"": 14.356916666666665}, {""year"": 2025, ""avg_pe"": 14.426333333333332}]",list,False,,stock_indices_qa.yaml
-624,24,retail_sales,single_table,2024年全国全年社零总额合计是多少亿元？,2024年全国全年社零总额合计是多少亿元？,"SELECT SUM(total_sales_100m_cny) AS value
-FROM retail_sales
-WHERE year = 2024 AND geo_level = 'national'","[""year"", ""geo_level"", ""total_sales_100m_cny""]",[],879574.01,scalar,False,,retail_sales_qa.yaml
-74,24,cpi_inflation,single_table,计算2023年全国CPI同比涨幅的全年累计值，即12个月之和,计算2023年全国CPI同比涨幅的全年累计值，即12个月之和,"SELECT SUM(yoy_change_pct) AS value
-FROM cpi_inflation
-WHERE year = 2023 AND geo_level = 'national'","[""year"", ""geo_level"", ""yoy_change_pct""]",[],19.067,scalar,False,,cpi_inflation_qa.yaml
-664,14,stock_indices,single_table,2023年上半年中，北向资金净流入为正且A股成交额超过20万亿的月份,2023年上半年中，北向资金净流入为正且A股成交额超过20万亿的月份,"SELECT year, month, northbound_netflow_100m_cny, market_turnover_100m_cny
-FROM stock_indices
-WHERE year = 2023 AND month <= 6 AND northbound_netflow_100m_cny > 0 AND market_turnover_100m_cny > 200000
-ORDER BY month","[""year"", ""month"", ""northbound_netflow_100m_cny"", ""market_turnover_100m_cny""]",[],"[{""year"": 2023, ""month"": 2, ""northbound_netflow_100m_cny"": 666.8, ""market_turnover_100m_cny"": 291143.86}, {""year"": 2023, ""month"": 3, ""northbound_netflow_100m_cny"": 1379.76, ""market_turnover_100m_cny"": 256752.96}, {""year"": 2023, ""month"": 4, ""northbound_netflow_100m_cny"": 774.63, ""market_turnover_100m_cny"": 273707.37}, {""year"": 2023, ""month"": 5, ""northbound_netflow_100m_cny"": 752.98, ""market_turnover_100m_cny"": 290859.89}]",list,False,,stock_indices_qa.yaml
-274,24,gdp_expenditure,single_table,计算2024年全国层级的总名义GDP支出,计算2024年全国层级的总名义GDP支出,"SELECT SUM(nominal_gdp_100m_cny) AS total_gdp
-FROM gdp_expenditure
-WHERE year = 2024 AND geo_level = 'national'","[""year"", ""geo_level"", ""nominal_gdp_100m_cny""]",[],1317806.58,scalar,False,,gdp_expenditure_questions.yaml
-215,15,exchange_rates,single_table,历史上美元兑人民币汇率最高的月份及对应汇率是多少？,历史上美元兑人民币汇率最高的月份及对应汇率是多少？,"SELECT ref_date, usd_cny
-FROM exchange_rates
-ORDER BY usd_cny DESC
-LIMIT 1","[""ref_date"", ""usd_cny""]",[],"[{""ref_date"": ""2018-01-01"", ""usd_cny"": 7.1899}]",list,False,,exchange_rates_qa.yaml
-364,14,industrial_output,single_table,2021年工业同比增速在5%-10%区间且季调环比增速为正的全国月份,2021年工业同比增速在5%-10%区间且季调环比增速为正的全国月份,"SELECT month, yoy_growth_pct, mom_growth_sa_pct
-FROM industrial_output
-WHERE year = 2021 AND geo_level = 'national' AND yoy_growth_pct BETWEEN 5 AND 10 AND mom_growth_sa_pct > 0
-ORDER BY month","[""year"", ""month"", ""geo_level"", ""yoy_growth_pct"", ""mom_growth_sa_pct""]",[],"[{""month"": 1, ""yoy_growth_pct"": 6.21, ""mom_growth_sa_pct"": 0.504}, {""month"": 4, ""yoy_growth_pct"": 7.06, ""mom_growth_sa_pct"": 0.585}, {""month"": 5, ""yoy_growth_pct"": 7.267, ""mom_growth_sa_pct"": 0.301}, {""month"": 6, ""yoy_growth_pct"": 5.38, ""mom_growth_sa_pct"": 0.004}, {""month"": 10, ""yoy_growth_pct"": 5.353, ""mom_growth_sa_pct"": 0.034}, {""month"": 11, ""yoy_growth_pct"": 6.786, ""mom_growth_sa_pct"": 0.802}, {""month"": 12, ""yoy_growth_pct"": 6.421, ""mom_growth_sa_pct"": 0.462}]",list,False,,industrial_output_qa.yaml
-380,30,industrial_output,single_table,按年度统计2016年至2025年全国工业总产出指数的年均值,按年度统计2016年至2025年全国工业总产出指数的年均值,"SELECT year, AVG(total_index) AS avg_index
-FROM industrial_output
-WHERE geo_level = 'national' AND year BETWEEN 2016 AND 2025
-GROUP BY year
-ORDER BY year","[""year"", ""geo_level"", ""total_index""]",[],"[{""year"": 2016, ""avg_index"": 103.41000000000001}, {""year"": 2017, ""avg_index"": 110.85000000000001}, {""year"": 2018, ""avg_index"": 118.29}, {""year"": 2019, ""avg_index"": 125.73}, {""year"": 2020, ""avg_index"": 133.17}, {""year"": 2021, ""avg_index"": 140.60999999999999}, {""year"": 2022, ""avg_index"": 148.04999999999998}, {""year"": 2023, ""avg_index"": 155.49}, {""year"": 2024, ""avg_index"": 162.93}, {""year"": 2025, ""avg_index"": 170.37}]",list,False,,industrial_output_qa.yaml
+ORDER BY year","[{""year"": 2020, ""total_sales"": 108563.99}, {""year"": 2021, ""total_sales"": 107174.96}, {""year"": 2022, ""total_sales"": 105029.13}]",list,False,real_estate_qa.yaml
+808,52,corporate_credit,single_table,2023年华东地区的企业债券平均违约率比华北地区高出多少个百分点？,"{""sql1"": ""SELECT AVG(default_rate_pct) AS east_rate\nFROM corporate_credit\nWHERE year = 2023 AND geo_name = '华东'"", ""sql2"": ""SELECT AVG(default_rate_pct) AS north_rate\nFROM corporate_credit\nWHERE year = 2023 AND geo_name = '华北'""}",-0.0343,scalar,True,corporate_credit_qa.yaml
+809,26,employment_stats,single_table,2024年全国的平均失业率是多少？,"SELECT AVG(unemployment_rate_pct) AS avg_rate
+FROM employment_stats
+WHERE year = 2024 AND geo_level = 'national'",5.069166666666667,scalar,False,employment_stats_qa.yaml
+810,49,government_finance,single_table_error,查询政府债务率超过200%的记录,,债务率的合理范围通常为0-150%，超过200%的情况极不合理且数据中不存在,error,False,government_finance_qa.yaml

@@ -19,6 +19,7 @@ _SQL_NAMES: dict[str, str] = {}
 _TABLE_INFO_CACHE: dict[str, str] = {}
 _TABLE_NAME_MAP: dict[str, str] = {}
 _PRELOADED = False
+_TABLE_REF_RE = re.compile(r"\b(?:FROM|JOIN)\s+([`\"\[]?[A-Za-z_][A-Za-z0-9_]*[`\"\]]?)", re.IGNORECASE)
 
 
 def _sanitize_sql_name(name: str) -> str:
@@ -41,11 +42,22 @@ def _sanitize_columns(columns: list[str]) -> list[str]:
     return final
 
 
-def _normalize_table_name(table_name: str) -> str | None:
+def _normalize_table_name(table_name: str | object) -> str | None:
+    if not isinstance(table_name, str):
+        return None
     name = table_name.strip()
     if name.endswith(".csv"):
         name = name[:-4]
     return _TABLE_NAME_MAP.get(name.lower())
+
+
+def _extract_query_table_refs(query: str) -> list[str]:
+    refs: list[str] = []
+    for match in _TABLE_REF_RE.finditer(query):
+        token = match.group(1).strip().strip('`"[]').strip()
+        if token:
+            refs.append(token)
+    return refs
 
 
 def _safe_json_value(val):
@@ -131,7 +143,7 @@ Returns:
 
     def get_table_names(self, keyword: str = "") -> list[str]:
         names = sorted(_TABLES.keys())
-        key = keyword.strip().lower()
+        key = str(keyword).strip().lower()
         if not key:
             return names
         return [name for name in names if key in name.lower()]
@@ -210,8 +222,20 @@ Returns:
         if not any(clause in query_upper for clause in sql_filters):
             return "Error: include at least one filter/limit clause or aggregate function."
 
+        referenced_tables = _extract_query_table_refs(query)
+        if not referenced_tables:
+            return "Error: query must reference at least one table."
+
+        allowed_tables = {table.lower(), _SQL_NAMES[table].lower()}
+        known_tables = set(_TABLE_NAME_MAP.keys()) | {name.lower() for name in _SQL_NAMES.values()}
+        for ref in referenced_tables:
+            ref_key = ref.lower()
+            if ref_key in known_tables and ref_key not in allowed_tables:
+                return f"Error: query may only reference table '{table}'."
+
         quoted_sql_name = f'"{sql_name}"'
-        pattern = rf'(FROM|JOIN)\s+[`"\']?{re.escape(table_name)}[`"\']?(?=\s|$|;|,|\))'
+        table_name_str = str(table_name).strip()
+        pattern = rf'(FROM|JOIN)\s+[`"\']?{re.escape(table_name_str)}[`"\']?(?=\s|$|;|,|\))'
         query_for_execution = re.sub(pattern, rf"\g<1> {quoted_sql_name}", query, flags=re.IGNORECASE)
 
         # Also normalize canonical table name if caller uses the normalized name.

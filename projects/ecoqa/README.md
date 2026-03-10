@@ -32,7 +32,19 @@ It is not training; it is for end-to-end evaluation/inference.
 uv pip install -e ".[dev]"
 ```
 
-2. Register pre-generated EcoQA datasets:
+2. Regenerate QA pairs from YAML and then register datasets:
+
+```bash
+python3 projects/ecoqa/data/generate_qa_pairs_from_yaml.py
+```
+
+By default this script reads `projects/ecoqa/data/yaml/*.yaml`, applies a reproducible random split (seed=42), and writes:
+
+- `projects/ecoqa/data/qa_pairs/train_ecoqa.csv` (720)
+- `projects/ecoqa/data/qa_pairs/val_ecoqa.csv` (90)
+- `projects/ecoqa/data/qa_pairs/test_ecoqa.csv` (90)
+
+Then register these CSV files:
 
 ```bash
 python -m projects.ecoqa.prepare_ecoqa_data
@@ -104,4 +116,5 @@ pytest -q projects/ecoqa/tests
 ## Data Layout
 
 - Raw tables: `projects/ecoqa/data/csv/*.csv`
+- QA YAML source: `projects/ecoqa/data/yaml/*.yaml`
 - QA pairs: `projects/ecoqa/data/qa_pairs/*.csv`

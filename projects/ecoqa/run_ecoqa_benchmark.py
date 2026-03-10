@@ -1,7 +1,6 @@
 import argparse
 import asyncio
 import csv
-import hashlib
 import json
 import os
 from dataclasses import dataclass
@@ -9,14 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from transformers import AutoTokenizer
-
-from rllm.data.dataset import DatasetRegistry
-from rllm.engine.agent_execution_engine import AgentExecutionEngine
-
-from .eco_qa_agent import EcoQAAgent
-from .eco_qa_environment import EcoQAEnvironment
-from .prepare_ecoqa_data import prepare_ecoqa_data
+from .eval_runtime import build_engine, load_split, task_id
 
 
 @dataclass
@@ -65,28 +57,11 @@ def _load_model_profiles(config_path: Path, include_disabled: bool = False) -> l
         profiles.append(profile)
     return profiles
 
-
-def _load_split(split: str):
-    dataset = DatasetRegistry.load_dataset("ecoqa", split)
-    if dataset is None:
-        train, val, test = prepare_ecoqa_data()
-        dataset = {"train": train, "val": val, "test": test}[split]
-    return dataset
-
-
-def _task_id(task: dict[str, Any]) -> str:
-    qid = str(task.get("question_id", "")).strip()
-    if qid:
-        return qid
-    digest = hashlib.md5(json.dumps(task, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
-    return digest
-
-
 def _target_kind(task: dict[str, Any]) -> str:
     question_type = str(task.get("question_type", "")).strip().lower()
     answer_type = str(task.get("answer_type", "")).strip().lower()
     if question_type == "single_table_error":
-        return "error"
+        return "no_data"
     if answer_type in {"scalar", "list"}:
         return answer_type
     return "unknown"
@@ -117,7 +92,7 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
         reward = float(getattr(traj, "reward", 0.0) or 0.0)
         is_correct = reward > 0
         task = getattr(traj, "task", {}) or {}
-        question_id = _task_id(task)
+        question_id = task_id(task)
         kind = _target_kind(task)
         rows.append(
             {
@@ -164,7 +139,7 @@ def _write_details(path: Path, run_id: str, profile: ModelProfile, trajectories:
                 "model_name": profile.name,
                 "model_kind": profile.kind,
                 "trajectory_index": idx,
-                "question_id": _task_id(task),
+                "question_id": task_id(task),
                 "question_type": task.get("question_type", ""),
                 "answer_type": task.get("answer_type", ""),
                 "reward": reward,
@@ -194,7 +169,7 @@ def _append_summary(path: Path, summary_row: dict[str, Any]) -> None:
         "reward_mean",
         "acc_scalar",
         "acc_list",
-        "acc_error",
+        "acc_no_data",
         "acc_unknown",
         "notes",
     ]
@@ -207,18 +182,13 @@ def _append_summary(path: Path, summary_row: dict[str, Any]) -> None:
 
 
 async def _run_single_profile(profile: ModelProfile, dataset, args) -> tuple[dict[str, Any], list]:
-    tokenizer = AutoTokenizer.from_pretrained(profile.tokenizer_model)
-    engine = AgentExecutionEngine(
-        agent_class=EcoQAAgent,
-        env_class=EcoQAEnvironment,
-        engine_name="openai",
-        rollout_engine_args={
-            "model": profile.model,
-            "base_url": profile.base_url,
-            "api_key": profile.api_key,
-        },
-        tokenizer=tokenizer,
-        sampling_params={"temperature": args.temperature, "top_p": args.top_p},
+    engine = build_engine(
+        model=profile.model,
+        base_url=profile.base_url,
+        api_key=profile.api_key,
+        tokenizer_model=profile.tokenizer_model,
+        temperature=args.temperature,
+        top_p=args.top_p,
         n_parallel_agents=profile.n_parallel_agents or args.n_parallel_agents,
         max_steps=profile.max_steps or args.max_steps,
         max_prompt_length=args.max_prompt_length,
@@ -284,7 +254,7 @@ def main():
             "reward_mean": round(metrics["reward_mean"], 6),
             "acc_scalar": round(metrics["accuracy_by_type"].get("scalar", 0.0), 6),
             "acc_list": round(metrics["accuracy_by_type"].get("list", 0.0), 6),
-            "acc_error": round(metrics["accuracy_by_type"].get("error", 0.0), 6),
+            "acc_no_data": round(metrics["accuracy_by_type"].get("no_data", 0.0), 6),
             "acc_unknown": round(metrics["accuracy_by_type"].get("unknown", 0.0), 6),
             "notes": profile.notes,
         }

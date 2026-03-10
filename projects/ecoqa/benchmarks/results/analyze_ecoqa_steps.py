@@ -177,7 +177,7 @@ def _infer_target_kind(row: dict) -> str:
     question_type = str(row.get("question_type", "")).strip().lower()
     answer_type = str(row.get("answer_type", "")).strip().lower()
     if question_type == "single_table_error":
-        return "error"
+        return "no_data"
     if answer_type in {"list", "scalar"}:
         return answer_type
     return "unknown"
@@ -249,8 +249,8 @@ def _categorize_failure(row: dict) -> tuple[str, dict]:
             else:
                 tol = max(1e-4, 1e-3 * max(abs(gt_num), 1.0))
                 category = "value_mismatch" if abs(pred_scalar - gt_num) > tol else "other_scalar_failure"
-    elif target_kind == "error":
-        category = "error_text_mismatch"
+    elif target_kind == "no_data":
+        category = "no_data_not_returned"
 
     return category, {
         "question_id": str(row.get("question_id", "")),

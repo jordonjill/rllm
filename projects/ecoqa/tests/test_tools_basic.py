@@ -25,3 +25,9 @@ def test_sql_query_blocks_select_star_and_allows_valid_query():
     ok = tool.sql_query("interest_rates", "SELECT year FROM interest_rates LIMIT 1")
     rows = json.loads(ok)
     assert isinstance(rows, list) and len(rows) == 1 and "year" in rows[0]
+
+
+def test_sql_query_rejects_cross_table_query():
+    tool = SQLQuery()
+    blocked = tool.sql_query("interest_rates", "SELECT year FROM exchange_rates LIMIT 1")
+    assert "only reference table 'interest_rates'" in blocked

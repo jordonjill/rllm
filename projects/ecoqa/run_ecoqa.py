@@ -1,26 +1,12 @@
 import asyncio
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
 
-from transformers import AutoTokenizer
-
-from rllm.data.dataset import DatasetRegistry
-from rllm.engine.agent_execution_engine import AgentExecutionEngine
 from rllm.utils import compute_pass_at_k
 
-from .eco_qa_agent import EcoQAAgent
-from .eco_qa_environment import EcoQAEnvironment
-
-
-def _task_id(task: dict) -> str:
-    qid = str(task.get("question_id", "")).strip()
-    if qid:
-        return qid
-    digest = hashlib.md5(json.dumps(task, ensure_ascii=False, sort_keys=True, default=str).encode("utf-8")).hexdigest()
-    return digest
+from .eval_runtime import build_engine, load_split, task_id
 
 
 def _infer_termination_reason(trajectory, max_steps: int) -> str:
@@ -46,7 +32,7 @@ def _write_steps_jsonl(path: str, trajectories: list, max_steps: int) -> None:
             steps = getattr(traj, "steps", []) or []
             row = {
                 "trajectory_index": idx,
-                "question_id": _task_id(task),
+                "question_id": task_id(task),
                 "question": task.get("question", ""),
                 "question_type": task.get("question_type", ""),
                 "answer_type": task.get("answer_type", ""),
@@ -109,35 +95,19 @@ def main():
     model_name = args.model
     base_url = args.base_url
 
-    try:
-        tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_model)
-    except Exception as e:
-        raise RuntimeError(
-            "Failed to load tokenizer. If you are using Ollama, set --tokenizer-model to a valid "
-            "HuggingFace tokenizer repo/path (for qwen3-4b, try Qwen/Qwen3-4B-Instruct-2507)."
-        ) from e
-
-    sampling_params = {"temperature": args.temperature, "top_p": args.top_p}
-
-    engine = AgentExecutionEngine(
-        agent_class=EcoQAAgent,
-        env_class=EcoQAEnvironment,
-        engine_name="openai",
-        rollout_engine_args={"model": model_name, "base_url": base_url, "api_key": args.api_key},
-        tokenizer=tokenizer,
-        sampling_params=sampling_params,
+    engine = build_engine(
+        model=model_name,
+        base_url=base_url,
+        api_key=args.api_key,
+        tokenizer_model=args.tokenizer_model,
+        temperature=args.temperature,
+        top_p=args.top_p,
         n_parallel_agents=args.n_parallel_agents,
         max_steps=args.max_steps,
         max_prompt_length=args.max_prompt_length,
     )
 
-    dataset = DatasetRegistry.load_dataset("ecoqa", args.split)
-    if dataset is None:
-        print("EcoQA dataset not found, preparing dataset...")
-        from .prepare_ecoqa_data import prepare_ecoqa_data
-
-        train_dataset, val_dataset, test_dataset = prepare_ecoqa_data()
-        dataset = {"train": train_dataset, "val": val_dataset, "test": test_dataset}[args.split]
+    dataset = load_split(args.split)
 
     if args.max_samples > 0:
         dataset = dataset.select(range(min(args.max_samples, len(dataset))))

@@ -20,6 +20,12 @@ def test_scalar_reward_binary():
     assert wrong.reward == 0.0 and not wrong.is_correct
 
 
+def test_scalar_allows_percent_symbol_when_numeric_value_matches():
+    task = _task("5.5", "single_table", "scalar")
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":"5.5%"}')
+    assert pred.reward == 1.0 and pred.is_correct
+
+
 def test_list_requires_exact_match():
     gt = '[{"a":1,"b":2},{"a":3,"b":4}]'
     task = _task(gt, "single_table", "list")
@@ -58,9 +64,11 @@ def test_list_allows_temporal_equivalence_between_ref_date_and_year_month():
     assert pred.metadata.get("list_temporal_value_match") is True
 
 
-def test_error_semantic_match_binary():
+def test_no_data_requires_no_data_answer():
     task = _task("数据范围仅覆盖2016-2025年，无法查询2030年数据", "single_table_error", "")
-    correct = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"error","reason":"无数据"}')
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"error","reason":"2024年为8.1%"}')
+    correct = eco_qa_reward_function(task, "FINAL ANSWER: No Data")
+    also_correct = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"no_data"}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"error","reason":"逻辑冲突：条件不成立"}')
     assert correct.reward == 1.0 and correct.is_correct
+    assert also_correct.reward == 1.0 and also_correct.is_correct
     assert wrong.reward == 0.0 and not wrong.is_correct

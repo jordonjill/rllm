@@ -13,7 +13,7 @@ export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export OMP_NUM_THREADS=10
 
-uv run python -m projects.ecoqa.train_ecoqa \
+python3 -m projects.ecoqa.train_ecoqa \
     algorithm.adv_estimator=grpo \
     data.train_batch_size=8 \
     data.val_batch_size=8 \

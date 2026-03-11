@@ -28,6 +28,11 @@ _YEAR_QUARTER_RE = re.compile(r"^\s*(\d{4})\s*[-_/ ]?q([1-4])\s*$", re.IGNORECAS
 _YEAR_ONLY_RE = re.compile(r"^\s*(\d{4})\s*$")
 _MONTH_CN_RE = re.compile(r"^\s*(1[0-2]|0?[1-9])月\s*$")
 
+_RIGHT_TABLE_SHAPING_WEIGHT = 0.15
+_SQL_SUCCESS_SHAPING_WEIGHT = 0.10
+_SQL_ERROR_PENALTY_WEIGHT = 0.05
+_MAX_SHAPING_BONUS = 0.30
+
 
 def _extract_final_answer(action: str) -> str:
     match = _FINAL_ANSWER_CODE_BLOCK_RE.search(action)
@@ -405,6 +410,12 @@ def _check_right_table_accessed(accessed_tables: list[str], expected_table_name:
     return hits / len(expected)
 
 
+def _safe_ratio(numerator: int | float, denominator: int | float) -> float:
+    if denominator <= 0:
+        return 0.0
+    return float(numerator) / float(denominator)
+
+
 def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     question = task_info.get("question")
     ground_truth = task_info.get("ground_truth")
@@ -452,12 +463,38 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     expected_table_name = task_info.get("table_name", "")
     right_table_access_reward = _check_right_table_accessed(accessed_tables, expected_table_name)
 
+    sql_total_calls = int(task_info.get("sql_total_calls", 0) or 0)
+    sql_success_calls = int(task_info.get("sql_success_calls", 0) or 0)
+    sql_error_calls = int(task_info.get("sql_error_calls", 0) or 0)
+    sql_success_rate = _safe_ratio(sql_success_calls, sql_total_calls)
+    sql_error_rate = _safe_ratio(sql_error_calls, sql_total_calls)
+
+    # Shaping reward is only used for incorrect answers, and only when both
+    # table selection and SQL execution show useful progress.
+    shaping_bonus = 0.0
+    if (not is_correct) and right_table_access_reward > 0.0 and sql_success_rate > 0.0:
+        shaping_bonus = (
+            _RIGHT_TABLE_SHAPING_WEIGHT * right_table_access_reward
+            + _SQL_SUCCESS_SHAPING_WEIGHT * sql_success_rate
+            - _SQL_ERROR_PENALTY_WEIGHT * sql_error_rate
+        )
+        shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, shaping_bonus))
+
+    final_reward = correctness_reward if is_correct else shaping_bonus
+
     return RewardOutput(
-        reward=correctness_reward,
+        reward=final_reward,
         is_correct=is_correct,
         metadata={
             "correctness_reward": correctness_reward,
+            "shaping_bonus": shaping_bonus,
+            "final_reward": final_reward,
             "right_table_access_reward": right_table_access_reward,
+            "sql_total_calls": sql_total_calls,
+            "sql_success_calls": sql_success_calls,
+            "sql_error_calls": sql_error_calls,
+            "sql_success_rate": sql_success_rate,
+            "sql_error_rate": sql_error_rate,
             "target_kind": target_kind,
             "list_exact_match": list_exact_match,
             "list_alias_value_match": list_alias_value_match,

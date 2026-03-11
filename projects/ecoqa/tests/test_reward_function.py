@@ -1,14 +1,26 @@
 from projects.ecoqa.eco_qa_reward import eco_qa_reward_function
 
 
-def _task(ground_truth: str, question_type: str, answer_type: str):
+def _task(
+    ground_truth: str,
+    question_type: str,
+    answer_type: str,
+    *,
+    accessed_tables: list[str] | None = None,
+    sql_total_calls: int = 0,
+    sql_success_calls: int = 0,
+    sql_error_calls: int = 0,
+):
     return {
         "question": "dummy",
         "ground_truth": ground_truth,
         "question_type": question_type,
         "answer_type": answer_type,
         "table_name": "interest_rates",
-        "accessed_tables": ["interest_rates"],
+        "accessed_tables": accessed_tables if accessed_tables is not None else ["interest_rates"],
+        "sql_total_calls": sql_total_calls,
+        "sql_success_calls": sql_success_calls,
+        "sql_error_calls": sql_error_calls,
     }
 
 
@@ -72,3 +84,33 @@ def test_no_data_requires_no_data_answer():
     assert correct.reward == 1.0 and correct.is_correct
     assert also_correct.reward == 1.0 and also_correct.is_correct
     assert wrong.reward == 0.0 and not wrong.is_correct
+
+
+def test_incorrect_answer_gets_progress_bonus_when_right_table_and_sql_success():
+    task = _task(
+        "8.10725",
+        "single_table",
+        "scalar",
+        accessed_tables=["interest_rates"],
+        sql_total_calls=2,
+        sql_success_calls=2,
+        sql_error_calls=0,
+    )
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
+    assert wrong.reward > 0.0 and wrong.reward < 1.0
+    assert wrong.metadata["right_table_access_reward"] == 1.0
+    assert wrong.metadata["sql_success_rate"] == 1.0
+
+
+def test_incorrect_answer_gets_no_bonus_without_sql_success():
+    task = _task(
+        "8.10725",
+        "single_table",
+        "scalar",
+        accessed_tables=["interest_rates"],
+        sql_total_calls=2,
+        sql_success_calls=0,
+        sql_error_calls=2,
+    )
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
+    assert wrong.reward == 0.0

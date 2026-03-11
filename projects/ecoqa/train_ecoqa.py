@@ -1,3 +1,6 @@
+import random
+import re
+
 import hydra
 
 from rllm.agents.agent import Episode
@@ -9,6 +12,133 @@ from rllm.workflows.workflow import TerminationEvent, TerminationReason
 
 from .eco_qa_agent import EcoQAAgent
 from .eco_qa_environment import EcoQAEnvironment
+
+
+def _as_float(value, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_int(value, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _infer_sql_difficulty(example: dict) -> str:
+    question_type = str(example.get("question_type", "")).strip().lower()
+    if question_type == "single_table_error":
+        return "easy"
+
+    sql = str(example.get("ground_truth_sql", "")).strip().lower()
+    answer_type = str(example.get("answer_type", "")).strip().lower()
+    score = 0
+
+    # Heuristic complexity score from SQL operators.
+    sql_patterns = (
+        r"\bgroup\s+by\b",
+        r"\bhaving\b",
+        r"\border\s+by\b",
+        r"\bcount\s*\(",
+        r"\bsum\s*\(",
+        r"\bavg\s*\(",
+        r"\bmin\s*\(",
+        r"\bmax\s*\(",
+        r"\bdistinct\b",
+        r"\bcase\b",
+    )
+    for pattern in sql_patterns:
+        if re.search(pattern, sql):
+            score += 1
+
+    if " and " in sql or " or " in sql:
+        score += 1
+
+    if answer_type == "list":
+        score += 1
+
+    if score <= 1:
+        return "easy"
+    if score <= 3:
+        return "medium"
+    return "hard"
+
+
+def _blend_weight(start: float, end: float, phase: float) -> float:
+    p = min(1.0, max(0.0, phase))
+    return start * (1.0 - p) + end * p
+
+
+def _build_curriculum_train_dataset(config, train_dataset):
+    curriculum_cfg = config.get("ecoqa_curriculum", None)
+    if not curriculum_cfg or not bool(curriculum_cfg.get("enable", False)):
+        return train_dataset
+
+    raw_data = train_dataset.get_data()
+    if not raw_data:
+        return train_dataset
+
+    phase = _as_float(curriculum_cfg.get("phase", 0.35), 0.35)
+    size_multiplier = max(_as_float(curriculum_cfg.get("size_multiplier", 1.0), 1.0), 0.1)
+    seed = _as_int(curriculum_cfg.get("seed", 42), 42)
+
+    answer_weight_start = curriculum_cfg.get("answer_weight_start", {})
+    answer_weight_end = curriculum_cfg.get("answer_weight_end", {})
+    difficulty_weight_start = curriculum_cfg.get("difficulty_weight_start", {})
+    difficulty_weight_end = curriculum_cfg.get("difficulty_weight_end", {})
+
+    def answer_weight(answer_key: str) -> float:
+        start = _as_float(answer_weight_start.get(answer_key, 1.0), 1.0)
+        end = _as_float(answer_weight_end.get(answer_key, 1.0), 1.0)
+        return _blend_weight(start, end, phase)
+
+    def difficulty_weight(diff_key: str) -> float:
+        start = _as_float(difficulty_weight_start.get(diff_key, 1.0), 1.0)
+        end = _as_float(difficulty_weight_end.get(diff_key, 1.0), 1.0)
+        return _blend_weight(start, end, phase)
+
+    weights = []
+    for example in raw_data:
+        answer_type = str(example.get("answer_type", "")).strip().lower()
+        if answer_type == "error":
+            answer_key = "no_data"
+        elif answer_type in {"scalar", "list"}:
+            answer_key = answer_type
+        else:
+            answer_key = "other"
+
+        diff_key = _infer_sql_difficulty(example)
+        weight = answer_weight(answer_key) * difficulty_weight(diff_key)
+        weights.append(max(weight, 1e-6))
+
+    rng = random.Random(seed)
+    base_size = len(raw_data)
+    target_size = max(base_size, int(round(base_size * size_multiplier)))
+    extra_size = target_size - base_size
+
+    # Full-coverage guarantee: keep every sample at least once, then over-sample
+    # extra samples with curriculum weights.
+    sampled_data = [dict(row) for row in raw_data]
+    if extra_size > 0:
+        extra_indices = rng.choices(range(base_size), weights=weights, k=extra_size)
+        sampled_data.extend(dict(raw_data[idx]) for idx in extra_indices)
+
+    rng.shuffle(sampled_data)
+
+    dataset_name = str(curriculum_cfg.get("dataset_name", "ecoqa_curriculum")).strip() or "ecoqa_curriculum"
+    dataset_split = str(curriculum_cfg.get("dataset_split", "train")).strip() or "train"
+    sampled_dataset = DatasetRegistry.register_dataset(dataset_name, sampled_data, dataset_split)
+    print(
+        "[EcoQACurriculum] enabled, "
+        f"phase={phase:.3f}, size_multiplier={size_multiplier:.3f}, "
+        f"base_size={base_size}, sampled_size={len(sampled_data)}, "
+        f"extra_size={extra_size}, "
+        f"dataset={dataset_name}/{dataset_split}"
+    )
+    return sampled_dataset
 
 
 class EcoQAWorkflow(MultiTurnWorkflow):
@@ -83,7 +213,11 @@ class EcoQAWorkflow(MultiTurnWorkflow):
 
             # Keep overall rewards for global monitoring.
             episode.metrics["correctness_reward"] = correctness_reward
+            episode.metrics["final_reward"] = float(metadata.get("final_reward", correctness_reward))
+            episode.metrics["shaping_bonus"] = float(metadata.get("shaping_bonus", 0.0))
             episode.metrics["right_table_access_reward"] = float(metadata.get("right_table_access_reward", 0.0))
+            episode.metrics["sql_success_rate"] = float(metadata.get("sql_success_rate", 0.0))
+            episode.metrics["sql_error_rate"] = float(metadata.get("sql_error_rate", 0.0))
 
             # Dataset composition monitoring.
             episode.metrics["target_is_scalar"] = 1.0 if target_kind == "scalar" else 0.0
@@ -115,6 +249,8 @@ def main(config):
         from .prepare_ecoqa_data import prepare_ecoqa_data
 
         train_dataset, val_dataset, _ = prepare_ecoqa_data()
+
+    train_dataset = _build_curriculum_train_dataset(config, train_dataset)
 
     config.rllm.workflow.use_workflow = True
 

@@ -76,8 +76,30 @@ class EcoQAWorkflow(MultiTurnWorkflow):
     def collect_metrics(self, episode: Episode) -> None:
         super().collect_metrics(episode)
         if episode.trajectories and episode.trajectories[0].steps:
-            metadata = episode.trajectories[0].steps[-1].info.get("metadata", {})
-            episode.metrics.update(metadata)
+            step_info = episode.trajectories[0].steps[-1].info
+            metadata = step_info.get("metadata", {})
+            target_kind = str(metadata.get("target_kind", "")).strip().lower()
+            correctness_reward = float(metadata.get("correctness_reward", float(step_info.get("is_correct", False))))
+
+            # Keep overall rewards for global monitoring.
+            episode.metrics["correctness_reward"] = correctness_reward
+            episode.metrics["right_table_access_reward"] = float(metadata.get("right_table_access_reward", 0.0))
+
+            # Dataset composition monitoring.
+            episode.metrics["target_is_scalar"] = 1.0 if target_kind == "scalar" else 0.0
+            episode.metrics["target_is_list"] = 1.0 if target_kind == "list" else 0.0
+            episode.metrics["target_is_no_data"] = 1.0 if target_kind == "no_data" else 0.0
+
+            # Type-conditional accuracy (denominator = samples of that type only).
+            if target_kind == "scalar":
+                episode.metrics["scalar_acc"] = correctness_reward
+            elif target_kind == "list":
+                episode.metrics["list_acc"] = correctness_reward
+                episode.metrics["list_exact_match"] = float(bool(metadata.get("list_exact_match", False)))
+                episode.metrics["list_alias_value_match"] = float(bool(metadata.get("list_alias_value_match", False)))
+                episode.metrics["list_temporal_value_match"] = float(bool(metadata.get("list_temporal_value_match", False)))
+            elif target_kind == "no_data":
+                episode.metrics["no_data_acc"] = correctness_reward
 
 
 @hydra.main(

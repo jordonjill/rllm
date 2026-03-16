@@ -35,7 +35,7 @@ def _infer_sql_difficulty(example: dict) -> str:
 
     sql = str(example.get("ground_truth_sql", "")).strip().lower()
     answer_type = str(example.get("answer_type", "")).strip().lower()
-    score = 0
+    score = 0.0
 
     # Heuristic complexity score from SQL operators.
     sql_patterns = (
@@ -58,7 +58,7 @@ def _infer_sql_difficulty(example: dict) -> str:
         score += 1
 
     if answer_type == "list":
-        score += 1
+        score += 0.5
 
     if score <= 1:
         return "easy"
@@ -85,15 +85,8 @@ def _build_curriculum_train_dataset(config, train_dataset):
     size_multiplier = max(_as_float(curriculum_cfg.get("size_multiplier", 1.0), 1.0), 0.1)
     seed = _as_int(curriculum_cfg.get("seed", 42), 42)
 
-    answer_weight_start = curriculum_cfg.get("answer_weight_start", {})
-    answer_weight_end = curriculum_cfg.get("answer_weight_end", {})
     difficulty_weight_start = curriculum_cfg.get("difficulty_weight_start", {})
     difficulty_weight_end = curriculum_cfg.get("difficulty_weight_end", {})
-
-    def answer_weight(answer_key: str) -> float:
-        start = _as_float(answer_weight_start.get(answer_key, 1.0), 1.0)
-        end = _as_float(answer_weight_end.get(answer_key, 1.0), 1.0)
-        return _blend_weight(start, end, phase)
 
     def difficulty_weight(diff_key: str) -> float:
         start = _as_float(difficulty_weight_start.get(diff_key, 1.0), 1.0)
@@ -102,16 +95,8 @@ def _build_curriculum_train_dataset(config, train_dataset):
 
     weights = []
     for example in raw_data:
-        answer_type = str(example.get("answer_type", "")).strip().lower()
-        if answer_type == "error":
-            answer_key = "no_data"
-        elif answer_type in {"scalar", "list"}:
-            answer_key = answer_type
-        else:
-            answer_key = "other"
-
         diff_key = _infer_sql_difficulty(example)
-        weight = answer_weight(answer_key) * difficulty_weight(diff_key)
+        weight = difficulty_weight(diff_key)
         weights.append(max(weight, 1e-6))
 
     rng = random.Random(seed)

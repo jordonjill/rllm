@@ -6,10 +6,7 @@ def _task(
     question_type: str,
     answer_type: str,
     *,
-    accessed_tables: list[str] | None = None,
-    sql_total_calls: int = 0,
-    sql_success_calls: int = 0,
-    sql_error_calls: int = 0,
+    sql_call_records: list[dict] | None = None,
 ):
     return {
         "question": "dummy",
@@ -17,10 +14,7 @@ def _task(
         "question_type": question_type,
         "answer_type": answer_type,
         "table_name": "interest_rates",
-        "accessed_tables": accessed_tables if accessed_tables is not None else ["interest_rates"],
-        "sql_total_calls": sql_total_calls,
-        "sql_success_calls": sql_success_calls,
-        "sql_error_calls": sql_error_calls,
+        "sql_call_records": sql_call_records if sql_call_records is not None else [],
     }
 
 
@@ -91,15 +85,15 @@ def test_incorrect_answer_gets_progress_bonus_when_right_table_and_sql_success()
         "8.10725",
         "single_table",
         "scalar",
-        accessed_tables=["interest_rates"],
-        sql_total_calls=2,
-        sql_success_calls=2,
-        sql_error_calls=0,
+        sql_call_records=[
+            {"table_name": "interest_rates", "success": True},
+            {"table_name": "interest_rates", "success": True},
+        ],
     )
     wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
     assert wrong.reward > 0.0 and wrong.reward < 1.0
-    assert wrong.metadata["right_table_access_reward"] == 1.0
-    assert wrong.metadata["sql_success_rate"] == 1.0
+    assert wrong.metadata["exp_table_hit_rate"] == 1.0
+    assert wrong.metadata["exp_table_sql_succ_rate"] == 1.0
 
 
 def test_incorrect_answer_gets_no_bonus_without_sql_success():
@@ -107,10 +101,28 @@ def test_incorrect_answer_gets_no_bonus_without_sql_success():
         "8.10725",
         "single_table",
         "scalar",
-        accessed_tables=["interest_rates"],
-        sql_total_calls=2,
-        sql_success_calls=0,
-        sql_error_calls=2,
+        sql_call_records=[
+            {"table_name": "interest_rates", "success": False},
+            {"table_name": "interest_rates", "success": False},
+        ],
     )
     wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
     assert wrong.reward == 0.0
+    assert wrong.metadata["exp_table_hit_rate"] == 1.0
+    assert wrong.metadata["exp_table_sql_succ_rate"] == 0.0
+
+
+def test_incorrect_answer_gets_no_bonus_when_only_wrong_table_sql_succeeds():
+    task = _task(
+        "8.10725",
+        "single_table",
+        "scalar",
+        sql_call_records=[
+            {"table_name": "other_table", "success": True},
+            {"table_name": "other_table", "success": True},
+        ],
+    )
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
+    assert wrong.reward == 0.0
+    assert wrong.metadata["exp_table_hit_rate"] == 0.0
+    assert wrong.metadata["exp_table_sql_succ_rate"] == 0.0

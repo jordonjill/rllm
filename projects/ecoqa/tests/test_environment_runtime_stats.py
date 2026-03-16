@@ -53,7 +53,7 @@ def test_environment_tracks_sql_runtime_stats():
         ]
     )
 
-    assert task["sql_total_calls"] == 2
-    assert task["sql_success_calls"] == 1
-    assert task["sql_error_calls"] == 1
-    assert "interest_rates" in task["accessed_tables"]
+    assert task["sql_call_records"] == [
+        {"table_name": "interest_rates", "success": True},
+        {"table_name": "interest_rates", "success": False},
+    ]

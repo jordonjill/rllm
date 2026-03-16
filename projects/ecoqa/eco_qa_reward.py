@@ -28,10 +28,7 @@ _YEAR_QUARTER_RE = re.compile(r"^\s*(\d{4})\s*[-_/ ]?q([1-4])\s*$", re.IGNORECAS
 _YEAR_ONLY_RE = re.compile(r"^\s*(\d{4})\s*$")
 _MONTH_CN_RE = re.compile(r"^\s*(1[0-2]|0?[1-9])月\s*$")
 
-_RIGHT_TABLE_SHAPING_WEIGHT = 0.15
-_SQL_SUCCESS_SHAPING_WEIGHT = 0.10
-_SQL_ERROR_PENALTY_WEIGHT = 0.05
-_MAX_SHAPING_BONUS = 0.30
+_MAX_SHAPING_BONUS = 0.15
 
 
 def _extract_final_answer(action: str) -> str:
@@ -392,35 +389,48 @@ def _determine_target_kind(task_info: dict, ground_truth: str) -> str:
     return "text"
 
 
-def _check_right_table_accessed(accessed_tables: list[str], expected_table_name: str | list[str]) -> float:
-    if not accessed_tables or not expected_table_name:
-        return 0.0
-
-    normalized_access = {table.strip().lower() for table in accessed_tables if isinstance(table, str) and table.strip()}
-
-    if isinstance(expected_table_name, list):
-        expected = [name.strip().lower() for name in expected_table_name if isinstance(name, str) and name.strip()]
-    else:
-        expected = [expected_table_name.strip().lower()] if isinstance(expected_table_name, str) and expected_table_name.strip() else []
-
-    if not expected:
-        return 0.0
-
-    hits = sum(1 for name in expected if name in normalized_access)
-    return hits / len(expected)
-
-
 def _safe_ratio(numerator: int | float, denominator: int | float) -> float:
     if denominator <= 0:
         return 0.0
     return float(numerator) / float(denominator)
 
 
+def _normalize_expected_tables(expected_table_name: str | list[str]) -> set[str]:
+    if isinstance(expected_table_name, list):
+        expected = [name.strip().lower() for name in expected_table_name if isinstance(name, str) and name.strip()]
+    elif isinstance(expected_table_name, str) and expected_table_name.strip():
+        expected = [expected_table_name.strip().lower()]
+    else:
+        expected = []
+    return set(expected)
+
+
+def _sql_call_stats(task_info: dict, expected_tables: set[str]) -> tuple[int, int, int]:
+    records = task_info.get("sql_call_records", [])
+    if not isinstance(records, list):
+        return 0, 0, 0
+
+    total_sql_calls = 0
+    exp_table_sql_calls = 0
+    exp_table_sql_success = 0
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        total_sql_calls += 1
+        table_name = str(record.get("table_name", "")).strip().lower()
+        if table_name not in expected_tables:
+            continue
+        exp_table_sql_calls += 1
+        if bool(record.get("success", False)):
+            exp_table_sql_success += 1
+    return total_sql_calls, exp_table_sql_calls, exp_table_sql_success
+
+
 def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     question = task_info.get("question")
     ground_truth = task_info.get("ground_truth")
     if not action or not question or ground_truth in (None, ""):
-        return RewardOutput(reward=0.0, is_correct=False, metadata={"correctness_reward": 0.0, "right_table_access_reward": 0.0})
+        return RewardOutput(reward=0.0, is_correct=False, metadata={"correctness_reward": 0.0})
 
     ground_truth_text = str(ground_truth)
     final_answer = _extract_final_answer(action)
@@ -459,26 +469,18 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
         is_correct = _normalize_text(pred_text) == _normalize_text(ground_truth_text)
 
     correctness_reward = 1.0 if is_correct else 0.0
-    accessed_tables = task_info.get("accessed_tables", [])
     expected_table_name = task_info.get("table_name", "")
-    right_table_access_reward = _check_right_table_accessed(accessed_tables, expected_table_name)
 
-    sql_total_calls = int(task_info.get("sql_total_calls", 0) or 0)
-    sql_success_calls = int(task_info.get("sql_success_calls", 0) or 0)
-    sql_error_calls = int(task_info.get("sql_error_calls", 0) or 0)
-    sql_success_rate = _safe_ratio(sql_success_calls, sql_total_calls)
-    sql_error_rate = _safe_ratio(sql_error_calls, sql_total_calls)
+    expected_tables = _normalize_expected_tables(expected_table_name)
+    sql_call_count, exp_table_sql_calls, exp_table_sql_success = _sql_call_stats(task_info, expected_tables)
+    exp_table_hit_rate = _safe_ratio(exp_table_sql_calls, sql_call_count)
+    exp_table_sql_succ_rate = _safe_ratio(exp_table_sql_success, exp_table_sql_calls)
 
-    # Shaping reward is only used for incorrect answers, and only when both
-    # table selection and SQL execution show useful progress.
+    # Shaping reward for incorrect answers is based only on SQL success ratio
+    # over expected table calls.
     shaping_bonus = 0.0
-    if (not is_correct) and right_table_access_reward > 0.0 and sql_success_rate > 0.0:
-        shaping_bonus = (
-            _RIGHT_TABLE_SHAPING_WEIGHT * right_table_access_reward
-            + _SQL_SUCCESS_SHAPING_WEIGHT * sql_success_rate
-            - _SQL_ERROR_PENALTY_WEIGHT * sql_error_rate
-        )
-        shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, shaping_bonus))
+    if not is_correct and exp_table_sql_calls > 0:
+        shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, _MAX_SHAPING_BONUS * exp_table_sql_succ_rate))
 
     final_reward = correctness_reward if is_correct else shaping_bonus
 
@@ -489,12 +491,11 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
             "correctness_reward": correctness_reward,
             "shaping_bonus": shaping_bonus,
             "final_reward": final_reward,
-            "right_table_access_reward": right_table_access_reward,
-            "sql_total_calls": sql_total_calls,
-            "sql_success_calls": sql_success_calls,
-            "sql_error_calls": sql_error_calls,
-            "sql_success_rate": sql_success_rate,
-            "sql_error_rate": sql_error_rate,
+            "sql_call_count": sql_call_count,
+            "exp_table_sql_calls": exp_table_sql_calls,
+            "exp_table_sql_success": exp_table_sql_success,
+            "exp_table_hit_rate": exp_table_hit_rate,
+            "exp_table_sql_succ_rate": exp_table_sql_succ_rate,
             "target_kind": target_kind,
             "list_exact_match": list_exact_match,
             "list_alias_value_match": list_alias_value_match,

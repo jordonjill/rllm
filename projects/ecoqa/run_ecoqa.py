@@ -4,9 +4,50 @@ import json
 import os
 from pathlib import Path
 
-from rllm.utils import compute_pass_at_k
-
 from .eval_runtime import build_engine, load_split, task_id
+
+
+def _trajectory_is_correct(trajectory) -> bool:
+    steps = getattr(trajectory, "steps", None) or []
+    if steps:
+        info = getattr(steps[-1], "info", {}) or {}
+        if "is_correct" in info:
+            return bool(info.get("is_correct"))
+        metadata = info.get("metadata", {})
+        if isinstance(metadata, dict):
+            correctness_reward = metadata.get("correctness_reward")
+            if correctness_reward is not None:
+                try:
+                    return float(correctness_reward) >= 1.0
+                except (TypeError, ValueError):
+                    pass
+    # Fallback: for tasks without explicit is_correct, treat reward >= 1.0 as correct.
+    return float(getattr(trajectory, "reward", 0.0) or 0.0) >= 1.0
+
+
+def _print_pass_metrics(trajectories: list) -> None:
+    if not trajectories:
+        print("Total unique problems: 0")
+        print("Average Pass@1 Accuracy: 0.0")
+        print("Average Pass@k Accuracy: 0.0")
+        return
+
+    grouped: dict[str, list[bool]] = {}
+    total_correct = 0
+    for traj in trajectories:
+        task = getattr(traj, "task", {}) or {}
+        qid = task_id(task)
+        is_correct = _trajectory_is_correct(traj)
+        grouped.setdefault(qid, []).append(is_correct)
+        if is_correct:
+            total_correct += 1
+
+    pass_at_1 = total_correct / len(trajectories)
+    pass_at_k = sum(1 for group in grouped.values() if any(group)) / len(grouped)
+
+    print("Total unique problems:", len(grouped))
+    print("Average Pass@1 Accuracy:", pass_at_1)
+    print("Average Pass@k Accuracy:", pass_at_k)
 
 
 def _infer_termination_reason(trajectory, max_steps: int) -> str:
@@ -115,7 +156,7 @@ def main():
     tasks = dataset.repeat(n=args.repeat_n)
     results = asyncio.run(engine.execute_tasks(tasks))
 
-    compute_pass_at_k(results)
+    _print_pass_metrics(results)
 
     if args.save_steps_jsonl:
         _write_steps_jsonl(path=args.save_steps_jsonl, trajectories=results, max_steps=args.max_steps)

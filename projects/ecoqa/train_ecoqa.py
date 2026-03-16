@@ -215,9 +215,8 @@ class EcoQAWorkflow(MultiTurnWorkflow):
             episode.metrics["correctness_reward"] = correctness_reward
             episode.metrics["final_reward"] = float(metadata.get("final_reward", correctness_reward))
             episode.metrics["shaping_bonus"] = float(metadata.get("shaping_bonus", 0.0))
-            episode.metrics["right_table_access_reward"] = float(metadata.get("right_table_access_reward", 0.0))
-            episode.metrics["sql_success_rate"] = float(metadata.get("sql_success_rate", 0.0))
-            episode.metrics["sql_error_rate"] = float(metadata.get("sql_error_rate", 0.0))
+            episode.metrics["exp_table_hit_rate"] = float(metadata.get("exp_table_hit_rate", 0.0))
+            episode.metrics["exp_table_sql_succ_rate"] = float(metadata.get("exp_table_sql_succ_rate", 0.0))
 
             # Dataset composition monitoring.
             episode.metrics["target_is_scalar"] = 1.0 if target_kind == "scalar" else 0.0

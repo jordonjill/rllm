@@ -26,6 +26,24 @@ class ModelProfile:
     notes: str = ""
 
 
+def _trajectory_is_correct(trajectory) -> bool:
+    steps = getattr(trajectory, "steps", None) or []
+    if steps:
+        info = getattr(steps[-1], "info", {}) or {}
+        if "is_correct" in info:
+            return bool(info.get("is_correct"))
+        metadata = info.get("metadata", {})
+        if isinstance(metadata, dict):
+            correctness_reward = metadata.get("correctness_reward")
+            if correctness_reward is not None:
+                try:
+                    return float(correctness_reward) >= 1.0
+                except (TypeError, ValueError):
+                    pass
+    # Fallback: for tasks without explicit is_correct, treat reward >= 1.0 as correct.
+    return float(getattr(trajectory, "reward", 0.0) or 0.0) >= 1.0
+
+
 def _load_model_profiles(config_path: Path, include_disabled: bool = False) -> list[ModelProfile]:
     with open(config_path, encoding="utf-8") as f:
         payload = json.load(f)
@@ -90,7 +108,7 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     for traj in trajectories:
         reward = float(getattr(traj, "reward", 0.0) or 0.0)
-        is_correct = reward > 0
+        is_correct = _trajectory_is_correct(traj)
         task = getattr(traj, "task", {}) or {}
         question_id = task_id(task)
         kind = _target_kind(task)
@@ -143,7 +161,7 @@ def _write_details(path: Path, run_id: str, profile: ModelProfile, trajectories:
                 "question_type": task.get("question_type", ""),
                 "answer_type": task.get("answer_type", ""),
                 "reward": reward,
-                "is_correct": reward > 0,
+                "is_correct": _trajectory_is_correct(traj),
                 "target_kind": metadata.get("target_kind", ""),
                 "list_exact_match": metadata.get("list_exact_match", ""),
                 "final_answer_extracted": metadata.get("final_answer_extracted", ""),
@@ -222,7 +240,7 @@ def main():
     if not profiles:
         raise ValueError(f"No model profile is enabled in {config_path}.")
 
-    dataset = _load_split(args.split)
+    dataset = load_split(args.split)
     if args.max_samples > 0:
         dataset = dataset.select(range(min(args.max_samples, len(dataset))))
     if args.repeat_n > 1:

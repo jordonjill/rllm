@@ -16,31 +16,22 @@ class EcoQAEnvironment(ToolEnvironment):
             "get_table_names": GetTableNames,
             "sql_query": SQLQuery,
         }
-        super().__init__(task=task, tool_map=tool_map, reward_fn=eco_qa_reward_function, max_steps=12)
-        self.accessed_tables: list[str] = []
-        self.sql_total_calls = 0
-        self.sql_success_calls = 0
-        self.sql_error_calls = 0
+        super().__init__(task=task, tool_map=tool_map, reward_fn=eco_qa_reward_function, max_steps=10)
+        self.sql_call_records: list[dict[str, object]] = []
 
     def reset(self, task: dict | None = None):
         if task is not None:
             self.task = task
 
         if hasattr(self, "task") and self.task is not None:
-            self.task.pop("accessed_tables", None)
-            self.task.pop("sql_total_calls", None)
-            self.task.pop("sql_success_calls", None)
-            self.task.pop("sql_error_calls", None)
+            self.task.pop("sql_call_records", None)
 
-        self.accessed_tables = []
-        self.sql_total_calls = 0
-        self.sql_success_calls = 0
-        self.sql_error_calls = 0
+        self.sql_call_records = []
         self._sync_task_runtime_stats()
         return super().reset()
 
     def _execute_tool_calls(self, tool_calls: list[dict]) -> dict[str, str]:
-        sql_call_ids: list[str] = []
+        sql_call_info: dict[str, str] = {}
 
         for tool_call in tool_calls:
             tool_name = tool_call.get("function", {}).get("name")
@@ -53,23 +44,17 @@ class EcoQAEnvironment(ToolEnvironment):
                 continue
 
             table_name = str(tool_args.get("table_name", "")).strip().lower()
-            if table_name:
-                self.accessed_tables.append(table_name)
-
             if tool_name == "sql_query":
                 call_id = str(tool_call.get("id", "")).strip()
                 if call_id:
-                    sql_call_ids.append(call_id)
+                    sql_call_info[call_id] = table_name
 
         tool_outputs = super()._execute_tool_calls(tool_calls)
 
-        for call_id in sql_call_ids:
-            self.sql_total_calls += 1
+        for call_id, table_name in sql_call_info.items():
             output = str(tool_outputs.get(call_id, "")).strip()
-            if output.lower().startswith("error:"):
-                self.sql_error_calls += 1
-            else:
-                self.sql_success_calls += 1
+            is_success = not output.lower().startswith("error:")
+            self.sql_call_records.append({"table_name": table_name, "success": is_success})
 
         self._sync_task_runtime_stats()
         return tool_outputs
@@ -77,10 +62,7 @@ class EcoQAEnvironment(ToolEnvironment):
     def _sync_task_runtime_stats(self) -> None:
         if self.task is None:
             return
-        self.task["accessed_tables"] = self.accessed_tables
-        self.task["sql_total_calls"] = self.sql_total_calls
-        self.task["sql_success_calls"] = self.sql_success_calls
-        self.task["sql_error_calls"] = self.sql_error_calls
+        self.task["sql_call_records"] = self.sql_call_records
 
     @staticmethod
     def from_dict(env_args: dict) -> "EcoQAEnvironment":

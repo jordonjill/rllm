@@ -30,10 +30,8 @@ python3 -m projects.ecoqa.train_ecoqa \
     actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=1 \
     actor_rollout_ref.actor.use_dynamic_bsz=True \
     actor_rollout_ref.actor.ppo_max_token_len_per_gpu=12000 \
-    actor_rollout_ref.actor.use_kl_loss=True \
-    actor_rollout_ref.actor.kl_loss_coef=0.001 \
-    actor_rollout_ref.actor.kl_loss_type=low_var_kl \
-    actor_rollout_ref.actor.entropy_coeff=0.0002 \
+    actor_rollout_ref.actor.use_kl_loss=False \
+    actor_rollout_ref.actor.entropy_coeff=0.0001 \
     actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
     actor_rollout_ref.rollout.name=vllm \
     actor_rollout_ref.rollout.mode=async \
@@ -57,7 +55,7 @@ python3 -m projects.ecoqa.train_ecoqa \
     trainer.logger=['console','wandb'] \
     trainer.project_name='rllm-agent' \
     trainer.experiment_name='ecoqa-4b' \
-    trainer.val_before_train=True \
+    trainer.val_before_train=False \
     trainer.resume_mode=disable \
     trainer.n_gpus_per_node=1 \
     trainer.nnodes=1 \

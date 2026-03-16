@@ -32,6 +32,9 @@ python3 -m projects.ecoqa.train_ecoqa \
     actor_rollout_ref.actor.ppo_max_token_len_per_gpu=12000 \
     actor_rollout_ref.actor.use_kl_loss=False \
     actor_rollout_ref.actor.entropy_coeff=0.0001 \
+    actor_rollout_ref.actor.fsdp_config.model_dtype=bfloat16 \
+    actor_rollout_ref.actor.fsdp_config.dtype=bfloat16 \
+    actor_rollout_ref.rollout.dtype=bfloat16 \
     actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
     actor_rollout_ref.rollout.name=vllm \
     actor_rollout_ref.rollout.mode=async \
@@ -46,7 +49,7 @@ python3 -m projects.ecoqa.train_ecoqa \
     actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=1 \
     actor_rollout_ref.rollout.max_num_batched_tokens=3072 \
     actor_rollout_ref.rollout.max_num_seqs=64 \
-    actor_rollout_ref.rollout.enforce_eager=True \
+    actor_rollout_ref.rollout.enforce_eager=False \
     actor_rollout_ref.rollout.free_cache_engine=True \
     actor_rollout_ref.rollout.enable_prefix_caching=True \
     actor_rollout_ref.actor.checkpoint.save_contents=[model] \

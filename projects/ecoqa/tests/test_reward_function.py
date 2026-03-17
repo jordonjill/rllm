@@ -32,6 +32,14 @@ def test_scalar_allows_percent_symbol_when_numeric_value_matches():
     assert pred.reward == 1.0 and pred.is_correct
 
 
+def test_scalar_text_answer_supported():
+    task = _task("广东", "single_table", "scalar")
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":"广东"}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":"江苏"}')
+    assert pred.reward == 1.0 and pred.is_correct
+    assert wrong.reward == 0.0 and not wrong.is_correct
+
+
 def test_list_requires_exact_match():
     gt = '[{"a":1,"b":2},{"a":3,"b":4}]'
     task = _task(gt, "single_table", "list")
@@ -52,6 +60,13 @@ def test_list_allows_alias_when_row_values_align():
     assert alias_only.metadata.get("list_alias_value_match") is True
 
 
+def test_list_empty_exact_match_is_correct():
+    gt = "[]"
+    task = _task(gt, "single_table", "list")
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"list","rows":[]}')
+    assert pred.reward == 1.0 and pred.is_correct
+
+
 def test_list_no_partial_reward_for_incomplete_structure():
     gt = '[{"geo_name":"广东","m2_100m_cny":411709.31}]'
     task = _task(gt, "single_table", "list")
@@ -59,15 +74,15 @@ def test_list_no_partial_reward_for_incomplete_structure():
     assert wrong.reward == 0.0 and not wrong.is_correct
 
 
-def test_list_allows_temporal_equivalence_between_ref_date_and_year_month():
+def test_list_temporal_only_match_is_not_enough_anymore():
     gt = '[{"ref_date":"2017-09-01","wti_usd_per_bbl":61.969}]'
     task = _task(gt, "single_table", "list")
     pred = eco_qa_reward_function(
         task,
         'FINAL ANSWER: {"type":"list","rows":[{"year":2017,"month":9,"min_price":61.969}]}',
     )
-    assert pred.reward == 1.0 and pred.is_correct
-    assert pred.metadata.get("list_temporal_value_match") is True
+    assert pred.reward == 0.0 and not pred.is_correct
+    assert "list_temporal_value_match" not in pred.metadata
 
 
 def test_no_data_requires_no_data_answer():

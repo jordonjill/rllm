@@ -183,6 +183,24 @@ def _infer_target_kind(row: dict) -> str:
     return "unknown"
 
 
+def _row_is_correct(row: dict) -> bool:
+    steps = row.get("steps", [])
+    if steps:
+        info = (steps[-1].get("info", {}) or {})
+        if "is_correct" in info:
+            return bool(info.get("is_correct"))
+        metadata = info.get("metadata", {})
+        if isinstance(metadata, dict):
+            correctness_reward = metadata.get("correctness_reward")
+            if correctness_reward is not None:
+                try:
+                    return float(correctness_reward) >= 1.0
+                except (TypeError, ValueError):
+                    pass
+    # Fallback for legacy rows without explicit correctness info.
+    return float(row.get("reward", 0.0) or 0.0) >= 1.0
+
+
 def _categorize_failure(row: dict) -> tuple[str, dict]:
     final_answer = _extract_final_answer(row)
     pred_type, pred_rows, pred_scalar = _extract_pred_struct(final_answer)
@@ -263,7 +281,7 @@ def _categorize_failure(row: dict) -> tuple[str, dict]:
 def analyze(input_path: Path, top_n_examples: int = 3) -> dict:
     rows = [json.loads(line) for line in input_path.open(encoding="utf-8") if line.strip()]
     total = len(rows)
-    success = sum(1 for row in rows if float(row.get("reward", 0.0) or 0.0) > 0)
+    success = sum(1 for row in rows if _row_is_correct(row))
     failure = total - success
 
     answer_type_stats = defaultdict(lambda: {"total": 0, "success": 0})
@@ -273,7 +291,7 @@ def analyze(input_path: Path, top_n_examples: int = 3) -> dict:
     sql_call_distribution = Counter()
 
     for row in rows:
-        ok = float(row.get("reward", 0.0) or 0.0) > 0
+        ok = _row_is_correct(row)
         answer_type = str(row.get("answer_type", "unknown") or "unknown")
         question_type = str(row.get("question_type", "unknown") or "unknown")
 
@@ -298,7 +316,7 @@ def analyze(input_path: Path, top_n_examples: int = 3) -> dict:
     failure_categories = Counter()
     examples = defaultdict(list)
     for row in rows:
-        if float(row.get("reward", 0.0) or 0.0) > 0:
+        if _row_is_correct(row):
             continue
         category, payload = _categorize_failure(row)
         failure_categories[category] += 1

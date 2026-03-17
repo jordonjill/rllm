@@ -1191,7 +1191,9 @@ questions:
     FROM exchange_rates
     WHERE year = 2025 AND fx_vol_1m_pct > 6.0
   sql2: |-
-    SELECT 12 AS total_months
+    SELECT COUNT(*) AS total_months
+    FROM exchange_rates
+    WHERE year = 2025
 - id: 55
   question: 2024年CFETS人民币汇率指数的波动幅度（最大值-最小值）占年度平均值的百分比是多少？
   answer_type: scalar

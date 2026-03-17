@@ -28,6 +28,20 @@ def _as_int(value, default: int) -> int:
         return default
 
 
+def _as_bool(value, default: bool = False) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"1", "true", "yes", "y", "on"}:
+            return True
+        if normalized in {"0", "false", "no", "n", "off", ""}:
+            return False
+    return default
+
+
 def _infer_sql_difficulty(example: dict) -> str:
     question_type = str(example.get("question_type", "")).strip().lower()
     if question_type == "single_table_error":
@@ -56,6 +70,10 @@ def _infer_sql_difficulty(example: dict) -> str:
 
     if " and " in sql or " or " in sql:
         score += 1
+
+    # Multi-SQL + calculator questions are harder even if each SQL is simple.
+    if _as_bool(example.get("requires_calculator", False), default=False):
+        score += 1.0
 
     if answer_type == "list":
         score += 0.5
@@ -219,7 +237,6 @@ class EcoQAWorkflow(MultiTurnWorkflow):
                 episode.metrics["list_acc"] = correctness_reward
                 episode.metrics["list_exact_match"] = float(bool(metadata.get("list_exact_match", False)))
                 episode.metrics["list_alias_value_match"] = float(bool(metadata.get("list_alias_value_match", False)))
-                episode.metrics["list_temporal_value_match"] = float(bool(metadata.get("list_temporal_value_match", False)))
             elif target_kind == "no_data":
                 episode.metrics["no_data_acc"] = correctness_reward
 

@@ -16,5 +16,3 @@ TEST_QUESTIONS_PATH = QA_PAIRS_DIR / "test_ecoqa.csv"
 
 # Prompts
 REACT_SYSTEM_PROMPT_PATH = PROMPTS_DIR / "react_system_prompt.txt"
-QUESTION_GENERATION_PROMPT_PATH = PROMPTS_DIR / "question_generation_prompt.txt"
-QUESTION_VERIFICATION_PROMPT_PATH = PROMPTS_DIR / "question_verification_prompt.txt"

@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from projects.ecoqa.run_ecoqa import _print_pass_metrics, _trajectory_is_correct as run_is_correct
+from projects.ecoqa.run_ecoqa import _print_eval_metrics, _trajectory_is_correct as run_is_correct
 from projects.ecoqa.run_ecoqa_benchmark import _compute_metrics, _trajectory_is_correct as benchmark_is_correct
 
 
@@ -54,12 +54,12 @@ def test_run_metrics_use_is_correct_flag_not_reward_sign(capsys):
         _trajectory("q2", reward=0.05, is_correct=True),
     ]
 
-    _print_pass_metrics(trajectories)
+    _print_eval_metrics(trajectories)
     captured = capsys.readouterr().out
 
     assert "Total unique problems: 2" in captured
-    assert "Average Pass@1 Accuracy: 0.3333333333333333" in captured
-    assert "Average Pass@k Accuracy: 0.5" in captured
+    assert "Pass@1: 0.3333333333333333" in captured
+    assert "Pass@k: 0.5" in captured
 
 
 def test_run_is_correct_supports_correctness_reward_metadata_fallback():

@@ -59,18 +59,43 @@ python -m projects.ecoqa.run_ecoqa
 Save full per-step traces to JSONL (tools/actions/outputs per step):
 
 ```bash
-python -m projects.ecoqa.run_ecoqa \
-  --save-steps-jsonl projects/ecoqa/benchmarks/results/ecoqa_steps.jsonl
+ECOQA_SAVE_STEPS_JSONL=projects/ecoqa/benchmarks/results/ecoqa_steps.jsonl \
+python -m projects.ecoqa.run_ecoqa
 ```
 
-If you are using Ollama (OpenAI-compatible endpoint):
+`run_ecoqa.py` currently reads runtime config from env vars (not CLI args).
+
+Run current base model (default path in `run_ecoqa.py`):
 
 ```bash
-python -m projects.ecoqa.run_ecoqa \
-  --model qwen3-4b:latest \
-  --base-url http://localhost:11434/v1 \
-  --tokenizer-model Qwen/Qwen3-4B-Instruct-2507
+python -m vllm.entrypoints.openai.api_server \
+  --model /root/autodl-tmp/models/Qwen3-4B-Instruct-2507 \
+  --host 0.0.0.0 \
+  --port 30000 \
+  --dtype bfloat16
+
+python -m projects.ecoqa.run_ecoqa
 ```
+
+Run trained checkpoint:
+
+```bash
+python -m vllm.entrypoints.openai.api_server \
+  --model /root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b \
+  --host 0.0.0.0 \
+  --port 30000 \
+  --dtype bfloat16
+
+ECOQA_MODEL_SOURCE=ckpt \
+ECOQA_CKPT_MODEL_PATH=/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b \
+ECOQA_BASE_URL=http://127.0.0.1:30000/v1 \
+ECOQA_TOKENIZER_MODEL=/root/autodl-tmp/models/Qwen3-4B-Instruct-2507 \
+ECOQA_API_KEY=EMPTY \
+python -m projects.ecoqa.run_ecoqa
+```
+
+If your model path or endpoint differs from the defaults in `run_ecoqa.py`,
+override `ECOQA_BASE_MODEL_PATH`, `ECOQA_CKPT_MODEL_PATH`, and `ECOQA_BASE_URL`.
 
 4. Run GRPO training:
 

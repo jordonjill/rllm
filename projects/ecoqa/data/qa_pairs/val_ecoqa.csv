@@ -89,7 +89,7 @@ FROM exchange_rates
 ORDER BY fx_reserve_100m_usd DESC
 LIMIT 1","[{""year"": 2025, ""month"": 12, ""fx_reserve_100m_usd"": 33308.09}]",list,False,exchange_rates_qa.yaml
 748,51,real_estate,single_table,2024年全国新房销售面积是二手房销售面积的多少倍？,"{""sql1"": ""SELECT SUM(new_home_sales_10k_sqm) AS new_sales\nFROM real_estate\nWHERE year = 2024 AND geo_level = 'national'"", ""sql2"": ""SELECT SUM(existing_home_sales_10k_sqm) AS existing_sales\nFROM real_estate\nWHERE year = 2024 AND geo_level = 'national'""}",0.7325678062646748,scalar,True,real_estate_qa.yaml
-749,54,exchange_rates,single_table,2025年人民币汇率1个月波动率超过6%的月份占全年的百分比是多少？,"{""sql1"": ""SELECT COUNT(*) AS high_vol_months\nFROM exchange_rates\nWHERE year = 2025 AND fx_vol_1m_pct > 6.0"", ""sql2"": ""SELECT 12 AS total_months""}",33.33333333333333,scalar,True,exchange_rates_qa.yaml
+749,54,exchange_rates,single_table,2025年人民币汇率1个月波动率超过6%的月份占全年的百分比是多少？,"{""sql1"": ""SELECT COUNT(*) AS high_vol_months\nFROM exchange_rates\nWHERE year = 2025 AND fx_vol_1m_pct > 6.0"", ""sql2"": ""SELECT COUNT(*) AS total_months\nFROM exchange_rates\nWHERE year = 2025""}",33.33333333333333,scalar,True,exchange_rates_qa.yaml
 750,4,retail_sales,single_table,2022年12月北京的食品类零售额和服务零售额各是多少？,"SELECT food_sales_100m_cny, service_retail_100m_cny
 FROM retail_sales
 WHERE year = 2022 AND month = 12 AND geo_level = 'province' AND geo_name = '北京'","[{""food_sales_100m_cny"": 444.54, ""service_retail_100m_cny"": 823.99}]",list,False,retail_sales_qa.yaml

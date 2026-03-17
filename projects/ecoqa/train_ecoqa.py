@@ -98,7 +98,6 @@ class EcoQAWorkflow(MultiTurnWorkflow):
                 episode.metrics["list_acc"] = correctness_reward
                 episode.metrics["list_exact_match"] = float(bool(metadata.get("list_exact_match", False)))
                 episode.metrics["list_alias_value_match"] = float(bool(metadata.get("list_alias_value_match", False)))
-                episode.metrics["list_temporal_value_match"] = float(bool(metadata.get("list_temporal_value_match", False)))
             elif target_kind == "no_data":
                 episode.metrics["no_data_acc"] = correctness_reward
 

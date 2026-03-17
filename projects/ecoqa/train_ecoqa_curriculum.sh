@@ -85,9 +85,9 @@ python3 -m projects.ecoqa.train_ecoqa_curriculum \
     ++ecoqa_curriculum.phase=0.5 \
     ++ecoqa_curriculum.size_multiplier=1.2 \
     ++ecoqa_curriculum.seed=0 \
-    ++ecoqa_curriculum.difficulty_weight_start.easy=1.1 \
+    ++ecoqa_curriculum.difficulty_weight_start.easy=1.2 \
     ++ecoqa_curriculum.difficulty_weight_start.medium=1.0 \
-    ++ecoqa_curriculum.difficulty_weight_start.hard=0.9 \
+    ++ecoqa_curriculum.difficulty_weight_start.hard=0.8 \
     trainer.total_epochs=1
 
 # Stage 2 (epoch 2): raw dataset (1:1 distribution), resume from stage-1 checkpoint.

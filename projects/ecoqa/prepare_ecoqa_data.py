@@ -2,8 +2,10 @@ import pandas as pd
 from rllm.data.dataset import DatasetRegistry
 from .constants import TEST_QUESTIONS_PATH, TRAIN_QUESTIONS_PATH, VAL_QUESTIONS_PATH
 
+
 def _load_csv(path):
     return pd.read_csv(path)
+
 
 def _safe_str(value) -> str:
     if value is None:
@@ -11,6 +13,22 @@ def _safe_str(value) -> str:
     if isinstance(value, float) and pd.isna(value):
         return ""
     return str(value).strip()
+
+
+def _safe_bool(value) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, float) and pd.isna(value):
+        return False
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes", "y", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "n", "off", ""}:
+        return False
+    return False
+
 
 def _ensure_qa_files_exist() -> None:
     missing_paths = [path for path in (TRAIN_QUESTIONS_PATH, VAL_QUESTIONS_PATH, TEST_QUESTIONS_PATH) if not path.exists()]
@@ -45,6 +63,7 @@ def prepare_ecoqa_data(force_regenerate: bool = False):
             "answer_type": _safe_str(example.get("answer_type")).lower(),
             "table_name": _safe_str(example.get("table_name")),
             "ground_truth_sql": _safe_str(example.get("ground_truth_sql")),
+            "requires_calculator": _safe_bool(example.get("requires_calculator")),
         }
 
     train_processed = [preprocess_fn(row) for _, row in train_df.iterrows()]

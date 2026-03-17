@@ -12,6 +12,10 @@ export WANDB_DIR=/root/autodl-tmp/wandb
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export OMP_NUM_THREADS=10
+export SHAPING_ENABLE=${SHAPING_ENABLE:-True}
+export SHAPING_MAX_BONUS=${SHAPING_MAX_BONUS:-0.20}
+export ECOQA_ENABLE_SHAPING_BONUS=${SHAPING_ENABLE}
+export ECOQA_MAX_SHAPING_BONUS=${SHAPING_MAX_BONUS}
 
 python3 -m projects.ecoqa.train_ecoqa \
     algorithm.adv_estimator=grpo \
@@ -71,16 +75,4 @@ python3 -m projects.ecoqa.train_ecoqa \
     rllm.workflow.n_parallel_tasks=64 \
     rllm.mask_truncated_samples=True \
     rllm.compact_filtering.enable=True \
-    ++ecoqa_curriculum.enable=True \
-    ++ecoqa_curriculum.phase=0.30 \
-    ++ecoqa_curriculum.size_multiplier=1.2 \
-    ++ecoqa_curriculum.seed=0 \
-    ++ecoqa_curriculum.dataset_name=ecoqa_curriculum \
-    ++ecoqa_curriculum.dataset_split=train \
-    ++ecoqa_curriculum.difficulty_weight_start.easy=1.1 \
-    ++ecoqa_curriculum.difficulty_weight_start.medium=1.0 \
-    ++ecoqa_curriculum.difficulty_weight_start.hard=0.9 \
-    ++ecoqa_curriculum.difficulty_weight_end.easy=1.0 \
-    ++ecoqa_curriculum.difficulty_weight_end.medium=1.0 \
-    ++ecoqa_curriculum.difficulty_weight_end.hard=1.0 \
     trainer.total_epochs=2

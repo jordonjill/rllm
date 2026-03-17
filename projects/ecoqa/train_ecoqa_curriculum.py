@@ -1,4 +1,8 @@
+import random
+import re
+
 import hydra
+
 from rllm.agents.agent import Episode
 from rllm.data.dataset import DatasetRegistry
 from rllm.engine.rollout.rollout_engine import ModelOutput
@@ -8,6 +12,123 @@ from rllm.workflows.workflow import TerminationEvent, TerminationReason
 
 from .eco_qa_agent import EcoQAAgent
 from .eco_qa_environment import EcoQAEnvironment
+
+
+def _as_float(value, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_int(value, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _infer_sql_difficulty(example: dict) -> str:
+    question_type = str(example.get("question_type", "")).strip().lower()
+    if question_type == "single_table_error":
+        return "easy"
+
+    sql = str(example.get("ground_truth_sql", "")).strip().lower()
+    answer_type = str(example.get("answer_type", "")).strip().lower()
+    score = 0.0
+
+    # Heuristic complexity score from SQL operators.
+    sql_patterns = (
+        r"\bgroup\s+by\b",
+        r"\bhaving\b",
+        r"\border\s+by\b",
+        r"\bcount\s*\(",
+        r"\bsum\s*\(",
+        r"\bavg\s*\(",
+        r"\bmin\s*\(",
+        r"\bmax\s*\(",
+        r"\bdistinct\b",
+        r"\bcase\b",
+    )
+    for pattern in sql_patterns:
+        if re.search(pattern, sql):
+            score += 1
+
+    if " and " in sql or " or " in sql:
+        score += 1
+
+    if answer_type == "list":
+        score += 0.5
+
+    if score <= 1:
+        return "easy"
+    if score <= 3:
+        return "medium"
+    return "hard"
+
+
+def _build_curriculum_train_dataset(config, train_dataset):
+    curriculum_cfg = config.get("ecoqa_curriculum", None)
+    if not curriculum_cfg or not bool(curriculum_cfg.get("enable", False)):
+        return train_dataset
+
+    raw_data = train_dataset.get_data()
+    if not raw_data:
+        return train_dataset
+
+    phase = min(1.0, max(0.0, _as_float(curriculum_cfg.get("phase", 0.35), 0.35)))
+    raw_size_multiplier = _as_float(curriculum_cfg.get("size_multiplier", 1.2), 1.2)
+    size_multiplier = raw_size_multiplier
+    if size_multiplier <= 1.0:
+        size_multiplier = 1.2
+    seed = _as_int(curriculum_cfg.get("seed", 42), 42)
+
+    difficulty_weight_start = curriculum_cfg.get("difficulty_weight_start", {})
+    difficulty_weight_end = curriculum_cfg.get("difficulty_weight_end", {})
+
+    def weight_from_map(weight_cfg, diff_key: str) -> float:
+        return _as_float(weight_cfg.get(diff_key, 1.0), 1.0)
+
+    rng = random.Random(seed)
+    base_size = len(raw_data)
+    target_size = max(base_size + 1, int(round(base_size * size_multiplier)))
+    sampled_data = []
+
+    stage1_ratio = phase
+    stage1_size = int(round(target_size * stage1_ratio))
+    stage2_size = target_size - stage1_size
+
+    start_weights = []
+    end_weights = []
+    for example in raw_data:
+        diff_key = _infer_sql_difficulty(example)
+        start_weights.append(max(weight_from_map(difficulty_weight_start, diff_key), 1e-6))
+        end_weights.append(max(weight_from_map(difficulty_weight_end, diff_key), 1e-6))
+
+    stage1_indices = rng.choices(range(base_size), weights=start_weights, k=stage1_size) if stage1_size > 0 else []
+    stage2_indices = rng.choices(range(base_size), weights=end_weights, k=stage2_size) if stage2_size > 0 else []
+
+    sampled_data.extend(dict(raw_data[idx]) for idx in stage1_indices)
+    sampled_data.extend(dict(raw_data[idx]) for idx in stage2_indices)
+
+    print(
+        "[EcoQACurriculum] enabled, "
+        f"phase={phase:.3f}, size_multiplier={size_multiplier:.3f}, "
+        f"base_size={base_size}, sampled_size={len(sampled_data)}, "
+        f"stage1_size={stage1_size}, stage2_size={stage2_size}, "
+        f"dataset={str(curriculum_cfg.get('dataset_name', 'ecoqa_curriculum')).strip() or 'ecoqa_curriculum'}/{str(curriculum_cfg.get('dataset_split', 'train')).strip() or 'train'}"
+    )
+    if raw_size_multiplier <= 1.0:
+        print(
+            "[EcoQACurriculum] size_multiplier<=1 detected; "
+            f"auto-adjusted from {raw_size_multiplier:.3f} to {size_multiplier:.3f} to ensure extra curriculum samples."
+        )
+
+    dataset_name = str(curriculum_cfg.get("dataset_name", "ecoqa_curriculum")).strip() or "ecoqa_curriculum"
+    dataset_split = str(curriculum_cfg.get("dataset_split", "train")).strip() or "train"
+    sampled_dataset = DatasetRegistry.register_dataset(dataset_name, sampled_data, dataset_split)
+    return sampled_dataset
+
 
 class EcoQAWorkflow(MultiTurnWorkflow):
     """MultiTurnWorkflow with reward metadata logging."""
@@ -116,6 +237,14 @@ def main(config):
         from .prepare_ecoqa_data import prepare_ecoqa_data
 
         train_dataset, val_dataset, _ = prepare_ecoqa_data()
+
+    train_dataset = _build_curriculum_train_dataset(config, train_dataset)
+
+    curriculum_cfg = config.get("ecoqa_curriculum", None)
+    if curriculum_cfg and bool(curriculum_cfg.get("enable", False)):
+        data_cfg = config.get("data", {})
+        if bool(data_cfg.get("shuffle", True)):
+            print("[EcoQACurriculum] warning: data.shuffle=True will break stage order; set data.shuffle=False.")
 
     config.rllm.workflow.use_workflow = True
 

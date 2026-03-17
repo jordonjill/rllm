@@ -1,5 +1,4 @@
 import asyncio
-import argparse
 import json
 import os
 from pathlib import Path
@@ -21,19 +20,39 @@ def _trajectory_is_correct(trajectory) -> bool:
                     return float(correctness_reward) >= 1.0
                 except (TypeError, ValueError):
                     pass
-    # Fallback: for tasks without explicit is_correct, treat reward >= 1.0 as correct.
-    return float(getattr(trajectory, "reward", 0.0) or 0.0) >= 1.0
+    return False
 
 
-def _print_pass_metrics(trajectories: list) -> None:
+def _extract_float_metadata(trajectory, key: str) -> float | None:
+    steps = getattr(trajectory, "steps", None) or []
+    if not steps:
+        return None
+    info = getattr(steps[-1], "info", {}) or {}
+    metadata = info.get("metadata", {})
+    if not isinstance(metadata, dict):
+        return None
+    value = metadata.get(key)
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _print_eval_metrics(trajectories: list) -> None:
     if not trajectories:
         print("Total unique problems: 0")
-        print("Average Pass@1 Accuracy: 0.0")
-        print("Average Pass@k Accuracy: 0.0")
+        print("Pass@1: 0.0")
+        print("Pass@k: 0.0")
+        print("Expected Table Hit Rate: 0.0")
+        print("Expected Table SQL Success Rate: 0.0")
         return
 
     grouped: dict[str, list[bool]] = {}
     total_correct = 0
+    hit_rates: list[float] = []
+    sql_succ_rates: list[float] = []
     for traj in trajectories:
         task = getattr(traj, "task", {}) or {}
         qid = task_id(task)
@@ -41,13 +60,23 @@ def _print_pass_metrics(trajectories: list) -> None:
         grouped.setdefault(qid, []).append(is_correct)
         if is_correct:
             total_correct += 1
+        hit_rate = _extract_float_metadata(traj, "exp_table_hit_rate")
+        if hit_rate is not None:
+            hit_rates.append(hit_rate)
+        sql_succ_rate = _extract_float_metadata(traj, "exp_table_sql_succ_rate")
+        if sql_succ_rate is not None:
+            sql_succ_rates.append(sql_succ_rate)
 
     pass_at_1 = total_correct / len(trajectories)
     pass_at_k = sum(1 for group in grouped.values() if any(group)) / len(grouped)
+    avg_hit_rate = sum(hit_rates) / len(hit_rates) if hit_rates else 0.0
+    avg_sql_succ_rate = sum(sql_succ_rates) / len(sql_succ_rates) if sql_succ_rates else 0.0
 
     print("Total unique problems:", len(grouped))
-    print("Average Pass@1 Accuracy:", pass_at_1)
-    print("Average Pass@k Accuracy:", pass_at_k)
+    print("Pass@1:", pass_at_1)
+    print("Pass@k:", pass_at_k)
+    print("Expected Table Hit Rate:", avg_hit_rate)
+    print("Expected Table SQL Success Rate:", avg_sql_succ_rate)
 
 
 def _infer_termination_reason(trajectory, max_steps: int) -> str:
@@ -105,61 +134,56 @@ def _write_steps_jsonl(path: str, trajectories: list, max_steps: int) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run full EcoQA inference-eval pipeline for one model.")
-    parser.add_argument("--split", choices=["train", "val", "test"], default="test")
-    parser.add_argument("--repeat-n", type=int, default=1, help="Repeat each sample N times for pass@k.")
-    parser.add_argument("--max-samples", type=int, default=0, help="Use first N samples for quick checks; 0 means all.")
-    parser.add_argument("--n-parallel-agents", type=int, default=64)
-    parser.add_argument("--max-steps", type=int, default=12)
-    parser.add_argument("--max-prompt-length", type=int, default=4096)
-    parser.add_argument("--temperature", type=float, default=0.6)
-    parser.add_argument("--top-p", type=float, default=0.95)
-    parser.add_argument("--model", type=str, default=os.getenv("ECOQA_MODEL", "qwen3-4b:latest"))
-    parser.add_argument("--base-url", type=str, default=os.getenv("ECOQA_BASE_URL", "http://localhost:11434/v1"))
-    parser.add_argument(
-        "--tokenizer-model",
-        type=str,
-        default=os.getenv("ECOQA_TOKENIZER_MODEL", "Qwen/Qwen3-4B-Instruct-2507"),
-        help="HF tokenizer repo/path. Keep this separate from serving model name (e.g. Ollama tag).",
-    )
-    parser.add_argument("--api-key", type=str, default=os.getenv("ECOQA_API_KEY", "ollama"))
-    parser.add_argument(
-        "--save-steps-jsonl",
-        type=str,
-        default="",
-        help="Optional path to save full per-trajectory step traces as JSONL.",
-    )
-    args = parser.parse_args()
-
     os.environ["TOKENIZERS_PARALLELISM"] = "true"
+    # Fixed eval settings aligned with EcoQA training setup.
+    split = "test"
+    repeat_n = 8
+    n_parallel_agents = 64
+    max_steps = 10
+    max_prompt_length = 2048
+    temperature = 0.6
+    top_p = 0.95
 
-    model_name = args.model
-    base_url = args.base_url
+    # Keep model selection simple via env var: ECOQA_MODEL_SOURCE=base|ckpt.
+    model_source = os.getenv("ECOQA_MODEL_SOURCE", "base").strip().lower()
+    if model_source not in {"base", "ckpt"}:
+        model_source = "base"
+
+    base_model_path = os.getenv("ECOQA_BASE_MODEL_PATH", "/root/autodl-tmp/models/Qwen3-4B-Instruct-2507")
+    ckpt_model_path = os.getenv("ECOQA_CKPT_MODEL_PATH", "/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b")
+    model_name = base_model_path if model_source == "base" else ckpt_model_path
+
+    base_url = os.getenv("ECOQA_BASE_URL", "http://127.0.0.1:30000/v1")
+    tokenizer_model = os.getenv("ECOQA_TOKENIZER_MODEL", "/root/autodl-tmp/models/Qwen3-4B-Instruct-2507")
+    api_key = os.getenv("ECOQA_API_KEY", "EMPTY")
+    save_steps_jsonl = os.getenv("ECOQA_SAVE_STEPS_JSONL", "").strip()
+
+    print(f"[EcoQA] split={split}, repeat_n={repeat_n}, max_steps={max_steps}, max_prompt_length={max_prompt_length}")
+    print(f"[EcoQA] sampling: temperature={temperature}, top_p={top_p}")
+    print(f"[EcoQA] model_source={model_source}")
+    print(f"[EcoQA] model={model_name}")
+    print(f"[EcoQA] base_url={base_url} (expect vLLM with dtype=bfloat16)")
 
     engine = build_engine(
         model=model_name,
         base_url=base_url,
-        api_key=args.api_key,
-        tokenizer_model=args.tokenizer_model,
-        temperature=args.temperature,
-        top_p=args.top_p,
-        n_parallel_agents=args.n_parallel_agents,
-        max_steps=args.max_steps,
-        max_prompt_length=args.max_prompt_length,
+        api_key=api_key,
+        tokenizer_model=tokenizer_model,
+        temperature=temperature,
+        top_p=top_p,
+        n_parallel_agents=n_parallel_agents,
+        max_steps=max_steps,
+        max_prompt_length=max_prompt_length,
     )
 
-    dataset = load_split(args.split)
-
-    if args.max_samples > 0:
-        dataset = dataset.select(range(min(args.max_samples, len(dataset))))
-
-    tasks = dataset.repeat(n=args.repeat_n)
+    dataset = load_split(split)
+    tasks = dataset.repeat(n=repeat_n)
     results = asyncio.run(engine.execute_tasks(tasks))
 
-    _print_pass_metrics(results)
+    _print_eval_metrics(results)
 
-    if args.save_steps_jsonl:
-        _write_steps_jsonl(path=args.save_steps_jsonl, trajectories=results, max_steps=args.max_steps)
+    if save_steps_jsonl:
+        _write_steps_jsonl(path=save_steps_jsonl, trajectories=results, max_steps=max_steps)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,100 @@
+#!/bin/bash
+set -x
+
+unset ROCR_VISIBLE_DEVICES
+export VLLM_ATTENTION_BACKEND=FLASH_ATTN
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:False"
+export VLLM_USE_V1=1
+export VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
+export VLLM_ENGINE_ITERATION_TIMEOUT_S=100000000000
+export RAY_TMPDIR=/root/autodl-tmp/ray
+export WANDB_DIR=/root/autodl-tmp/wandb
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+export OMP_NUM_THREADS=10
+export SHAPING_ENABLE=${SHAPING_ENABLE:-True}
+export SHAPING_MAX_BONUS=${SHAPING_MAX_BONUS:-0.20}
+export ECOQA_ENABLE_SHAPING_BONUS=${SHAPING_ENABLE}
+export ECOQA_MAX_SHAPING_BONUS=${SHAPING_MAX_BONUS}
+
+COMMON_ARGS=(
+    algorithm.adv_estimator=grpo
+    data.train_batch_size=8
+    data.val_batch_size=8
+    data.max_prompt_length=2048
+    data.max_response_length=3072
+    actor_rollout_ref.model.path=/root/autodl-tmp/models/Qwen3-4B-Instruct-2507
+    actor_rollout_ref.model.use_remove_padding=True
+    actor_rollout_ref.hybrid_engine=True
+    actor_rollout_ref.model.lora_rank=16
+    actor_rollout_ref.model.lora_alpha=32
+    actor_rollout_ref.model.target_modules=all-linear
+    actor_rollout_ref.actor.optim.lr=5e-6
+    actor_rollout_ref.actor.ppo_mini_batch_size=4
+    actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=2
+    actor_rollout_ref.actor.use_dynamic_bsz=True
+    actor_rollout_ref.actor.ppo_max_token_len_per_gpu=12000
+    actor_rollout_ref.actor.use_kl_loss=False
+    actor_rollout_ref.actor.entropy_coeff=0.0001
+    actor_rollout_ref.actor.fsdp_config.model_dtype=bfloat16
+    actor_rollout_ref.actor.fsdp_config.dtype=bfloat16
+    actor_rollout_ref.rollout.dtype=bfloat16
+    actor_rollout_ref.rollout.tensor_model_parallel_size=1
+    actor_rollout_ref.rollout.name=vllm
+    actor_rollout_ref.rollout.mode=async
+    actor_rollout_ref.rollout.temperature=0.7
+    actor_rollout_ref.rollout.top_p=0.95
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.80
+    actor_rollout_ref.rollout.n=8
+    actor_rollout_ref.rollout.val_kwargs.n=8
+    actor_rollout_ref.rollout.val_kwargs.temperature=0.6
+    actor_rollout_ref.rollout.val_kwargs.top_p=0.95
+    actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu=2
+    actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=2
+    actor_rollout_ref.rollout.max_num_batched_tokens=16384
+    actor_rollout_ref.rollout.max_num_seqs=64
+    actor_rollout_ref.model.use_fused_kernels=True
+    actor_rollout_ref.rollout.enforce_eager=False
+    actor_rollout_ref.rollout.free_cache_engine=False
+    actor_rollout_ref.rollout.enable_prefix_caching=True
+    actor_rollout_ref.actor.checkpoint.save_contents=[model]
+    actor_rollout_ref.actor.checkpoint.load_contents=[model]
+    trainer.max_actor_ckpt_to_keep=1
+    trainer.logger=['console','wandb']
+    trainer.project_name='rllm-agent'
+    trainer.experiment_name='ecoqa-4b-curriculum'
+    trainer.val_before_train=False
+    trainer.n_gpus_per_node=1
+    trainer.nnodes=1
+    trainer.test_freq=90
+    trainer.default_hdfs_dir=null
+    trainer.default_local_dir=/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b-curriculum
+    rllm.agent.max_steps=10
+    rllm.workflow.n_parallel_tasks=64
+    rllm.mask_truncated_samples=True
+    rllm.compact_filtering.enable=True
+)
+
+# Stage 1 (epoch 1): curriculum enabled, first 50% easy-biased then 50% raw ratio.
+python3 -m projects.ecoqa.train_ecoqa_curriculum \
+    "${COMMON_ARGS[@]}" \
+    data.shuffle=False \
+    trainer.resume_mode=disable \
+    trainer.save_freq=108 \
+    ++ecoqa_curriculum.enable=True \
+    ++ecoqa_curriculum.phase=0.5 \
+    ++ecoqa_curriculum.size_multiplier=1.2 \
+    ++ecoqa_curriculum.seed=0 \
+    ++ecoqa_curriculum.difficulty_weight_start.easy=1.1 \
+    ++ecoqa_curriculum.difficulty_weight_start.medium=1.0 \
+    ++ecoqa_curriculum.difficulty_weight_start.hard=0.9 \
+    trainer.total_epochs=1
+
+# Stage 2 (epoch 2): raw dataset (1:1 distribution), resume from stage-1 checkpoint.
+python3 -m projects.ecoqa.train_ecoqa_curriculum \
+    "${COMMON_ARGS[@]}" \
+    data.shuffle=True \
+    trainer.resume_mode=auto \
+    trainer.save_freq=90 \
+    ++ecoqa_curriculum.enable=False \
+    trainer.total_epochs=1

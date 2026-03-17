@@ -1,5 +1,6 @@
 import json
 import math
+import os
 import re
 from collections import Counter
 
@@ -28,7 +29,31 @@ _YEAR_QUARTER_RE = re.compile(r"^\s*(\d{4})\s*[-_/ ]?q([1-4])\s*$", re.IGNORECAS
 _YEAR_ONLY_RE = re.compile(r"^\s*(\d{4})\s*$")
 _MONTH_CN_RE = re.compile(r"^\s*(1[0-2]|0?[1-9])月\s*$")
 
-_MAX_SHAPING_BONUS = 0.15
+def _as_env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    lowered = value.strip().lower()
+    if lowered in {"1", "true", "yes", "y", "on"}:
+        return True
+    if lowered in {"0", "false", "no", "n", "off"}:
+        return False
+    return default
+
+
+def _as_env_float(name: str, default: float) -> float:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    try:
+        parsed = float(value)
+    except ValueError:
+        return default
+    return parsed
+
+
+_SHAPING_ENABLED = _as_env_bool("ECOQA_ENABLE_SHAPING_BONUS", True)
+_MAX_SHAPING_BONUS = max(0.0, _as_env_float("ECOQA_MAX_SHAPING_BONUS", 0.15))
 
 
 def _extract_final_answer(action: str) -> str:
@@ -479,7 +504,7 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     # Shaping reward for incorrect answers is based only on SQL success ratio
     # over expected table calls.
     shaping_bonus = 0.0
-    if not is_correct and exp_table_sql_calls > 0:
+    if _SHAPING_ENABLED and not is_correct and exp_table_sql_calls > 0:
         shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, _MAX_SHAPING_BONUS * exp_table_sql_succ_rate))
 
     final_reward = correctness_reward if is_correct else shaping_bonus
@@ -496,6 +521,8 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
             "exp_table_sql_success": exp_table_sql_success,
             "exp_table_hit_rate": exp_table_hit_rate,
             "exp_table_sql_succ_rate": exp_table_sql_succ_rate,
+            "shaping_enabled": float(_SHAPING_ENABLED),
+            "max_shaping_bonus": _MAX_SHAPING_BONUS,
             "target_kind": target_kind,
             "list_exact_match": list_exact_match,
             "list_alias_value_match": list_alias_value_match,

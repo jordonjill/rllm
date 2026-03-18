@@ -51,7 +51,7 @@ uv pip install -e ".[dev]"
 2. Regenerate QA pairs from YAML and then register datasets:
 
 ```bash
-python3 projects/ecoqa/data/generate_qa_pairs_from_yaml.py
+python projects/ecoqa/data/generate_qa_pairs_from_yaml.py
 ```
 
 By default this script reads `projects/ecoqa/data/yaml/*.yaml`, applies a reproducible random split (seed=20260318), and writes:
@@ -81,15 +81,23 @@ python -m projects.ecoqa.run_ecoqa
 
 `run_ecoqa.py` currently reads runtime config from env vars (not CLI args).
 
-Run current base model (default path in `run_ecoqa.py`):
+Run current base model with vLLM (recommended explicit `served-model-name`):
 
 ```bash
 python -m vllm.entrypoints.openai.api_server \
   --model /root/autodl-tmp/models/Qwen3-4B-Instruct-2507 \
+  --served-model-name ecoqa-qwen \
   --host 0.0.0.0 \
   --port 30000 \
-  --dtype bfloat16
+  --dtype bfloat16 \
+  --max-model-len 16384 \
+  --gpu-memory-utilization 0.92
 
+ECOQA_MODEL_SOURCE=base \
+ECOQA_BASE_MODEL_PATH=ecoqa-qwen \
+ECOQA_BASE_URL=http://127.0.0.1:30000/v1 \
+ECOQA_TOKENIZER_MODEL=/root/autodl-tmp/models/Qwen3-4B-Instruct-2507 \
+ECOQA_API_KEY=EMPTY \
 python -m projects.ecoqa.run_ecoqa
 ```
 
@@ -98,12 +106,15 @@ Run trained checkpoint:
 ```bash
 python -m vllm.entrypoints.openai.api_server \
   --model /root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b \
+  --served-model-name ecoqa-ckpt \
   --host 0.0.0.0 \
   --port 30000 \
-  --dtype bfloat16
+  --dtype bfloat16 \
+  --max-model-len 16384 \
+  --gpu-memory-utilization 0.92
 
 ECOQA_MODEL_SOURCE=ckpt \
-ECOQA_CKPT_MODEL_PATH=/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b \
+ECOQA_CKPT_MODEL_PATH=ecoqa-ckpt \
 ECOQA_BASE_URL=http://127.0.0.1:30000/v1 \
 ECOQA_TOKENIZER_MODEL=/root/autodl-tmp/models/Qwen3-4B-Instruct-2507 \
 ECOQA_API_KEY=EMPTY \
@@ -118,6 +129,14 @@ override `ECOQA_BASE_MODEL_PATH`, `ECOQA_CKPT_MODEL_PATH`, and `ECOQA_BASE_URL`.
 ```bash
 bash projects/ecoqa/train_ecoqa.sh
 ```
+
+## Runtime Troubleshooting
+
+- If vLLM fails on startup with KV cache / max seq len errors, lower `--max-model-len` (e.g. `8192` or `16384`).
+- If `run_ecoqa.py` reports repeated `400` errors about context length, verify:
+  - `curl http://127.0.0.1:30000/v1/models` returns the served model id.
+  - `ECOQA_BASE_MODEL_PATH` / `ECOQA_CKPT_MODEL_PATH` matches that served model id.
+  - `max_model_len` in `/v1/models` is not 0.
 
 ## Model Comparison (Baseline / Trained / Online API)
 

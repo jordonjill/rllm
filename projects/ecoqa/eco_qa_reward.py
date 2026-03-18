@@ -9,20 +9,8 @@ from rllm.rewards.reward_types import RewardOutput
 _FINAL_ANSWER_CODE_BLOCK_RE = re.compile(r"```\s*FINAL ANSWER:\s*(.*?)\s*```", re.DOTALL | re.IGNORECASE)
 _FINAL_ANSWER_PARAGRAPH_RE = re.compile(r"FINAL ANSWER:\s*(.*?)(?=\n\s*\n)", re.DOTALL | re.IGNORECASE)
 _FINAL_ANSWER_TAIL_RE = re.compile(r"FINAL ANSWER:\s*(.*)$", re.DOTALL | re.IGNORECASE)
-_NUMBER_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?%?")
 _FULL_NUMBER_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?%?")
-_NO_DATA_KEYWORDS = (
-    "无数据",
-    "no_data",
-    "No Data",
-    "null",
-    "超出数据范围",
-    "数据不存在",
-    "no data",
-    "not found",
-    "no matching data",
-    "empty result",
-)
+
 
 def _as_env_bool(name: str, default: bool) -> bool:
     value = os.getenv(name)
@@ -94,59 +82,10 @@ def _try_parse_json(text: str):
     return None
 
 
-def _parse_number(text: str) -> tuple[float | None, bool]:
-    if not text:
-        return None, False
-
-    cleaned = text.strip().replace("\\boxed{", "").replace("}", "")
-    match = _NUMBER_RE.search(cleaned)
-    if not match:
-        return None, False
-
-    token = match.group(0)
-    is_percent = token.endswith("%")
-    token = token.rstrip("%").replace(",", "")
-
-    try:
-        value = float(token)
-    except ValueError:
-        return None, is_percent
-
-    return value, is_percent
-
-
 def _normalize_text(text: str) -> str:
     text = text.strip().lower()
     text = re.sub(r"\s+", " ", text)
     return text
-
-
-def _is_no_data_text(text: str) -> bool:
-    normalized = _normalize_text(text)
-    if not normalized:
-        return False
-    return any(keyword in normalized for keyword in _NO_DATA_KEYWORDS)
-
-
-def _is_no_data_prediction(text: str) -> bool:
-    if not isinstance(text, str) or not text.strip():
-        return False
-
-    parsed = _try_parse_json(text)
-    if isinstance(parsed, dict):
-        pred_type = _normalize_text(str(parsed.get("type", "")))
-        if pred_type in {"no_data", "nodata"}:
-            return True
-
-        for key in ("reason", "message", "value", "answer"):
-            value = parsed.get(key)
-            if isinstance(value, str) and _is_no_data_prediction(value):
-                return True
-
-    normalized = _normalize_text(text)
-    if "无数据" in normalized:
-        return True
-    return bool(re.search(r"\bno[\s_]*data\b", normalized))
 
 
 def _coerce_numeric_string(value: str) -> float | None:
@@ -154,14 +93,11 @@ def _coerce_numeric_string(value: str) -> float | None:
     if not token or not _FULL_NUMBER_RE.fullmatch(token):
         return None
 
-    is_percent = token.endswith("%")
     token = token.rstrip("%").replace(",", "")
     try:
         parsed = float(token)
     except ValueError:
         return None
-    if is_percent:
-        parsed /= 100.0
     return parsed
 
 
@@ -187,98 +123,62 @@ def _normalize_json_value(value):
     return _normalize_text(str(value))
 
 
-def _normalize_row(row: dict) -> dict:
-    return {str(key).strip().lower(): _normalize_json_value(value) for key, value in row.items()}
+def _normalize_item(item: dict) -> dict:
+    return {str(key).strip().lower(): _normalize_json_value(value) for key, value in item.items()}
 
 
-def _serialize_row(row: dict) -> str:
-    return json.dumps(row, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+def _serialize_item(item: dict) -> str:
+    return json.dumps(item, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
-def _serialize_value(value) -> str:
-    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
-
-
-def _serialize_row_values_unordered(row: dict) -> str:
-    normalized_row = _normalize_row(row)
-    value_tokens = sorted(_serialize_value(value) for value in normalized_row.values())
-    return json.dumps(value_tokens, ensure_ascii=False, separators=(",", ":"))
-
-
-def _list_alias_value_match(pred_rows: list, gt_rows: list) -> bool:
-    if not pred_rows or not gt_rows:
-        return False
-
-    if len(pred_rows) != len(gt_rows):
-        return False
-
-    if not all(isinstance(row, dict) for row in pred_rows):
-        return False
-    if not all(isinstance(row, dict) for row in gt_rows):
-        return False
-
-    pred_counter = Counter(_serialize_row_values_unordered(row) for row in pred_rows)
-    gt_counter = Counter(_serialize_row_values_unordered(row) for row in gt_rows)
-    return pred_counter == gt_counter
-
-
-def _extract_pred_rows(final_answer: str):
-    parsed = _try_parse_json(final_answer)
-    if isinstance(parsed, list):
-        return parsed
-    if isinstance(parsed, dict):
-        for key in ("rows", "value", "data", "answer"):
-            candidate = parsed.get(key)
-            if isinstance(candidate, list):
-                return candidate
+def _extract_items(text: str) -> list | None:
+    parsed = _try_parse_json(text)
+    if not isinstance(parsed, dict):
+        return None
+    items = parsed.get("items")
+    if isinstance(items, list):
+        return items
     return None
 
 
-def _extract_pred_scalar(final_answer: str) -> tuple[float | None, bool]:
-    parsed = _try_parse_json(final_answer)
-    if isinstance(parsed, dict):
-        value = parsed.get("value")
-        if isinstance(value, int | float) and not isinstance(value, bool):
-            return float(value), False
-        if isinstance(value, str):
-            return _parse_number(value)
-    elif isinstance(parsed, int | float) and not isinstance(parsed, bool):
-        return float(parsed), False
-    elif isinstance(parsed, str):
-        return _parse_number(parsed)
-    return _parse_number(final_answer)
+def _serialize_dim_value_signature(item: dict) -> str | None:
+    normalized_item = _normalize_item(item)
+    if "value" not in normalized_item:
+        return None
+
+    payload: dict[str, object] = {"value": normalized_item.get("value")}
+    dims = normalized_item.get("dims")
+    if dims is not None:
+        if not isinstance(dims, dict):
+            return None
+        payload["has_dims"] = True
+        payload["dims"] = dims
+    else:
+        payload["has_dims"] = False
+    return _serialize_item(payload)
 
 
-def _extract_pred_text(final_answer: str) -> str:
-    parsed = _try_parse_json(final_answer)
-    if isinstance(parsed, dict):
-        for key in ("reason", "message", "value", "answer"):
-            value = parsed.get(key)
-            if isinstance(value, str) and value.strip():
-                return value
-    if isinstance(parsed, str):
-        return parsed
-    return final_answer
+def _structure_alias_match(pred_items: list, gt_items: list) -> bool:
+    if len(pred_items) != len(gt_items):
+        return False
+    if not all(isinstance(item, dict) for item in pred_items):
+        return False
+    if not all(isinstance(item, dict) for item in gt_items):
+        return False
 
-
-def _determine_target_kind(task_info: dict, ground_truth: str) -> str:
-    question_type = str(task_info.get("question_type", "")).strip().lower()
-    answer_type = str(task_info.get("answer_type", "")).strip().lower()
-
-    if question_type == "single_table_error":
-        return "no_data"
-    if answer_type in {"list", "scalar"}:
-        return answer_type
-
-    parsed_gt = _try_parse_json(ground_truth)
-    if isinstance(parsed_gt, list):
-        return "list"
-    gt_num, _ = _parse_number(ground_truth)
-    if gt_num is not None:
-        return "scalar"
-    if _is_no_data_text(ground_truth):
-        return "no_data"
-    return "text"
+    gt_signatures = []
+    pred_signatures = []
+    for item in gt_items:
+        sig = _serialize_dim_value_signature(item)
+        if sig is None:
+            return False
+        gt_signatures.append(sig)
+    for item in pred_items:
+        sig = _serialize_dim_value_signature(item)
+        if sig is None:
+            return False
+        pred_signatures.append(sig)
+    return Counter(pred_signatures) == Counter(gt_signatures)
 
 
 def _safe_ratio(numerator: int | float, denominator: int | float) -> float:
@@ -326,41 +226,23 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
 
     ground_truth_text = str(ground_truth)
     final_answer = _extract_final_answer(action)
-    target_kind = _determine_target_kind(task_info, ground_truth_text)
+    target_kind = "structure"
 
     is_correct = False
-    list_exact_match = False
-    list_alias_value_match = False
+    structure_exact_match = False
+    structure_alias_value_match = False
+    gt_items = _extract_items(ground_truth_text)
+    pred_items = _extract_items(final_answer)
 
-    if target_kind == "scalar":
-        pred_num, _ = _extract_pred_scalar(final_answer)
-        gt_num, _ = _parse_number(ground_truth_text)
-        if pred_num is not None and gt_num is not None:
-            tol = max(1e-4, 1e-3 * max(abs(gt_num), 1.0))
-            is_correct = abs(pred_num - gt_num) <= tol
-        else:
-            # Support textual scalar labels (for argmax/argmin style questions).
-            pred_text = _extract_pred_text(final_answer)
-            is_correct = _normalize_text(pred_text) == _normalize_text(ground_truth_text)
-    elif target_kind == "list":
-        pred_rows = _extract_pred_rows(final_answer)
-        gt_rows = _try_parse_json(ground_truth_text)
-        if isinstance(pred_rows, list) and isinstance(gt_rows, list):
-            pred_dict_rows = [row for row in pred_rows if isinstance(row, dict)]
-            gt_dict_rows = [row for row in gt_rows if isinstance(row, dict)]
-
-            if len(pred_dict_rows) == len(pred_rows) and len(gt_dict_rows) == len(gt_rows):
-                pred_counter = Counter(_serialize_row(_normalize_row(row)) for row in pred_dict_rows)
-                gt_counter = Counter(_serialize_row(_normalize_row(row)) for row in gt_dict_rows)
-                list_exact_match = pred_counter == gt_counter
-
-            list_alias_value_match = _list_alias_value_match(pred_rows, gt_rows)
-            is_correct = list_exact_match or list_alias_value_match
-    elif target_kind == "no_data":
-        is_correct = _is_no_data_prediction(final_answer)
-    else:
-        pred_text = _extract_pred_text(final_answer)
-        is_correct = _normalize_text(pred_text) == _normalize_text(ground_truth_text)
+    if isinstance(gt_items, list) and isinstance(pred_items, list):
+        gt_dict_items = [item for item in gt_items if isinstance(item, dict)]
+        pred_dict_items = [item for item in pred_items if isinstance(item, dict)]
+        if len(gt_dict_items) == len(gt_items) and len(pred_dict_items) == len(pred_items):
+            gt_counter = Counter(_serialize_item(_normalize_item(item)) for item in gt_dict_items)
+            pred_counter = Counter(_serialize_item(_normalize_item(item)) for item in pred_dict_items)
+            structure_exact_match = pred_counter == gt_counter
+            structure_alias_value_match = _structure_alias_match(pred_dict_items, gt_dict_items)
+            is_correct = structure_exact_match or structure_alias_value_match
 
     correctness_reward = 1.0 if is_correct else 0.0
     expected_table_name = task_info.get("table_name", "")
@@ -393,8 +275,10 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
             "shaping_enabled": float(_SHAPING_ENABLED),
             "max_shaping_bonus": _MAX_SHAPING_BONUS,
             "target_kind": target_kind,
-            "list_exact_match": list_exact_match,
-            "list_alias_value_match": list_alias_value_match,
+            "structure_exact_match": structure_exact_match,
+            "structure_alias_value_match": structure_alias_value_match,
+            "ground_truth_item_count": len(gt_items) if isinstance(gt_items, list) else -1,
+            "pred_item_count": len(pred_items) if isinstance(pred_items, list) else -1,
             "final_answer_extracted": final_answer,
         },
     )

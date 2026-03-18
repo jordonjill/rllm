@@ -10,7 +10,6 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
-NUMBER_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?%?")
 FULL_NUMBER_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?%?")
 
 
@@ -94,10 +93,53 @@ def _serialize_value(value) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
-def _serialize_row_values(row: dict) -> str:
-    normalized = _normalize_row(row)
-    tokens = sorted(_serialize_value(v) for v in normalized.values())
-    return json.dumps(tokens, ensure_ascii=False, separators=(",", ":"))
+def _extract_items(text: str) -> list | None:
+    parsed = _try_parse_json(text)
+    if not isinstance(parsed, dict):
+        return None
+    items = parsed.get("items")
+    if isinstance(items, list):
+        return items
+    return None
+
+
+def _serialize_dim_value_signature(item: dict) -> str | None:
+    normalized = _normalize_row(item)
+    if "value" not in normalized:
+        return None
+    payload: dict[str, object] = {"value": normalized.get("value")}
+    dims = normalized.get("dims")
+    if dims is not None:
+        if not isinstance(dims, dict):
+            return None
+        payload["has_dims"] = True
+        payload["dims"] = dims
+    else:
+        payload["has_dims"] = False
+    return _serialize_row(payload)
+
+
+def _structure_alias_match(pred_items: list, gt_items: list) -> bool:
+    if len(pred_items) != len(gt_items):
+        return False
+    if not all(isinstance(item, dict) for item in pred_items):
+        return False
+    if not all(isinstance(item, dict) for item in gt_items):
+        return False
+
+    pred_sigs = []
+    gt_sigs = []
+    for item in pred_items:
+        sig = _serialize_dim_value_signature(item)
+        if sig is None:
+            return False
+        pred_sigs.append(sig)
+    for item in gt_items:
+        sig = _serialize_dim_value_signature(item)
+        if sig is None:
+            return False
+        gt_sigs.append(sig)
+    return Counter(pred_sigs) == Counter(gt_sigs)
 
 
 def _extract_sql_query_and_last_rows(steps: list[dict]) -> tuple[str, list | None]:
@@ -136,46 +178,11 @@ def _extract_final_answer(row: dict) -> str:
     return str(metadata.get("final_answer_extracted", "") or "")
 
 
-def _extract_pred_struct(final_answer: str) -> tuple[str, list | None, float | None]:
-    parsed = _try_parse_json(final_answer)
-    pred_type = "unknown"
-    pred_rows = None
-    pred_scalar = None
-
-    if isinstance(parsed, dict):
-        pred_type = str(parsed.get("type", "unknown")).strip().lower() or "unknown"
-        for key in ("rows", "value", "data", "answer"):
-            candidate = parsed.get(key)
-            if isinstance(candidate, list):
-                pred_rows = candidate
-                break
-        value = parsed.get("value")
-        if isinstance(value, (int, float)) and not isinstance(value, bool):
-            pred_scalar = float(value)
-        elif isinstance(value, str):
-            match = NUMBER_RE.search(value)
-            if match:
-                try:
-                    pred_scalar = float(match.group(0).rstrip("%").replace(",", ""))
-                except ValueError:
-                    pass
-    elif isinstance(parsed, list):
-        pred_rows = parsed
-    elif isinstance(parsed, (int, float)) and not isinstance(parsed, bool):
-        pred_scalar = float(parsed)
-    elif isinstance(parsed, str):
-        match = NUMBER_RE.search(parsed)
-        if match:
-            try:
-                pred_scalar = float(match.group(0).rstrip("%").replace(",", ""))
-            except ValueError:
-                pass
-    return pred_type, pred_rows, pred_scalar
-
-
 def _infer_target_kind(row: dict) -> str:
     question_type = str(row.get("question_type", "")).strip().lower()
     answer_type = str(row.get("answer_type", "")).strip().lower()
+    if answer_type == "structure":
+        return "structure"
     if question_type == "single_table_error":
         return "no_data"
     if answer_type in {"list", "scalar"}:
@@ -203,72 +210,55 @@ def _row_is_correct(row: dict) -> bool:
 
 def _categorize_failure(row: dict) -> tuple[str, dict]:
     final_answer = _extract_final_answer(row)
-    pred_type, pred_rows, pred_scalar = _extract_pred_struct(final_answer)
     target_kind = _infer_target_kind(row)
-    gt = _try_parse_json(row.get("ground_truth", ""))
+    gt_items = _extract_items(str(row.get("ground_truth", "")))
+    pred_items = _extract_items(final_answer)
     sql_query, sql_rows = _extract_sql_query_and_last_rows(row.get("steps", []))
 
     category = "unknown_failure"
-    if target_kind == "list":
-        if pred_type != "list" and not isinstance(pred_rows, list):
-            category = "format_error_list_to_non_list"
-        elif sql_rows == []:
-            category = "sql_empty_result"
-        elif not isinstance(gt, list) or not isinstance(pred_rows, list):
+    if target_kind == "structure":
+        parsed_pred = _try_parse_json(final_answer)
+        if not isinstance(parsed_pred, dict):
+            category = "format_non_json_object"
+        elif "items" not in parsed_pred:
+            category = "format_missing_items_field"
+        elif not isinstance(parsed_pred.get("items"), list):
+            category = "format_items_not_list"
+        elif pred_items is None or gt_items is None:
             category = "parse_or_schema_error"
+        elif not all(isinstance(x, dict) for x in pred_items):
+            category = "items_not_object"
+        elif not all(isinstance(x, dict) for x in gt_items):
+            category = "ground_truth_items_not_object"
+        elif any("value" not in x for x in pred_items):
+            category = "item_missing_value"
+        elif sql_rows == [] and len(gt_items) > 0:
+            category = "sql_empty_result"
         else:
-            gt_dict_rows = [x for x in gt if isinstance(x, dict)]
-            pred_dict_rows = [x for x in pred_rows if isinstance(x, dict)]
-            if len(gt_dict_rows) != len(gt) or len(pred_dict_rows) != len(pred_rows):
-                category = "rows_not_object"
+            gt_exact = Counter(_serialize_row(_normalize_row(x)) for x in gt_items)
+            pred_exact = Counter(_serialize_row(_normalize_row(x)) for x in pred_items)
+            if gt_exact == pred_exact:
+                category = "unexpected_exact_match"
+            elif _structure_alias_match(pred_items, gt_items):
+                category = "alias_only_name_mismatch"
+            elif len(pred_items) != len(gt_items):
+                category = "item_count_mismatch"
             else:
-                gt_keys = set().union(*[set(_normalize_row(x).keys()) for x in gt_dict_rows]) if gt_dict_rows else set()
-                pred_keys = set().union(*[set(_normalize_row(x).keys()) for x in pred_dict_rows]) if pred_dict_rows else set()
-                gt_exact = Counter(_serialize_row(_normalize_row(x)) for x in gt_dict_rows)
-                pred_exact = Counter(_serialize_row(_normalize_row(x)) for x in pred_dict_rows)
-                gt_values = Counter(_serialize_row_values(x) for x in gt_dict_rows)
-                pred_values = Counter(_serialize_row_values(x) for x in pred_dict_rows)
+                gt_dim_value = Counter(_serialize_dim_value_signature(x) for x in gt_items)
+                pred_dim_value = Counter(_serialize_dim_value_signature(x) for x in pred_items)
+                gt_dim_value.pop(None, None)
+                pred_dim_value.pop(None, None)
+                gt_value_only = Counter(_serialize_value(_normalize_row(x).get("value")) for x in gt_items)
+                pred_value_only = Counter(_serialize_value(_normalize_row(x).get("value")) for x in pred_items)
 
-                if gt_exact == pred_exact and len(gt_exact) > 0:
-                    category = "value_mismatch"
-                elif gt_values == pred_values and len(gt_values) > 0:
-                    category = "alias_only_mismatch"
-                elif pred_keys != gt_keys:
-                    missing = gt_keys - pred_keys
-                    extra = pred_keys - gt_keys
-                    if missing and extra:
-                        category = "column_mismatch_plus_missing"
-                    elif missing:
-                        category = "missing_columns_or_incomplete_structure"
-                    else:
-                        category = "column_mismatch"
+                if gt_value_only == pred_value_only and gt_dim_value != pred_dim_value:
+                    category = "dims_mismatch_or_missing"
                 else:
                     category = "value_mismatch"
-    elif target_kind == "scalar":
-        if pred_type == "list" or isinstance(pred_rows, list):
-            category = "format_error_scalar_to_list"
-        elif sql_rows == []:
-            category = "sql_empty_result"
-        else:
-            gt_num = None
-            if isinstance(gt, (int, float)) and not isinstance(gt, bool):
-                gt_num = float(gt)
-            elif isinstance(gt, str):
-                match = NUMBER_RE.search(gt)
-                if match:
-                    try:
-                        gt_num = float(match.group(0).rstrip("%").replace(",", ""))
-                    except ValueError:
-                        pass
-            if pred_scalar is None:
-                category = "scalar_not_parseable"
-            elif gt_num is None:
-                category = "scalar_text_or_schema_mismatch"
-            else:
-                tol = max(1e-4, 1e-3 * max(abs(gt_num), 1.0))
-                category = "value_mismatch" if abs(pred_scalar - gt_num) > tol else "other_scalar_failure"
     elif target_kind == "no_data":
         category = "no_data_not_returned"
+    elif target_kind in {"list", "scalar"}:
+        category = "legacy_target_kind_mismatch"
 
     return category, {
         "question_id": str(row.get("question_id", "")),

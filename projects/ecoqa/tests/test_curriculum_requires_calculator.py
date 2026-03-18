@@ -27,6 +27,26 @@ def test_curriculum_requires_calculator_increases_difficulty_bucket():
     assert _infer_sql_difficulty(calc) == "medium"
 
 
+def test_curriculum_structure_items_and_dims_increase_difficulty():
+    base = {
+        "question_type": "single_table",
+        "answer_type": "structure",
+        "ground_truth_sql": "SELECT month FROM exchange_rates ORDER BY month DESC",
+        "requires_calculator": False,
+        "ground_truth": '{"items":[{"name":"month","value":12}]}',
+    }
+    richer = {
+        **base,
+        "ground_truth": (
+            '{"items":[{"name":"month","value":12,"dims":{"year":2024}},'
+            '{"name":"month","value":11,"dims":{"year":2024}}]}'
+        ),
+    }
+
+    assert _infer_sql_difficulty(base) == "easy"
+    assert _infer_sql_difficulty(richer) == "medium"
+
+
 def test_prepare_data_keeps_requires_calculator_field(monkeypatch):
     captured: dict[str, list[dict]] = {}
 

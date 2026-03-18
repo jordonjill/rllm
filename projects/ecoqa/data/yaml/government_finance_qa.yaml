@@ -7,46 +7,50 @@ questions:
     SELECT total_revenue_100m_cny AS value
     FROM government_finance
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: scalar
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 257600.0
   requires_calculator: false
-  answer: 257600.0
 - id: 2
   question: 2023年华东地区的税收收入和非税收入分别是多少？
   sql: |-
     SELECT tax_revenue_100m_cny, non_tax_revenue_100m_cny
     FROM government_finance
     WHERE year = 2023 AND geo_name = '华东'
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - tax_revenue_100m_cny: 74175.92
-    non_tax_revenue_100m_cny: 24328.85
+    items:
+    - name: tax_revenue_100m_cny
+      value: 74175.92
+    - name: non_tax_revenue_100m_cny
+      value: 24328.85
+  requires_calculator: false
 - id: 3
   question: 2022年北京市的政府债务余额和债务率分别是多少？
   sql: |-
     SELECT debt_balance_100m_cny, debt_to_gdp_pct
     FROM government_finance
     WHERE year = 2022 AND geo_level = 'province' AND geo_name = '北京'
-  answer_type: list
-  answer_unit: 亿元/%
-  requires_calculator: false
   answer:
-  - debt_balance_100m_cny: 35031.82
-    debt_to_gdp_pct: 81.618
+    items:
+    - name: debt_balance_100m_cny
+      value: 35031.82
+    - name: debt_to_gdp_pct
+      value: 81.618
+  requires_calculator: false
 - id: 4
   question: 2021年全国层级的转移支付和社会保障支出总额各是多少？
   sql: |-
     SELECT transfer_payment_100m_cny, social_security_100m_cny
     FROM government_finance
     WHERE year = 2021 AND geo_level = 'national'
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - transfer_payment_100m_cny: 40863.08
-    social_security_100m_cny: 79091.7
+    items:
+    - name: transfer_payment_100m_cny
+      value: 40863.08
+    - name: social_security_100m_cny
+      value: 79091.7
+  requires_calculator: false
 - id: 5
   question: 2023年上海、江苏、浙江三省市的财政总收入各是多少？
   sql: |-
@@ -54,16 +58,21 @@ questions:
     FROM government_finance
     WHERE year = 2023 AND geo_name IN ('上海', '江苏', '浙江')
     ORDER BY total_revenue_100m_cny DESC
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - geo_name: 江苏
-    total_revenue_100m_cny: 24873.65
-  - geo_name: 浙江
-    total_revenue_100m_cny: 16491.23
-  - geo_name: 上海
-    total_revenue_100m_cny: 9172.22
+    items:
+    - name: total_revenue_100m_cny
+      value: 24873.65
+      dims:
+        geo_name: 江苏
+    - name: total_revenue_100m_cny
+      value: 16491.23
+      dims:
+        geo_name: 浙江
+    - name: total_revenue_100m_cny
+      value: 9172.22
+      dims:
+        geo_name: 上海
+  requires_calculator: false
 - id: 6
   question: 2020年华北、华东、华南三大区域的财政赤字各是多少？
   sql: |-
@@ -71,26 +80,32 @@ questions:
     FROM government_finance
     WHERE year = 2020 AND geo_name IN ('华北', '华东', '华南')
     ORDER BY deficit_100m_cny DESC
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - geo_name: 华东
-    deficit_100m_cny: 31265.21
-  - geo_name: 华南
-    deficit_100m_cny: 10554.33
-  - geo_name: 华北
-    deficit_100m_cny: 5464.02
+    items:
+    - name: deficit_100m_cny
+      value: 31265.21
+      dims:
+        geo_name: 华东
+    - name: deficit_100m_cny
+      value: 10554.33
+      dims:
+        geo_name: 华南
+    - name: deficit_100m_cny
+      value: 5464.02
+      dims:
+        geo_name: 华北
+  requires_calculator: false
 - id: 7
   question: 政府债务余额为空值的数据有多少条？
   sql: |-
     SELECT COUNT(*) AS missing_count
     FROM government_finance
     WHERE debt_balance_100m_cny IS NULL
-  answer_type: scalar
-  answer_unit: 条
+  answer:
+    items:
+    - name: missing_count
+      value: 0
   requires_calculator: false
-  answer: 0
 - id: 8
   question: 2018至2022年间，全国财政赤字的变化趋势如何？
   sql: |-
@@ -98,20 +113,29 @@ questions:
     FROM government_finance
     WHERE year BETWEEN 2018 AND 2022 AND geo_level = 'national'
     ORDER BY year
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - year: 2018
-    deficit_100m_cny: 65200.0
-  - year: 2019
-    deficit_100m_cny: 66800.0
-  - year: 2020
-    deficit_100m_cny: 68400.0
-  - year: 2021
-    deficit_100m_cny: 70000.0
-  - year: 2022
-    deficit_100m_cny: 71600.0
+    items:
+    - name: deficit_100m_cny
+      value: 65200.0
+      dims:
+        year: 2018
+    - name: deficit_100m_cny
+      value: 66800.0
+      dims:
+        year: 2019
+    - name: deficit_100m_cny
+      value: 68400.0
+      dims:
+        year: 2020
+    - name: deficit_100m_cny
+      value: 70000.0
+      dims:
+        year: 2021
+    - name: deficit_100m_cny
+      value: 71600.0
+      dims:
+        year: 2022
+  requires_calculator: false
 - id: 9
   question: 2019到2023年期间，广东省的税收收入历年数据是多少？
   sql: |-
@@ -119,20 +143,29 @@ questions:
     FROM government_finance
     WHERE year BETWEEN 2019 AND 2023 AND geo_name = '广东'
     ORDER BY year
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - year: 2019
-    tax_revenue_100m_cny: 18760.91
-  - year: 2020
-    tax_revenue_100m_cny: 17236.4
-  - year: 2021
-    tax_revenue_100m_cny: 21821.43
-  - year: 2022
-    tax_revenue_100m_cny: 19885.94
-  - year: 2023
-    tax_revenue_100m_cny: 20858.57
+    items:
+    - name: tax_revenue_100m_cny
+      value: 18760.91
+      dims:
+        year: 2019
+    - name: tax_revenue_100m_cny
+      value: 17236.4
+      dims:
+        year: 2020
+    - name: tax_revenue_100m_cny
+      value: 21821.43
+      dims:
+        year: 2021
+    - name: tax_revenue_100m_cny
+      value: 19885.94
+      dims:
+        year: 2022
+    - name: tax_revenue_100m_cny
+      value: 20858.57
+      dims:
+        year: 2023
+  requires_calculator: false
 - id: 10
   question: 2024年哪些省份的政府债务率超过90%？
   sql: |-
@@ -140,13 +173,15 @@ questions:
     FROM government_finance
     WHERE year = 2024 AND geo_level = 'province' AND debt_to_gdp_pct > 90
     ORDER BY debt_to_gdp_pct DESC
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 天津
-  - geo_name: 新疆
-  - geo_name: 宁夏
+    items:
+    - name: geo_name
+      value: 天津
+    - name: geo_name
+      value: 新疆
+    - name: geo_name
+      value: 宁夏
+  requires_calculator: false
 - id: 11
   question: 2023年哪些省份的财政总收入超过20000亿元？
   sql: |-
@@ -154,13 +189,15 @@ questions:
     FROM government_finance
     WHERE year = 2023 AND geo_level = 'province' AND total_revenue_100m_cny > 20000
     ORDER BY total_revenue_100m_cny DESC
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 山东
+  requires_calculator: false
 - id: 12
   question: 2022年哪些地区的财政赤字少于5000亿元？
   sql: |-
@@ -168,11 +205,11 @@ questions:
     FROM government_finance
     WHERE year = 2022 AND geo_level = 'region' AND deficit_100m_cny < 5000
     ORDER BY deficit_100m_cny
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 东北
+    items:
+    - name: geo_name
+      value: 东北
+  requires_calculator: false
 - id: 13
   question: 2020至2024年间，哪些省份的债务率在每一年都高于95%？
   sql: |-
@@ -182,10 +219,9 @@ questions:
     GROUP BY geo_name
     HAVING COUNT(*) = 5 AND MIN(debt_to_gdp_pct) > 95
     ORDER BY geo_name
-  answer_type: list
-  answer_unit: null
+  answer:
+    items: []
   requires_calculator: false
-  answer: []
 - id: 14
   question: 2019到2023年期间，哪些省份的社会保障支出曾超过10000亿元？
   sql: |-
@@ -193,12 +229,13 @@ questions:
     FROM government_finance
     WHERE year BETWEEN 2019 AND 2023 AND geo_level = 'province' AND social_security_100m_cny > 10000
     ORDER BY geo_name
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 山东
-  - geo_name: 广东
+    items:
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 广东
+  requires_calculator: false
 - id: 15
   question: 2024年哪个省份的财政总收入最高？
   sql: |-
@@ -207,10 +244,11 @@ questions:
     WHERE year = 2024 AND geo_level = 'province'
     ORDER BY total_revenue_100m_cny DESC
     LIMIT 1
-  answer_type: scalar
-  answer_unit: null
+  answer:
+    items:
+    - name: geo_name
+      value: 广东
   requires_calculator: false
-  answer: 广东
 - id: 16
   question: 2023年哪个大区的政府债务余额最高？
   sql: |-
@@ -219,10 +257,11 @@ questions:
     WHERE year = 2023 AND geo_level = 'region'
     ORDER BY debt_balance_100m_cny DESC
     LIMIT 1
-  answer_type: scalar
-  answer_unit: null
+  answer:
+    items:
+    - name: geo_name
+      value: 华东
   requires_calculator: false
-  answer: 华东
 - id: 17
   question: 2022年哪个大区的转移支付金额最低？
   sql: |-
@@ -231,10 +270,11 @@ questions:
     WHERE year = 2022 AND geo_level = 'region'
     ORDER BY transfer_payment_100m_cny ASC
     LIMIT 1
-  answer_type: scalar
-  answer_unit: null
+  answer:
+    items:
+    - name: geo_name
+      value: 东北
   requires_calculator: false
-  answer: 东北
 - id: 18
   question: 2024年哪个省份的财政赤字最少？
   sql: |-
@@ -243,10 +283,11 @@ questions:
     WHERE year = 2024 AND geo_level = 'province' AND deficit_100m_cny IS NOT NULL
     ORDER BY deficit_100m_cny ASC
     LIMIT 1
-  answer_type: scalar
-  answer_unit: null
+  answer:
+    items:
+    - name: geo_name
+      value: 西藏
   requires_calculator: false
-  answer: 西藏
 - id: 19
   question: 2023年税收收入最高的5个省份是哪些？
   sql: |-
@@ -255,15 +296,19 @@ questions:
     WHERE year = 2023 AND geo_level = 'province'
     ORDER BY tax_revenue_100m_cny DESC
     LIMIT 5
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 浙江
+    - name: geo_name
+      value: 四川
+  requires_calculator: false
 - id: 20
   question: 2024年债务率最高的3个省份是哪些？
   sql: |-
@@ -272,13 +317,15 @@ questions:
     WHERE year = 2024 AND geo_level = 'province'
     ORDER BY debt_to_gdp_pct DESC
     LIMIT 3
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 天津
-  - geo_name: 新疆
-  - geo_name: 宁夏
+    items:
+    - name: geo_name
+      value: 天津
+    - name: geo_name
+      value: 新疆
+    - name: geo_name
+      value: 宁夏
+  requires_calculator: false
 - id: 21
   question: 按年份和财政总收入排序，列出2022-2024年全国财政总收入前3名的记录
   sql: |-
@@ -287,132 +334,156 @@ questions:
     WHERE year BETWEEN 2022 AND 2024 AND geo_level = 'national'
     ORDER BY year DESC, total_revenue_100m_cny DESC
     LIMIT 3
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - year: 2024
-    geo_name: 中国
-    total_revenue_100m_cny: 257600.0
-  - year: 2023
-    geo_name: 中国
-    total_revenue_100m_cny: 252400.0
-  - year: 2022
-    geo_name: 中国
-    total_revenue_100m_cny: 247200.0
+    items:
+    - name: total_revenue_100m_cny
+      value: 257600.0
+      dims:
+        year: 2024
+        geo_name: 中国
+    - name: total_revenue_100m_cny
+      value: 252400.0
+      dims:
+        year: 2023
+        geo_name: 中国
+    - name: total_revenue_100m_cny
+      value: 247200.0
+      dims:
+        year: 2022
+        geo_name: 中国
+  requires_calculator: false
 - id: 22
   question: 2024年省级层面财政赤字为正的数据有多少条？
   sql: |-
     SELECT COUNT(*) AS value
     FROM government_finance
     WHERE year = 2024 AND geo_level = 'province' AND deficit_100m_cny > 0
-  answer_type: scalar
-  answer_unit: 条
+  answer:
+    items:
+    - name: value
+      value: 31
   requires_calculator: false
-  answer: 31
 - id: 23
   question: 全国层级债务率高于70%的年份有多少个？
   sql: |-
     SELECT COUNT(DISTINCT year) AS value
     FROM government_finance
     WHERE geo_level = 'national' AND debt_to_gdp_pct > 70
-  answer_type: scalar
-  answer_unit: 年
+  answer:
+    items:
+    - name: value
+      value: 10
   requires_calculator: false
-  answer: 10
 - id: 24
   question: 2023年所有省份的税收收入总和是多少？
   sql: |-
     SELECT SUM(tax_revenue_100m_cny) AS value
     FROM government_finance
     WHERE year = 2023 AND geo_level = 'province'
-  answer_type: scalar
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 197209.73
   requires_calculator: false
-  answer: 197209.73
 - id: 25
   question: 2022年所有大区的财政支出总额是多少？
   sql: |-
     SELECT SUM(expenditure_100m_cny) AS value
     FROM government_finance
     WHERE year = 2022 AND geo_level = 'region'
-  answer_type: scalar
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 318799.99
   requires_calculator: false
-  answer: 318799.99
 - id: 26
   question: 2024年所有省份的平均债务率是多少？
   sql: |-
     SELECT AVG(debt_to_gdp_pct) AS value
     FROM government_finance
     WHERE year = 2024 AND geo_level = 'province'
-  answer_type: scalar
-  answer_unit: '%'
+  answer:
+    items:
+    - name: value
+      value: 79.346
   requires_calculator: false
-  answer: 79.346
 - id: 27
   question: 2023年所有大区的平均社会保障支出是多少？
   sql: |-
     SELECT AVG(social_security_100m_cny) AS value
     FROM government_finance
     WHERE year = 2023 AND geo_level = 'region'
-  answer_type: scalar
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 13644.972857142857
   requires_calculator: false
-  answer: 13644.972857142857
 - id: 28
   question: 2024年所有省份中，财政总收入的最高值和最低值分别是多少？
   sql: |-
     SELECT MAX(total_revenue_100m_cny) AS max_value, MIN(total_revenue_100m_cny) AS min_value
     FROM government_finance
     WHERE year = 2024 AND geo_level = 'province'
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - max_value: 26910.53
-    min_value: 575.44
+    items:
+    - name: max_value
+      value: 26910.53
+    - name: min_value
+      value: 575.44
+  requires_calculator: false
 - id: 29
   question: 2016-2025年间，全国层级的财政赤字最大值是多少？
   sql: |-
     SELECT MAX(deficit_100m_cny) AS value
     FROM government_finance
     WHERE geo_level = 'national'
-  answer_type: scalar
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 76400.0
   requires_calculator: false
-  answer: 76400.0
 - id: 30
-  question: 按年份统计，历年全国财政总收入的变化趋势
+  question: 按年份统计，2017-2024年全国财政总收入的变化趋势
   sql: |-
     SELECT year, total_revenue_100m_cny
     FROM government_finance
-    WHERE geo_level = 'national'
+    WHERE geo_level = 'national' AND year BETWEEN 2017 AND 2024
     ORDER BY year
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - year: 2016
-    total_revenue_100m_cny: 216000.0
-  - year: 2017
-    total_revenue_100m_cny: 221200.0
-  - year: 2018
-    total_revenue_100m_cny: 226400.0
-  - year: 2019
-    total_revenue_100m_cny: 231600.0
-  - year: 2020
-    total_revenue_100m_cny: 236800.0
-  - year: 2021
-    total_revenue_100m_cny: 242000.0
-  - year: 2022
-    total_revenue_100m_cny: 247200.0
-  - year: 2023
-    total_revenue_100m_cny: 252400.0
-  - year: 2024
-    total_revenue_100m_cny: 257600.0
-  - year: 2025
-    total_revenue_100m_cny: 262800.0
+    items:
+    - name: total_revenue_100m_cny
+      value: 221200.0
+      dims:
+        year: 2017
+    - name: total_revenue_100m_cny
+      value: 226400.0
+      dims:
+        year: 2018
+    - name: total_revenue_100m_cny
+      value: 231600.0
+      dims:
+        year: 2019
+    - name: total_revenue_100m_cny
+      value: 236800.0
+      dims:
+        year: 2020
+    - name: total_revenue_100m_cny
+      value: 242000.0
+      dims:
+        year: 2021
+    - name: total_revenue_100m_cny
+      value: 247200.0
+      dims:
+        year: 2022
+    - name: total_revenue_100m_cny
+      value: 252400.0
+      dims:
+        year: 2023
+    - name: total_revenue_100m_cny
+      value: 257600.0
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 31
   question: 2023年各大区的平均债务率是多少？
   sql: |-
@@ -421,24 +492,37 @@ questions:
     WHERE year = 2023 AND geo_level = 'region'
     GROUP BY geo_name
     ORDER BY avg_debt_ratio DESC
-  answer_type: list
-  answer_unit: '%'
-  requires_calculator: false
   answer:
-  - geo_name: 西南
-    avg_debt_ratio: 89.225
-  - geo_name: 华中
-    avg_debt_ratio: 84.507
-  - geo_name: 华南
-    avg_debt_ratio: 79.366
-  - geo_name: 华北
-    avg_debt_ratio: 78.659
-  - geo_name: 东北
-    avg_debt_ratio: 76.403
-  - geo_name: 西北
-    avg_debt_ratio: 72.706
-  - geo_name: 华东
-    avg_debt_ratio: 71.108
+    items:
+    - name: avg_debt_ratio
+      value: 89.225
+      dims:
+        geo_name: 西南
+    - name: avg_debt_ratio
+      value: 84.507
+      dims:
+        geo_name: 华中
+    - name: avg_debt_ratio
+      value: 79.366
+      dims:
+        geo_name: 华南
+    - name: avg_debt_ratio
+      value: 78.659
+      dims:
+        geo_name: 华北
+    - name: avg_debt_ratio
+      value: 76.403
+      dims:
+        geo_name: 东北
+    - name: avg_debt_ratio
+      value: 72.706
+      dims:
+        geo_name: 西北
+    - name: avg_debt_ratio
+      value: 71.108
+      dims:
+        geo_name: 华东
+  requires_calculator: false
 - id: 32
   question: 2024年各统计层级中债务率高于70%的数据数量分别是多少？
   sql: |-
@@ -447,181 +531,157 @@ questions:
     WHERE year = 2024 AND debt_to_gdp_pct > 70
     GROUP BY geo_level
     ORDER BY record_count DESC
-  answer_type: list
-  answer_unit: 条
-  requires_calculator: false
   answer:
-  - geo_level: province
-    record_count: 30
-  - geo_level: region
-    record_count: 7
-  - geo_level: national
-    record_count: 1
+    items:
+    - name: record_count
+      value: 30
+      dims:
+        geo_level: province
+    - name: record_count
+      value: 7
+      dims:
+        geo_level: region
+    - name: record_count
+      value: 1
+      dims:
+        geo_level: national
+  requires_calculator: false
 - id: 33
-  question: 每年省级层面财政赤字为正的数据有多少条？
+  question: 2018-2024年每年省级层面财政赤字为正的数据有多少条？
   sql: |-
     SELECT year, COUNT(*) AS record_count
     FROM government_finance
-    WHERE geo_level = 'province' AND deficit_100m_cny > 0
+    WHERE geo_level = 'province' AND deficit_100m_cny > 0 AND year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  answer_type: list
-  answer_unit: 条
-  requires_calculator: false
   answer:
-  - year: 2016
-    record_count: 31
-  - year: 2017
-    record_count: 31
-  - year: 2018
-    record_count: 31
-  - year: 2019
-    record_count: 31
-  - year: 2020
-    record_count: 31
-  - year: 2021
-    record_count: 31
-  - year: 2022
-    record_count: 31
-  - year: 2023
-    record_count: 31
-  - year: 2024
-    record_count: 31
-  - year: 2025
-    record_count: 31
+    items:
+    - name: record_count
+      value: 31
+      dims:
+        year: 2018
+    - name: record_count
+      value: 31
+      dims:
+        year: 2019
+    - name: record_count
+      value: 31
+      dims:
+        year: 2020
+    - name: record_count
+      value: 31
+      dims:
+        year: 2021
+    - name: record_count
+      value: 31
+      dims:
+        year: 2022
+    - name: record_count
+      value: 31
+      dims:
+        year: 2023
+    - name: record_count
+      value: 31
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 34
-  question: 按年份和统计层级分组，2020-2024年平均转移支付金额分别是多少？
+  question: 按年份统计，2020-2024年省级层面的平均转移支付金额分别是多少？
   sql: |-
-    SELECT year, geo_level, AVG(transfer_payment_100m_cny) AS avg_transfer
+    SELECT year, AVG(transfer_payment_100m_cny) AS avg_transfer
     FROM government_finance
-    WHERE transfer_payment_100m_cny IS NOT NULL AND year BETWEEN 2020 AND 2024
-    GROUP BY year, geo_level
-    ORDER BY year, geo_level
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
+    WHERE transfer_payment_100m_cny IS NOT NULL AND year BETWEEN 2020 AND 2024 AND geo_level = 'province'
+    GROUP BY year
+    ORDER BY year
   answer:
-  - year: 2020
-    geo_level: national
-    avg_transfer: 66608.85
-  - year: 2020
-    geo_level: province
-    avg_transfer: 2148.6725806451614
-  - year: 2020
-    geo_level: region
-    avg_transfer: 9515.551428571429
-  - year: 2021
-    geo_level: national
-    avg_transfer: 40863.08
-  - year: 2021
-    geo_level: province
-    avg_transfer: 1318.164516129032
-  - year: 2021
-    geo_level: region
-    avg_transfer: 5837.584285714286
-  - year: 2022
-    geo_level: national
-    avg_transfer: 71725.86
-  - year: 2022
-    geo_level: province
-    avg_transfer: 2313.7380645161293
-  - year: 2022
-    geo_level: region
-    avg_transfer: 10246.551428571429
-  - year: 2023
-    geo_level: national
-    avg_transfer: 45767.47
-  - year: 2023
-    geo_level: province
-    avg_transfer: 1476.3709677419354
-  - year: 2023
-    geo_level: region
-    avg_transfer: 6538.211428571428
-  - year: 2024
-    geo_level: national
-    avg_transfer: 61861.71
-  - year: 2024
-    geo_level: province
-    avg_transfer: 1995.5387096774193
-  - year: 2024
-    geo_level: region
-    avg_transfer: 8837.387142857142
+    items:
+    - name: avg_transfer
+      value: 2148.6725806451614
+      dims:
+        year: 2020
+    - name: avg_transfer
+      value: 1318.164516129032
+      dims:
+        year: 2021
+    - name: avg_transfer
+      value: 2313.7380645161293
+      dims:
+        year: 2022
+    - name: avg_transfer
+      value: 1476.3709677419354
+      dims:
+        year: 2023
+    - name: avg_transfer
+      value: 1995.5387096774193
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 35
-  question: 2023-2024年间，各大区每年的社会保障支出总和是多少？
+  question: 2024年各大区的社会保障支出总和是多少？
   sql: |-
-    SELECT year, geo_name, SUM(social_security_100m_cny) AS total_social_security
+    SELECT geo_name, SUM(social_security_100m_cny) AS total_social_security
     FROM government_finance
-    WHERE year BETWEEN 2023 AND 2024 AND geo_level = 'region'
-    GROUP BY year, geo_name
-    ORDER BY year, total_social_security DESC
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
+    WHERE year = 2024 AND geo_level = 'region'
+    GROUP BY geo_name
+    ORDER BY total_social_security DESC
   answer:
-  - year: 2023
-    geo_name: 华东
-    total_social_security: 37900.26
-  - year: 2023
-    geo_name: 华中
-    total_social_security: 13009.87
-  - year: 2023
-    geo_name: 华南
-    total_social_security: 12651.17
-  - year: 2023
-    geo_name: 华北
-    total_social_security: 11224.59
-  - year: 2023
-    geo_name: 西南
-    total_social_security: 9628.08
-  - year: 2023
-    geo_name: 西北
-    total_social_security: 5795.38
-  - year: 2023
-    geo_name: 东北
-    total_social_security: 5305.46
-  - year: 2024
-    geo_name: 华东
-    total_social_security: 28910.26
-  - year: 2024
-    geo_name: 华北
-    total_social_security: 9936.68
-  - year: 2024
-    geo_name: 华南
-    total_social_security: 8048.42
-  - year: 2024
-    geo_name: 华中
-    total_social_security: 7717.77
-  - year: 2024
-    geo_name: 西南
-    total_social_security: 7008.27
-  - year: 2024
-    geo_name: 西北
-    total_social_security: 3936.5
-  - year: 2024
-    geo_name: 东北
-    total_social_security: 3543.81
+    items:
+    - name: total_social_security
+      value: 28910.26
+      dims:
+        geo_name: 华东
+    - name: total_social_security
+      value: 9936.68
+      dims:
+        geo_name: 华北
+    - name: total_social_security
+      value: 8048.42
+      dims:
+        geo_name: 华南
+    - name: total_social_security
+      value: 7717.77
+      dims:
+        geo_name: 华中
+    - name: total_social_security
+      value: 7008.27
+      dims:
+        geo_name: 西南
+    - name: total_social_security
+      value: 3936.5
+      dims:
+        geo_name: 西北
+    - name: total_social_security
+      value: 3543.81
+      dims:
+        geo_name: 东北
+  requires_calculator: false
 - id: 36
-  question: 2024年税收收入从高到低排名前10的省份有哪些？
+  question: 2024年税收收入从高到低排名前8的省份有哪些？
   sql: |-
     SELECT geo_name
     FROM government_finance
     WHERE year = 2024 AND geo_level = 'province'
     ORDER BY tax_revenue_100m_cny DESC
-    LIMIT 10
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
+    LIMIT 8
   answer:
-  - geo_name: 江苏
-  - geo_name: 广东
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
-  - geo_name: 河南
-  - geo_name: 湖北
-  - geo_name: 福建
-  - geo_name: 湖南
-  - geo_name: 河北
+    items:
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 浙江
+    - name: geo_name
+      value: 四川
+    - name: geo_name
+      value: 河南
+    - name: geo_name
+      value: 湖北
+    - name: geo_name
+      value: 福建
+  requires_calculator: false
 - id: 37
   question: 哪些大区在2020-2024年间的平均财政赤字超过10000亿元？
   sql: |-
@@ -631,34 +691,29 @@ questions:
     GROUP BY geo_name
     HAVING AVG(deficit_100m_cny) > 10000
     ORDER BY AVG(deficit_100m_cny) DESC
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 华东
+    items:
+    - name: geo_name
+      value: 华东
+  requires_calculator: false
 - id: 38
-  question: 哪些省份在2022-2024年间的平均债务率超过80%？
+  question: 哪些省份在2022-2024年间的平均债务率超过82%？
   sql: |-
     SELECT geo_name
     FROM government_finance
     WHERE year BETWEEN 2022 AND 2024 AND geo_level = 'province'
     GROUP BY geo_name
-    HAVING AVG(debt_to_gdp_pct) > 80
+    HAVING AVG(debt_to_gdp_pct) > 82
     ORDER BY AVG(debt_to_gdp_pct) DESC
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 湖北
-  - geo_name: 贵州
-  - geo_name: 河南
-  - geo_name: 内蒙古
-  - geo_name: 湖南
-  - geo_name: 天津
-  - geo_name: 新疆
-  - geo_name: 北京
-  - geo_name: 四川
-  - geo_name: 吉林
+    items:
+    - name: geo_name
+      value: 湖北
+    - name: geo_name
+      value: 贵州
+    - name: geo_name
+      value: 河南
+  requires_calculator: false
 - id: 39
   question: 哪些地区社会保障支出超过10000亿元的年份次数超过5次？
   sql: |-
@@ -668,11 +723,11 @@ questions:
     GROUP BY geo_name
     HAVING COUNT(*) > 5
     ORDER BY COUNT(*) DESC, geo_name
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 华东
+    items:
+    - name: geo_name
+      value: 华东
+  requires_calculator: false
 - id: 40
   question: 2020-2024年间，哪些省份的累计税收收入超过90000亿元？
   sql: |-
@@ -682,76 +737,99 @@ questions:
     GROUP BY geo_name
     HAVING SUM(tax_revenue_100m_cny) > 90000
     ORDER BY SUM(tax_revenue_100m_cny) DESC
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 江苏
+  requires_calculator: false
 - id: 41
-  question: 全国层级历年政府债务余额的变化趋势是怎样的？
+  question: 2017-2024年全国层级历年政府债务余额的变化趋势是怎样的？
   sql: |-
     SELECT year, debt_balance_100m_cny
     FROM government_finance
-    WHERE geo_level = 'national'
+    WHERE geo_level = 'national' AND year BETWEEN 2017 AND 2024
     ORDER BY year
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - year: 2016
-    debt_balance_100m_cny: 680000.0
-  - year: 2017
-    debt_balance_100m_cny: 722000.0
-  - year: 2018
-    debt_balance_100m_cny: 764000.0
-  - year: 2019
-    debt_balance_100m_cny: 806000.0
-  - year: 2020
-    debt_balance_100m_cny: 848000.0
-  - year: 2021
-    debt_balance_100m_cny: 890000.0
-  - year: 2022
-    debt_balance_100m_cny: 932000.0
-  - year: 2023
-    debt_balance_100m_cny: 974000.0
-  - year: 2024
-    debt_balance_100m_cny: 1016000.0
-  - year: 2025
-    debt_balance_100m_cny: 1058000.0
+    items:
+    - name: debt_balance_100m_cny
+      value: 722000.0
+      dims:
+        year: 2017
+    - name: debt_balance_100m_cny
+      value: 764000.0
+      dims:
+        year: 2018
+    - name: debt_balance_100m_cny
+      value: 806000.0
+      dims:
+        year: 2019
+    - name: debt_balance_100m_cny
+      value: 848000.0
+      dims:
+        year: 2020
+    - name: debt_balance_100m_cny
+      value: 890000.0
+      dims:
+        year: 2021
+    - name: debt_balance_100m_cny
+      value: 932000.0
+      dims:
+        year: 2022
+    - name: debt_balance_100m_cny
+      value: 974000.0
+      dims:
+        year: 2023
+    - name: debt_balance_100m_cny
+      value: 1016000.0
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 42
-  question: 按年统计，全国社会保障支出的历年数据
+  question: 按年统计，2017-2024年全国社会保障支出的历年数据
   sql: |-
     SELECT year, social_security_100m_cny
     FROM government_finance
-    WHERE geo_level = 'national'
+    WHERE geo_level = 'national' AND year BETWEEN 2017 AND 2024
     ORDER BY year
-  answer_type: list
-  answer_unit: 亿元
-  requires_calculator: false
   answer:
-  - year: 2016
-    social_security_100m_cny: 71991.11
-  - year: 2017
-    social_security_100m_cny: 70643.39
-  - year: 2018
-    social_security_100m_cny: 74876.59
-  - year: 2019
-    social_security_100m_cny: 63836.0
-  - year: 2020
-    social_security_100m_cny: 82649.98
-  - year: 2021
-    social_security_100m_cny: 79091.7
-  - year: 2022
-    social_security_100m_cny: 69157.74
-  - year: 2023
-    social_security_100m_cny: 95514.81
-  - year: 2024
-    social_security_100m_cny: 69101.7
-  - year: 2025
-    social_security_100m_cny: 95838.76
+    items:
+    - name: social_security_100m_cny
+      value: 70643.39
+      dims:
+        year: 2017
+    - name: social_security_100m_cny
+      value: 74876.59
+      dims:
+        year: 2018
+    - name: social_security_100m_cny
+      value: 63836.0
+      dims:
+        year: 2019
+    - name: social_security_100m_cny
+      value: 82649.98
+      dims:
+        year: 2020
+    - name: social_security_100m_cny
+      value: 79091.7
+      dims:
+        year: 2021
+    - name: social_security_100m_cny
+      value: 69157.74
+      dims:
+        year: 2022
+    - name: social_security_100m_cny
+      value: 95514.81
+      dims:
+        year: 2023
+    - name: social_security_100m_cny
+      value: 69101.7
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 43
-  question: 2024年哪些省份的税收收入高于所有省份的平均值？
+  question: 2024年哪些省份的税收收入高于所有省份平均值1200亿元以上？
   sql: |-
     SELECT geo_name
     FROM government_finance
@@ -759,25 +837,29 @@ questions:
       SELECT AVG(tax_revenue_100m_cny)
       FROM government_finance
       WHERE year = 2024 AND geo_level = 'province'
-    )
+    ) + 1200
     ORDER BY tax_revenue_100m_cny DESC
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 江苏
-  - geo_name: 广东
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
-  - geo_name: 河南
-  - geo_name: 湖北
-  - geo_name: 福建
-  - geo_name: 湖南
-  - geo_name: 河北
-  - geo_name: 安徽
-  - geo_name: 北京
-  - geo_name: 上海
+    items:
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 浙江
+    - name: geo_name
+      value: 四川
+    - name: geo_name
+      value: 河南
+    - name: geo_name
+      value: 湖北
+    - name: geo_name
+      value: 福建
+    - name: geo_name
+      value: 湖南
+  requires_calculator: false
 - id: 44
   question: 2023年哪些大区的财政支出低于所有大区的平均支出？
   sql: |-
@@ -789,22 +871,28 @@ questions:
       WHERE year = 2023 AND geo_level = 'region'
     )
     ORDER BY expenditure_100m_cny
-  answer_type: list
-  answer_unit: null
-  requires_calculator: false
   answer:
-  - geo_name: 东北
-  - geo_name: 西北
-  - geo_name: 西南
-  - geo_name: 华中
-  - geo_name: 华南
-  - geo_name: 华北
+    items:
+    - name: geo_name
+      value: 东北
+    - name: geo_name
+      value: 西北
+    - name: geo_name
+      value: 西南
+    - name: geo_name
+      value: 华中
+    - name: geo_name
+      value: 华南
+    - name: geo_name
+      value: 华北
+  requires_calculator: false
 - id: 45
   question: 2024年全国的税收收入占财政总收入的比例是多少？
-  answer_type: scalar
-  answer_unit: '%'
+  answer:
+    items:
+    - name: result
+      value: 82.16402173913043
   requires_calculator: true
-  answer: 82.16402173913043
   sql1: |-
     SELECT tax_revenue_100m_cny AS tax_revenue
     FROM government_finance
@@ -816,38 +904,39 @@ questions:
 - id: 46
   question: 2030年全国财政总收入是多少？
   sql: null
+  answer:
+    items: []
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
-  answer: null
-  answer_unit: null
 - id: 47
   question: 查询各省份的财政预算编制人员数量
   sql: null
+  answer:
+    items: []
   expected_error: 表中不包含人员数量字段，仅有财政收支和债务等宏观指标
-  answer: null
-  answer_unit: null
 - id: 48
   question: 查询全国层级且地理名称为上海的财政数据
   sql: null
+  answer:
+    items: []
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为'上海'
-  answer: null
-  answer_unit: null
 - id: 49
   question: 查询政府债务率超过200%的记录
   sql: null
+  answer:
+    items: []
   expected_error: 债务率的合理范围通常为0-150%，超过200%的情况极不合理且数据中不存在
-  answer: null
-  answer_unit: null
 - id: 50
   question: 查询2015年的全国财政收支数据
   sql: null
+  answer:
+    items: []
   expected_error: 数据起始年份为2016年，2015年数据不存在
-  answer: null
-  answer_unit: null
 - id: 51
   question: 2024年广东省的财政总收入占全国财政总收入的比例是多少？
-  answer_type: scalar
-  answer: 10.446634316770185
-  answer_unit: '%'
+  answer:
+    items:
+    - name: result
+      value: 10.446634316770185
   requires_calculator: true
   sql1: |-
     SELECT total_revenue_100m_cny AS gd_revenue
@@ -859,9 +948,10 @@ questions:
     WHERE year = 2024 AND geo_level = 'national'
 - id: 52
   question: 2023年华东地区的政府债务余额占全国政府债务余额的比例是多少？
-  answer_type: scalar
-  answer: 36.71820431211499
-  answer_unit: '%'
+  answer:
+    items:
+    - name: result
+      value: 36.71820431211499
   requires_calculator: true
   sql1: |-
     SELECT debt_balance_100m_cny AS hd_debt
@@ -873,9 +963,10 @@ questions:
     WHERE year = 2023 AND geo_level = 'national'
 - id: 53
   question: 2024年北京市的社会保障支出是天津市的多少倍？
-  answer_type: scalar
-  answer: 2.6077815621946243
-  answer_unit: 倍
+  answer:
+    items:
+    - name: result
+      value: 2.6077815621946243
   requires_calculator: true
   sql1: |-
     SELECT social_security_100m_cny AS bj_social
@@ -887,9 +978,10 @@ questions:
     WHERE year = 2024 AND geo_name = '天津'
 - id: 54
   question: 2023年全国的转移支付占财政支出的比例是多少？
-  answer_type: scalar
-  answer: 14.05634828009828
-  answer_unit: '%'
+  answer:
+    items:
+    - name: result
+      value: 14.05634828009828
   requires_calculator: true
   sql1: |-
     SELECT transfer_payment_100m_cny AS transfer
@@ -901,9 +993,10 @@ questions:
     WHERE year = 2023 AND geo_level = 'national'
 - id: 55
   question: 2024年江苏省的税收收入比浙江省高出多少亿元？
-  answer_type: scalar
-  answer: 7896.999999999998
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: result
+      value: 7896.999999999998
   requires_calculator: true
   sql1: |-
     SELECT tax_revenue_100m_cny AS js_tax
@@ -915,9 +1008,10 @@ questions:
     WHERE year = 2024 AND geo_name = '浙江'
 - id: 56
   question: 2024年全国财政赤字比2019年增加了多少亿元？
-  answer_type: scalar
-  answer: 8000.0
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: result
+      value: 8000.0
   requires_calculator: true
   sql1: |-
     SELECT deficit_100m_cny AS deficit_2024
@@ -929,9 +1023,10 @@ questions:
     WHERE year = 2019 AND geo_level = 'national'
 - id: 57
   question: 2025年全国政府债务余额是2016年的多少倍？
-  answer_type: scalar
-  answer: 1.5558823529411765
-  answer_unit: 倍
+  answer:
+    items:
+    - name: result
+      value: 1.5558823529411765
   requires_calculator: true
   sql1: |-
     SELECT debt_balance_100m_cny AS debt_2025
@@ -943,9 +1038,10 @@ questions:
     WHERE year = 2016 AND geo_level = 'national'
 - id: 58
   question: 2023年广东省的非税收入相较2020年变化了多少亿元？
-  answer_type: scalar
-  answer: -1784.2399999999998
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: result
+      value: -1784.2399999999998
   requires_calculator: true
   sql1: |-
     SELECT non_tax_revenue_100m_cny AS nontax_2023
@@ -957,9 +1053,10 @@ questions:
     WHERE year = 2020 AND geo_name = '广东'
 - id: 59
   question: 2022年华东地区的财政支出是2017年的多少倍？
-  answer_type: scalar
-  answer: 1.0551794677887312
-  answer_unit: 倍
+  answer:
+    items:
+    - name: result
+      value: 1.0551794677887312
   requires_calculator: true
   sql1: |-
     SELECT expenditure_100m_cny AS exp_2022
@@ -971,9 +1068,10 @@ questions:
     WHERE year = 2017 AND geo_name = '华东'
 - id: 60
   question: 2024年全国社会保障支出比2018年减少了多少亿元？
-  answer_type: scalar
-  answer: 5774.889999999999
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: result
+      value: 5774.889999999999
   requires_calculator: true
   sql1: |-
     SELECT social_security_100m_cny AS social_2018

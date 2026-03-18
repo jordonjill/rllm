@@ -8,10 +8,11 @@ questions:
     FROM cpi_inflation
     WHERE year = 2024 AND month = 1 AND geo_level = 'national'
     LIMIT 1
-  answer_type: scalar
-  answer_unit: 指数
   requires_calculator: false
-  answer: 116.245
+  answer:
+    items:
+    - name: overall_cpi_idx
+      value: 116.245
 - id: 2
   question: 查询华东地区2023年12月的食品CPI指数
   sql: |-
@@ -19,84 +20,97 @@ questions:
     FROM cpi_inflation
     WHERE geo_name = '华东' AND year = 2023 AND month = 12
     LIMIT 1
-  answer_type: scalar
-  answer_unit: 指数
   requires_calculator: false
-  answer: 115.235
+  answer:
+    items:
+    - name: food_cpi_idx
+      value: 115.235
 - id: 3
-  question: 查询2022年全年北京市已剔除食品和能源因素的核心CPI指数记录
+  question: 查询2022年1月至9月北京市已剔除食品和能源因素的核心CPI指数记录
   sql: |-
     SELECT year, month, core_cpi_idx
     FROM cpi_inflation
-    WHERE year = 2022 AND geo_level = 'province' AND geo_name = '北京'
+    WHERE year = 2022 AND geo_level = 'province' AND geo_name = '北京' AND month BETWEEN 1 AND 9
     ORDER BY year, month
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - year: 2022
-    month: 1
-    core_cpi_idx: 112.196
-  - year: 2022
-    month: 2
-    core_cpi_idx: 112.763
-  - year: 2022
-    month: 3
-    core_cpi_idx: 113.202
-  - year: 2022
-    month: 4
-    core_cpi_idx: 113.457
-  - year: 2022
-    month: 5
-    core_cpi_idx: 113.856
-  - year: 2022
-    month: 6
-    core_cpi_idx: 112.917
-  - year: 2022
-    month: 7
-    core_cpi_idx: 113.588
-  - year: 2022
-    month: 8
-    core_cpi_idx: 113.173
-  - year: 2022
-    month: 9
-    core_cpi_idx: 113.555
-  - year: 2022
-    month: 10
-    core_cpi_idx: 113.881
-  - year: 2022
-    month: 11
-    core_cpi_idx: 114.066
-  - year: 2022
-    month: 12
-    core_cpi_idx: 114.59
+    items:
+    - name: core_cpi_idx
+      value: 112.196
+      dims:
+        year: 2022
+        month: 1
+    - name: core_cpi_idx
+      value: 112.763
+      dims:
+        year: 2022
+        month: 2
+    - name: core_cpi_idx
+      value: 113.202
+      dims:
+        year: 2022
+        month: 3
+    - name: core_cpi_idx
+      value: 113.457
+      dims:
+        year: 2022
+        month: 4
+    - name: core_cpi_idx
+      value: 113.856
+      dims:
+        year: 2022
+        month: 5
+    - name: core_cpi_idx
+      value: 112.917
+      dims:
+        year: 2022
+        month: 6
+    - name: core_cpi_idx
+      value: 113.588
+      dims:
+        year: 2022
+        month: 7
+    - name: core_cpi_idx
+      value: 113.173
+      dims:
+        year: 2022
+        month: 8
+    - name: core_cpi_idx
+      value: 113.555
+      dims:
+        year: 2022
+        month: 9
 - id: 4
   question: 查询2020年6月省级层级的服务类CPI指数前5条记录
   sql: |-
-    SELECT geo_name, services_cpi_idx, yoy_change_pct
+    SELECT geo_name, services_cpi_idx
     FROM cpi_inflation
     WHERE year = 2020 AND month = 6 AND geo_level = 'province'
     ORDER BY services_cpi_idx DESC
     LIMIT 5
-  answer_type: list
-  answer_unit: 指数/%
   requires_calculator: false
   answer:
-  - geo_name: 青海
-    services_cpi_idx: 111.149
-    yoy_change_pct: 0.199
-  - geo_name: 浙江
-    services_cpi_idx: 111.109
-    yoy_change_pct: 1.506
-  - geo_name: 内蒙古
-    services_cpi_idx: 111.024
-    yoy_change_pct: 0.756
-  - geo_name: 河北
-    services_cpi_idx: 110.853
-    yoy_change_pct: 0.553
-  - geo_name: 陕西
-    services_cpi_idx: 110.814
-    yoy_change_pct: 0.419
+    items:
+    - name: services_cpi_idx
+      value: 111.149
+      dims:
+        geo_name: 青海
+    - name: services_cpi_idx
+      value: 111.109
+      dims:
+        geo_name: 浙江
+    - name: services_cpi_idx
+      value: 111.024
+      dims:
+        geo_name: 内蒙古
+    - name: services_cpi_idx
+      value: 110.853
+      dims:
+        geo_name: 河北
+    - name: services_cpi_idx
+      value: 110.814
+      dims:
+        geo_name: 陕西
 - id: 5
   question: 查询2023年华北、东北、华东三大区域1月份的总体CPI同比变化率
   sql: |-
@@ -104,16 +118,21 @@ questions:
     FROM cpi_inflation
     WHERE year = 2023 AND month = 1 AND geo_level = 'region' AND geo_name IN ('华北', '东北', '华东')
     ORDER BY geo_name
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - geo_name: 东北
-    yoy_change_pct: 1.114
-  - geo_name: 华东
-    yoy_change_pct: 1.508
-  - geo_name: 华北
-    yoy_change_pct: 1.486
+    items:
+    - name: yoy_change_pct
+      value: 1.114
+      dims:
+        geo_name: 东北
+    - name: yoy_change_pct
+      value: 1.508
+      dims:
+        geo_name: 华东
+    - name: yoy_change_pct
+      value: 1.486
+      dims:
+        geo_name: 华北
 - id: 6
   question: 查询2021年和2022年全国CPI能源价格指数的12月数据
   sql: |-
@@ -121,157 +140,102 @@ questions:
     FROM cpi_inflation
     WHERE geo_level = 'national' AND month = 12 AND year IN (2021, 2022)
     ORDER BY year
-  answer_type: list
-  answer_unit: 指数/%
   requires_calculator: false
   answer:
-  - year: 2021
-    month: 12
-    energy_cpi_idx: 115.413
-    yoy_change_pct: 1.49
-  - year: 2022
-    month: 12
-    energy_cpi_idx: 116.809
-    yoy_change_pct: 1.403
+    items:
+    - name: energy_cpi_idx
+      value: 115.413
+      dims: &id001
+        year: 2021
+        month: 12
+    - name: yoy_change_pct
+      value: 1.49
+      dims: *id001
+    - name: energy_cpi_idx
+      value: 116.809
+      dims: &id002
+        year: 2022
+        month: 12
+    - name: yoy_change_pct
+      value: 1.403
+      dims: *id002
 - id: 7
   question: 检查能源CPI指数数据是否存在缺失记录
   sql: |-
     SELECT COUNT(*) AS value
     FROM cpi_inflation
     WHERE energy_cpi_idx IS NULL
-  answer_type: scalar
-  answer_unit: 条
   requires_calculator: false
-  answer: 0
+  answer:
+    items:
+    - name: count
+      value: 0
 - id: 8
   question: 查询2018年至2020年间全国CPI同比涨幅超过3%的月份数量
   sql: |-
     SELECT COUNT(*) AS value
     FROM cpi_inflation
     WHERE geo_level = 'national' AND year BETWEEN 2018 AND 2020 AND yoy_change_pct > 3.0
-  answer_type: scalar
-  answer_unit: 个月
   requires_calculator: false
-  answer: 0
+  answer:
+    items:
+    - name: count
+      value: 0
 - id: 9
-  question: 查询2019年到2021年华南地区的食品CPI指数月度记录
+  question: 查询2021年4月至12月华南地区的食品CPI指数月度记录
   sql: |-
     SELECT year, month, food_cpi_idx
     FROM cpi_inflation
-    WHERE geo_name = '华南' AND year BETWEEN 2019 AND 2021
+    WHERE geo_name = '华南' AND year = 2021 AND month BETWEEN 4 AND 12
     ORDER BY year, month
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - year: 2019
-    month: 1
-    food_cpi_idx: 107.978
-  - year: 2019
-    month: 2
-    food_cpi_idx: 106.769
-  - year: 2019
-    month: 3
-    food_cpi_idx: 106.502
-  - year: 2019
-    month: 4
-    food_cpi_idx: 104.6
-  - year: 2019
-    month: 5
-    food_cpi_idx: 105.093
-  - year: 2019
-    month: 6
-    food_cpi_idx: 106.146
-  - year: 2019
-    month: 7
-    food_cpi_idx: 105.06
-  - year: 2019
-    month: 8
-    food_cpi_idx: 107.635
-  - year: 2019
-    month: 9
-    food_cpi_idx: 105.833
-  - year: 2019
-    month: 10
-    food_cpi_idx: 106.164
-  - year: 2019
-    month: 11
-    food_cpi_idx: 107.18
-  - year: 2019
-    month: 12
-    food_cpi_idx: 108.576
-  - year: 2020
-    month: 1
-    food_cpi_idx: 108.886
-  - year: 2020
-    month: 2
-    food_cpi_idx: 109.599
-  - year: 2020
-    month: 3
-    food_cpi_idx: 108.229
-  - year: 2020
-    month: 4
-    food_cpi_idx: 107.374
-  - year: 2020
-    month: 5
-    food_cpi_idx: 107.967
-  - year: 2020
-    month: 6
-    food_cpi_idx: 108.6
-  - year: 2020
-    month: 7
-    food_cpi_idx: 107.368
-  - year: 2020
-    month: 8
-    food_cpi_idx: 109.107
-  - year: 2020
-    month: 9
-    food_cpi_idx: 109.633
-  - year: 2020
-    month: 10
-    food_cpi_idx: 109.936
-  - year: 2020
-    month: 11
-    food_cpi_idx: 108.37
-  - year: 2020
-    month: 12
-    food_cpi_idx: 110.154
-  - year: 2021
-    month: 1
-    food_cpi_idx: 108.395
-  - year: 2021
-    month: 2
-    food_cpi_idx: 110.394
-  - year: 2021
-    month: 3
-    food_cpi_idx: 108.978
-  - year: 2021
-    month: 4
-    food_cpi_idx: 112.007
-  - year: 2021
-    month: 5
-    food_cpi_idx: 112.418
-  - year: 2021
-    month: 6
-    food_cpi_idx: 109.916
-  - year: 2021
-    month: 7
-    food_cpi_idx: 110.246
-  - year: 2021
-    month: 8
-    food_cpi_idx: 111.757
-  - year: 2021
-    month: 9
-    food_cpi_idx: 109.108
-  - year: 2021
-    month: 10
-    food_cpi_idx: 109.939
-  - year: 2021
-    month: 11
-    food_cpi_idx: 110.671
-  - year: 2021
-    month: 12
-    food_cpi_idx: 110.547
+    items:
+    - name: food_cpi_idx
+      value: 112.007
+      dims:
+        year: 2021
+        month: 4
+    - name: food_cpi_idx
+      value: 112.418
+      dims:
+        year: 2021
+        month: 5
+    - name: food_cpi_idx
+      value: 109.916
+      dims:
+        year: 2021
+        month: 6
+    - name: food_cpi_idx
+      value: 110.246
+      dims:
+        year: 2021
+        month: 7
+    - name: food_cpi_idx
+      value: 111.757
+      dims:
+        year: 2021
+        month: 8
+    - name: food_cpi_idx
+      value: 109.108
+      dims:
+        year: 2021
+        month: 9
+    - name: food_cpi_idx
+      value: 109.939
+      dims:
+        year: 2021
+        month: 10
+    - name: food_cpi_idx
+      value: 110.671
+      dims:
+        year: 2021
+        month: 11
+    - name: food_cpi_idx
+      value: 110.547
+      dims:
+        year: 2021
+        month: 12
 - id: 10
   question: 查询2023年全国CPI环比涨幅超过0.2%的所有月份
   sql: |-
@@ -279,24 +243,28 @@ questions:
     FROM cpi_inflation
     WHERE year = 2023 AND geo_level = 'national' AND mom_change_pct > 0.2
     ORDER BY month
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - month: 3
-    mom_change_pct: 0.31
-  - month: 4
-    mom_change_pct: 0.21
+    items:
+    - name: mom_change_pct
+      value: 0.31
+      dims:
+        month: 3
+    - name: mom_change_pct
+      value: 0.21
+      dims:
+        month: 4
 - id: 11
   question: 查询2024年已剔除食品和能源因素且低于99的核心CPI指数城市数量
   sql: |-
     SELECT COUNT(DISTINCT geo_name) AS value
     FROM cpi_inflation
     WHERE year = 2024 AND geo_level = 'city' AND core_cpi_idx < 99.0
-  answer_type: scalar
-  answer_unit: 个城市
   requires_calculator: false
-  answer: 0
+  answer:
+    items:
+    - name: count_distinct_geo_name
+      value: 0
 - id: 12
   question: 查询2022年服务类CPI年均同比涨幅超过2%的省级地区
   sql: |-
@@ -308,236 +276,121 @@ questions:
     GROUP BY c.geo_name
     HAVING AVG((c.services_cpi_idx - p.services_cpi_idx) * 100.0 / p.services_cpi_idx) > 2.0
     ORDER BY c.geo_name
-  answer_type: list
-  answer_unit: null
   requires_calculator: false
   answer:
-  - geo_name: 吉林
-  - geo_name: 山东
-  - geo_name: 山西
-  - geo_name: 黑龙江
+    items:
+    - name: geo_name
+      value: 吉林
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 山西
+    - name: geo_name
+      value: 黑龙江
 - id: 13
-  question: 查询2020年到2023年间能源CPI指数高于100且能源CPI同比涨幅为正的全国月份记录
+  question: 查询2021年能源CPI指数高于100且能源CPI同比涨幅为正的全国月份同比涨幅记录
   sql: |-
-    SELECT c.year, c.month, c.energy_cpi_idx,
+    SELECT c.year, c.month,
            ROUND(((c.energy_cpi_idx - p.energy_cpi_idx) * 100.0 / p.energy_cpi_idx), 3) AS yoy_change_pct
     FROM cpi_inflation c
     JOIN cpi_inflation p
     ON c.geo_level = p.geo_level AND c.month = p.month AND c.year = p.year + 1
-    WHERE c.geo_level = 'national' AND c.year BETWEEN 2020 AND 2023 AND c.energy_cpi_idx > 100.0
+    WHERE c.geo_level = 'national' AND c.year = 2021 AND c.energy_cpi_idx > 100.0
       AND ((c.energy_cpi_idx - p.energy_cpi_idx) * 100.0 / p.energy_cpi_idx) > 0
     ORDER BY c.year, c.month
-  answer_type: list
-  answer_unit: 指数/%
   requires_calculator: false
   answer:
-  - year: 2020
-    month: 1
-    energy_cpi_idx: 108.9
-    yoy_change_pct: 0.155
-  - year: 2020
-    month: 2
-    energy_cpi_idx: 109.936
-    yoy_change_pct: 2.998
-  - year: 2020
-    month: 3
-    energy_cpi_idx: 110.306
-    yoy_change_pct: 3.396
-  - year: 2020
-    month: 4
-    energy_cpi_idx: 110.295
-    yoy_change_pct: 3.648
-  - year: 2020
-    month: 5
-    energy_cpi_idx: 110.654
-    yoy_change_pct: 5.868
-  - year: 2020
-    month: 6
-    energy_cpi_idx: 107.292
-    yoy_change_pct: 3.026
-  - year: 2020
-    month: 7
-    energy_cpi_idx: 106.34
-    yoy_change_pct: 0.62
-  - year: 2020
-    month: 8
-    energy_cpi_idx: 111.543
-    yoy_change_pct: 4.613
-  - year: 2020
-    month: 9
-    energy_cpi_idx: 110.572
-    yoy_change_pct: 5.196
-  - year: 2020
-    month: 10
-    energy_cpi_idx: 110.035
-    yoy_change_pct: 1.29
-  - year: 2020
-    month: 11
-    energy_cpi_idx: 112.135
-    yoy_change_pct: 2.643
-  - year: 2020
-    month: 12
-    energy_cpi_idx: 111.093
-    yoy_change_pct: 3.798
-  - year: 2021
-    month: 1
-    energy_cpi_idx: 109.86
-    yoy_change_pct: 0.882
-  - year: 2021
-    month: 4
-    energy_cpi_idx: 110.902
-    yoy_change_pct: 0.55
-  - year: 2021
-    month: 5
-    energy_cpi_idx: 113.233
-    yoy_change_pct: 2.331
-  - year: 2021
-    month: 6
-    energy_cpi_idx: 110.15
-    yoy_change_pct: 2.664
-  - year: 2021
-    month: 7
-    energy_cpi_idx: 112.87
-    yoy_change_pct: 6.141
-  - year: 2021
-    month: 10
-    energy_cpi_idx: 113.445
-    yoy_change_pct: 3.099
-  - year: 2021
-    month: 12
-    energy_cpi_idx: 115.413
-    yoy_change_pct: 3.889
-  - year: 2022
-    month: 1
-    energy_cpi_idx: 114.272
-    yoy_change_pct: 4.016
-  - year: 2022
-    month: 2
-    energy_cpi_idx: 114.861
-    yoy_change_pct: 6.641
-  - year: 2022
-    month: 3
-    energy_cpi_idx: 112.227
-    yoy_change_pct: 2.548
-  - year: 2022
-    month: 4
-    energy_cpi_idx: 112.186
-    yoy_change_pct: 1.158
-  - year: 2022
-    month: 6
-    energy_cpi_idx: 110.255
-    yoy_change_pct: 0.095
-  - year: 2022
-    month: 7
-    energy_cpi_idx: 115.586
-    yoy_change_pct: 2.406
-  - year: 2022
-    month: 8
-    energy_cpi_idx: 111.647
-    yoy_change_pct: 2.738
-  - year: 2022
-    month: 9
-    energy_cpi_idx: 112.15
-    yoy_change_pct: 3.171
-  - year: 2022
-    month: 11
-    energy_cpi_idx: 113.115
-    yoy_change_pct: 1.938
-  - year: 2022
-    month: 12
-    energy_cpi_idx: 116.809
-    yoy_change_pct: 1.21
-  - year: 2023
-    month: 1
-    energy_cpi_idx: 116.107
-    yoy_change_pct: 1.606
-  - year: 2023
-    month: 3
-    energy_cpi_idx: 112.43
-    yoy_change_pct: 0.181
-  - year: 2023
-    month: 4
-    energy_cpi_idx: 112.287
-    yoy_change_pct: 0.09
-  - year: 2023
-    month: 5
-    energy_cpi_idx: 117.874
-    yoy_change_pct: 5.139
-  - year: 2023
-    month: 6
-    energy_cpi_idx: 112.866
-    yoy_change_pct: 2.368
-  - year: 2023
-    month: 8
-    energy_cpi_idx: 117.89
-    yoy_change_pct: 5.592
-  - year: 2023
-    month: 9
-    energy_cpi_idx: 115.173
-    yoy_change_pct: 2.695
-  - year: 2023
-    month: 10
-    energy_cpi_idx: 116.976
-    yoy_change_pct: 5.007
-  - year: 2023
-    month: 11
-    energy_cpi_idx: 117.132
-    yoy_change_pct: 3.551
-  - year: 2023
-    month: 12
-    energy_cpi_idx: 118.654
-    yoy_change_pct: 1.58
+    items:
+    - name: yoy_change_pct
+      value: 0.882
+      dims:
+        year: 2021
+        month: 1
+    - name: yoy_change_pct
+      value: 0.55
+      dims:
+        year: 2021
+        month: 4
+    - name: yoy_change_pct
+      value: 2.331
+      dims:
+        year: 2021
+        month: 5
+    - name: yoy_change_pct
+      value: 2.664
+      dims:
+        year: 2021
+        month: 6
+    - name: yoy_change_pct
+      value: 6.141
+      dims:
+        year: 2021
+        month: 7
+    - name: yoy_change_pct
+      value: 3.099
+      dims:
+        year: 2021
+        month: 10
+    - name: yoy_change_pct
+      value: 3.889
+      dims:
+        year: 2021
+        month: 12
 - id: 14
-  question: 查询2021年6月至8月食品CPI指数超过101且环比上涨的区域记录
+  question: 查询2021年6月至7月食品CPI指数超过101且环比上涨的区域食品CPI指数记录
   sql: |-
-    SELECT geo_name, month, food_cpi_idx, mom_change_pct
+    SELECT geo_name, month, food_cpi_idx
     FROM cpi_inflation
-    WHERE year = 2021 AND geo_level = 'region' AND month BETWEEN 6 AND 8 AND food_cpi_idx > 101.0 AND mom_change_pct > 0
+    WHERE year = 2021 AND geo_level = 'region' AND month BETWEEN 6 AND 7 AND food_cpi_idx > 101.0 AND mom_change_pct > 0
     ORDER BY month, geo_name
-  answer_type: list
-  answer_unit: 指数/%
   requires_calculator: false
   answer:
-  - geo_name: 东北
-    month: 6
-    food_cpi_idx: 109.72
-    mom_change_pct: 0.315
-  - geo_name: 华中
-    month: 6
-    food_cpi_idx: 110.381
-    mom_change_pct: 0.241
-  - geo_name: 华北
-    month: 6
-    food_cpi_idx: 107.937
-    mom_change_pct: 0.27
-  - geo_name: 西北
-    month: 6
-    food_cpi_idx: 110.524
-    mom_change_pct: 0.053
-  - geo_name: 西南
-    month: 6
-    food_cpi_idx: 111.932
-    mom_change_pct: 0.121
-  - geo_name: 东北
-    month: 7
-    food_cpi_idx: 111.124
-    mom_change_pct: 0.18
-  - geo_name: 华东
-    month: 7
-    food_cpi_idx: 111.165
-    mom_change_pct: 0.125
-  - geo_name: 华北
-    month: 7
-    food_cpi_idx: 109.047
-    mom_change_pct: 0.138
-  - geo_name: 西北
-    month: 7
-    food_cpi_idx: 107.708
-    mom_change_pct: 0.126
-  - geo_name: 华中
-    month: 8
-    food_cpi_idx: 110.166
-    mom_change_pct: 0.021
+    items:
+    - name: food_cpi_idx
+      value: 109.72
+      dims:
+        geo_name: 东北
+        month: 6
+    - name: food_cpi_idx
+      value: 110.381
+      dims:
+        geo_name: 华中
+        month: 6
+    - name: food_cpi_idx
+      value: 107.937
+      dims:
+        geo_name: 华北
+        month: 6
+    - name: food_cpi_idx
+      value: 110.524
+      dims:
+        geo_name: 西北
+        month: 6
+    - name: food_cpi_idx
+      value: 111.932
+      dims:
+        geo_name: 西南
+        month: 6
+    - name: food_cpi_idx
+      value: 111.124
+      dims:
+        geo_name: 东北
+        month: 7
+    - name: food_cpi_idx
+      value: 111.165
+      dims:
+        geo_name: 华东
+        month: 7
+    - name: food_cpi_idx
+      value: 109.047
+      dims:
+        geo_name: 华北
+        month: 7
+    - name: food_cpi_idx
+      value: 107.708
+      dims:
+        geo_name: 西北
+        month: 7
 - id: 15
   question: 查询2023年全年全国CPI同比涨幅最高的月份及其涨幅
   sql: |-
@@ -546,12 +399,13 @@ questions:
     WHERE year = 2023 AND geo_level = 'national'
     ORDER BY yoy_change_pct DESC
     LIMIT 1
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - month: 2
-    value: 1.999
+    items:
+    - name: value
+      value: 1.999
+      dims:
+        month: 2
 - id: 16
   question: 查询2022年能源CPI指数最高的省级地区及其指数值
   sql: |-
@@ -561,12 +415,13 @@ questions:
     GROUP BY geo_name
     ORDER BY value DESC
     LIMIT 1
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - geo_name: 陕西
-    value: 117.827
+    items:
+    - name: value
+      value: 117.827
+      dims:
+        geo_name: 陕西
 - id: 17
   question: 查询2024年已剔除食品和能源因素的核心CPI指数最低城市
   sql: |-
@@ -576,12 +431,13 @@ questions:
     GROUP BY geo_name
     ORDER BY value ASC
     LIMIT 1
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - geo_name: 南京
-    value: 114.515
+    items:
+    - name: value
+      value: 114.515
+      dims:
+        geo_name: 南京
 - id: 18
   question: 查询2019年全国CPI环比跌幅最大的月份，即环比变化率最小的月份
   sql: |-
@@ -590,12 +446,13 @@ questions:
     WHERE year = 2019 AND geo_level = 'national'
     ORDER BY mom_change_pct ASC
     LIMIT 1
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - month: 9
-    value: -0.217
+    items:
+    - name: value
+      value: -0.217
+      dims:
+        month: 9
 - id: 19
   question: 查询2023年区域层级中食品CPI同比涨幅年均值最高的前3个区域
   sql: |-
@@ -607,16 +464,21 @@ questions:
     GROUP BY c.geo_name
     ORDER BY avg_yoy DESC
     LIMIT 3
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - geo_name: 华中
-    avg_yoy: 3.3681718206494207
-  - geo_name: 华南
-    avg_yoy: 2.439227502780785
-  - geo_name: 西南
-    avg_yoy: 2.2538008854442904
+    items:
+    - name: avg_yoy
+      value: 3.3681718206494207
+      dims:
+        geo_name: 华中
+    - name: avg_yoy
+      value: 2.439227502780785
+      dims:
+        geo_name: 华南
+    - name: avg_yoy
+      value: 2.2538008854442904
+      dims:
+        geo_name: 西南
 - id: 20
   question: 查询2020年服务类CPI指数最高的前5个省份
   sql: |-
@@ -626,161 +488,193 @@ questions:
     GROUP BY geo_name
     ORDER BY avg_services_cpi DESC
     LIMIT 5
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - geo_name: 陕西
-    avg_services_cpi: 110.916
-  - geo_name: 浙江
-    avg_services_cpi: 110.88633333333333
-  - geo_name: 河北
-    avg_services_cpi: 110.88433333333334
-  - geo_name: 青海
-    avg_services_cpi: 110.65566666666666
-  - geo_name: 北京
-    avg_services_cpi: 110.5215
+    items:
+    - name: avg_services_cpi
+      value: 110.916
+      dims:
+        geo_name: 陕西
+    - name: avg_services_cpi
+      value: 110.88633333333333
+      dims:
+        geo_name: 浙江
+    - name: avg_services_cpi
+      value: 110.88433333333334
+      dims:
+        geo_name: 河北
+    - name: avg_services_cpi
+      value: 110.65566666666666
+      dims:
+        geo_name: 青海
+    - name: avg_services_cpi
+      value: 110.5215
+      dims:
+        geo_name: 北京
 - id: 21
-  question: 查询2024年CPI数据，按同比涨幅降序、环比涨幅降序排列的前5条全国记录
+  question: 查询2024年全国CPI同比涨幅最高的前5个月记录（同比降序、环比降序打破并列）
   sql: |-
-    SELECT month, yoy_change_pct, mom_change_pct
+    SELECT month, yoy_change_pct
     FROM cpi_inflation
     WHERE year = 2024 AND geo_level = 'national'
     ORDER BY yoy_change_pct DESC, mom_change_pct DESC
     LIMIT 5
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - month: 2
-    yoy_change_pct: 2.347
-    mom_change_pct: 0.387
-  - month: 4
-    yoy_change_pct: 2.323
-    mom_change_pct: 0.183
-  - month: 5
-    yoy_change_pct: 2.109
-    mom_change_pct: 0.196
-  - month: 3
-    yoy_change_pct: 2.101
-    mom_change_pct: 0.178
-  - month: 6
-    yoy_change_pct: 1.821
-    mom_change_pct: 0.046
+    items:
+    - name: yoy_change_pct
+      value: 2.347
+      dims:
+        month: 2
+    - name: yoy_change_pct
+      value: 2.323
+      dims:
+        month: 4
+    - name: yoy_change_pct
+      value: 2.109
+      dims:
+        month: 5
+    - name: yoy_change_pct
+      value: 2.101
+      dims:
+        month: 3
+    - name: yoy_change_pct
+      value: 1.821
+      dims:
+        month: 6
 - id: 22
   question: 纳入CPI统计的省级地区有多少个？
   sql: |-
     SELECT COUNT(DISTINCT geo_name) AS value
     FROM cpi_inflation
     WHERE geo_level = 'province'
-  answer_type: scalar
-  answer_unit: 个省份
   requires_calculator: false
-  answer: 31
+  answer:
+    items:
+    - name: count_distinct_geo_name
+      value: 31
 - id: 23
   question: 统计2022年城市层级的CPI记录总条数
   sql: |-
     SELECT COUNT(*) AS value
     FROM cpi_inflation
     WHERE year = 2022 AND geo_level = 'city'
-  answer_type: scalar
-  answer_unit: 条
   requires_calculator: false
-  answer: 120
+  answer:
+    items:
+    - name: count
+      value: 120
 - id: 24
   question: 计算2023年全国CPI同比涨幅的全年累计值，即12个月之和
   sql: |-
     SELECT SUM(yoy_change_pct) AS value
     FROM cpi_inflation
     WHERE year = 2023 AND geo_level = 'national'
-  answer_type: scalar
-  answer_unit: '%'
   requires_calculator: false
-  answer: 19.067
+  answer:
+    items:
+    - name: sum_yoy_change_pct
+      value: 19.067
 - id: 25
   question: 计算2021年华北地区CPI环比变化率的年度总和
   sql: |-
     SELECT SUM(mom_change_pct) AS value
     FROM cpi_inflation
     WHERE year = 2021 AND geo_name = '华北'
-  answer_type: scalar
-  answer_unit: '%'
   requires_calculator: false
-  answer: 0.22000000000000003
+  answer:
+    items:
+    - name: sum_mom_change_pct
+      value: 0.22000000000000003
 - id: 26
   question: 计算2022年全国食品CPI指数的年度平均值
   sql: |-
     SELECT AVG(food_cpi_idx) AS value
     FROM cpi_inflation
     WHERE year = 2022 AND geo_level = 'national'
-  answer_type: scalar
-  answer_unit: 指数
   requires_calculator: false
-  answer: 113.25616666666667
+  answer:
+    items:
+    - name: avg_food_cpi_idx
+      value: 113.25616666666667
 - id: 27
   question: 计算2020年所有省份已剔除食品和能源因素的核心CPI指数平均水平
   sql: |-
     SELECT AVG(core_cpi_idx) AS value
     FROM cpi_inflation
     WHERE year = 2020 AND geo_level = 'province'
-  answer_type: scalar
-  answer_unit: 指数
   requires_calculator: false
-  answer: 108.5736559139785
+  answer:
+    items:
+    - name: avg_core_cpi_idx
+      value: 108.5736559139785
 - id: 28
   question: 查询2019年全国能源CPI指数的最高值和最低值
   sql: |-
     SELECT MAX(energy_cpi_idx) AS max_value, MIN(energy_cpi_idx) AS min_value
     FROM cpi_inflation
     WHERE year = 2019 AND geo_level = 'national'
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - max_value: 109.248
-    min_value: 104.141
+    items:
+    - name: max_value
+      value: 109.248
+    - name: min_value
+      value: 104.141
 - id: 29
   question: 查询2024年所有城市服务类CPI指数的最大值
   sql: |-
     SELECT MAX(services_cpi_idx) AS value
     FROM cpi_inflation
     WHERE year = 2024 AND geo_level = 'city'
-  answer_type: scalar
-  answer_unit: 指数
   requires_calculator: false
-  answer: 120.416
+  answer:
+    items:
+    - name: max_services_cpi_idx
+      value: 120.416
 - id: 30
-  question: 按年份统计2016年至2025年全国CPI同比涨幅的年度平均值
+  question: 按年份统计2017年至2024年全国CPI同比涨幅的年度平均值
   sql: |-
     SELECT year, AVG(yoy_change_pct) AS avg_yoy
     FROM cpi_inflation
-    WHERE geo_level = 'national' AND year BETWEEN 2016 AND 2025
+    WHERE geo_level = 'national' AND year BETWEEN 2017 AND 2024
     GROUP BY year
     ORDER BY year
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - year: 2016
-    avg_yoy: 0.7509166666666666
-  - year: 2017
-    avg_yoy: 0.9216666666666667
-  - year: 2018
-    avg_yoy: 1.1199999999999999
-  - year: 2019
-    avg_yoy: 1.1874166666666668
-  - year: 2020
-    avg_yoy: 1.2468333333333332
-  - year: 2021
-    avg_yoy: 1.404
-  - year: 2022
-    avg_yoy: 1.4791666666666667
-  - year: 2023
-    avg_yoy: 1.5889166666666668
-  - year: 2024
-    avg_yoy: 1.7929166666666667
-  - year: 2025
-    avg_yoy: 1.8616666666666666
+    items:
+    - name: avg_yoy
+      value: 0.9216666666666667
+      dims:
+        year: 2017
+    - name: avg_yoy
+      value: 1.1199999999999999
+      dims:
+        year: 2018
+    - name: avg_yoy
+      value: 1.1874166666666668
+      dims:
+        year: 2019
+    - name: avg_yoy
+      value: 1.2468333333333332
+      dims:
+        year: 2020
+    - name: avg_yoy
+      value: 1.404
+      dims:
+        year: 2021
+    - name: avg_yoy
+      value: 1.4791666666666667
+      dims:
+        year: 2022
+    - name: avg_yoy
+      value: 1.5889166666666668
+      dims:
+        year: 2023
+    - name: avg_yoy
+      value: 1.7929166666666667
+      dims:
+        year: 2024
 - id: 31
   question: 按区域统计2023年食品CPI指数的区域平均值
   sql: |-
@@ -789,24 +683,37 @@ questions:
     WHERE year = 2023 AND geo_level = 'region'
     GROUP BY geo_name
     ORDER BY avg_food_cpi DESC
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - geo_name: 西南
-    avg_food_cpi: 116.73758333333335
-  - geo_name: 华南
-    avg_food_cpi: 115.83933333333334
-  - geo_name: 华中
-    avg_food_cpi: 115.37866666666666
-  - geo_name: 华东
-    avg_food_cpi: 114.77558333333333
-  - geo_name: 西北
-    avg_food_cpi: 114.63525
-  - geo_name: 东北
-    avg_food_cpi: 114.062
-  - geo_name: 华北
-    avg_food_cpi: 113.86066666666666
+    items:
+    - name: avg_food_cpi
+      value: 116.73758333333335
+      dims:
+        geo_name: 西南
+    - name: avg_food_cpi
+      value: 115.83933333333334
+      dims:
+        geo_name: 华南
+    - name: avg_food_cpi
+      value: 115.37866666666666
+      dims:
+        geo_name: 华中
+    - name: avg_food_cpi
+      value: 114.77558333333333
+      dims:
+        geo_name: 华东
+    - name: avg_food_cpi
+      value: 114.63525
+      dims:
+        geo_name: 西北
+    - name: avg_food_cpi
+      value: 114.062
+      dims:
+        geo_name: 东北
+    - name: avg_food_cpi
+      value: 113.86066666666666
+      dims:
+        geo_name: 华北
 - id: 32
   question: 2023年各统计层级中CPI同比为正的数据数量分别是多少？
   sql: |-
@@ -815,18 +722,25 @@ questions:
     WHERE year = 2023 AND yoy_change_pct > 0
     GROUP BY geo_level
     ORDER BY record_count DESC
-  answer_type: list
-  answer_unit: 条
   requires_calculator: false
   answer:
-  - geo_level: province
-    record_count: 372
-  - geo_level: city
-    record_count: 120
-  - geo_level: region
-    record_count: 84
-  - geo_level: national
-    record_count: 12
+    items:
+    - name: record_count
+      value: 372
+      dims:
+        geo_level: province
+    - name: record_count
+      value: 120
+      dims:
+        geo_level: city
+    - name: record_count
+      value: 84
+      dims:
+        geo_level: region
+    - name: record_count
+      value: 12
+      dims:
+        geo_level: national
 - id: 33
   question: 2022年各月份中，CPI同比涨幅超过2%的省份数量分别是多少？
   sql: |-
@@ -835,151 +749,140 @@ questions:
     WHERE year = 2022 AND geo_level = 'province' AND yoy_change_pct > 2.0
     GROUP BY month
     ORDER BY month
-  answer_type: list
-  answer_unit: 条
   requires_calculator: false
   answer:
-  - month: 1
-    record_count: 14
-  - month: 2
-    record_count: 12
-  - month: 3
-    record_count: 13
-  - month: 4
-    record_count: 19
-  - month: 5
-    record_count: 6
-  - month: 6
-    record_count: 4
-  - month: 7
-    record_count: 1
-  - month: 9
-    record_count: 3
-  - month: 12
-    record_count: 7
+    items:
+    - name: record_count
+      value: 14
+      dims:
+        month: 1
+    - name: record_count
+      value: 12
+      dims:
+        month: 2
+    - name: record_count
+      value: 13
+      dims:
+        month: 3
+    - name: record_count
+      value: 19
+      dims:
+        month: 4
+    - name: record_count
+      value: 6
+      dims:
+        month: 5
+    - name: record_count
+      value: 4
+      dims:
+        month: 6
+    - name: record_count
+      value: 1
+      dims:
+        month: 7
+    - name: record_count
+      value: 3
+      dims:
+        month: 9
+    - name: record_count
+      value: 7
+      dims:
+        month: 12
 - id: 34
-  question: 按年份和区域统计2020年至2022年区域层级能源CPI指数的平均值
+  question: 按区域统计2022年区域层级能源CPI指数的平均值
   sql: |-
-    SELECT year, geo_name, AVG(energy_cpi_idx) AS avg_energy_cpi
+    SELECT geo_name, AVG(energy_cpi_idx) AS avg_energy_cpi
     FROM cpi_inflation
-    WHERE year BETWEEN 2020 AND 2022 AND geo_level = 'region'
-    GROUP BY year, geo_name
-    ORDER BY year, geo_name
-  answer_type: list
-  answer_unit: 指数
+    WHERE year = 2022 AND geo_level = 'region'
+    GROUP BY geo_name
+    ORDER BY geo_name
   requires_calculator: false
   answer:
-  - year: 2020
-    geo_name: 东北
-    avg_energy_cpi: 109.01866666666666
-  - year: 2020
-    geo_name: 华东
-    avg_energy_cpi: 108.43074999999999
-  - year: 2020
-    geo_name: 华中
-    avg_energy_cpi: 108.69866666666667
-  - year: 2020
-    geo_name: 华北
-    avg_energy_cpi: 108.92525
-  - year: 2020
-    geo_name: 华南
-    avg_energy_cpi: 108.97250000000001
-  - year: 2020
-    geo_name: 西北
-    avg_energy_cpi: 108.37625000000001
-  - year: 2020
-    geo_name: 西南
-    avg_energy_cpi: 109.97175
-  - year: 2021
-    geo_name: 东北
-    avg_energy_cpi: 111.01425
-  - year: 2021
-    geo_name: 华东
-    avg_energy_cpi: 110.96525000000001
-  - year: 2021
-    geo_name: 华中
-    avg_energy_cpi: 110.48533333333334
-  - year: 2021
-    geo_name: 华北
-    avg_energy_cpi: 109.72633333333333
-  - year: 2021
-    geo_name: 华南
-    avg_energy_cpi: 111.49341666666668
-  - year: 2021
-    geo_name: 西北
-    avg_energy_cpi: 110.40408333333333
-  - year: 2021
-    geo_name: 西南
-    avg_energy_cpi: 111.92225
-  - year: 2022
-    geo_name: 东北
-    avg_energy_cpi: 112.80666666666667
-  - year: 2022
-    geo_name: 华东
-    avg_energy_cpi: 112.63716666666666
-  - year: 2022
-    geo_name: 华中
-    avg_energy_cpi: 112.69975
-  - year: 2022
-    geo_name: 华北
-    avg_energy_cpi: 113.52483333333333
-  - year: 2022
-    geo_name: 华南
-    avg_energy_cpi: 113.16841666666666
-  - year: 2022
-    geo_name: 西北
-    avg_energy_cpi: 112.34741666666667
-  - year: 2022
-    geo_name: 西南
-    avg_energy_cpi: 113.15008333333333
+    items:
+    - name: avg_energy_cpi
+      value: 112.80666666666667
+      dims:
+        geo_name: 东北
+    - name: avg_energy_cpi
+      value: 112.63716666666666
+      dims:
+        geo_name: 华东
+    - name: avg_energy_cpi
+      value: 112.69975
+      dims:
+        geo_name: 华中
+    - name: avg_energy_cpi
+      value: 113.52483333333333
+      dims:
+        geo_name: 华北
+    - name: avg_energy_cpi
+      value: 113.16841666666666
+      dims:
+        geo_name: 华南
+    - name: avg_energy_cpi
+      value: 112.34741666666667
+      dims:
+        geo_name: 西北
+    - name: avg_energy_cpi
+      value: 113.15008333333333
+      dims:
+        geo_name: 西南
 - id: 35
-  question: 按年份和月份统计2023年全国CPI环比涨幅的平均值
+  question: 按年份和月份统计2023年1月至9月全国CPI环比涨幅的平均值
   sql: |-
     SELECT year, month, AVG(mom_change_pct) AS avg_mom
     FROM cpi_inflation
-    WHERE year = 2023 AND geo_level = 'national'
+    WHERE year = 2023 AND geo_level = 'national' AND month BETWEEN 1 AND 9
     GROUP BY year, month
     ORDER BY month
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - year: 2023
-    month: 1
-    avg_mom: 0.075
-  - year: 2023
-    month: 2
-    avg_mom: 0.139
-  - year: 2023
-    month: 3
-    avg_mom: 0.31
-  - year: 2023
-    month: 4
-    avg_mom: 0.21
-  - year: 2023
-    month: 5
-    avg_mom: 0.04
-  - year: 2023
-    month: 6
-    avg_mom: 0.018
-  - year: 2023
-    month: 7
-    avg_mom: -0.1
-  - year: 2023
-    month: 8
-    avg_mom: -0.101
-  - year: 2023
-    month: 9
-    avg_mom: -0.064
-  - year: 2023
-    month: 10
-    avg_mom: -0.005
-  - year: 2023
-    month: 11
-    avg_mom: -0.173
-  - year: 2023
-    month: 12
-    avg_mom: -0.087
+    items:
+    - name: avg_mom
+      value: 0.075
+      dims:
+        year: 2023
+        month: 1
+    - name: avg_mom
+      value: 0.139
+      dims:
+        year: 2023
+        month: 2
+    - name: avg_mom
+      value: 0.31
+      dims:
+        year: 2023
+        month: 3
+    - name: avg_mom
+      value: 0.21
+      dims:
+        year: 2023
+        month: 4
+    - name: avg_mom
+      value: 0.04
+      dims:
+        year: 2023
+        month: 5
+    - name: avg_mom
+      value: 0.018
+      dims:
+        year: 2023
+        month: 6
+    - name: avg_mom
+      value: -0.1
+      dims:
+        year: 2023
+        month: 7
+    - name: avg_mom
+      value: -0.101
+      dims:
+        year: 2023
+        month: 8
+    - name: avg_mom
+      value: -0.064
+      dims:
+        year: 2023
+        month: 9
 - id: 36
   question: 查询2021年核心CPI指数平均值最高的3个省份
   sql: |-
@@ -989,16 +892,21 @@ questions:
     GROUP BY geo_name
     ORDER BY avg_core_cpi DESC
     LIMIT 3
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - geo_name: 河北
-    avg_core_cpi: 111.65325
-  - geo_name: 浙江
-    avg_core_cpi: 111.592
-  - geo_name: 云南
-    avg_core_cpi: 111.368
+    items:
+    - name: avg_core_cpi
+      value: 111.65325
+      dims:
+        geo_name: 河北
+    - name: avg_core_cpi
+      value: 111.592
+      dims:
+        geo_name: 浙江
+    - name: avg_core_cpi
+      value: 111.368
+      dims:
+        geo_name: 云南
 - id: 37
   question: 查询2023年平均CPI同比涨幅超过1.5%的区域
   sql: |-
@@ -1008,13 +916,15 @@ questions:
     GROUP BY geo_name
     HAVING AVG(yoy_change_pct) > 1.5
     ORDER BY AVG(yoy_change_pct) DESC
-  answer_type: list
-  answer_unit: null
   requires_calculator: false
   answer:
-  - geo_name: 华南
-  - geo_name: 华北
-  - geo_name: 西南
+    items:
+    - name: geo_name
+      value: 华南
+    - name: geo_name
+      value: 华北
+    - name: geo_name
+      value: 西南
 - id: 38
   question: 查询2022年平均食品CPI指数超过100.5的省份数量
   sql: |-
@@ -1024,10 +934,11 @@ questions:
     WHERE year = 2022 AND geo_level = 'province'
     GROUP BY geo_name
     HAVING AVG(food_cpi_idx) > 100.5 )
-  answer_type: scalar
-  answer_unit: 个省份
   requires_calculator: false
-  answer: 31
+  answer:
+    items:
+    - name: count
+      value: 31
 - id: 39
   question: 查询在2020年有完整12个月CPI数据的城市数量
   sql: |-
@@ -1037,10 +948,11 @@ questions:
     WHERE year = 2020 AND geo_level = 'city'
     GROUP BY geo_name
     HAVING COUNT(*) = 12 )
-  answer_type: scalar
-  answer_unit: 个城市
   requires_calculator: false
-  answer: 10
+  answer:
+    items:
+    - name: count
+      value: 10
 - id: 40
   question: 查询2023年CPI环比累计涨幅超过1%的区域
   sql: |-
@@ -1050,43 +962,54 @@ questions:
     GROUP BY geo_name
     HAVING SUM(mom_change_pct) > 1.0
     ORDER BY SUM(mom_change_pct) DESC
-  answer_type: list
-  answer_unit: null
   requires_calculator: false
   answer:
-  - geo_name: 华东
+    items:
+    - name: geo_name
+      value: 华东
 - id: 41
-  question: 查询2016年至2025年全国CPI总体指数年度平均值的变化趋势
+  question: 查询2017年至2024年全国CPI总体指数年度平均值的变化趋势
   sql: |-
     SELECT year, AVG(overall_cpi_idx) AS avg_overall_cpi
     FROM cpi_inflation
-    WHERE geo_level = 'national' AND year BETWEEN 2016 AND 2025
+    WHERE geo_level = 'national' AND year BETWEEN 2017 AND 2024
     GROUP BY year
     ORDER BY year
-  answer_type: list
-  answer_unit: 指数
   requires_calculator: false
   answer:
-  - year: 2016
-    avg_overall_cpi: 100.92366666666668
-  - year: 2017
-    avg_overall_cpi: 102.95766666666667
-  - year: 2018
-    avg_overall_cpi: 105.01283333333333
-  - year: 2019
-    avg_overall_cpi: 106.96791666666667
-  - year: 2020
-    avg_overall_cpi: 109.00316666666667
-  - year: 2021
-    avg_overall_cpi: 111.11475
-  - year: 2022
-    avg_overall_cpi: 113.17458333333333
-  - year: 2023
-    avg_overall_cpi: 115.16741666666667
-  - year: 2024
-    avg_overall_cpi: 117.1365
-  - year: 2025
-    avg_overall_cpi: 119.20041666666667
+    items:
+    - name: avg_overall_cpi
+      value: 102.95766666666667
+      dims:
+        year: 2017
+    - name: avg_overall_cpi
+      value: 105.01283333333333
+      dims:
+        year: 2018
+    - name: avg_overall_cpi
+      value: 106.96791666666667
+      dims:
+        year: 2019
+    - name: avg_overall_cpi
+      value: 109.00316666666667
+      dims:
+        year: 2020
+    - name: avg_overall_cpi
+      value: 111.11475
+      dims:
+        year: 2021
+    - name: avg_overall_cpi
+      value: 113.17458333333333
+      dims:
+        year: 2022
+    - name: avg_overall_cpi
+      value: 115.16741666666667
+      dims:
+        year: 2023
+    - name: avg_overall_cpi
+      value: 117.1365
+      dims:
+        year: 2024
 - id: 42
   question: 查询2018-2024年全国服务类CPI同比涨幅的年均值趋势
   sql: |-
@@ -1097,24 +1020,37 @@ questions:
     WHERE c.geo_level = 'national' AND c.year BETWEEN 2018 AND 2024
     GROUP BY c.year
     ORDER BY c.year
-  answer_type: list
-  answer_unit: '%'
   requires_calculator: false
   answer:
-  - year: 2018
-    avg_yoy: 1.9283047528883082
-  - year: 2019
-    avg_yoy: 2.207365198278184
-  - year: 2020
-    avg_yoy: 1.6708642188556369
-  - year: 2021
-    avg_yoy: 1.7710796118302525
-  - year: 2022
-    avg_yoy: 1.9603848782780655
-  - year: 2023
-    avg_yoy: 1.7461163945430336
-  - year: 2024
-    avg_yoy: 1.6633208696237343
+    items:
+    - name: avg_yoy
+      value: 1.9283047528883082
+      dims:
+        year: 2018
+    - name: avg_yoy
+      value: 2.207365198278184
+      dims:
+        year: 2019
+    - name: avg_yoy
+      value: 1.6708642188556369
+      dims:
+        year: 2020
+    - name: avg_yoy
+      value: 1.7710796118302525
+      dims:
+        year: 2021
+    - name: avg_yoy
+      value: 1.9603848782780655
+      dims:
+        year: 2022
+    - name: avg_yoy
+      value: 1.7461163945430336
+      dims:
+        year: 2023
+    - name: avg_yoy
+      value: 1.6633208696237343
+      dims:
+        year: 2024
 - id: 43
   question: 查询2023年CPI同比涨幅高于全年平均水平的月份
   sql: |-
@@ -1124,17 +1060,23 @@ questions:
     FROM cpi_inflation
     WHERE year = 2023 AND geo_level = 'national')
     ORDER BY month
-  answer_type: list
-  answer_unit: null
   requires_calculator: false
   answer:
-  - month: 1
-  - month: 2
-  - month: 3
-  - month: 4
-  - month: 5
-  - month: 6
-  - month: 12
+    items:
+    - name: month
+      value: 1
+    - name: month
+      value: 2
+    - name: month
+      value: 3
+    - name: month
+      value: 4
+    - name: month
+      value: 5
+    - name: month
+      value: 6
+    - name: month
+      value: 12
 - id: 44
   question: 查询2022年食品CPI指数年均值超过全国年均水平的省份数量
   sql: |-
@@ -1150,10 +1092,11 @@ questions:
         WHERE year = 2022 AND geo_level = 'national'
       )
     )
-  answer_type: scalar
-  answer_unit: 个省份
   requires_calculator: false
-  answer: 17
+  answer:
+    items:
+    - name: count
+      value: 17
 - id: 45
   question: 2023年全国食品CPI指数均值是能源CPI指数均值的多少倍？
   sql1: |-
@@ -1164,46 +1107,48 @@ questions:
     SELECT AVG(energy_cpi_idx) AS energy_avg
     FROM cpi_inflation
     WHERE year = 2023 AND geo_level = 'national'
-  answer_type: scalar
-  answer_unit: 倍
   requires_calculator: true
-  answer: 1.0026484737265617
+  answer:
+    items:
+    - name: result
+      value: 1.0026484737265617
 - id: 46
   question: 查询2030年全国CPI总体指数
   sql: null
-  answer_unit: null
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
-  answer: null
+  answer:
+    items: []
 - id: 47
   question: 查询2015年的CPI通胀数据
   sql: null
-  answer_unit: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
-  answer: null
+  answer:
+    items: []
 - id: 48
   question: 查询各省的CPI权重占比
   sql: null
-  answer_unit: null
   expected_error: 表中不包含CPI权重字段，仅有价格指数和变化率数据
-  answer: null
+  answer:
+    items: []
 - id: 49
   question: 查询全国层级且地区为上海的CPI数据
   sql: null
-  answer_unit: null
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不能同时为'上海'
-  answer: null
+  answer:
+    items: []
 - id: 50
   question: 查询CPI同比涨幅超过50%的记录并判断是否存在极端通胀
   sql: null
-  answer_unit: null
   expected_error: CPI同比涨幅合理范围通常在-5%至20%之间，不存在超过50%的情况
-  answer: null
+  answer:
+    items: []
 - id: 51
   question: 2024年广东省的总体CPI指数年均值比江苏省高出多少点？
-  answer_type: scalar
-  answer_unit: 指数点
   requires_calculator: true
-  answer: 1.0905
+  answer:
+    items:
+    - name: result
+      value: 1.0905
   sql1: |-
     SELECT AVG(overall_cpi_idx) AS gd_avg
     FROM cpi_inflation
@@ -1214,10 +1159,11 @@ questions:
     WHERE year = 2024 AND geo_name = '江苏'
 - id: 52
   question: 2023年全国服务类CPI指数年均值是食品类CPI指数年均值的多少倍？
-  answer_type: scalar
-  answer_unit: 倍
   requires_calculator: true
-  answer: 1.0033
+  answer:
+    items:
+    - name: result
+      value: 1.0033
   sql1: |-
     SELECT AVG(services_cpi_idx) AS services_avg
     FROM cpi_inflation
@@ -1228,10 +1174,11 @@ questions:
     WHERE year = 2023 AND geo_level = 'national'
 - id: 53
   question: 2024年华东地区核心CPI指数年均值占全国核心CPI指数年均值的百分比是多少？
-  answer_type: scalar
-  answer_unit: '%'
   requires_calculator: true
-  answer: 100.0634
+  answer:
+    items:
+    - name: result
+      value: 100.0634
   sql1: |-
     SELECT AVG(core_cpi_idx) AS east_avg
     FROM cpi_inflation
@@ -1242,10 +1189,11 @@ questions:
     WHERE year = 2024 AND geo_level = 'national'
 - id: 54
   question: 2023年全国能源CPI指数年均值与核心CPI指数年均值相差多少点？
-  answer_type: scalar
-  answer_unit: 指数点
   requires_calculator: true
-  answer: 0.5287
+  answer:
+    items:
+    - name: result
+      value: 0.5287
   sql1: |-
     SELECT AVG(energy_cpi_idx) AS energy_avg
     FROM cpi_inflation
@@ -1256,10 +1204,11 @@ questions:
     WHERE year = 2023 AND geo_level = 'national'
 - id: 55
   question: 2024年北京市服务类CPI指数年均值是全国服务类CPI指数年均值的多少倍？
-  answer_type: scalar
-  answer_unit: 倍
   requires_calculator: true
-  answer: 1.0069
+  answer:
+    items:
+    - name: result
+      value: 1.0069
   sql1: |-
     SELECT AVG(services_cpi_idx) AS bj_avg
     FROM cpi_inflation
@@ -1270,10 +1219,11 @@ questions:
     WHERE year = 2024 AND geo_level = 'national'
 - id: 56
   question: 2024年全国总体CPI指数年均值比2019年增长了多少点？
-  answer_type: scalar
-  answer_unit: 指数点
   requires_calculator: true
-  answer: 10.1686
+  answer:
+    items:
+    - name: result
+      value: 10.1686
   sql1: |-
     SELECT AVG(overall_cpi_idx) AS avg_2024
     FROM cpi_inflation
@@ -1284,10 +1234,11 @@ questions:
     WHERE year = 2019 AND geo_level = 'national'
 - id: 57
   question: 2024年12月全国食品CPI指数是2016年同期的多少倍？
-  answer_type: scalar
-  answer_unit: 倍
   requires_calculator: true
-  answer: 1.1615
+  answer:
+    items:
+    - name: result
+      value: 1.1615
   sql1: |-
     SELECT food_cpi_idx AS food_2024
     FROM cpi_inflation
@@ -1298,10 +1249,11 @@ questions:
     WHERE year = 2016 AND month = 12 AND geo_level = 'national'
 - id: 58
   question: 2023年全国能源CPI指数年均值比2020年增加了多少点？
-  answer_type: scalar
-  answer_unit: 指数点
   requires_calculator: true
-  answer: 5.2356
+  answer:
+    items:
+    - name: result
+      value: 5.2356
   sql1: |-
     SELECT AVG(energy_cpi_idx) AS avg_2023
     FROM cpi_inflation
@@ -1312,10 +1264,11 @@ questions:
     WHERE year = 2020 AND geo_level = 'national'
 - id: 59
   question: 2025年全国核心CPI指数年均值是2018年的多少倍？
-  answer_type: scalar
-  answer_unit: 倍
   requires_calculator: true
-  answer: 1.1343
+  answer:
+    items:
+    - name: result
+      value: 1.1343
   sql1: |-
     SELECT AVG(core_cpi_idx) AS avg_2025
     FROM cpi_inflation
@@ -1326,10 +1279,11 @@ questions:
     WHERE year = 2018 AND geo_level = 'national'
 - id: 60
   question: 华南地区2024年服务类CPI指数年均值比2019年增加了多少点？
-  answer_type: scalar
-  answer_unit: 指数点
   requires_calculator: true
-  answer: 10.0962
+  answer:
+    items:
+    - name: result
+      value: 10.0962
   sql1: |-
     SELECT AVG(services_cpi_idx) AS avg_2024
     FROM cpi_inflation

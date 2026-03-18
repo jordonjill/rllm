@@ -87,19 +87,14 @@ class EcoQAWorkflow(MultiTurnWorkflow):
             episode.metrics["exp_table_sql_succ_rate"] = float(metadata.get("exp_table_sql_succ_rate", 0.0))
 
             # Dataset composition monitoring.
-            episode.metrics["target_is_scalar"] = 1.0 if target_kind == "scalar" else 0.0
-            episode.metrics["target_is_list"] = 1.0 if target_kind == "list" else 0.0
-            episode.metrics["target_is_no_data"] = 1.0 if target_kind == "no_data" else 0.0
+            episode.metrics["target_is_structure"] = 1.0 if target_kind == "structure" else 0.0
+            episode.metrics["target_is_unknown"] = 1.0 if target_kind not in {"structure"} else 0.0
 
             # Type-conditional accuracy (denominator = samples of that type only).
-            if target_kind == "scalar":
-                episode.metrics["scalar_acc"] = correctness_reward
-            elif target_kind == "list":
-                episode.metrics["list_acc"] = correctness_reward
-                episode.metrics["list_exact_match"] = float(bool(metadata.get("list_exact_match", False)))
-                episode.metrics["list_alias_value_match"] = float(bool(metadata.get("list_alias_value_match", False)))
-            elif target_kind == "no_data":
-                episode.metrics["no_data_acc"] = correctness_reward
+            if target_kind == "structure":
+                episode.metrics["structure_acc"] = correctness_reward
+                episode.metrics["structure_exact_match"] = float(bool(metadata.get("structure_exact_match", False)))
+                episode.metrics["structure_alias_value_match"] = float(bool(metadata.get("structure_alias_value_match", False)))
 
 
 @hydra.main(

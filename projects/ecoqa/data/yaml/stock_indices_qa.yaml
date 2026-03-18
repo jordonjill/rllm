@@ -7,44 +7,44 @@ questions:
     SELECT shanghai_comp_close AS value
     FROM stock_indices
     WHERE year = 2024 AND month = 1
-  answer_type: scalar
-  answer: 4010.336
-  answer_unit: 点
+  answer:
+    items:
+    - name: value
+      value: 4010.336
   requires_calculator: false
 - id: 2
-  question: 2023年全年沪深300指数的月末收盘价记录有哪些？
+  question: 2023年上半年沪深300指数的月末收盘价记录有哪些？
   sql: |-
     SELECT month, csi300_close
     FROM stock_indices
-    WHERE year = 2023
+    WHERE year = 2023 AND month BETWEEN 1 AND 6
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-    csi300_close: 4857.433
-  - month: 2
-    csi300_close: 4948.558
-  - month: 3
-    csi300_close: 4848.67
-  - month: 4
-    csi300_close: 4906.642
-  - month: 5
-    csi300_close: 5090.506
-  - month: 6
-    csi300_close: 4846.785
-  - month: 7
-    csi300_close: 4915.193
-  - month: 8
-    csi300_close: 4734.886
-  - month: 9
-    csi300_close: 4732.557
-  - month: 10
-    csi300_close: 5016.041
-  - month: 11
-    csi300_close: 5046.146
-  - month: 12
-    csi300_close: 4948.082
-  answer_unit: 点
+    items:
+    - name: csi300_close
+      value: 4857.433
+      dims:
+        month: 1
+    - name: csi300_close
+      value: 4948.558
+      dims:
+        month: 2
+    - name: csi300_close
+      value: 4848.67
+      dims:
+        month: 3
+    - name: csi300_close
+      value: 4906.642
+      dims:
+        month: 4
+    - name: csi300_close
+      value: 5090.506
+      dims:
+        month: 5
+    - name: csi300_close
+      value: 4846.785
+      dims:
+        month: 6
   requires_calculator: false
 - id: 3
   question: 2022年12月的深证成指收盘价和创业板指收盘价分别是多少？
@@ -52,11 +52,12 @@ questions:
     SELECT shenzhen_comp_close, chinext_close
     FROM stock_indices
     WHERE year = 2022 AND month = 12
-  answer_type: list
   answer:
-  - shenzhen_comp_close: 12128.093
-    chinext_close: 3051.514
-  answer_unit: 点
+    items:
+    - name: shenzhen_comp_close
+      value: 12128.093
+    - name: chinext_close
+      value: 3051.514
   requires_calculator: false
 - id: 4
   question: 2025年第一季度的沪深300市盈率TTM数据是多少？
@@ -65,15 +66,20 @@ questions:
     FROM stock_indices
     WHERE year = 2025 AND month IN (1, 2, 3)
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-    pe_ttm_csi300: 13.936
-  - month: 2
-    pe_ttm_csi300: 15.198
-  - month: 3
-    pe_ttm_csi300: 13.484
-  answer_unit: 倍
+    items:
+    - name: pe_ttm_csi300
+      value: 13.936
+      dims:
+        month: 1
+    - name: pe_ttm_csi300
+      value: 15.198
+      dims:
+        month: 2
+    - name: pe_ttm_csi300
+      value: 13.484
+      dims:
+        month: 3
   requires_calculator: false
 - id: 5
   question: 2020年1月、6月、12月的北向资金净流入额分别是多少？
@@ -82,98 +88,70 @@ questions:
     FROM stock_indices
     WHERE year = 2020 AND month IN (1, 6, 12)
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-    northbound_netflow_100m_cny: 18.5
-  - month: 6
-    northbound_netflow_100m_cny: 429.85
-  - month: 12
-    northbound_netflow_100m_cny: -80.01
-  answer_unit: 亿元
+    items:
+    - name: northbound_netflow_100m_cny
+      value: 18.5
+      dims:
+        month: 1
+    - name: northbound_netflow_100m_cny
+      value: 429.85
+      dims:
+        month: 6
+    - name: northbound_netflow_100m_cny
+      value: -80.01
+      dims:
+        month: 12
   requires_calculator: false
 - id: 6
-  question: 查询2021年或2022年上证综指超过3500点的月份数据
+  question: 查询2022年上证综指超过3800点的月份数据
   sql: |-
     SELECT year, month, shanghai_comp_close
     FROM stock_indices
-    WHERE year IN (2021, 2022) AND shanghai_comp_close > 3500
+    WHERE year = 2022 AND shanghai_comp_close > 3800
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2021
-    month: 1
-    shanghai_comp_close: 3780.322
-  - year: 2021
-    month: 2
-    shanghai_comp_close: 3676.84
-  - year: 2021
-    month: 3
-    shanghai_comp_close: 3852.798
-  - year: 2021
-    month: 4
-    shanghai_comp_close: 3899.668
-  - year: 2021
-    month: 5
-    shanghai_comp_close: 3810.669
-  - year: 2021
-    month: 6
-    shanghai_comp_close: 3704.869
-  - year: 2021
-    month: 7
-    shanghai_comp_close: 3805.139
-  - year: 2021
-    month: 8
-    shanghai_comp_close: 3657.037
-  - year: 2021
-    month: 9
-    shanghai_comp_close: 3751.744
-  - year: 2021
-    month: 10
-    shanghai_comp_close: 3801.845
-  - year: 2021
-    month: 11
-    shanghai_comp_close: 3715.132
-  - year: 2021
-    month: 12
-    shanghai_comp_close: 3832.69
-  - year: 2022
-    month: 1
-    shanghai_comp_close: 3820.938
-  - year: 2022
-    month: 2
-    shanghai_comp_close: 3945.636
-  - year: 2022
-    month: 3
-    shanghai_comp_close: 3859.249
-  - year: 2022
-    month: 4
-    shanghai_comp_close: 3883.89
-  - year: 2022
-    month: 5
-    shanghai_comp_close: 3843.311
-  - year: 2022
-    month: 6
-    shanghai_comp_close: 3791.941
-  - year: 2022
-    month: 7
-    shanghai_comp_close: 3723.104
-  - year: 2022
-    month: 8
-    shanghai_comp_close: 3879.229
-  - year: 2022
-    month: 9
-    shanghai_comp_close: 3764.72
-  - year: 2022
-    month: 10
-    shanghai_comp_close: 3742.872
-  - year: 2022
-    month: 11
-    shanghai_comp_close: 3914.355
-  - year: 2022
-    month: 12
-    shanghai_comp_close: 3890.205
-  answer_unit: 点
+    items:
+    - name: shanghai_comp_close
+      value: 3820.938
+      dims:
+        year: 2022
+        month: 1
+    - name: shanghai_comp_close
+      value: 3945.636
+      dims:
+        year: 2022
+        month: 2
+    - name: shanghai_comp_close
+      value: 3859.249
+      dims:
+        year: 2022
+        month: 3
+    - name: shanghai_comp_close
+      value: 3883.89
+      dims:
+        year: 2022
+        month: 4
+    - name: shanghai_comp_close
+      value: 3843.311
+      dims:
+        year: 2022
+        month: 5
+    - name: shanghai_comp_close
+      value: 3879.229
+      dims:
+        year: 2022
+        month: 8
+    - name: shanghai_comp_close
+      value: 3914.355
+      dims:
+        year: 2022
+        month: 11
+    - name: shanghai_comp_close
+      value: 3890.205
+      dims:
+        year: 2022
+        month: 12
   requires_calculator: false
 - id: 7
   question: 沪深300市盈率为空值的数据有多少条？
@@ -181,449 +159,272 @@ questions:
     SELECT COUNT(*) AS missing_count
     FROM stock_indices
     WHERE pe_ttm_csi300 IS NULL
-  answer_type: scalar
-  answer: 0
-  answer_unit: 条
+  answer:
+    items:
+    - name: missing_count
+      value: 0
   requires_calculator: false
 - id: 8
-  question: 2018年至2020年间，上证综指月末收盘价的所有记录
+  question: 2020年1月至9月，上证综指月末收盘价的记录有哪些？
   sql: |-
     SELECT year, month, shanghai_comp_close
     FROM stock_indices
-    WHERE year BETWEEN 2018 AND 2020
+    WHERE year = 2020 AND month BETWEEN 1 AND 9
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2018
-    month: 1
-    shanghai_comp_close: 3293.441
-  - year: 2018
-    month: 2
-    shanghai_comp_close: 3482.816
-  - year: 2018
-    month: 3
-    shanghai_comp_close: 3479.109
-  - year: 2018
-    month: 4
-    shanghai_comp_close: 3345.525
-  - year: 2018
-    month: 5
-    shanghai_comp_close: 3451.878
-  - year: 2018
-    month: 6
-    shanghai_comp_close: 3434.522
-  - year: 2018
-    month: 7
-    shanghai_comp_close: 3469.856
-  - year: 2018
-    month: 8
-    shanghai_comp_close: 3401.406
-  - year: 2018
-    month: 9
-    shanghai_comp_close: 3331.423
-  - year: 2018
-    month: 10
-    shanghai_comp_close: 3329.939
-  - year: 2018
-    month: 11
-    shanghai_comp_close: 3469.571
-  - year: 2018
-    month: 12
-    shanghai_comp_close: 3417.433
-  - year: 2019
-    month: 1
-    shanghai_comp_close: 3499.705
-  - year: 2019
-    month: 2
-    shanghai_comp_close: 3669.174
-  - year: 2019
-    month: 3
-    shanghai_comp_close: 3655.295
-  - year: 2019
-    month: 4
-    shanghai_comp_close: 3637.165
-  - year: 2019
-    month: 5
-    shanghai_comp_close: 3661.79
-  - year: 2019
-    month: 6
-    shanghai_comp_close: 3598.73
-  - year: 2019
-    month: 7
-    shanghai_comp_close: 3461.784
-  - year: 2019
-    month: 8
-    shanghai_comp_close: 3562.509
-  - year: 2019
-    month: 9
-    shanghai_comp_close: 3487.89
-  - year: 2019
-    month: 10
-    shanghai_comp_close: 3534.628
-  - year: 2019
-    month: 11
-    shanghai_comp_close: 3594.318
-  - year: 2019
-    month: 12
-    shanghai_comp_close: 3570.477
-  - year: 2020
-    month: 1
-    shanghai_comp_close: 3717.369
-  - year: 2020
-    month: 2
-    shanghai_comp_close: 3691.162
-  - year: 2020
-    month: 3
-    shanghai_comp_close: 3637.33
-  - year: 2020
-    month: 4
-    shanghai_comp_close: 3635.629
-  - year: 2020
-    month: 5
-    shanghai_comp_close: 3723.838
-  - year: 2020
-    month: 6
-    shanghai_comp_close: 3678.536
-  - year: 2020
-    month: 7
-    shanghai_comp_close: 3540.136
-  - year: 2020
-    month: 8
-    shanghai_comp_close: 3671.668
-  - year: 2020
-    month: 9
-    shanghai_comp_close: 3506.287
-  - year: 2020
-    month: 10
-    shanghai_comp_close: 3691.598
-  - year: 2020
-    month: 11
-    shanghai_comp_close: 3725.306
-  - year: 2020
-    month: 12
-    shanghai_comp_close: 3745.749
-  answer_unit: 点
+    items:
+    - name: shanghai_comp_close
+      value: 3717.369
+      dims:
+        year: 2020
+        month: 1
+    - name: shanghai_comp_close
+      value: 3691.162
+      dims:
+        year: 2020
+        month: 2
+    - name: shanghai_comp_close
+      value: 3637.33
+      dims:
+        year: 2020
+        month: 3
+    - name: shanghai_comp_close
+      value: 3635.629
+      dims:
+        year: 2020
+        month: 4
+    - name: shanghai_comp_close
+      value: 3723.838
+      dims:
+        year: 2020
+        month: 5
+    - name: shanghai_comp_close
+      value: 3678.536
+      dims:
+        year: 2020
+        month: 6
+    - name: shanghai_comp_close
+      value: 3540.136
+      dims:
+        year: 2020
+        month: 7
+    - name: shanghai_comp_close
+      value: 3671.668
+      dims:
+        year: 2020
+        month: 8
+    - name: shanghai_comp_close
+      value: 3506.287
+      dims:
+        year: 2020
+        month: 9
   requires_calculator: false
 - id: 9
-  question: 2019年到2021年间，创业板指收盘价的月度数据
+  question: 2021年1月至9月，创业板指收盘价的月度数据是多少？
   sql: |-
     SELECT year, month, chinext_close
     FROM stock_indices
-    WHERE year BETWEEN 2019 AND 2021
+    WHERE year = 2021 AND month BETWEEN 1 AND 9
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2019
-    month: 1
-    chinext_close: 2691.76
-  - year: 2019
-    month: 2
-    chinext_close: 2675.713
-  - year: 2019
-    month: 3
-    chinext_close: 2901.329
-  - year: 2019
-    month: 4
-    chinext_close: 2596.178
-  - year: 2019
-    month: 5
-    chinext_close: 2567.657
-  - year: 2019
-    month: 6
-    chinext_close: 2430.497
-  - year: 2019
-    month: 7
-    chinext_close: 2442.477
-  - year: 2019
-    month: 8
-    chinext_close: 2372.093
-  - year: 2019
-    month: 9
-    chinext_close: 2331.281
-  - year: 2019
-    month: 10
-    chinext_close: 2679.034
-  - year: 2019
-    month: 11
-    chinext_close: 2604.174
-  - year: 2019
-    month: 12
-    chinext_close: 2809.052
-  - year: 2020
-    month: 1
-    chinext_close: 2600.699
-  - year: 2020
-    month: 2
-    chinext_close: 2712.026
-  - year: 2020
-    month: 3
-    chinext_close: 2699.515
-  - year: 2020
-    month: 4
-    chinext_close: 2804.196
-  - year: 2020
-    month: 5
-    chinext_close: 2813.408
-  - year: 2020
-    month: 6
-    chinext_close: 2843.008
-  - year: 2020
-    month: 7
-    chinext_close: 2797.448
-  - year: 2020
-    month: 8
-    chinext_close: 2674.069
-  - year: 2020
-    month: 9
-    chinext_close: 2772.385
-  - year: 2020
-    month: 10
-    chinext_close: 2592.844
-  - year: 2020
-    month: 11
-    chinext_close: 2654.48
-  - year: 2020
-    month: 12
-    chinext_close: 2742.209
-  - year: 2021
-    month: 1
-    chinext_close: 2935.53
-  - year: 2021
-    month: 2
-    chinext_close: 2932.12
-  - year: 2021
-    month: 3
-    chinext_close: 2785.93
-  - year: 2021
-    month: 4
-    chinext_close: 2899.24
-  - year: 2021
-    month: 5
-    chinext_close: 3019.223
-  - year: 2021
-    month: 6
-    chinext_close: 2783.446
-  - year: 2021
-    month: 7
-    chinext_close: 3028.632
-  - year: 2021
-    month: 8
-    chinext_close: 2838.55
-  - year: 2021
-    month: 9
-    chinext_close: 2703.91
-  - year: 2021
-    month: 10
-    chinext_close: 2745.6
-  - year: 2021
-    month: 11
-    chinext_close: 2701.652
-  - year: 2021
-    month: 12
-    chinext_close: 2945.014
-  answer_unit: 点
+    items:
+    - name: chinext_close
+      value: 2935.53
+      dims:
+        year: 2021
+        month: 1
+    - name: chinext_close
+      value: 2932.12
+      dims:
+        year: 2021
+        month: 2
+    - name: chinext_close
+      value: 2785.93
+      dims:
+        year: 2021
+        month: 3
+    - name: chinext_close
+      value: 2899.24
+      dims:
+        year: 2021
+        month: 4
+    - name: chinext_close
+      value: 3019.223
+      dims:
+        year: 2021
+        month: 5
+    - name: chinext_close
+      value: 2783.446
+      dims:
+        year: 2021
+        month: 6
+    - name: chinext_close
+      value: 3028.632
+      dims:
+        year: 2021
+        month: 7
+    - name: chinext_close
+      value: 2838.55
+      dims:
+        year: 2021
+        month: 8
+    - name: chinext_close
+      value: 2703.91
+      dims:
+        year: 2021
+        month: 9
   requires_calculator: false
 - id: 10
-  question: 哪些月份的A股市场月度成交额超过30万亿元？
+  question: 2024年哪些月份的A股市场月度成交额超过30万亿元？
   sql: |-
     SELECT year, month
     FROM stock_indices
-    WHERE market_turnover_100m_cny > 300000
+    WHERE year = 2024 AND market_turnover_100m_cny > 300000
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2022
-    month: 7
-  - year: 2022
-    month: 10
-  - year: 2023
-    month: 11
-  - year: 2024
-    month: 1
-  - year: 2024
-    month: 2
-  - year: 2024
-    month: 6
-  - year: 2024
-    month: 7
-  - year: 2024
-    month: 8
-  - year: 2024
-    month: 9
-  - year: 2024
-    month: 10
-  - year: 2024
-    month: 11
-  - year: 2024
-    month: 12
-  - year: 2025
-    month: 1
-  - year: 2025
-    month: 2
-  - year: 2025
-    month: 4
-  - year: 2025
-    month: 5
-  - year: 2025
-    month: 6
-  - year: 2025
-    month: 7
-  - year: 2025
-    month: 8
-  - year: 2025
-    month: 9
-  - year: 2025
-    month: 10
-  - year: 2025
-    month: 11
-  - year: 2025
-    month: 12
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 1
+      dims:
+        year: 2024
+    - name: month
+      value: 2
+      dims:
+        year: 2024
+    - name: month
+      value: 6
+      dims:
+        year: 2024
+    - name: month
+      value: 7
+      dims:
+        year: 2024
+    - name: month
+      value: 8
+      dims:
+        year: 2024
+    - name: month
+      value: 9
+      dims:
+        year: 2024
+    - name: month
+      value: 10
+      dims:
+        year: 2024
+    - name: month
+      value: 11
+      dims:
+        year: 2024
+    - name: month
+      value: 12
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 11
-  question: 市场波动率指数超过22的月份有哪些？
+  question: 市场波动率指数超过23的月份有哪些？
   sql: |-
     SELECT year, month
     FROM stock_indices
-    WHERE volatility_idx > 22
+    WHERE volatility_idx > 23
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2016
-    month: 2
-  - year: 2017
-    month: 12
-  - year: 2018
-    month: 11
-  - year: 2018
-    month: 12
-  - year: 2019
-    month: 3
-  - year: 2019
-    month: 4
-  - year: 2019
-    month: 12
-  - year: 2020
-    month: 2
-  - year: 2021
-    month: 7
-  - year: 2023
-    month: 8
-  - year: 2023
-    month: 10
-  - year: 2023
-    month: 11
-  - year: 2024
-    month: 12
-  - year: 2025
-    month: 10
-  - year: 2025
-    month: 11
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 12
+      dims:
+        year: 2017
+    - name: month
+      value: 11
+      dims:
+        year: 2018
+    - name: month
+      value: 3
+      dims:
+        year: 2019
+    - name: month
+      value: 4
+      dims:
+        year: 2019
+    - name: month
+      value: 12
+      dims:
+        year: 2019
   requires_calculator: false
 - id: 12
-  question: 北向资金月净流入超过1000亿元的月份统计
+  question: 北向资金月净流入超过1100亿元的月份统计
   sql: |-
     SELECT year, month
     FROM stock_indices
-    WHERE northbound_netflow_100m_cny > 1000
+    WHERE northbound_netflow_100m_cny > 1100
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2016
-    month: 1
-  - year: 2017
-    month: 9
-  - year: 2017
-    month: 12
-  - year: 2020
-    month: 2
-  - year: 2021
-    month: 2
-  - year: 2023
-    month: 3
-  - year: 2023
-    month: 7
-  - year: 2023
-    month: 11
-  - year: 2023
-    month: 12
-  - year: 2024
-    month: 5
-  - year: 2025
-    month: 1
-  - year: 2025
-    month: 2
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 1
+      dims:
+        year: 2016
+    - name: month
+      value: 2
+      dims:
+        year: 2020
+    - name: month
+      value: 3
+      dims:
+        year: 2023
+    - name: month
+      value: 7
+      dims:
+        year: 2023
+    - name: month
+      value: 12
+      dims:
+        year: 2023
+    - name: month
+      value: 5
+      dims:
+        year: 2024
+    - name: month
+      value: 1
+      dims:
+        year: 2025
+    - name: month
+      value: 2
+      dims:
+        year: 2025
   requires_calculator: false
 - id: 13
-  question: 2020年至2022年间，沪深300指数收盘价超过4500点的月份
+  question: 2020年至2022年间，沪深300指数收盘价超过4800点的月份有哪些？
   sql: |-
     SELECT year, month
     FROM stock_indices
-    WHERE year BETWEEN 2020 AND 2022 AND csi300_close > 4500
+    WHERE year BETWEEN 2020 AND 2022 AND csi300_close > 4800
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2020
-    month: 1
-  - year: 2020
-    month: 3
-  - year: 2020
-    month: 9
-  - year: 2020
-    month: 11
-  - year: 2020
-    month: 12
-  - year: 2021
-    month: 1
-  - year: 2021
-    month: 2
-  - year: 2021
-    month: 3
-  - year: 2021
-    month: 4
-  - year: 2021
-    month: 5
-  - year: 2021
-    month: 6
-  - year: 2021
-    month: 7
-  - year: 2021
-    month: 8
-  - year: 2021
-    month: 9
-  - year: 2021
-    month: 10
-  - year: 2021
-    month: 11
-  - year: 2021
-    month: 12
-  - year: 2022
-    month: 1
-  - year: 2022
-    month: 2
-  - year: 2022
-    month: 3
-  - year: 2022
-    month: 4
-  - year: 2022
-    month: 5
-  - year: 2022
-    month: 6
-  - year: 2022
-    month: 7
-  - year: 2022
-    month: 8
-  - year: 2022
-    month: 9
-  - year: 2022
-    month: 10
-  - year: 2022
-    month: 11
-  - year: 2022
-    month: 12
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 1
+      dims:
+        year: 2022
+    - name: month
+      value: 2
+      dims:
+        year: 2022
+    - name: month
+      value: 3
+      dims:
+        year: 2022
+    - name: month
+      value: 4
+      dims:
+        year: 2022
+    - name: month
+      value: 9
+      dims:
+        year: 2022
+    - name: month
+      value: 11
+      dims:
+        year: 2022
   requires_calculator: false
 - id: 14
   question: 2023年上半年中，北向资金净流入为正且A股成交额超过20万亿的月份
@@ -632,17 +433,24 @@ questions:
     FROM stock_indices
     WHERE year = 2023 AND month <= 6 AND northbound_netflow_100m_cny > 0 AND market_turnover_100m_cny > 200000
     ORDER BY month
-  answer_type: list
   answer:
-  - year: 2023
-    month: 2
-  - year: 2023
-    month: 3
-  - year: 2023
-    month: 4
-  - year: 2023
-    month: 5
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 2
+      dims:
+        year: 2023
+    - name: month
+      value: 3
+      dims:
+        year: 2023
+    - name: month
+      value: 4
+      dims:
+        year: 2023
+    - name: month
+      value: 5
+      dims:
+        year: 2023
   requires_calculator: false
 - id: 15
   question: 历史上上证综指月末收盘价的最高点是哪个月？
@@ -651,11 +459,12 @@ questions:
     FROM stock_indices
     ORDER BY shanghai_comp_close DESC
     LIMIT 1
-  answer_type: list
   answer:
-  - year: 2025
-    month: 12
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 12
+      dims:
+        year: 2025
   requires_calculator: false
 - id: 16
   question: A股市场单月总成交额最高纪录出现在哪个月？
@@ -664,11 +473,12 @@ questions:
     FROM stock_indices
     ORDER BY market_turnover_100m_cny DESC
     LIMIT 1
-  answer_type: list
   answer:
-  - year: 2024
-    month: 9
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 9
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 17
   question: 创业板指历史最低收盘价出现在哪个月？
@@ -677,11 +487,12 @@ questions:
     FROM stock_indices
     ORDER BY chinext_close ASC
     LIMIT 1
-  answer_type: list
   answer:
-  - year: 2016
-    month: 9
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 9
+      dims:
+        year: 2016
   requires_calculator: false
 - id: 18
   question: 沪深300市盈率历史最低值是哪个月？
@@ -691,11 +502,12 @@ questions:
     WHERE pe_ttm_csi300 IS NOT NULL
     ORDER BY pe_ttm_csi300 ASC
     LIMIT 1
-  answer_type: list
   answer:
-  - year: 2016
-    month: 4
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 4
+      dims:
+        year: 2016
   requires_calculator: false
 - id: 19
   question: 北向资金单月净流入前5名的月份分别是哪些？
@@ -704,19 +516,28 @@ questions:
     FROM stock_indices
     ORDER BY northbound_netflow_100m_cny DESC
     LIMIT 5
-  answer_type: list
   answer:
-  - year: 2023
-    month: 12
-  - year: 2023
-    month: 7
-  - year: 2023
-    month: 3
-  - year: 2025
-    month: 1
-  - year: 2025
-    month: 2
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 12
+      dims:
+        year: 2023
+    - name: month
+      value: 7
+      dims:
+        year: 2023
+    - name: month
+      value: 3
+      dims:
+        year: 2023
+    - name: month
+      value: 1
+      dims:
+        year: 2025
+    - name: month
+      value: 2
+      dims:
+        year: 2025
   requires_calculator: false
 - id: 20
   question: 市场波动率指数最高的前3个月是哪些？
@@ -725,46 +546,66 @@ questions:
     FROM stock_indices
     ORDER BY volatility_idx DESC
     LIMIT 3
-  answer_type: list
   answer:
-  - year: 2019
-    month: 3
-  - year: 2018
-    month: 11
-  - year: 2017
-    month: 12
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 3
+      dims:
+        year: 2019
+    - name: month
+      value: 11
+      dims:
+        year: 2018
+    - name: month
+      value: 12
+      dims:
+        year: 2017
   requires_calculator: false
 - id: 21
-  question: 按深证成指收盘价降序、创业板指收盘价升序排列，取前10个月份数据
+  question: 按深证成指收盘价降序、创业板指收盘价升序排列，给出2024年1月至9月的月份数据
   sql: |-
     SELECT year, month
     FROM stock_indices
+    WHERE year = 2024 AND month BETWEEN 1 AND 9
     ORDER BY shenzhen_comp_close DESC, chinext_close ASC
-    LIMIT 10
-  answer_type: list
   answer:
-  - year: 2025
-    month: 5
-  - year: 2025
-    month: 2
-  - year: 2025
-    month: 7
-  - year: 2025
-    month: 1
-  - year: 2025
-    month: 4
-  - year: 2025
-    month: 12
-  - year: 2025
-    month: 9
-  - year: 2025
-    month: 3
-  - year: 2024
-    month: 2
-  - year: 2024
-    month: 7
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 2
+      dims:
+        year: 2024
+    - name: month
+      value: 7
+      dims:
+        year: 2024
+    - name: month
+      value: 6
+      dims:
+        year: 2024
+    - name: month
+      value: 3
+      dims:
+        year: 2024
+    - name: month
+      value: 4
+      dims:
+        year: 2024
+    - name: month
+      value: 8
+      dims:
+        year: 2024
+    - name: month
+      value: 9
+      dims:
+        year: 2024
+    - name: month
+      value: 5
+      dims:
+        year: 2024
+    - name: month
+      value: 1
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 22
   question: 2016-2025年波动率指数高于20的月份有多少个？
@@ -772,9 +613,10 @@ questions:
     SELECT COUNT(*) AS value
     FROM stock_indices
     WHERE volatility_idx > 20
-  answer_type: scalar
-  answer: 35
-  answer_unit: 条
+  answer:
+    items:
+    - name: value
+      value: 35
   requires_calculator: false
 - id: 23
   question: 2016-2025年中出现过波动率指数高于20的年份有多少个？
@@ -782,36 +624,40 @@ questions:
     SELECT COUNT(DISTINCT year) AS value
     FROM stock_indices
     WHERE volatility_idx > 20
-  answer_type: scalar
-  answer: 10
-  answer_unit: 个
+  answer:
+    items:
+    - name: value
+      value: 10
   requires_calculator: false
 - id: 24
   question: 2016年至2025年全部月份的A股市场总成交额累计是多少？
   sql: |-
     SELECT SUM(market_turnover_100m_cny) AS value
     FROM stock_indices
-  answer_type: scalar
-  answer: 30142272.1
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 30142272.1
   requires_calculator: false
 - id: 25
   question: 全时期北向资金的累计净流入总额是多少？
   sql: |-
     SELECT SUM(northbound_netflow_100m_cny) AS value
     FROM stock_indices
-  answer_type: scalar
-  answer: 16072.369999999999
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 16072.369999999999
   requires_calculator: false
 - id: 26
   question: 历史上沪深300指数月末收盘价的平均值是多少？
   sql: |-
     SELECT AVG(csi300_close) AS value
     FROM stock_indices
-  answer_type: scalar
-  answer: 4557.526033333333
-  answer_unit: 点
+  answer:
+    items:
+    - name: value
+      value: 4557.526033333333
   requires_calculator: false
 - id: 27
   question: 全时期沪深300市盈率的平均水平是多少倍？
@@ -819,423 +665,304 @@ questions:
     SELECT AVG(pe_ttm_csi300) AS value
     FROM stock_indices
     WHERE pe_ttm_csi300 IS NOT NULL
-  answer_type: scalar
-  answer: 13.4535
-  answer_unit: 倍
+  answer:
+    items:
+    - name: value
+      value: 13.4535
   requires_calculator: false
 - id: 28
   question: 上证综指历史最低和最高收盘价分别是多少？
   sql: |-
     SELECT MIN(shanghai_comp_close) AS min_value, MAX(shanghai_comp_close) AS max_value
     FROM stock_indices
-  answer_type: list
   answer:
-  - min_value: 3119.971
-    max_value: 4333.823
-  answer_unit: 点
+    items:
+    - name: min_value
+      value: 3119.971
+    - name: max_value
+      value: 4333.823
   requires_calculator: false
 - id: 29
   question: 市场波动率指数的最小值和最大值分别是多少？
   sql: |-
     SELECT MIN(volatility_idx) AS min_value, MAX(volatility_idx) AS max_value
     FROM stock_indices
-  answer_type: list
   answer:
-  - min_value: 13.983
-    max_value: 23.632
-  answer_unit: null
+    items:
+    - name: min_value
+      value: 13.983
+    - name: max_value
+      value: 23.632
   requires_calculator: false
 - id: 30
-  question: 各年度A股市场月度成交额的年度总和是多少？
+  question: 2017年至2024年各年度A股市场月度成交额的年度总和是多少？
   sql: |-
     SELECT year, SUM(market_turnover_100m_cny) AS total_turnover
     FROM stock_indices
+    WHERE year BETWEEN 2017 AND 2024
     GROUP BY year
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2016
-    total_turnover: 2229624.58
-  - year: 2017
-    total_turnover: 2393580.4
-  - year: 2018
-    total_turnover: 2611937.53
-  - year: 2019
-    total_turnover: 2769960.74
-  - year: 2020
-    total_turnover: 2874779.65
-  - year: 2021
-    total_turnover: 3176226.7399999998
-  - year: 2022
-    total_turnover: 3340031.0300000003
-  - year: 2023
-    total_turnover: 3379433.17
-  - year: 2024
-    total_turnover: 3623874.11
-  - year: 2025
-    total_turnover: 3742824.15
-  answer_unit: 亿元
+    items:
+    - name: total_turnover
+      value: 2393580.4
+      dims:
+        year: 2017
+    - name: total_turnover
+      value: 2611937.53
+      dims:
+        year: 2018
+    - name: total_turnover
+      value: 2769960.74
+      dims:
+        year: 2019
+    - name: total_turnover
+      value: 2874779.65
+      dims:
+        year: 2020
+    - name: total_turnover
+      value: 3176226.7399999998
+      dims:
+        year: 2021
+    - name: total_turnover
+      value: 3340031.0300000003
+      dims:
+        year: 2022
+    - name: total_turnover
+      value: 3379433.17
+      dims:
+        year: 2023
+    - name: total_turnover
+      value: 3623874.11
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 31
-  question: 各年度上证综指的平均收盘价是多少？
+  question: 2017年至2024年各年度上证综指的平均收盘价是多少？
   sql: |-
     SELECT year, AVG(shanghai_comp_close) AS avg_close
     FROM stock_indices
+    WHERE year BETWEEN 2017 AND 2024
     GROUP BY year
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2016
-    avg_close: 3204.334666666667
-  - year: 2017
-    avg_close: 3290.8180833333336
-  - year: 2018
-    avg_close: 3408.909916666667
-  - year: 2019
-    avg_close: 3577.7887499999997
-  - year: 2020
-    avg_close: 3663.7173333333335
-  - year: 2021
-    avg_close: 3774.0627499999996
-  - year: 2022
-    avg_close: 3838.2875
-  - year: 2023
-    avg_close: 3961.5643333333333
-  - year: 2024
-    avg_close: 4051.639333333333
-  - year: 2025
-    avg_close: 4177.8859999999995
-  answer_unit: 点
+    items:
+    - name: avg_close
+      value: 3290.818083333334
+      dims:
+        year: 2017
+    - name: avg_close
+      value: 3408.909916666667
+      dims:
+        year: 2018
+    - name: avg_close
+      value: 3577.78875
+      dims:
+        year: 2019
+    - name: avg_close
+      value: 3663.717333333333
+      dims:
+        year: 2020
+    - name: avg_close
+      value: 3774.06275
+      dims:
+        year: 2021
+    - name: avg_close
+      value: 3838.2875
+      dims:
+        year: 2022
+    - name: avg_close
+      value: 3961.564333333333
+      dims:
+        year: 2023
+    - name: avg_close
+      value: 4051.639333333333
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 32
-  question: 各月份中波动率指数高于20的次数分别是多少？
+  question: 2022年至2024年中，各月份里波动率指数高于20的次数分别是多少？
   sql: |-
     SELECT month, COUNT(*) AS count
     FROM stock_indices
-    WHERE volatility_idx > 20
+    WHERE year BETWEEN 2022 AND 2024 AND volatility_idx > 20
     GROUP BY month
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-    count: 2
-  - month: 2
-    count: 4
-  - month: 3
-    count: 3
-  - month: 4
-    count: 2
-  - month: 5
-    count: 2
-  - month: 6
-    count: 1
-  - month: 7
-    count: 3
-  - month: 8
-    count: 2
-  - month: 9
-    count: 4
-  - month: 10
-    count: 3
-  - month: 11
-    count: 4
-  - month: 12
-    count: 5
-  answer_unit: 条
+    items:
+    - name: count
+      value: 1
+      dims:
+        month: 3
+    - name: count
+      value: 2
+      dims:
+        month: 5
+    - name: count
+      value: 1
+      dims:
+        month: 8
+    - name: count
+      value: 1
+      dims:
+        month: 9
+    - name: count
+      value: 1
+      dims:
+        month: 10
+    - name: count
+      value: 1
+      dims:
+        month: 11
+    - name: count
+      value: 1
+      dims:
+        month: 12
   requires_calculator: false
 - id: 33
-  question: 各年份北向资金净流入为正的月份数量统计
+  question: 2017年至2024年各年份北向资金净流入为正的月份数量统计
   sql: |-
     SELECT year, COUNT(*) AS positive_months
     FROM stock_indices
-    WHERE northbound_netflow_100m_cny > 0
+    WHERE year BETWEEN 2017 AND 2024 AND northbound_netflow_100m_cny > 0
     GROUP BY year
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2016
-    positive_months: 9
-  - year: 2017
-    positive_months: 9
-  - year: 2018
-    positive_months: 6
-  - year: 2019
-    positive_months: 8
-  - year: 2020
-    positive_months: 9
-  - year: 2021
-    positive_months: 6
-  - year: 2022
-    positive_months: 5
-  - year: 2023
-    positive_months: 8
-  - year: 2024
-    positive_months: 3
-  - year: 2025
-    positive_months: 7
-  answer_unit: 个月
+    items:
+    - name: positive_months
+      value: 9
+      dims:
+        year: 2017
+    - name: positive_months
+      value: 6
+      dims:
+        year: 2018
+    - name: positive_months
+      value: 8
+      dims:
+        year: 2019
+    - name: positive_months
+      value: 9
+      dims:
+        year: 2020
+    - name: positive_months
+      value: 6
+      dims:
+        year: 2021
+    - name: positive_months
+      value: 5
+      dims:
+        year: 2022
+    - name: positive_months
+      value: 8
+      dims:
+        year: 2023
+    - name: positive_months
+      value: 3
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 34
-  question: 各年各季度的沪深300指数平均收盘价
+  question: 2024年和2025年各年各季度的沪深300指数平均收盘价是多少？
   sql: |-
     SELECT year, CASE WHEN month IN (1, 2, 3) THEN 1 WHEN month IN (4, 5, 6) THEN 2 WHEN month IN (7, 8, 9) THEN 3 ELSE 4 END AS quarter, AVG(csi300_close) AS avg_close
     FROM stock_indices
+    WHERE year BETWEEN 2024 AND 2025
     GROUP BY year, quarter
     ORDER BY year, quarter
-  answer_type: list
   answer:
-  - year: 2016
-    quarter: 1
-    avg_close: 3883.2753333333335
-  - year: 2016
-    quarter: 2
-    avg_close: 3856.042
-  - year: 2016
-    quarter: 3
-    avg_close: 3869.8106666666667
-  - year: 2016
-    quarter: 4
-    avg_close: 3887.453666666667
-  - year: 2017
-    quarter: 1
-    avg_close: 3992.3700000000003
-  - year: 2017
-    quarter: 2
-    avg_close: 4061.6786666666667
-  - year: 2017
-    quarter: 3
-    avg_close: 3967.3903333333333
-  - year: 2017
-    quarter: 4
-    avg_close: 4039.054
-  - year: 2018
-    quarter: 1
-    avg_close: 4152.668333333334
-  - year: 2018
-    quarter: 2
-    avg_close: 4303.451333333333
-  - year: 2018
-    quarter: 3
-    avg_close: 4199.416
-  - year: 2018
-    quarter: 4
-    avg_close: 4246.174666666667
-  - year: 2019
-    quarter: 1
-    avg_close: 4383.948
-  - year: 2019
-    quarter: 2
-    avg_close: 4444.826333333333
-  - year: 2019
-    quarter: 3
-    avg_close: 4222.714333333333
-  - year: 2019
-    quarter: 4
-    avg_close: 4384.258333333333
-  - year: 2020
-    quarter: 1
-    avg_close: 4548.549666666667
-  - year: 2020
-    quarter: 2
-    avg_close: 4444.482666666667
-  - year: 2020
-    quarter: 3
-    avg_close: 4459.390666666666
-  - year: 2020
-    quarter: 4
-    avg_close: 4550.3533333333335
-  - year: 2021
-    quarter: 1
-    avg_close: 4662.423666666667
-  - year: 2021
-    quarter: 2
-    avg_close: 4636.47
-  - year: 2021
-    quarter: 3
-    avg_close: 4577.062333333333
-  - year: 2021
-    quarter: 4
-    avg_close: 4685.317
-  - year: 2022
-    quarter: 1
-    avg_close: 4860.187999999999
-  - year: 2022
-    quarter: 2
-    avg_close: 4812.095666666667
-  - year: 2022
-    quarter: 3
-    avg_close: 4697.856
-  - year: 2022
-    quarter: 4
-    avg_close: 4768.581666666667
-  - year: 2023
-    quarter: 1
-    avg_close: 4884.887
-  - year: 2023
-    quarter: 2
-    avg_close: 4947.977666666667
-  - year: 2023
-    quarter: 3
-    avg_close: 4794.212
-  - year: 2023
-    quarter: 4
-    avg_close: 5003.423
-  - year: 2024
-    quarter: 1
-    avg_close: 5009.642
-  - year: 2024
-    quarter: 2
-    avg_close: 5098.332666666666
-  - year: 2024
-    quarter: 3
-    avg_close: 5039.964
-  - year: 2024
-    quarter: 4
-    avg_close: 5087.267333333333
-  - year: 2025
-    quarter: 1
-    avg_close: 5294.739666666667
-  - year: 2025
-    quarter: 2
-    avg_close: 5182.619
-  - year: 2025
-    quarter: 3
-    avg_close: 5139.201
-  - year: 2025
-    quarter: 4
-    avg_close: 5221.473333333333
-  answer_unit: 点
+    items:
+    - name: avg_close
+      value: 5009.642
+      dims:
+        year: 2024
+        quarter: 1
+    - name: avg_close
+      value: 5098.332666666666
+      dims:
+        year: 2024
+        quarter: 2
+    - name: avg_close
+      value: 5039.964
+      dims:
+        year: 2024
+        quarter: 3
+    - name: avg_close
+      value: 5087.267333333333
+      dims:
+        year: 2024
+        quarter: 4
+    - name: avg_close
+      value: 5294.739666666667
+      dims:
+        year: 2025
+        quarter: 1
+    - name: avg_close
+      value: 5182.619
+      dims:
+        year: 2025
+        quarter: 2
+    - name: avg_close
+      value: 5139.201
+      dims:
+        year: 2025
+        quarter: 3
+    - name: avg_close
+      value: 5221.473333333333
+      dims:
+        year: 2025
+        quarter: 4
   requires_calculator: false
 - id: 35
-  question: 各年各季度北向资金净流入总额统计
+  question: 2024年和2025年各年各季度北向资金净流入总额统计
   sql: |-
     SELECT year, CASE WHEN month IN (1, 2, 3) THEN 1 WHEN month IN (4, 5, 6) THEN 2 WHEN month IN (7, 8, 9) THEN 3 ELSE 4 END AS quarter, SUM(northbound_netflow_100m_cny) AS total_netflow
     FROM stock_indices
+    WHERE year BETWEEN 2024 AND 2025
     GROUP BY year, quarter
     ORDER BY year, quarter
-  answer_type: list
   answer:
-  - year: 2016
-    quarter: 1
-    total_netflow: 1268.21
-  - year: 2016
-    quarter: 2
-    total_netflow: 1804.76
-  - year: 2016
-    quarter: 3
-    total_netflow: -991.15
-  - year: 2016
-    quarter: 4
-    total_netflow: 927.8199999999999
-  - year: 2017
-    quarter: 1
-    total_netflow: 395.12
-  - year: 2017
-    quarter: 2
-    total_netflow: 1321.47
-  - year: 2017
-    quarter: 3
-    total_netflow: 1367.9399999999998
-  - year: 2017
-    quarter: 4
-    total_netflow: 888.02
-  - year: 2018
-    quarter: 1
-    total_netflow: -787.54
-  - year: 2018
-    quarter: 2
-    total_netflow: -779.8900000000001
-  - year: 2018
-    quarter: 3
-    total_netflow: 105.77000000000001
-  - year: 2018
-    quarter: 4
-    total_netflow: 927.5699999999999
-  - year: 2019
-    quarter: 1
-    total_netflow: 117.07000000000002
-  - year: 2019
-    quarter: 2
-    total_netflow: 195.45000000000002
-  - year: 2019
-    quarter: 3
-    total_netflow: 124.49000000000001
-  - year: 2019
-    quarter: 4
-    total_netflow: 869.1099999999999
-  - year: 2020
-    quarter: 1
-    total_netflow: 2060.35
-  - year: 2020
-    quarter: 2
-    total_netflow: 2186.16
-  - year: 2020
-    quarter: 3
-    total_netflow: -85.04999999999995
-  - year: 2020
-    quarter: 4
-    total_netflow: 634.39
-  - year: 2021
-    quarter: 1
-    total_netflow: 824.1700000000001
-  - year: 2021
-    quarter: 2
-    total_netflow: 79.26000000000005
-  - year: 2021
-    quarter: 3
-    total_netflow: -1295.8200000000002
-  - year: 2021
-    quarter: 4
-    total_netflow: -471.90999999999997
-  - year: 2022
-    quarter: 1
-    total_netflow: -34.01000000000005
-  - year: 2022
-    quarter: 2
-    total_netflow: -2455.98
-  - year: 2022
-    quarter: 3
-    total_netflow: -1656.4399999999998
-  - year: 2022
-    quarter: 4
-    total_netflow: 1539.02
-  - year: 2023
-    quarter: 1
-    total_netflow: 1620.01
-  - year: 2023
-    quarter: 2
-    total_netflow: 1306.42
-  - year: 2023
-    quarter: 3
-    total_netflow: 428.79
-  - year: 2023
-    quarter: 4
-    total_netflow: 2879.23
-  - year: 2024
-    quarter: 1
-    total_netflow: -908.94
-  - year: 2024
-    quarter: 2
-    total_netflow: 328.34000000000003
-  - year: 2024
-    quarter: 3
-    total_netflow: -985.13
-  - year: 2024
-    quarter: 4
-    total_netflow: 1109.67
-  - year: 2025
-    quarter: 1
-    total_netflow: 2832.43
-  - year: 2025
-    quarter: 2
-    total_netflow: -1559.56
-  - year: 2025
-    quarter: 3
-    total_netflow: 983.93
-  - year: 2025
-    quarter: 4
-    total_netflow: -1041.18
-  answer_unit: 亿元
+    items:
+    - name: total_netflow
+      value: -908.94
+      dims:
+        year: 2024
+        quarter: 1
+    - name: total_netflow
+      value: 328.34
+      dims:
+        year: 2024
+        quarter: 2
+    - name: total_netflow
+      value: -985.13
+      dims:
+        year: 2024
+        quarter: 3
+    - name: total_netflow
+      value: 1109.67
+      dims:
+        year: 2024
+        quarter: 4
+    - name: total_netflow
+      value: 2832.43
+      dims:
+        year: 2025
+        quarter: 1
+    - name: total_netflow
+      value: -1559.56
+      dims:
+        year: 2025
+        quarter: 2
+    - name: total_netflow
+      value: 983.93
+      dims:
+        year: 2025
+        quarter: 3
+    - name: total_netflow
+      value: -1041.18
+      dims:
+        year: 2025
+        quarter: 4
   requires_calculator: false
 - id: 36
   question: 哪一年的创业板指年平均收盘价最高？
@@ -1245,9 +972,10 @@ questions:
     GROUP BY year
     ORDER BY AVG(chinext_close) DESC
     LIMIT 1
-  answer_type: scalar
-  answer: 2025
-  answer_unit: 年
+  answer:
+    items:
+    - name: year
+      value: 2025
   requires_calculator: false
 - id: 37
   question: 哪些年份的沪深300市盈率年平均值超过14倍？
@@ -1258,12 +986,14 @@ questions:
     GROUP BY year
     HAVING AVG(pe_ttm_csi300) > 14
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2023
-  - year: 2024
-  - year: 2025
-  answer_unit: 年
+    items:
+    - name: year
+      value: 2023
+    - name: year
+      value: 2024
+    - name: year
+      value: 2025
   requires_calculator: false
 - id: 38
   question: 哪些年份的深证成指年平均收盘价超过12000点？
@@ -1273,14 +1003,18 @@ questions:
     GROUP BY year
     HAVING AVG(shenzhen_comp_close) > 12000
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2021
-  - year: 2022
-  - year: 2023
-  - year: 2024
-  - year: 2025
-  answer_unit: 年
+    items:
+    - name: year
+      value: 2021
+    - name: year
+      value: 2022
+    - name: year
+      value: 2023
+    - name: year
+      value: 2024
+    - name: year
+      value: 2025
   requires_calculator: false
 - id: 39
   question: 哪些年份的市场波动率指数超过20的月份数量达到6个月以上？
@@ -1291,10 +1025,10 @@ questions:
     GROUP BY year
     HAVING COUNT(*) >= 6
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2019
-  answer_unit: 年
+    items:
+    - name: year
+      value: 2019
   requires_calculator: false
 - id: 40
   question: 哪些年份的北向资金年度累计净流入超过5000亿元？
@@ -1304,332 +1038,171 @@ questions:
     GROUP BY year
     HAVING SUM(northbound_netflow_100m_cny) > 5000
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2023
-  answer_unit: 年
+    items:
+    - name: year
+      value: 2023
   requires_calculator: false
 - id: 41
-  question: 2016年至2025年各年度上证综指年末收盘价趋势
+  question: 2017年至2024年各年度上证综指年末收盘价趋势
   sql: |-
     SELECT year, shanghai_comp_close AS year_end_close
     FROM stock_indices
-    WHERE month = 12
+    WHERE month = 12 AND year BETWEEN 2017 AND 2024
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2016
-    year_end_close: 3359.179
-  - year: 2017
-    year_end_close: 3363.712
-  - year: 2018
-    year_end_close: 3417.433
-  - year: 2019
-    year_end_close: 3570.477
-  - year: 2020
-    year_end_close: 3745.749
-  - year: 2021
-    year_end_close: 3832.69
-  - year: 2022
-    year_end_close: 3890.205
-  - year: 2023
-    year_end_close: 4010.256
-  - year: 2024
-    year_end_close: 4056.509
-  - year: 2025
-    year_end_close: 4333.823
-  answer_unit: 点
+    items:
+    - name: year_end_close
+      value: 3363.712
+      dims:
+        year: 2017
+    - name: year_end_close
+      value: 3417.433
+      dims:
+        year: 2018
+    - name: year_end_close
+      value: 3570.477
+      dims:
+        year: 2019
+    - name: year_end_close
+      value: 3745.749
+      dims:
+        year: 2020
+    - name: year_end_close
+      value: 3832.69
+      dims:
+        year: 2021
+    - name: year_end_close
+      value: 3890.205
+      dims:
+        year: 2022
+    - name: year_end_close
+      value: 4010.256
+      dims:
+        year: 2023
+    - name: year_end_close
+      value: 4056.509
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 42
-  question: 各年度A股市场的月均成交额变化趋势如何？
+  question: 2017年至2024年各年度A股市场的月均成交额变化趋势如何？
   sql: |-
     SELECT year, AVG(market_turnover_100m_cny) AS avg_monthly_turnover
     FROM stock_indices
+    WHERE year BETWEEN 2017 AND 2024
     GROUP BY year
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2016
-    avg_monthly_turnover: 185802.04833333334
-  - year: 2017
-    avg_monthly_turnover: 199465.03333333333
-  - year: 2018
-    avg_monthly_turnover: 217661.46083333332
-  - year: 2019
-    avg_monthly_turnover: 230830.06166666668
-  - year: 2020
-    avg_monthly_turnover: 239564.97083333333
-  - year: 2021
-    avg_monthly_turnover: 264685.56166666665
-  - year: 2022
-    avg_monthly_turnover: 278335.9191666667
-  - year: 2023
-    avg_monthly_turnover: 281619.43083333335
-  - year: 2024
-    avg_monthly_turnover: 301989.50916666666
-  - year: 2025
-    avg_monthly_turnover: 311902.0125
-  answer_unit: 亿元
+    items:
+    - name: avg_monthly_turnover
+      value: 199465.03333333333
+      dims:
+        year: 2017
+    - name: avg_monthly_turnover
+      value: 217661.46083333332
+      dims:
+        year: 2018
+    - name: avg_monthly_turnover
+      value: 230830.06166666668
+      dims:
+        year: 2019
+    - name: avg_monthly_turnover
+      value: 239564.97083333333
+      dims:
+        year: 2020
+    - name: avg_monthly_turnover
+      value: 264685.56166666665
+      dims:
+        year: 2021
+    - name: avg_monthly_turnover
+      value: 278335.9191666667
+      dims:
+        year: 2022
+    - name: avg_monthly_turnover
+      value: 281619.43083333335
+      dims:
+        year: 2023
+    - name: avg_monthly_turnover
+      value: 301989.50916666666
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 43
-  question: 哪些月份的沪深300指数收盘价高于全时期平均值？
+  question: 2024年哪些月份的沪深300指数收盘价高于当年平均值？
   sql: |-
     SELECT year, month
     FROM stock_indices
-    WHERE csi300_close > (
+    WHERE year = 2024 AND csi300_close > (
     SELECT AVG(csi300_close)
     FROM stock_indices
+    WHERE year = 2024
     )
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2020
-    month: 3
-  - year: 2020
-    month: 9
-  - year: 2020
-    month: 11
-  - year: 2021
-    month: 1
-  - year: 2021
-    month: 2
-  - year: 2021
-    month: 3
-  - year: 2021
-    month: 5
-  - year: 2021
-    month: 6
-  - year: 2021
-    month: 7
-  - year: 2021
-    month: 9
-  - year: 2021
-    month: 10
-  - year: 2021
-    month: 11
-  - year: 2021
-    month: 12
-  - year: 2022
-    month: 1
-  - year: 2022
-    month: 2
-  - year: 2022
-    month: 3
-  - year: 2022
-    month: 4
-  - year: 2022
-    month: 5
-  - year: 2022
-    month: 6
-  - year: 2022
-    month: 7
-  - year: 2022
-    month: 8
-  - year: 2022
-    month: 9
-  - year: 2022
-    month: 10
-  - year: 2022
-    month: 11
-  - year: 2022
-    month: 12
-  - year: 2023
-    month: 1
-  - year: 2023
-    month: 2
-  - year: 2023
-    month: 3
-  - year: 2023
-    month: 4
-  - year: 2023
-    month: 5
-  - year: 2023
-    month: 6
-  - year: 2023
-    month: 7
-  - year: 2023
-    month: 8
-  - year: 2023
-    month: 9
-  - year: 2023
-    month: 10
-  - year: 2023
-    month: 11
-  - year: 2023
-    month: 12
-  - year: 2024
-    month: 1
-  - year: 2024
-    month: 2
-  - year: 2024
-    month: 3
-  - year: 2024
-    month: 4
-  - year: 2024
-    month: 5
-  - year: 2024
-    month: 6
-  - year: 2024
-    month: 7
-  - year: 2024
-    month: 8
-  - year: 2024
-    month: 9
-  - year: 2024
-    month: 10
-  - year: 2024
-    month: 11
-  - year: 2024
-    month: 12
-  - year: 2025
-    month: 1
-  - year: 2025
-    month: 2
-  - year: 2025
-    month: 3
-  - year: 2025
-    month: 4
-  - year: 2025
-    month: 5
-  - year: 2025
-    month: 6
-  - year: 2025
-    month: 7
-  - year: 2025
-    month: 8
-  - year: 2025
-    month: 9
-  - year: 2025
-    month: 10
-  - year: 2025
-    month: 11
-  - year: 2025
-    month: 12
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 3
+      dims:
+        year: 2024
+    - name: month
+      value: 4
+      dims:
+        year: 2024
+    - name: month
+      value: 6
+      dims:
+        year: 2024
+    - name: month
+      value: 8
+      dims:
+        year: 2024
+    - name: month
+      value: 9
+      dims:
+        year: 2024
+    - name: month
+      value: 11
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 44
-  question: 市场波动率指数超过历史平均水平的月份有哪些？
+  question: 2023年市场波动率指数超过当年平均水平的月份有哪些？
   sql: |-
     SELECT year, month
     FROM stock_indices
-    WHERE volatility_idx > (
+    WHERE year = 2023 AND volatility_idx > (
     SELECT AVG(volatility_idx)
     FROM stock_indices
+    WHERE year = 2023
     )
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2016
-    month: 1
-  - year: 2016
-    month: 2
-  - year: 2016
-    month: 4
-  - year: 2016
-    month: 7
-  - year: 2016
-    month: 8
-  - year: 2016
-    month: 9
-  - year: 2016
-    month: 12
-  - year: 2017
-    month: 2
-  - year: 2017
-    month: 3
-  - year: 2017
-    month: 4
-  - year: 2017
-    month: 8
-  - year: 2017
-    month: 9
-  - year: 2017
-    month: 12
-  - year: 2018
-    month: 7
-  - year: 2018
-    month: 10
-  - year: 2018
-    month: 11
-  - year: 2018
-    month: 12
-  - year: 2019
-    month: 1
-  - year: 2019
-    month: 2
-  - year: 2019
-    month: 3
-  - year: 2019
-    month: 4
-  - year: 2019
-    month: 5
-  - year: 2019
-    month: 6
-  - year: 2019
-    month: 10
-  - year: 2019
-    month: 12
-  - year: 2020
-    month: 2
-  - year: 2020
-    month: 6
-  - year: 2020
-    month: 7
-  - year: 2020
-    month: 9
-  - year: 2020
-    month: 10
-  - year: 2021
-    month: 6
-  - year: 2021
-    month: 7
-  - year: 2021
-    month: 8
-  - year: 2021
-    month: 11
-  - year: 2022
-    month: 2
-  - year: 2022
-    month: 5
-  - year: 2022
-    month: 9
-  - year: 2022
-    month: 12
-  - year: 2023
-    month: 2
-  - year: 2023
-    month: 3
-  - year: 2023
-    month: 4
-  - year: 2023
-    month: 5
-  - year: 2023
-    month: 8
-  - year: 2023
-    month: 10
-  - year: 2023
-    month: 11
-  - year: 2023
-    month: 12
-  - year: 2024
-    month: 5
-  - year: 2024
-    month: 12
-  - year: 2025
-    month: 1
-  - year: 2025
-    month: 2
-  - year: 2025
-    month: 5
-  - year: 2025
-    month: 7
-  - year: 2025
-    month: 9
-  - year: 2025
-    month: 10
-  - year: 2025
-    month: 11
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 3
+      dims:
+        year: 2023
+    - name: month
+      value: 5
+      dims:
+        year: 2023
+    - name: month
+      value: 8
+      dims:
+        year: 2023
+    - name: month
+      value: 10
+      dims:
+        year: 2023
+    - name: month
+      value: 11
+      dims:
+        year: 2023
+    - name: month
+      value: 12
+      dims:
+        year: 2023
   requires_calculator: false
 - id: 45
   question: 2024年创业板指年末收盘价相比年初收盘价的涨跌幅是多少？
@@ -1641,35 +1214,41 @@ questions:
     SELECT chinext_close AS end_value
     FROM stock_indices
     WHERE year = 2024 AND month = 12
-  answer_type: scalar
-  answer: -4.9938291728763
-  answer_unit: '%'
+  answer:
+    items:
+    - name: 2024年创业板指年末较年初涨跌幅
+      value: -4.993829172876
   requires_calculator: true
 - id: 46
   question: 2030年12月的上证综指收盘价是多少？
   sql: null
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
-  answer: null
+  answer:
+    items: []
 - id: 47
   question: 查询各股票指数的日内最高价和最低价
   sql: null
   expected_error: 表中仅包含月末收盘价，不包含日内高低价字段
-  answer: null
+  answer:
+    items: []
 - id: 48
   question: 查询广东省的沪深300指数月度数据
   sql: null
   expected_error: 逻辑冲突：stock_indices表仅包含国家层级数据(geo_level='national')，无省级数据
-  answer: null
+  answer:
+    items: []
 - id: 49
   question: 查询北向资金单月净流入超过10万亿元的月份
   sql: null
   expected_error: 北向资金月净流入合理范围通常在-2000至3000亿元之间，10万亿元为极端不合理值
-  answer: null
+  answer:
+    items: []
 - id: 50
   question: 查询2015年全年的创业板指数据
   sql: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
-  answer: null
+  answer:
+    items: []
 - id: 51
   question: 2024年全年，上证综指的年平均月末收盘价是创业板指年平均月末收盘价的多少倍？
   sql1: |-
@@ -1680,9 +1259,10 @@ questions:
     SELECT AVG(chinext_close) AS avg_chinext
     FROM stock_indices
     WHERE year = 2024
-  answer_type: scalar
-  answer: 1.2455683840741913
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 上证综指年均/创业板指年均
+      value: 1.245568384074
   requires_calculator: true
 - id: 52
   question: 2023年全年，沪深300指数的最高月末收盘价比最低月末收盘价高出多少点？
@@ -1694,9 +1274,10 @@ questions:
     SELECT MIN(csi300_close) AS min_csi300
     FROM stock_indices
     WHERE year = 2023
-  answer_type: scalar
-  answer: 357.9490000000005
-  answer_unit: 点
+  answer:
+    items:
+    - name: 沪深300最高-最低
+      value: 357.949000000001
   requires_calculator: true
 - id: 53
   question: 2025年第一季度，北向资金净流入总额占同期A股市场总成交额的百分比是多少？
@@ -1708,9 +1289,10 @@ questions:
     SELECT SUM(market_turnover_100m_cny) AS q1_turnover
     FROM stock_indices
     WHERE year = 2025 AND month IN (1, 2, 3)
-  answer_type: scalar
-  answer: 0.307550272709639
-  answer_unit: '%'
+  answer:
+    items:
+    - name: Q1北向净流入占Q1成交额比重
+      value: 0.30755027271
   requires_calculator: true
 - id: 54
   question: 2022年全年，深证成指的年平均收盘价与上证综指的年平均收盘价之比是多少？
@@ -1722,9 +1304,10 @@ questions:
     SELECT AVG(shanghai_comp_close) AS avg_shanghai
     FROM stock_indices
     WHERE year = 2022
-  answer_type: scalar
-  answer: 3.1960453283745247
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 深证成指年均/上证综指年均
+      value: 3.196045328375
   requires_calculator: true
 - id: 55
   question: 2023年北向资金净流入最多的月份，其净流入额占当月A股市场成交额的百分比是多少？
@@ -1740,9 +1323,10 @@ questions:
     WHERE year = 2023
     ORDER BY northbound_netflow_100m_cny DESC
     LIMIT 1
-  answer_type: scalar
-  answer: 0.5214490288748536
-  answer_unit: '%'
+  answer:
+    items:
+    - name: 净流入最多月份净流入占当月成交额比重
+      value: 0.521449028875
   requires_calculator: true
 - id: 56
   question: 2025年12月的上证综指月末收盘价比2020年1月高出多少点？
@@ -1754,9 +1338,10 @@ questions:
     SELECT shanghai_comp_close AS close_2020_01
     FROM stock_indices
     WHERE year = 2020 AND month = 1
-  answer_type: scalar
-  answer: 616.4540000000002
-  answer_unit: 点
+  answer:
+    items:
+    - name: 2025年12月较2020年1月上证综指差值
+      value: 616.454
   requires_calculator: true
 - id: 57
   question: 2024年全年，沪深300市盈率TTM的最高月份是最低月份的多少倍？
@@ -1768,9 +1353,10 @@ questions:
     SELECT MIN(pe_ttm_csi300) AS min_pe
     FROM stock_indices
     WHERE year = 2024
-  answer_type: scalar
-  answer: 1.1763191763191763
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 2024年沪深300市盈率最高/最低
+      value: 1.176319176319
   requires_calculator: true
 - id: 58
   question: 2021年12月的创业板指月末收盘价是同年1月的多少倍？
@@ -1782,9 +1368,10 @@ questions:
     SELECT chinext_close AS close_jan
     FROM stock_indices
     WHERE year = 2021 AND month = 1
-  answer_type: scalar
-  answer: 1.0032307624176895
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 2021年12月/1月创业板指
+      value: 1.003230762418
   requires_calculator: true
 - id: 59
   question: 2019年全年北向资金累计净流入占当年A股市场总成交额的百分比是多少？
@@ -1796,9 +1383,10 @@ questions:
     SELECT SUM(market_turnover_100m_cny) AS annual_turnover
     FROM stock_indices
     WHERE year = 2019
-  answer_type: scalar
-  answer: 0.04715301488352502
-  answer_unit: '%'
+  answer:
+    items:
+    - name: 2019年北向资金累计净流入占总成交额比重
+      value: 0.047153014884
   requires_calculator: true
 - id: 60
   question: 2023年全年，市场波动率指数的最高月份是最低月份的多少倍？
@@ -1810,7 +1398,8 @@ questions:
     SELECT MIN(volatility_idx) AS min_volatility
     FROM stock_indices
     WHERE year = 2023
-  answer_type: scalar
-  answer: 1.4929926341177238
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 2023年波动率最高/最低
+      value: 1.492992634118
   requires_calculator: true

@@ -7,42 +7,46 @@ questions:
     SELECT m2_100m_cny AS value
     FROM money_supply
     WHERE year = 2024 AND month = 1 AND geo_level = 'national'
+  answer:
+    items:
+    - name: value
+      value: 3818555.67
   requires_calculator: false
-  answer_type: scalar
-  answer: 3818555.67
-  answer_unit: 亿元
 - id: 2
   question: 查询华东地区2023年12月的M1狭义货币余额
   sql: |-
     SELECT m1_100m_cny AS value
     FROM money_supply
     WHERE geo_name = '华东' AND year = 2023 AND month = 12
+  answer:
+    items:
+    - name: value
+      value: 382279.26
   requires_calculator: false
-  answer_type: scalar
-  answer: 382279.26
-  answer_unit: 亿元
 - id: 3
   question: 2022年6月北京的M0流通中货币余额和法定存款准备金率分别是多少？
   sql: |-
     SELECT m0_100m_cny, reserve_ratio_pct
     FROM money_supply
     WHERE geo_name = '北京' AND year = 2022 AND month = 6
-  requires_calculator: false
-  answer_type: list
   answer:
-  - m0_100m_cny: 6131.42
-    reserve_ratio_pct: 7.51
-  answer_unit: 亿元/%
+    items:
+    - name: m0_100m_cny
+      value: 6131.42
+    - name: reserve_ratio_pct
+      value: 7.51
+  requires_calculator: false
 - id: 4
   question: 查询省级层面2020年3月广东省货币供应统计中的人民币贷款余额
   sql: |-
     SELECT loan_balance_100m_cny AS value
     FROM money_supply
     WHERE geo_level = 'province' AND geo_name = '广东' AND year = 2020 AND month = 3
+  answer:
+    items:
+    - name: value
+      value: 303386.96
   requires_calculator: false
-  answer_type: scalar
-  answer: 303386.96
-  answer_unit: 亿元
 - id: 5
   question: 2024年1月北京、上海、广东三地的M2广义货币余额分别是多少？
   sql: |-
@@ -50,16 +54,21 @@ questions:
     FROM money_supply
     WHERE year = 2024 AND month = 1 AND geo_name IN ('北京', '上海', '广东')
     ORDER BY m2_100m_cny DESC
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 广东
-    m2_100m_cny: 390973.62
-  - geo_name: 北京
-    m2_100m_cny: 142380.9
-  - geo_name: 上海
-    m2_100m_cny: 137605.15
-  answer_unit: 亿元
+    items:
+    - name: m2_100m_cny
+      value: 390973.62
+      dims:
+        geo_name: 广东
+    - name: m2_100m_cny
+      value: 142380.9
+      dims:
+        geo_name: 北京
+    - name: m2_100m_cny
+      value: 137605.15
+      dims:
+        geo_name: 上海
+  requires_calculator: false
 - id: 6
   question: 查询2023年1月全国或华北地区的社会融资规模流量记录
   sql: |-
@@ -67,36 +76,41 @@ questions:
     FROM money_supply
     WHERE year = 2023 AND month = 1 AND (geo_level = 'national' OR geo_name = '华北')
     ORDER BY geo_level
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_level: national
-    geo_name: 中国
-    social_financing_flow_100m_cny: 36730.6
-  - geo_level: region
-    geo_name: 华北
-    social_financing_flow_100m_cny: 3904.57
-  answer_unit: 亿元
+    items:
+    - name: social_financing_flow_100m_cny
+      value: 36730.6
+      dims:
+        geo_level: national
+        geo_name: 中国
+    - name: social_financing_flow_100m_cny
+      value: 3904.57
+      dims:
+        geo_level: region
+        geo_name: 华北
+  requires_calculator: false
 - id: 7
   question: 检查2024年数据中是否存在M2货币供应余额为空的记录
   sql: |-
     SELECT COUNT(*) AS count
     FROM money_supply
     WHERE year = 2024 AND m2_100m_cny IS NULL
+  answer:
+    items:
+    - name: count
+      value: 0
   requires_calculator: false
-  answer_type: scalar
-  answer: 0
-  answer_unit: 条
 - id: 8
   question: 2018至2020年间全国M1货币同比增速的最高值是多少？
   sql: |-
     SELECT MAX(m1_yoy_pct) AS value
     FROM money_supply
     WHERE geo_level = 'national' AND year BETWEEN 2018 AND 2020
+  answer:
+    items:
+    - name: value
+      value: 5.21
   requires_calculator: false
-  answer_type: scalar
-  answer: 5.21
-  answer_unit: '%'
 - id: 9
   question: 统计2021-2023年间华南地区每年1月的社会融资规模流量
   sql: |-
@@ -104,50 +118,49 @@ questions:
     FROM money_supply
     WHERE geo_name = '华南' AND year BETWEEN 2021 AND 2023 AND month = 1
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2021
-    social_financing_flow_100m_cny: 5567.63
-  - year: 2022
-    social_financing_flow_100m_cny: 4088.22
-  - year: 2023
-    social_financing_flow_100m_cny: 4531.63
-  answer_unit: 亿元
+    items:
+    - name: social_financing_flow_100m_cny
+      value: 5567.63
+      dims:
+        year: 2021
+    - name: social_financing_flow_100m_cny
+      value: 4088.22
+      dims:
+        year: 2022
+    - name: social_financing_flow_100m_cny
+      value: 4531.63
+      dims:
+        year: 2023
+  requires_calculator: false
 - id: 10
-  question: 2024年哪些省份的M2同比增速超过9%？
+  question: 2024年哪些省份的M2同比增速年均值超过8.4%？
   sql: |-
-    SELECT DISTINCT geo_name
+    SELECT geo_name
     FROM money_supply
-    WHERE year = 2024 AND geo_level = 'province' AND m2_yoy_pct > 9.0
-    ORDER BY geo_name
-  requires_calculator: false
-  answer_type: list
+    WHERE year = 2024 AND geo_level = 'province'
+    GROUP BY geo_name
+    HAVING AVG(m2_yoy_pct) > 8.4
+    ORDER BY AVG(m2_yoy_pct) DESC
   answer:
-  - geo_name: 内蒙古
-  - geo_name: 北京
-  - geo_name: 吉林
-  - geo_name: 四川
-  - geo_name: 天津
-  - geo_name: 宁夏
-  - geo_name: 安徽
-  - geo_name: 山西
-  - geo_name: 广东
-  - geo_name: 广西
-  - geo_name: 新疆
-  - geo_name: 江苏
-  - geo_name: 江西
-  - geo_name: 河北
-  - geo_name: 河南
-  - geo_name: 海南
-  - geo_name: 湖北
-  - geo_name: 湖南
-  - geo_name: 甘肃
-  - geo_name: 西藏
-  - geo_name: 重庆
-  - geo_name: 青海
-  - geo_name: 黑龙江
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 北京
+    - name: geo_name
+      value: 吉林
+    - name: geo_name
+      value: 广西
+    - name: geo_name
+      value: 重庆
+    - name: geo_name
+      value: 河南
+    - name: geo_name
+      value: 内蒙古
+    - name: geo_name
+      value: 湖北
+    - name: geo_name
+      value: 江苏
+  requires_calculator: false
 - id: 11
   question: 查询2023年全国法定存款准备金率低于7.2%的月份
   sql: |-
@@ -155,13 +168,15 @@ questions:
     FROM money_supply
     WHERE year = 2023 AND geo_level = 'national' AND reserve_ratio_pct < 7.2
     ORDER BY month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - month: 4
-  - month: 8
-  - month: 12
-  answer_unit: 月
+    items:
+    - name: month
+      value: 4
+    - name: month
+      value: 8
+    - name: month
+      value: 12
+  requires_calculator: false
 - id: 12
   question: 2022年哪些大区的人民币贷款余额超过100万亿元？
   sql: |-
@@ -169,21 +184,22 @@ questions:
     FROM money_supply
     WHERE year = 2022 AND geo_level = 'region' AND loan_balance_100m_cny > 1000000
     ORDER BY geo_name
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 华东
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 华东
+  requires_calculator: false
 - id: 13
   question: 2019-2021年间全国M0同比增速在5%-8%之间的月份有多少个？
   sql: |-
     SELECT COUNT(*) AS count
     FROM money_supply
     WHERE geo_level = 'national' AND year BETWEEN 2019 AND 2021 AND m0_yoy_pct BETWEEN 5.0 AND 8.0
+  answer:
+    items:
+    - name: count
+      value: 28
   requires_calculator: false
-  answer_type: scalar
-  answer: 28
-  answer_unit: 个月
 - id: 14
   question: 查询2023年社会融资规模流量超过30000亿且M2同比增速超过9%的全国数据月份
   sql: |-
@@ -191,11 +207,11 @@ questions:
     FROM money_supply
     WHERE year = 2023 AND geo_level = 'national' AND social_financing_flow_100m_cny > 30000 AND m2_yoy_pct > 9.0
     ORDER BY month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - month: 11
-  answer_unit: 月
+    items:
+    - name: month
+      value: 11
+  requires_calculator: false
 - id: 15
   question: 2024年哪个省份的M2货币供应余额最高？
   sql: |-
@@ -204,10 +220,11 @@ questions:
     WHERE year = 2024 AND geo_level = 'province'
     ORDER BY m2_100m_cny DESC
     LIMIT 1
+  answer:
+    items:
+    - name: geo_name
+      value: 广东
   requires_calculator: false
-  answer_type: scalar
-  answer: 广东
-  answer_unit: null
 - id: 16
   question: 全国历史上M1货币同比增速的最高点出现在哪年哪月？
   sql: |-
@@ -216,12 +233,13 @@ questions:
     WHERE geo_level = 'national'
     ORDER BY m1_yoy_pct DESC
     LIMIT 1
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2024
-    month: 9
-  answer_unit: 年月
+    items:
+    - name: year
+      value: 2024
+    - name: month
+      value: 9
+  requires_calculator: false
 - id: 17
   question: 2023年全国法定存款准备金率的最低值是多少？出现在哪个月？
   sql: |-
@@ -230,12 +248,13 @@ questions:
     WHERE year = 2023 AND geo_level = 'national'
     ORDER BY reserve_ratio_pct ASC
     LIMIT 1
-  requires_calculator: false
-  answer_type: list
   answer:
-  - month: 8
-    reserve_ratio_pct: 7.132
-  answer_unit: '%'
+    items:
+    - name: month
+      value: 8
+    - name: reserve_ratio_pct
+      value: 7.132
+  requires_calculator: false
 - id: 18
   question: 2020年哪个大区的M0流通中货币余额最少，并按全年平均计算？
   sql: |-
@@ -245,10 +264,11 @@ questions:
     GROUP BY geo_name
     ORDER BY AVG(m0_100m_cny) ASC
     LIMIT 1
+  answer:
+    items:
+    - name: geo_name
+      value: 东北
   requires_calculator: false
-  answer_type: scalar
-  answer: 东北
-  answer_unit: null
 - id: 19
   question: 2024年6月人民币贷款余额最高的前5个省份是哪些？
   sql: |-
@@ -257,15 +277,19 @@ questions:
     WHERE year = 2024 AND month = 6 AND geo_level = 'province'
     ORDER BY loan_balance_100m_cny DESC
     LIMIT 5
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 浙江
+    - name: geo_name
+      value: 四川
+  requires_calculator: false
 - id: 20
   question: 2022年全年社会融资规模流量累计最高的前3个大区是哪些？
   sql: |-
@@ -275,13 +299,15 @@ questions:
     GROUP BY geo_name
     ORDER BY SUM(social_financing_flow_100m_cny) DESC
     LIMIT 3
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 华东
-  - geo_name: 华中
-  - geo_name: 华南
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 华东
+    - name: geo_name
+      value: 华中
+    - name: geo_name
+      value: 华南
+  requires_calculator: false
 - id: 21
   question: 2023年各省份按M2余额降序、M1余额升序排列的前5名是哪些？
   sql: |-
@@ -290,129 +316,148 @@ questions:
     WHERE year = 2023 AND geo_level = 'province' AND month = 12
     ORDER BY m2_100m_cny DESC, m1_100m_cny ASC
     LIMIT 5
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 浙江
+    - name: geo_name
+      value: 四川
+  requires_calculator: false
 - id: 22
   question: 货币供应量统计涉及多少个省级行政区？
   sql: |-
     SELECT COUNT(DISTINCT geo_name) AS value
     FROM money_supply
     WHERE geo_level = 'province'
+  answer:
+    items:
+    - name: value
+      value: 31
   requires_calculator: false
-  answer_type: scalar
-  answer: 31
-  answer_unit: 个
 - id: 23
   question: 2024年全国层面M2同比增速高于8%的月份有多少个？
   sql: |-
     SELECT COUNT(*) AS value
     FROM money_supply
     WHERE year = 2024 AND geo_level = 'national' AND m2_yoy_pct > 8.0
+  answer:
+    items:
+    - name: value
+      value: 8
   requires_calculator: false
-  answer_type: scalar
-  answer: 8
-  answer_unit: 条
 - id: 24
   question: 2023年全年全国社会融资规模流量的累计总额是多少？
   sql: |-
     SELECT SUM(social_financing_flow_100m_cny) AS value
     FROM money_supply
     WHERE year = 2023 AND geo_level = 'national'
+  answer:
+    items:
+    - name: value
+      value: 422695.84
   requires_calculator: false
-  answer_type: scalar
-  answer: 422695.84
-  answer_unit: 亿元
 - id: 25
   question: 2022年所有大区1月的M0流通货币余额总和是多少？
   sql: |-
     SELECT SUM(m0_100m_cny) AS value
     FROM money_supply
     WHERE year = 2022 AND month = 1 AND geo_level = 'region'
+  answer:
+    items:
+    - name: value
+      value: 165614.27
   requires_calculator: false
-  answer_type: scalar
-  answer: 165614.27
-  answer_unit: 亿元
 - id: 26
   question: 2024年全国M2货币同比增速的年均值是多少？
   sql: |-
     SELECT AVG(m2_yoy_pct) AS value
     FROM money_supply
     WHERE year = 2024 AND geo_level = 'national'
+  answer:
+    items:
+    - name: value
+      value: 8.10725
   requires_calculator: false
-  answer_type: scalar
-  answer: 8.10725
-  answer_unit: '%'
 - id: 27
   question: 2021年所有省份的法定存款准备金率平均水平是多少？
   sql: |-
     SELECT AVG(reserve_ratio_pct) AS value
     FROM money_supply
     WHERE year = 2021 AND geo_level = 'province'
+  answer:
+    items:
+    - name: value
+      value: 7.353561827956989
   requires_calculator: false
-  answer_type: scalar
-  answer: 7.353561827956989
-  answer_unit: '%'
 - id: 28
   question: 2023年全国M1狭义货币余额的最大值和最小值分别是多少？
   sql: |-
     SELECT MIN(m1_100m_cny) AS min_value, MAX(m1_100m_cny) AS max_value
     FROM money_supply
     WHERE year = 2023 AND geo_level = 'national'
-  requires_calculator: false
-  answer_type: list
   answer:
-  - min_value: 929185.19
-    max_value: 956062.22
-  answer_unit: 亿元
+    items:
+    - name: min_value
+      value: 929185.19
+    - name: max_value
+      value: 956062.22
+  requires_calculator: false
 - id: 29
   question: 2016-2025年全国人民币贷款余额的历史最高值是多少？
   sql: |-
     SELECT MAX(loan_balance_100m_cny) AS value
     FROM money_supply
     WHERE geo_level = 'national'
+  answer:
+    items:
+    - name: value
+      value: 3500726.43
   requires_calculator: false
-  answer_type: scalar
-  answer: 3500726.43
-  answer_unit: 亿元
 - id: 30
-  question: 各年份全国社会融资规模流量的年度总额趋势如何？
+  question: 2018-2024年各年份全国社会融资规模流量的年度总额趋势如何？
   sql: |-
     SELECT year, SUM(social_financing_flow_100m_cny) AS annual_total
     FROM money_supply
-    WHERE geo_level = 'national'
+    WHERE geo_level = 'national' AND year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    annual_total: 426216.64
-  - year: 2017
-    annual_total: 402142.08
-  - year: 2018
-    annual_total: 410556.88
-  - year: 2019
-    annual_total: 411167.41000000003
-  - year: 2020
-    annual_total: 417951.83
-  - year: 2021
-    annual_total: 408508.49
-  - year: 2022
-    annual_total: 404920.83
-  - year: 2023
-    annual_total: 422695.84
-  - year: 2024
-    annual_total: 400019.36
-  - year: 2025
-    annual_total: 425660.47
-  answer_unit: 亿元
+    items:
+    - name: annual_total
+      value: 410556.88
+      dims:
+        year: 2018
+    - name: annual_total
+      value: 411167.41000000003
+      dims:
+        year: 2019
+    - name: annual_total
+      value: 417951.83
+      dims:
+        year: 2020
+    - name: annual_total
+      value: 408508.49
+      dims:
+        year: 2021
+    - name: annual_total
+      value: 404920.83
+      dims:
+        year: 2022
+    - name: annual_total
+      value: 422695.84
+      dims:
+        year: 2023
+    - name: annual_total
+      value: 400019.36
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 31
   question: 2024年各大区M2货币供应余额的平均水平是多少？
   sql: |-
@@ -421,24 +466,37 @@ questions:
     WHERE year = 2024 AND geo_level = 'region'
     GROUP BY geo_name
     ORDER BY avg_m2 DESC
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 华东
-    avg_m2: 1521235.8458333332
-  - geo_name: 华中
-    avg_m2: 511330.53833333333
-  - geo_name: 华南
-    avg_m2: 508944.8858333333
-  - geo_name: 华北
-    avg_m2: 462063.58499999996
-  - geo_name: 西南
-    avg_m2: 451015.94916666666
-  - geo_name: 西北
-    avg_m2: 228160.72
-  - geo_name: 东北
-    avg_m2: 179402.1416666667
-  answer_unit: 亿元
+    items:
+    - name: avg_m2
+      value: 1521235.8458333332
+      dims:
+        geo_name: 华东
+    - name: avg_m2
+      value: 511330.53833333333
+      dims:
+        geo_name: 华中
+    - name: avg_m2
+      value: 508944.8858333333
+      dims:
+        geo_name: 华南
+    - name: avg_m2
+      value: 462063.58499999996
+      dims:
+        geo_name: 华北
+    - name: avg_m2
+      value: 451015.94916666666
+      dims:
+        geo_name: 西南
+    - name: avg_m2
+      value: 228160.72
+      dims:
+        geo_name: 西北
+    - name: avg_m2
+      value: 179402.1416666667
+      dims:
+        geo_name: 东北
+  requires_calculator: false
 - id: 32
   question: 2024年各统计层级中M2同比增速高于8%的数据数量分别是多少？
   sql: |-
@@ -447,719 +505,168 @@ questions:
     WHERE year = 2024 AND m2_yoy_pct > 8.0
     GROUP BY geo_level
     ORDER BY record_count DESC
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_level: province
-    record_count: 250
-  - geo_level: region
-    record_count: 55
-  - geo_level: national
-    record_count: 8
-  answer_unit: 条
+    items:
+    - name: record_count
+      value: 250
+      dims:
+        geo_level: province
+    - name: record_count
+      value: 55
+      dims:
+        geo_level: region
+    - name: record_count
+      value: 8
+      dims:
+        geo_level: national
+  requires_calculator: false
 - id: 33
-  question: 2023年每个月有多少个省份的M2同比增速数据？
+  question: 2023年季度末（3、6、9、12月）各月有多少个省份的M2同比增速数据？
   sql: |-
     SELECT month, COUNT(DISTINCT geo_name) AS province_count
     FROM money_supply
-    WHERE year = 2023 AND geo_level = 'province' AND m2_yoy_pct IS NOT NULL
+    WHERE year = 2023 AND geo_level = 'province' AND m2_yoy_pct IS NOT NULL AND month IN (3, 6, 9, 12)
     GROUP BY month
     ORDER BY month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - month: 1
-    province_count: 31
-  - month: 2
-    province_count: 31
-  - month: 3
-    province_count: 31
-  - month: 4
-    province_count: 31
-  - month: 5
-    province_count: 31
-  - month: 6
-    province_count: 31
-  - month: 7
-    province_count: 31
-  - month: 8
-    province_count: 31
-  - month: 9
-    province_count: 31
-  - month: 10
-    province_count: 31
-  - month: 11
-    province_count: 31
-  - month: 12
-    province_count: 31
-  answer_unit: 个
+    items:
+    - name: province_count
+      value: 31
+      dims:
+        month: 3
+    - name: province_count
+      value: 31
+      dims:
+        month: 6
+    - name: province_count
+      value: 31
+      dims:
+        month: 9
+    - name: province_count
+      value: 31
+      dims:
+        month: 12
+  requires_calculator: false
 - id: 34
-  question: 2022和2023年各大区的M0货币余额年度平均值对比
+  question: 2022和2023年华东、华南、华北三大区的M0货币余额年度平均值对比
   sql: |-
     SELECT year, geo_name, AVG(m0_100m_cny) AS avg_m0
     FROM money_supply
-    WHERE year IN (2022, 2023) AND geo_level = 'region'
+    WHERE year IN (2022, 2023) AND geo_level = 'region' AND geo_name IN ('华东', '华南', '华北')
     GROUP BY year, geo_name
     ORDER BY geo_name, year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2022
-    geo_name: 东北
-    avg_m0: 7920.509166666667
-  - year: 2023
-    geo_name: 东北
-    avg_m0: 8238.843333333332
-  - year: 2022
-    geo_name: 华东
-    avg_m0: 66517.48416666666
-  - year: 2023
-    geo_name: 华东
-    avg_m0: 70119.12833333334
-  - year: 2022
-    geo_name: 华中
-    avg_m0: 22328.454999999998
-  - year: 2023
-    geo_name: 华中
-    avg_m0: 23278.094166666666
-  - year: 2022
-    geo_name: 华北
-    avg_m0: 20011.693333333333
-  - year: 2023
-    geo_name: 华北
-    avg_m0: 21047.048333333332
-  - year: 2022
-    geo_name: 华南
-    avg_m0: 22392.965833333335
-  - year: 2023
-    geo_name: 华南
-    avg_m0: 23066.215833333335
-  - year: 2022
-    geo_name: 西北
-    avg_m0: 9944.612500000001
-  - year: 2023
-    geo_name: 西北
-    avg_m0: 10319.215
-  - year: 2022
-    geo_name: 西南
-    avg_m0: 19560.912500000002
-  - year: 2023
-    geo_name: 西南
-    avg_m0: 20368.0425
-  answer_unit: 亿元
+    items:
+    - name: avg_m0
+      value: 66517.48416666666
+      dims:
+        year: 2022
+        geo_name: 华东
+    - name: avg_m0
+      value: 70119.12833333334
+      dims:
+        year: 2023
+        geo_name: 华东
+    - name: avg_m0
+      value: 20011.693333333333
+      dims:
+        year: 2022
+        geo_name: 华北
+    - name: avg_m0
+      value: 21047.048333333332
+      dims:
+        year: 2023
+        geo_name: 华北
+    - name: avg_m0
+      value: 22392.965833333335
+      dims:
+        year: 2022
+        geo_name: 华南
+    - name: avg_m0
+      value: 23066.215833333335
+      dims:
+        year: 2023
+        geo_name: 华南
+  requires_calculator: false
 - id: 35
-  question: 各省份各年度人民币贷款余额的12月年末值是多少？
+  question: 广东、江苏、山东三省在2023-2025年12月的人民币贷款余额分别是多少？
   sql: |-
     SELECT geo_name, year, loan_balance_100m_cny
     FROM money_supply
-    WHERE geo_level = 'province' AND month = 12 AND year >= 2020
-    GROUP BY geo_name, year
+    WHERE geo_level = 'province' AND geo_name IN ('广东', '江苏', '山东') AND month = 12 AND year BETWEEN 2023 AND 2025
     ORDER BY geo_name, year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 上海
-    year: 2020
-    loan_balance_100m_cny: 107512.07
-  - geo_name: 上海
-    year: 2021
-    loan_balance_100m_cny: 112071.4
-  - geo_name: 上海
-    year: 2022
-    loan_balance_100m_cny: 115594.52
-  - geo_name: 上海
-    year: 2023
-    loan_balance_100m_cny: 121561.14
-  - geo_name: 上海
-    year: 2024
-    loan_balance_100m_cny: 125175.0
-  - geo_name: 上海
-    year: 2025
-    loan_balance_100m_cny: 124815.93
-  - geo_name: 云南
-    year: 2020
-    loan_balance_100m_cny: 62384.31
-  - geo_name: 云南
-    year: 2021
-    loan_balance_100m_cny: 64919.58
-  - geo_name: 云南
-    year: 2022
-    loan_balance_100m_cny: 65862.1
-  - geo_name: 云南
-    year: 2023
-    loan_balance_100m_cny: 69557.47
-  - geo_name: 云南
-    year: 2024
-    loan_balance_100m_cny: 70393.16
-  - geo_name: 云南
-    year: 2025
-    loan_balance_100m_cny: 73609.29
-  - geo_name: 内蒙古
-    year: 2020
-    loan_balance_100m_cny: 43162.8
-  - geo_name: 内蒙古
-    year: 2021
-    loan_balance_100m_cny: 43968.61
-  - geo_name: 内蒙古
-    year: 2022
-    loan_balance_100m_cny: 42673.6
-  - geo_name: 内蒙古
-    year: 2023
-    loan_balance_100m_cny: 47062.76
-  - geo_name: 内蒙古
-    year: 2024
-    loan_balance_100m_cny: 47854.88
-  - geo_name: 内蒙古
-    year: 2025
-    loan_balance_100m_cny: 48350.08
-  - geo_name: 北京
-    year: 2020
-    loan_balance_100m_cny: 105883.06
-  - geo_name: 北京
-    year: 2021
-    loan_balance_100m_cny: 111959.81
-  - geo_name: 北京
-    year: 2022
-    loan_balance_100m_cny: 111165.72
-  - geo_name: 北京
-    year: 2023
-    loan_balance_100m_cny: 117816.21
-  - geo_name: 北京
-    year: 2024
-    loan_balance_100m_cny: 123239.72
-  - geo_name: 北京
-    year: 2025
-    loan_balance_100m_cny: 124434.94
-  - geo_name: 吉林
-    year: 2020
-    loan_balance_100m_cny: 27703.91
-  - geo_name: 吉林
-    year: 2021
-    loan_balance_100m_cny: 29463.02
-  - geo_name: 吉林
-    year: 2022
-    loan_balance_100m_cny: 30064.98
-  - geo_name: 吉林
-    year: 2023
-    loan_balance_100m_cny: 30405.37
-  - geo_name: 吉林
-    year: 2024
-    loan_balance_100m_cny: 31255.27
-  - geo_name: 吉林
-    year: 2025
-    loan_balance_100m_cny: 33046.99
-  - geo_name: 四川
-    year: 2020
-    loan_balance_100m_cny: 151145.84
-  - geo_name: 四川
-    year: 2021
-    loan_balance_100m_cny: 154256.17
-  - geo_name: 四川
-    year: 2022
-    loan_balance_100m_cny: 158920.65
-  - geo_name: 四川
-    year: 2023
-    loan_balance_100m_cny: 163380.4
-  - geo_name: 四川
-    year: 2024
-    loan_balance_100m_cny: 171752.17
-  - geo_name: 四川
-    year: 2025
-    loan_balance_100m_cny: 182940.49
-  - geo_name: 天津
-    year: 2020
-    loan_balance_100m_cny: 43106.16
-  - geo_name: 天津
-    year: 2021
-    loan_balance_100m_cny: 43890.78
-  - geo_name: 天津
-    year: 2022
-    loan_balance_100m_cny: 44050.77
-  - geo_name: 天津
-    year: 2023
-    loan_balance_100m_cny: 45650.76
-  - geo_name: 天津
-    year: 2024
-    loan_balance_100m_cny: 48697.19
-  - geo_name: 天津
-    year: 2025
-    loan_balance_100m_cny: 49125.47
-  - geo_name: 宁夏
-    year: 2020
-    loan_balance_100m_cny: 15933.42
-  - geo_name: 宁夏
-    year: 2021
-    loan_balance_100m_cny: 17316.79
-  - geo_name: 宁夏
-    year: 2022
-    loan_balance_100m_cny: 17481.68
-  - geo_name: 宁夏
-    year: 2023
-    loan_balance_100m_cny: 16933.01
-  - geo_name: 宁夏
-    year: 2024
-    loan_balance_100m_cny: 18231.02
-  - geo_name: 宁夏
-    year: 2025
-    loan_balance_100m_cny: 19650.15
-  - geo_name: 安徽
-    year: 2020
-    loan_balance_100m_cny: 112474.59
-  - geo_name: 安徽
-    year: 2021
-    loan_balance_100m_cny: 112865.16
-  - geo_name: 安徽
-    year: 2022
-    loan_balance_100m_cny: 119094.54
-  - geo_name: 安徽
-    year: 2023
-    loan_balance_100m_cny: 124756.91
-  - geo_name: 安徽
-    year: 2024
-    loan_balance_100m_cny: 129457.61
-  - geo_name: 安徽
-    year: 2025
-    loan_balance_100m_cny: 130830.31
-  - geo_name: 山东
-    year: 2020
-    loan_balance_100m_cny: 269712.96
-  - geo_name: 山东
-    year: 2021
-    loan_balance_100m_cny: 273982.49
-  - geo_name: 山东
-    year: 2022
-    loan_balance_100m_cny: 294118.89
-  - geo_name: 山东
-    year: 2023
-    loan_balance_100m_cny: 293769.68
-  - geo_name: 山东
-    year: 2024
-    loan_balance_100m_cny: 300229.89
-  - geo_name: 山东
-    year: 2025
-    loan_balance_100m_cny: 305718.57
-  - geo_name: 山西
-    year: 2020
-    loan_balance_100m_cny: 59931.38
-  - geo_name: 山西
-    year: 2021
-    loan_balance_100m_cny: 64071.85
-  - geo_name: 山西
-    year: 2022
-    loan_balance_100m_cny: 61924.06
-  - geo_name: 山西
-    year: 2023
-    loan_balance_100m_cny: 68120.03
-  - geo_name: 山西
-    year: 2024
-    loan_balance_100m_cny: 68849.52
-  - geo_name: 山西
-    year: 2025
-    loan_balance_100m_cny: 71601.22
-  - geo_name: 广东
-    year: 2020
-    loan_balance_100m_cny: 314199.5
-  - geo_name: 广东
-    year: 2021
-    loan_balance_100m_cny: 321218.72
-  - geo_name: 广东
-    year: 2022
-    loan_balance_100m_cny: 328993.92
-  - geo_name: 广东
-    year: 2023
-    loan_balance_100m_cny: 339147.87
-  - geo_name: 广东
-    year: 2024
-    loan_balance_100m_cny: 349391.84
-  - geo_name: 广东
-    year: 2025
-    loan_balance_100m_cny: 371007.48
-  - geo_name: 广西
-    year: 2020
-    loan_balance_100m_cny: 62428.29
-  - geo_name: 广西
-    year: 2021
-    loan_balance_100m_cny: 65735.15
-  - geo_name: 广西
-    year: 2022
-    loan_balance_100m_cny: 65752.87
-  - geo_name: 广西
-    year: 2023
-    loan_balance_100m_cny: 70088.42
-  - geo_name: 广西
-    year: 2024
-    loan_balance_100m_cny: 71181.01
-  - geo_name: 广西
-    year: 2025
-    loan_balance_100m_cny: 74105.09
-  - geo_name: 新疆
-    year: 2020
-    loan_balance_100m_cny: 39407.86
-  - geo_name: 新疆
-    year: 2021
-    loan_balance_100m_cny: 40264.81
-  - geo_name: 新疆
-    year: 2022
-    loan_balance_100m_cny: 42229.24
-  - geo_name: 新疆
-    year: 2023
-    loan_balance_100m_cny: 41830.58
-  - geo_name: 新疆
-    year: 2024
-    loan_balance_100m_cny: 44510.45
-  - geo_name: 新疆
-    year: 2025
-    loan_balance_100m_cny: 45577.32
-  - geo_name: 江苏
-    year: 2020
-    loan_balance_100m_cny: 301285.69
-  - geo_name: 江苏
-    year: 2021
-    loan_balance_100m_cny: 309430.37
-  - geo_name: 江苏
-    year: 2022
-    loan_balance_100m_cny: 322467.24
-  - geo_name: 江苏
-    year: 2023
-    loan_balance_100m_cny: 335271.55
-  - geo_name: 江苏
-    year: 2024
-    loan_balance_100m_cny: 331178.38
-  - geo_name: 江苏
-    year: 2025
-    loan_balance_100m_cny: 339757.77
-  - geo_name: 江西
-    year: 2020
-    loan_balance_100m_cny: 74321.12
-  - geo_name: 江西
-    year: 2021
-    loan_balance_100m_cny: 76498.81
-  - geo_name: 江西
-    year: 2022
-    loan_balance_100m_cny: 78601.89
-  - geo_name: 江西
-    year: 2023
-    loan_balance_100m_cny: 84679.01
-  - geo_name: 江西
-    year: 2024
-    loan_balance_100m_cny: 84683.06
-  - geo_name: 江西
-    year: 2025
-    loan_balance_100m_cny: 86157.52
-  - geo_name: 河北
-    year: 2020
-    loan_balance_100m_cny: 109317.57
-  - geo_name: 河北
-    year: 2021
-    loan_balance_100m_cny: 113893.85
-  - geo_name: 河北
-    year: 2022
-    loan_balance_100m_cny: 112754.34
-  - geo_name: 河北
-    year: 2023
-    loan_balance_100m_cny: 118011.26
-  - geo_name: 河北
-    year: 2024
-    loan_balance_100m_cny: 120649.16
-  - geo_name: 河北
-    year: 2025
-    loan_balance_100m_cny: 125891.54
-  - geo_name: 河南
-    year: 2020
-    loan_balance_100m_cny: 140145.68
-  - geo_name: 河南
-    year: 2021
-    loan_balance_100m_cny: 148324.69
-  - geo_name: 河南
-    year: 2022
-    loan_balance_100m_cny: 159390.43
-  - geo_name: 河南
-    year: 2023
-    loan_balance_100m_cny: 156788.4
-  - geo_name: 河南
-    year: 2024
-    loan_balance_100m_cny: 164345.75
-  - geo_name: 河南
-    year: 2025
-    loan_balance_100m_cny: 169828.04
-  - geo_name: 浙江
-    year: 2020
-    loan_balance_100m_cny: 201969.4
-  - geo_name: 浙江
-    year: 2021
-    loan_balance_100m_cny: 203292.15
-  - geo_name: 浙江
-    year: 2022
-    loan_balance_100m_cny: 215277.22
-  - geo_name: 浙江
-    year: 2023
-    loan_balance_100m_cny: 223060.22
-  - geo_name: 浙江
-    year: 2024
-    loan_balance_100m_cny: 229900.2
-  - geo_name: 浙江
-    year: 2025
-    loan_balance_100m_cny: 230705.03
-  - geo_name: 海南
-    year: 2020
-    loan_balance_100m_cny: 18927.45
-  - geo_name: 海南
-    year: 2021
-    loan_balance_100m_cny: 19454.65
-  - geo_name: 海南
-    year: 2022
-    loan_balance_100m_cny: 19929.09
-  - geo_name: 海南
-    year: 2023
-    loan_balance_100m_cny: 20296.37
-  - geo_name: 海南
-    year: 2024
-    loan_balance_100m_cny: 21269.45
-  - geo_name: 海南
-    year: 2025
-    loan_balance_100m_cny: 21268.07
-  - geo_name: 湖北
-    year: 2020
-    loan_balance_100m_cny: 134572.12
-  - geo_name: 湖北
-    year: 2021
-    loan_balance_100m_cny: 136154.19
-  - geo_name: 湖北
-    year: 2022
-    loan_balance_100m_cny: 144362.35
-  - geo_name: 湖北
-    year: 2023
-    loan_balance_100m_cny: 147366.76
-  - geo_name: 湖北
-    year: 2024
-    loan_balance_100m_cny: 152508.7
-  - geo_name: 湖北
-    year: 2025
-    loan_balance_100m_cny: 163385.94
-  - geo_name: 湖南
-    year: 2020
-    loan_balance_100m_cny: 115822.35
-  - geo_name: 湖南
-    year: 2021
-    loan_balance_100m_cny: 120528.8
-  - geo_name: 湖南
-    year: 2022
-    loan_balance_100m_cny: 128027.32
-  - geo_name: 湖南
-    year: 2023
-    loan_balance_100m_cny: 126286.84
-  - geo_name: 湖南
-    year: 2024
-    loan_balance_100m_cny: 133453.36
-  - geo_name: 湖南
-    year: 2025
-    loan_balance_100m_cny: 139079.33
-  - geo_name: 甘肃
-    year: 2020
-    loan_balance_100m_cny: 24581.18
-  - geo_name: 甘肃
-    year: 2021
-    loan_balance_100m_cny: 27166.43
-  - geo_name: 甘肃
-    year: 2022
-    loan_balance_100m_cny: 26929.44
-  - geo_name: 甘肃
-    year: 2023
-    loan_balance_100m_cny: 27597.5
-  - geo_name: 甘肃
-    year: 2024
-    loan_balance_100m_cny: 27914.37
-  - geo_name: 甘肃
-    year: 2025
-    loan_balance_100m_cny: 29594.52
-  - geo_name: 福建
-    year: 2020
-    loan_balance_100m_cny: 116542.52
-  - geo_name: 福建
-    year: 2021
-    loan_balance_100m_cny: 121692.49
-  - geo_name: 福建
-    year: 2022
-    loan_balance_100m_cny: 126499.23
-  - geo_name: 福建
-    year: 2023
-    loan_balance_100m_cny: 133239.64
-  - geo_name: 福建
-    year: 2024
-    loan_balance_100m_cny: 135376.44
-  - geo_name: 福建
-    year: 2025
-    loan_balance_100m_cny: 137131.55
-  - geo_name: 西藏
-    year: 2020
-    loan_balance_100m_cny: 6986.34
-  - geo_name: 西藏
-    year: 2021
-    loan_balance_100m_cny: 7216.84
-  - geo_name: 西藏
-    year: 2022
-    loan_balance_100m_cny: 7416.85
-  - geo_name: 西藏
-    year: 2023
-    loan_balance_100m_cny: 7801.12
-  - geo_name: 西藏
-    year: 2024
-    loan_balance_100m_cny: 7846.73
-  - geo_name: 西藏
-    year: 2025
-    loan_balance_100m_cny: 8413.57
-  - geo_name: 贵州
-    year: 2020
-    loan_balance_100m_cny: 57455.5
-  - geo_name: 贵州
-    year: 2021
-    loan_balance_100m_cny: 59675.68
-  - geo_name: 贵州
-    year: 2022
-    loan_balance_100m_cny: 60505.02
-  - geo_name: 贵州
-    year: 2023
-    loan_balance_100m_cny: 62638.14
-  - geo_name: 贵州
-    year: 2024
-    loan_balance_100m_cny: 67044.94
-  - geo_name: 贵州
-    year: 2025
-    loan_balance_100m_cny: 68831.53
-  - geo_name: 辽宁
-    year: 2020
-    loan_balance_100m_cny: 70404.48
-  - geo_name: 辽宁
-    year: 2021
-    loan_balance_100m_cny: 74055.18
-  - geo_name: 辽宁
-    year: 2022
-    loan_balance_100m_cny: 78676.04
-  - geo_name: 辽宁
-    year: 2023
-    loan_balance_100m_cny: 76266.13
-  - geo_name: 辽宁
-    year: 2024
-    loan_balance_100m_cny: 78726.62
-  - geo_name: 辽宁
-    year: 2025
-    loan_balance_100m_cny: 83588.33
-  - geo_name: 重庆
-    year: 2020
-    loan_balance_100m_cny: 72052.09
-  - geo_name: 重庆
-    year: 2021
-    loan_balance_100m_cny: 72039.38
-  - geo_name: 重庆
-    year: 2022
-    loan_balance_100m_cny: 73244.6
-  - geo_name: 重庆
-    year: 2023
-    loan_balance_100m_cny: 77882.74
-  - geo_name: 重庆
-    year: 2024
-    loan_balance_100m_cny: 79404.05
-  - geo_name: 重庆
-    year: 2025
-    loan_balance_100m_cny: 83199.67
-  - geo_name: 陕西
-    year: 2020
-    loan_balance_100m_cny: 80429.23
-  - geo_name: 陕西
-    year: 2021
-    loan_balance_100m_cny: 87470.84
-  - geo_name: 陕西
-    year: 2022
-    loan_balance_100m_cny: 88682.5
-  - geo_name: 陕西
-    year: 2023
-    loan_balance_100m_cny: 89111.92
-  - geo_name: 陕西
-    year: 2024
-    loan_balance_100m_cny: 92183.34
-  - geo_name: 陕西
-    year: 2025
-    loan_balance_100m_cny: 100293.46
-  - geo_name: 青海
-    year: 2020
-    loan_balance_100m_cny: 11574.69
-  - geo_name: 青海
-    year: 2021
-    loan_balance_100m_cny: 11860.42
-  - geo_name: 青海
-    year: 2022
-    loan_balance_100m_cny: 12462.87
-  - geo_name: 青海
-    year: 2023
-    loan_balance_100m_cny: 12469.6
-  - geo_name: 青海
-    year: 2024
-    loan_balance_100m_cny: 13104.31
-  - geo_name: 青海
-    year: 2025
-    loan_balance_100m_cny: 13415.67
-  - geo_name: 黑龙江
-    year: 2020
-    loan_balance_100m_cny: 38387.81
-  - geo_name: 黑龙江
-    year: 2021
-    loan_balance_100m_cny: 40642.57
-  - geo_name: 黑龙江
-    year: 2022
-    loan_balance_100m_cny: 41677.13
-  - geo_name: 黑龙江
-    year: 2023
-    loan_balance_100m_cny: 43251.14
-  - geo_name: 黑龙江
-    year: 2024
-    loan_balance_100m_cny: 43762.09
-  - geo_name: 黑龙江
-    year: 2025
-    loan_balance_100m_cny: 45371.55
-  answer_unit: 亿元
+    items:
+    - name: loan_balance_100m_cny
+      value: 293769.68
+      dims:
+        geo_name: 山东
+        year: 2023
+    - name: loan_balance_100m_cny
+      value: 300229.89
+      dims:
+        geo_name: 山东
+        year: 2024
+    - name: loan_balance_100m_cny
+      value: 305718.57
+      dims:
+        geo_name: 山东
+        year: 2025
+    - name: loan_balance_100m_cny
+      value: 339147.87
+      dims:
+        geo_name: 广东
+        year: 2023
+    - name: loan_balance_100m_cny
+      value: 349391.84
+      dims:
+        geo_name: 广东
+        year: 2024
+    - name: loan_balance_100m_cny
+      value: 371007.48
+      dims:
+        geo_name: 广东
+        year: 2025
+    - name: loan_balance_100m_cny
+      value: 335271.55
+      dims:
+        geo_name: 江苏
+        year: 2023
+    - name: loan_balance_100m_cny
+      value: 331178.38
+      dims:
+        geo_name: 江苏
+        year: 2024
+    - name: loan_balance_100m_cny
+      value: 339757.77
+      dims:
+        geo_name: 江苏
+        year: 2025
+  requires_calculator: false
 - id: 36
-  question: 按M1货币同比增速平均值降序，2024年各省份的排名如何？
+  question: 2024年哪些省份的M1货币同比增速年均值超过5.05%？
   sql: |-
     SELECT geo_name
     FROM money_supply
     WHERE year = 2024 AND geo_level = 'province'
     GROUP BY geo_name
+    HAVING AVG(m1_yoy_pct) > 5.05
     ORDER BY AVG(m1_yoy_pct) DESC
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 江苏
-  - geo_name: 甘肃
-  - geo_name: 上海
-  - geo_name: 辽宁
-  - geo_name: 北京
-  - geo_name: 宁夏
-  - geo_name: 广东
-  - geo_name: 天津
-  - geo_name: 海南
-  - geo_name: 河南
-  - geo_name: 重庆
-  - geo_name: 浙江
-  - geo_name: 陕西
-  - geo_name: 云南
-  - geo_name: 广西
-  - geo_name: 江西
-  - geo_name: 山西
-  - geo_name: 四川
-  - geo_name: 内蒙古
-  - geo_name: 湖南
-  - geo_name: 青海
-  - geo_name: 山东
-  - geo_name: 福建
-  - geo_name: 吉林
-  - geo_name: 安徽
-  - geo_name: 湖北
-  - geo_name: 西藏
-  - geo_name: 黑龙江
-  - geo_name: 新疆
-  - geo_name: 贵州
-  - geo_name: 河北
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 甘肃
+    - name: geo_name
+      value: 上海
+    - name: geo_name
+      value: 辽宁
+    - name: geo_name
+      value: 北京
+    - name: geo_name
+      value: 宁夏
+  requires_calculator: false
 - id: 37
   question: 2023年哪些省份的M2货币同比增速年均值超过8.3%？
   sql: |-
@@ -1169,19 +676,27 @@ questions:
     GROUP BY geo_name
     HAVING AVG(m2_yoy_pct) > 8.3
     ORDER BY geo_name
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 内蒙古
-  - geo_name: 宁夏
-  - geo_name: 山西
-  - geo_name: 广东
-  - geo_name: 河南
-  - geo_name: 福建
-  - geo_name: 贵州
-  - geo_name: 辽宁
-  - geo_name: 黑龙江
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 内蒙古
+    - name: geo_name
+      value: 宁夏
+    - name: geo_name
+      value: 山西
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 河南
+    - name: geo_name
+      value: 福建
+    - name: geo_name
+      value: 贵州
+    - name: geo_name
+      value: 辽宁
+    - name: geo_name
+      value: 黑龙江
+  requires_calculator: false
 - id: 38
   question: 哪些大区在2022年的法定存款准备金率平均值低于7.5%？
   sql: |-
@@ -1191,61 +706,43 @@ questions:
     GROUP BY geo_name
     HAVING AVG(reserve_ratio_pct) < 7.5
     ORDER BY geo_name
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 东北
-  - geo_name: 华东
-  - geo_name: 华中
-  - geo_name: 华北
-  - geo_name: 华南
-  - geo_name: 西北
-  - geo_name: 西南
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 东北
+    - name: geo_name
+      value: 华东
+    - name: geo_name
+      value: 华中
+    - name: geo_name
+      value: 华北
+    - name: geo_name
+      value: 华南
+    - name: geo_name
+      value: 西北
+    - name: geo_name
+      value: 西南
+  requires_calculator: false
 - id: 39
-  question: 哪些省份在2024年有超过6个月的M0同比增速数据记录？
+  question: 2024年哪些省份M0同比增速超过6.5%的月份超过8个月？
   sql: |-
     SELECT geo_name
     FROM money_supply
-    WHERE year = 2024 AND geo_level = 'province' AND m0_yoy_pct IS NOT NULL
+    WHERE year = 2024 AND geo_level = 'province' AND m0_yoy_pct > 6.5
     GROUP BY geo_name
-    HAVING COUNT(*) > 6
+    HAVING COUNT(*) > 8
     ORDER BY geo_name
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 上海
-  - geo_name: 云南
-  - geo_name: 内蒙古
-  - geo_name: 北京
-  - geo_name: 吉林
-  - geo_name: 四川
-  - geo_name: 天津
-  - geo_name: 宁夏
-  - geo_name: 安徽
-  - geo_name: 山东
-  - geo_name: 山西
-  - geo_name: 广东
-  - geo_name: 广西
-  - geo_name: 新疆
-  - geo_name: 江苏
-  - geo_name: 江西
-  - geo_name: 河北
-  - geo_name: 河南
-  - geo_name: 浙江
-  - geo_name: 海南
-  - geo_name: 湖北
-  - geo_name: 湖南
-  - geo_name: 甘肃
-  - geo_name: 福建
-  - geo_name: 西藏
-  - geo_name: 贵州
-  - geo_name: 辽宁
-  - geo_name: 重庆
-  - geo_name: 陕西
-  - geo_name: 青海
-  - geo_name: 黑龙江
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 河北
+    - name: geo_name
+      value: 海南
+    - name: geo_name
+      value: 湖南
+    - name: geo_name
+      value: 辽宁
+  requires_calculator: false
 - id: 40
   question: 2023年哪些大区的社会融资规模流量年度累计超过10万亿？
   sql: |-
@@ -1255,74 +752,88 @@ questions:
     GROUP BY geo_name
     HAVING SUM(social_financing_flow_100m_cny) > 100000
     ORDER BY geo_name
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 华东
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 华东
+  requires_calculator: false
 - id: 41
-  question: 全国M2货币供应余额在12月年末值上的历年趋势如何？
+  question: 全国M2货币供应余额在12月年末值上，2018-2024年的历年趋势如何？
   sql: |-
     SELECT year, m2_100m_cny
     FROM money_supply
-    WHERE geo_level = 'national' AND month = 12
+    WHERE geo_level = 'national' AND month = 12 AND year BETWEEN 2018 AND 2024
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    m2_100m_cny: 2970023.15
-  - year: 2017
-    m2_100m_cny: 3103909.32
-  - year: 2018
-    m2_100m_cny: 3227962.64
-  - year: 2019
-    m2_100m_cny: 3345895.16
-  - year: 2020
-    m2_100m_cny: 3449780.22
-  - year: 2021
-    m2_100m_cny: 3570284.68
-  - year: 2022
-    m2_100m_cny: 3686107.7
-  - year: 2023
-    m2_100m_cny: 3809088.79
-  - year: 2024
-    m2_100m_cny: 3926348.06
-  - year: 2025
-    m2_100m_cny: 4050985.99
-  answer_unit: 亿元
+    items:
+    - name: m2_100m_cny
+      value: 3227962.64
+      dims:
+        year: 2018
+    - name: m2_100m_cny
+      value: 3345895.16
+      dims:
+        year: 2019
+    - name: m2_100m_cny
+      value: 3449780.22
+      dims:
+        year: 2020
+    - name: m2_100m_cny
+      value: 3570284.68
+      dims:
+        year: 2021
+    - name: m2_100m_cny
+      value: 3686107.7
+      dims:
+        year: 2022
+    - name: m2_100m_cny
+      value: 3809088.79
+      dims:
+        year: 2023
+    - name: m2_100m_cny
+      value: 3926348.06
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 42
-  question: 华东地区人民币贷款余额的年度平均值逐年变化趋势
+  question: 华东地区人民币贷款余额在2018-2024年的年度平均值逐年变化趋势
   sql: |-
     SELECT year, AVG(loan_balance_100m_cny) AS avg_balance
     FROM money_supply
-    WHERE geo_name = '华东'
+    WHERE geo_name = '华东' AND year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    avg_balance: 998533.85
-  - year: 2017
-    avg_balance: 1035519.0841666666
-  - year: 2018
-    avg_balance: 1075086.205
-  - year: 2019
-    avg_balance: 1112338.25
-  - year: 2020
-    avg_balance: 1159375.5283333333
-  - year: 2021
-    avg_balance: 1199839.1316666666
-  - year: 2022
-    avg_balance: 1238586.3158333332
-  - year: 2023
-    avg_balance: 1288489.2133333331
-  - year: 2024
-    avg_balance: 1316467.2933333332
-  - year: 2025
-    avg_balance: 1358060.2191666667
-  answer_unit: 亿元
+    items:
+    - name: avg_balance
+      value: 1075086.205
+      dims:
+        year: 2018
+    - name: avg_balance
+      value: 1112338.25
+      dims:
+        year: 2019
+    - name: avg_balance
+      value: 1159375.5283333333
+      dims:
+        year: 2020
+    - name: avg_balance
+      value: 1199839.1316666666
+      dims:
+        year: 2021
+    - name: avg_balance
+      value: 1238586.3158333332
+      dims:
+        year: 2022
+    - name: avg_balance
+      value: 1288489.2133333331
+      dims:
+        year: 2023
+    - name: avg_balance
+      value: 1316467.2933333332
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 43
   question: 2024年哪些月份全国M2同比增速高于该年的平均水平？
   sql: |-
@@ -1334,56 +845,48 @@ questions:
       WHERE year = 2024 AND geo_level = 'national'
     )
     ORDER BY month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - month: 5
-  - month: 6
-  - month: 10
-  answer_unit: 月
+    items:
+    - name: month
+      value: 5
+    - name: month
+      value: 6
+    - name: month
+      value: 10
+  requires_calculator: false
 - id: 44
-  question: 2023年12月哪些省份的人民币贷款余额高于所有省份的中位数？
+  question: 2023年12月哪些省份的人民币贷款余额超过13万亿元？
   sql: |-
-    WITH median_calc AS (
-      SELECT loan_balance_100m_cny AS median_value
-      FROM money_supply
-      WHERE year = 2023 AND month = 12 AND geo_level = 'province'
-      ORDER BY loan_balance_100m_cny
-      LIMIT 1
-      OFFSET (
-        SELECT COUNT(*) / 2
-        FROM money_supply
-        WHERE year = 2023 AND month = 12 AND geo_level = 'province'
-      )
-    )
     SELECT geo_name
     FROM money_supply
-    WHERE year = 2023 AND month = 12 AND geo_level = 'province' AND loan_balance_100m_cny > (
-      SELECT median_value
-      FROM median_calc
-    )
+    WHERE year = 2023 AND month = 12 AND geo_level = 'province' AND loan_balance_100m_cny > 130000
     ORDER BY loan_balance_100m_cny DESC
-  requires_calculator: false
-  answer_type: list
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
-  - geo_name: 河南
-  - geo_name: 湖北
-  - geo_name: 福建
-  - geo_name: 湖南
-  - geo_name: 安徽
-  - geo_name: 上海
-  - geo_name: 河北
-  - geo_name: 北京
-  - geo_name: 陕西
-  - geo_name: 江西
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 浙江
+    - name: geo_name
+      value: 四川
+    - name: geo_name
+      value: 河南
+    - name: geo_name
+      value: 湖北
+    - name: geo_name
+      value: 福建
+  requires_calculator: false
 - id: 45
   question: 2024年全国M2货币余额的年均值是M0货币余额年均值的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 21.0078802162955
+  requires_calculator: true
   sql1: |-
     SELECT AVG(m2_100m_cny) AS m2_avg
     FROM money_supply
@@ -1392,37 +895,43 @@ questions:
     SELECT AVG(m0_100m_cny) AS m0_avg
     FROM money_supply
     WHERE year = 2024 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 21.0078802162955
 - id: 46
   question: 2030年全国M2货币供应余额是多少？
   sql: null
+  answer:
+    items: []
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
-  answer: null
 - id: 47
   question: 查询2015年全国的社会融资规模流量数据
   sql: null
+  answer:
+    items: []
   expected_error: 数据起始年份为2016年，2015年数据不存在
-  answer: null
 - id: 48
   question: 查询各省份人民银行行长姓名和货币供应量
   sql: null
+  answer:
+    items: []
   expected_error: 表中不包含行长姓名字段，仅包含货币统计指标
-  answer: null
 - id: 49
   question: 查询全国层级且地区为上海的M2货币供应余额
   sql: null
+  answer:
+    items: []
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不可能为'上海'
-  answer: null
 - id: 50
   question: 查询M2货币同比增速超过200%的记录
   sql: null
+  answer:
+    items: []
   expected_error: M2同比增速的合理范围通常在-50%到50%之间，不存在超过200%的情况
-  answer: null
 - id: 51
   question: 2024年全国M2广义货币余额的年均值是M0流通中货币余额年均值的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 21.0078802162955
+  requires_calculator: true
   sql1: |-
     SELECT AVG(m2_100m_cny) AS m2_avg
     FROM money_supply
@@ -1431,12 +940,13 @@ questions:
     SELECT AVG(m0_100m_cny) AS m0_avg
     FROM money_supply
     WHERE year = 2024 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 21.0078802162955
 - id: 52
   question: 2023年广东省M2货币供应余额的年均值占全国M2年均值的百分比是多少？
+  answer:
+    items:
+    - name: result
+      value: 10.369475364909276
+  requires_calculator: true
   sql1: |-
     SELECT AVG(m2_100m_cny) AS gd_m2
     FROM money_supply
@@ -1445,12 +955,13 @@ questions:
     SELECT AVG(m2_100m_cny) AS nat_m2
     FROM money_supply
     WHERE year = 2023 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: '%'
-  answer: 10.369475364909276
 - id: 53
   question: 2024年华东地区的人民币贷款余额年均值比华北地区高出多少亿元？
+  answer:
+    items:
+    - name: result
+      value: 916613.7583333333
+  requires_calculator: true
   sql1: |-
     SELECT AVG(loan_balance_100m_cny) AS hd_loan
     FROM money_supply
@@ -1459,12 +970,13 @@ questions:
     SELECT AVG(loan_balance_100m_cny) AS hb_loan
     FROM money_supply
     WHERE year = 2024 AND geo_level = 'region' AND geo_name = '华北'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 亿元
-  answer: 916613.7583333333
 - id: 54
   question: 2023年全国社会融资规模流量的年度累计总额占当年12月M2货币余额的百分比是多少？
+  answer:
+    items:
+    - name: result
+      value: 11.097032999327904
+  requires_calculator: true
   sql1: |-
     SELECT SUM(social_financing_flow_100m_cny) AS sf_total
     FROM money_supply
@@ -1473,12 +985,13 @@ questions:
     SELECT m2_100m_cny AS m2_dec
     FROM money_supply
     WHERE year = 2023 AND month = 12 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: '%'
-  answer: 11.097032999327904
 - id: 55
   question: 2024年江苏省M1狭义货币余额的年均值是安徽省的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 2.6547674740082132
+  requires_calculator: true
   sql1: |-
     SELECT AVG(m1_100m_cny) AS js_m1
     FROM money_supply
@@ -1487,12 +1000,13 @@ questions:
     SELECT AVG(m1_100m_cny) AS ah_m1
     FROM money_supply
     WHERE year = 2024 AND geo_level = 'province' AND geo_name = '安徽'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 2.6547674740082132
 - id: 56
   question: 2024年12月全国M2广义货币余额比2020年同期增加了多少亿元？
+  answer:
+    items:
+    - name: result
+      value: 476567.83999999985
+  requires_calculator: true
   sql1: |-
     SELECT m2_100m_cny AS m2_2024
     FROM money_supply
@@ -1501,12 +1015,13 @@ questions:
     SELECT m2_100m_cny AS m2_2020
     FROM money_supply
     WHERE year = 2020 AND month = 12 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 亿元
-  answer: 476567.83999999985
 - id: 57
   question: 2024年全国社会融资规模流量的年度累计总额是2016年的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 0.9385352951025093
+  requires_calculator: true
   sql1: |-
     SELECT SUM(social_financing_flow_100m_cny) AS sf_2024
     FROM money_supply
@@ -1515,12 +1030,13 @@ questions:
     SELECT SUM(social_financing_flow_100m_cny) AS sf_2016
     FROM money_supply
     WHERE year = 2016 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 0.9385352951025093
 - id: 58
   question: 2023年6月全国M1狭义货币余额比2019年同期增加了多少亿元？
+  answer:
+    items:
+    - name: result
+      value: 124180.38
+  requires_calculator: true
   sql1: |-
     SELECT m1_100m_cny AS m1_2023
     FROM money_supply
@@ -1529,12 +1045,13 @@ questions:
     SELECT m1_100m_cny AS m1_2019
     FROM money_supply
     WHERE year = 2019 AND month = 6 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 亿元
-  answer: 124180.38
 - id: 59
   question: 2024年全国M2货币同比增速的年均值比2020年低多少个百分点？
+  answer:
+    items:
+    - name: result
+      value: 0.14783333333333282
+  requires_calculator: true
   sql1: |-
     SELECT AVG(m2_yoy_pct) AS avg_2024
     FROM money_supply
@@ -1543,12 +1060,13 @@ questions:
     SELECT AVG(m2_yoy_pct) AS avg_2020
     FROM money_supply
     WHERE year = 2020 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 百分点
-  answer: 0.14783333333333282
 - id: 60
   question: 2025年12月全国人民币贷款余额是2018年同期的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 1.2605557577587545
+  requires_calculator: true
   sql1: |-
     SELECT loan_balance_100m_cny AS loan_2025
     FROM money_supply
@@ -1557,7 +1075,3 @@ questions:
     SELECT loan_balance_100m_cny AS loan_2018
     FROM money_supply
     WHERE year = 2018 AND month = 12 AND geo_level = 'national'
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 1.2605557577587545

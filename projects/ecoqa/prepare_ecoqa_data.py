@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 from rllm.data.dataset import DatasetRegistry
 from .constants import TEST_QUESTIONS_PATH, TRAIN_QUESTIONS_PATH, VAL_QUESTIONS_PATH
@@ -30,6 +32,29 @@ def _safe_bool(value) -> bool:
     return False
 
 
+def _normalize_structure_answer(value, question_id: str) -> str:
+    raw = _safe_str(value)
+    if not raw:
+        raise ValueError(f"Missing answer for question_id={question_id}")
+
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid answer JSON for question_id={question_id}: {exc}") from exc
+
+    if not isinstance(parsed, dict):
+        raise ValueError(f"Answer must be JSON object for question_id={question_id}")
+
+    items = parsed.get("items")
+    if not isinstance(items, list):
+        raise ValueError(f"Answer must contain list field 'items' for question_id={question_id}")
+    if not all(isinstance(item, dict) for item in items):
+        raise ValueError(f"Each item in answer.items must be object for question_id={question_id}")
+
+    # Canonical JSON string for stable downstream parsing/comparison.
+    return json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
+
+
 def _ensure_qa_files_exist() -> None:
     missing_paths = [path for path in (TRAIN_QUESTIONS_PATH, VAL_QUESTIONS_PATH, TEST_QUESTIONS_PATH) if not path.exists()]
     if not missing_paths:
@@ -54,13 +79,15 @@ def prepare_ecoqa_data(force_regenerate: bool = False):
 
     def preprocess_fn(example):
         question_text = _safe_str(example.get("question")) or _safe_str(example.get("user_query"))
+        question_id = _safe_str(example.get("id"))
+        ground_truth = _normalize_structure_answer(example.get("answer"), question_id)
         return {
             "question": question_text,
-            "ground_truth": _safe_str(example.get("answer")),
+            "ground_truth": ground_truth,
             "data_source": "ecoqa",
-            "question_id": _safe_str(example.get("id")),
+            "question_id": question_id,
             "question_type": _safe_str(example.get("question_type")).lower(),
-            "answer_type": _safe_str(example.get("answer_type")).lower(),
+            "answer_type": "structure",
             "table_name": _safe_str(example.get("table_name")),
             "ground_truth_sql": _safe_str(example.get("ground_truth_sql")),
             "requires_calculator": _safe_bool(example.get("requires_calculator")),

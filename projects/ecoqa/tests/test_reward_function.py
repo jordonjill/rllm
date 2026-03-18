@@ -3,8 +3,8 @@ from projects.ecoqa.eco_qa_reward import eco_qa_reward_function
 
 def _task(
     ground_truth: str,
-    question_type: str,
-    answer_type: str,
+    question_type: str = "single_table",
+    answer_type: str = "structure",
     *,
     sql_call_records: list[dict] | None = None,
 ):
@@ -18,94 +18,87 @@ def _task(
     }
 
 
-def test_scalar_reward_binary():
-    task = _task("8.10725", "single_table", "scalar")
-    correct = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":8.10725}')
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
+def test_structure_numeric_value_match():
+    task = _task('{"items":[{"name":"result","value":8.10725}]}')
+    correct = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"result","value":8.10725}]}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"result","value":7.0}]}')
     assert correct.reward == 1.0 and correct.is_correct
     assert wrong.reward == 0.0 and not wrong.is_correct
 
 
-def test_scalar_allows_percent_symbol_when_numeric_value_matches():
-    task = _task("5.5", "single_table", "scalar")
-    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":"5.5%"}')
+def test_structure_numeric_value_allows_percent_symbol():
+    task = _task('{"items":[{"name":"rate","value":5.5}]}')
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"rate","value":"5.5%"}]}')
     assert pred.reward == 1.0 and pred.is_correct
 
 
-def test_scalar_text_answer_supported():
-    task = _task("广东", "single_table", "scalar")
-    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":"广东"}')
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":"江苏"}')
+def test_structure_text_value_match():
+    task = _task('{"items":[{"name":"geo_name","value":"广东"}]}')
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"geo_name","value":"广东"}]}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"geo_name","value":"江苏"}]}')
     assert pred.reward == 1.0 and pred.is_correct
     assert wrong.reward == 0.0 and not wrong.is_correct
 
 
-def test_list_requires_exact_match():
-    gt = '[{"a":1,"b":2},{"a":3,"b":4}]'
-    task = _task(gt, "single_table", "list")
-    correct = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"list","rows":[{"b":"2","a":1.0},{"a":3,"b":4}]}')
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"list","rows":[{"a":1,"b":2}]}')
-    assert correct.reward == 1.0 and correct.is_correct
-    assert wrong.reward == 0.0 and not wrong.is_correct
-
-
-def test_list_allows_alias_when_row_values_align():
-    gt = '[{"geo_name":"华中","avg_export_yoy":7.56}]'
-    task = _task(gt, "single_table", "list")
-    alias_only = eco_qa_reward_function(
-        task,
-        'FINAL ANSWER: {"type":"list","rows":[{"geo_name":"华中","avg_export_yoy_pct":"7.56"}]}',
-    )
-    assert alias_only.reward == 1.0 and alias_only.is_correct
-    assert alias_only.metadata.get("list_alias_value_match") is True
-
-
-def test_list_empty_exact_match_is_correct():
-    gt = "[]"
-    task = _task(gt, "single_table", "list")
-    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"list","rows":[]}')
-    assert pred.reward == 1.0 and pred.is_correct
-
-
-def test_list_no_partial_reward_for_incomplete_structure():
-    gt = '[{"geo_name":"广东","m2_100m_cny":411709.31}]'
-    task = _task(gt, "single_table", "list")
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":411709.31}')
-    assert wrong.reward == 0.0 and not wrong.is_correct
-
-
-def test_list_temporal_only_match_is_not_enough_anymore():
-    gt = '[{"ref_date":"2017-09-01","wti_usd_per_bbl":61.969}]'
-    task = _task(gt, "single_table", "list")
+def test_structure_multiple_items_match_order_insensitive():
+    gt = '{"items":[{"name":"a","value":1,"dims":{"year":2024,"month":1}},{"name":"b","value":"2"}]}'
+    task = _task(gt)
     pred = eco_qa_reward_function(
         task,
-        'FINAL ANSWER: {"type":"list","rows":[{"year":2017,"month":9,"min_price":61.969}]}',
+        'FINAL ANSWER: {"items":[{"name":"b","value":2.0},{"name":"a","value":"1","dims":{"month":1,"year":"2024"}}]}',
     )
-    assert pred.reward == 0.0 and not pred.is_correct
-    assert "list_temporal_value_match" not in pred.metadata
+    assert pred.reward == 1.0 and pred.is_correct
+    assert pred.metadata.get("structure_exact_match") is True
 
 
-def test_no_data_requires_no_data_answer():
-    task = _task("数据范围仅覆盖2016-2025年，无法查询2030年数据", "single_table_error", "")
-    correct = eco_qa_reward_function(task, "FINAL ANSWER: No Data")
-    also_correct = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"no_data"}')
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"error","reason":"逻辑冲突：条件不成立"}')
-    assert correct.reward == 1.0 and correct.is_correct
-    assert also_correct.reward == 1.0 and also_correct.is_correct
+def test_structure_alias_name_without_dims_is_correct():
+    task = _task('{"items":[{"name":"avg_rate","value":3.21}]}')
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"value","value":"3.21"}]}')
+    assert pred.reward == 1.0 and pred.is_correct
+    assert pred.metadata.get("structure_exact_match") is False
+    assert pred.metadata.get("structure_alias_value_match") is True
+
+
+def test_structure_alias_name_with_dims_is_correct():
+    task = _task('{"items":[{"name":"avg_exports","value":36774.2367,"dims":{"geo_name":"广东","quarter":"Q2"}}]}')
+    pred = eco_qa_reward_function(
+        task,
+        'FINAL ANSWER: {"items":[{"name":"value","value":"36774.2367","dims":{"quarter":"Q2","geo_name":"广东"}}]}',
+    )
+    assert pred.reward == 1.0 and pred.is_correct
+    assert pred.metadata.get("structure_alias_value_match") is True
+
+
+def test_structure_with_dims_requires_dims_in_prediction():
+    task = _task('{"items":[{"name":"avg_exports","value":36774.2367,"dims":{"geo_name":"广东","quarter":"Q2"}}]}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"value","value":36774.2367}]}')
+    assert wrong.reward == 0.0 and not wrong.is_correct
+
+
+def test_structure_no_partial_reward_for_wrong_schema():
+    gt = '{"items":[{"name":"geo_name","value":"广东"},{"name":"m2_100m_cny","value":411709.31}]}'
+    task = _task(gt)
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"list","rows":[{"geo_name":"广东"}]}')
+    assert wrong.reward == 0.0 and not wrong.is_correct
+
+
+def test_structure_empty_items_match():
+    task = _task('{"items":[]}', question_type="single_table_error")
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[]}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"x","value":1}]}')
+    assert pred.reward == 1.0 and pred.is_correct
     assert wrong.reward == 0.0 and not wrong.is_correct
 
 
 def test_incorrect_answer_gets_progress_bonus_when_right_table_and_sql_success():
     task = _task(
-        "8.10725",
-        "single_table",
-        "scalar",
+        '{"items":[{"name":"result","value":8.10725}]}',
         sql_call_records=[
             {"table_name": "interest_rates", "success": True},
             {"table_name": "interest_rates", "success": True},
         ],
     )
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"result","value":7.0}]}')
     assert wrong.reward > 0.0 and wrong.reward < 1.0
     assert wrong.metadata["exp_table_hit_rate"] == 1.0
     assert wrong.metadata["exp_table_sql_succ_rate"] == 1.0
@@ -113,15 +106,13 @@ def test_incorrect_answer_gets_progress_bonus_when_right_table_and_sql_success()
 
 def test_incorrect_answer_gets_no_bonus_without_sql_success():
     task = _task(
-        "8.10725",
-        "single_table",
-        "scalar",
+        '{"items":[{"name":"result","value":8.10725}]}',
         sql_call_records=[
             {"table_name": "interest_rates", "success": False},
             {"table_name": "interest_rates", "success": False},
         ],
     )
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"result","value":7.0}]}')
     assert wrong.reward == 0.0
     assert wrong.metadata["exp_table_hit_rate"] == 1.0
     assert wrong.metadata["exp_table_sql_succ_rate"] == 0.0
@@ -129,15 +120,13 @@ def test_incorrect_answer_gets_no_bonus_without_sql_success():
 
 def test_incorrect_answer_gets_no_bonus_when_only_wrong_table_sql_succeeds():
     task = _task(
-        "8.10725",
-        "single_table",
-        "scalar",
+        '{"items":[{"name":"result","value":8.10725}]}',
         sql_call_records=[
             {"table_name": "other_table", "success": True},
             {"table_name": "other_table", "success": True},
         ],
     )
-    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"type":"scalar","value":7.0}')
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"result","value":7.0}]}')
     assert wrong.reward == 0.0
     assert wrong.metadata["exp_table_hit_rate"] == 0.0
     assert wrong.metadata["exp_table_sql_succ_rate"] == 0.0

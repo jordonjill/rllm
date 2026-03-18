@@ -41,20 +41,10 @@ def _normalize_text(value: Any) -> str:
 
 def _normalize_answer(value: Any) -> str:
     if value is None:
-        return ""
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
-
-
-def _infer_answer_type(raw_answer: Any, answer_type: str) -> str:
-    if answer_type:
-        return answer_type.lower()
-    if isinstance(raw_answer, list):
-        return "list"
-    if isinstance(raw_answer, (dict, int, float, str)):
-        return "scalar"
-    return ""
+        value = {"items": []}
+    if not isinstance(value, (dict, list)):
+        raise ValueError(f"answer must be dict/list for structured format, got: {type(value).__name__}")
+    return json.dumps(value, ensure_ascii=False)
 
 
 def _load_examples(yaml_dir: Path) -> list[dict[str, Any]]:
@@ -86,20 +76,20 @@ def _load_examples(yaml_dir: Path) -> list[dict[str, Any]]:
 
             if expected_error is not None:
                 question_type = "single_table_error"
-                answer = str(expected_error).strip()
-                answer_type = "error"
+                answer = _normalize_answer(raw_answer)
+                answer_type = "structure"
                 ground_truth_sql = ""
                 requires_calculator = False
             elif single_sql:
                 question_type = "single_table"
                 answer = _normalize_answer(raw_answer)
-                answer_type = _infer_answer_type(raw_answer, str(question_item.get("answer_type", "")).strip())
+                answer_type = "structure"
                 ground_truth_sql = single_sql
                 requires_calculator = bool(question_item.get("requires_calculator", False))
             elif sql_1 and sql_2:
                 question_type = "single_table"
                 answer = _normalize_answer(raw_answer)
-                answer_type = _infer_answer_type(raw_answer, str(question_item.get("answer_type", "")).strip())
+                answer_type = "structure"
                 ground_truth_sql = json.dumps({"sql1": sql_1, "sql2": sql_2}, ensure_ascii=False)
                 requires_calculator = bool(question_item.get("requires_calculator", True))
             else:

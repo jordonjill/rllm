@@ -1,7 +1,11 @@
 from types import SimpleNamespace
 
 from projects.ecoqa.run_ecoqa import _print_eval_metrics, _trajectory_is_correct as run_is_correct
-from projects.ecoqa.run_ecoqa_benchmark import _compute_metrics, _trajectory_is_correct as benchmark_is_correct
+from projects.ecoqa.run_ecoqa_benchmark import (
+    _compute_metrics,
+    _target_kind as benchmark_target_kind,
+    _trajectory_is_correct as benchmark_is_correct,
+)
 
 
 def _trajectory(
@@ -21,7 +25,7 @@ def _trajectory(
         task={
             "question_id": question_id,
             "question_type": "single_table",
-            "answer_type": "scalar",
+            "answer_type": "structure",
         },
         reward=reward,
         steps=[SimpleNamespace(info=info)],
@@ -44,7 +48,11 @@ def test_benchmark_metrics_use_is_correct_flag_not_reward_sign():
     assert metrics["num_unique_questions"] == 2
     assert metrics["pass_at_1"] == 1 / 3
     assert metrics["pass_at_k"] == 1 / 2
-    assert metrics["accuracy_by_type"]["scalar"] == 1 / 3
+    assert metrics["accuracy_by_type"]["structure"] == 1 / 3
+
+
+def test_benchmark_target_kind_supports_structure():
+    assert benchmark_target_kind({"question_type": "single_table", "answer_type": "structure"}) == "structure"
 
 
 def test_run_metrics_use_is_correct_flag_not_reward_sign(capsys):

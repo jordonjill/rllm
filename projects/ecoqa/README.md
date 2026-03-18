@@ -24,6 +24,16 @@ All CSV tables are preloaded into one in-memory SQLite database, one SQL table p
 
 It is not training; it is for end-to-end evaluation/inference.
 
+## Answer / Reward Format
+
+- QA ground truth now uses a unified structured JSON format:
+  - `{"items":[{"name": "...", "value": ..., "dims": {...}}, ...]}`
+  - no-data answer: `{"items":[]}`
+- `answer_type` is unified as `structure`.
+- Reward correctness compares `items` structurally (order-insensitive), with alias tolerance on `name`:
+  - if `dims` exists, `dims + value` must match exactly
+  - if `dims` does not exist, `value` must match
+
 ## Quick Start
 
 1. Install project dependencies from root:
@@ -124,6 +134,7 @@ Tips:
 - Enable/disable models in `projects/ecoqa/benchmarks/model_profiles.json`.
 - For online API models, set the env var referenced by `api_key_env` (for example `OPENAI_API_KEY`).
 - For trained checkpoints, update `model` in the `trained_ecoqa_local` profile and start a serving endpoint.
+- `model_comparison.csv` includes `acc_structure` for the unified answer format.
 
 ## Tests
 

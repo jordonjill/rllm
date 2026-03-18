@@ -7,44 +7,44 @@ questions:
     SELECT total_sales_100m_cny AS value
     FROM retail_sales
     WHERE year = 2024 AND month = 1 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 71807.11
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 71807.11
   requires_calculator: false
 - id: 2
-  question: 2023年全国汽车类商品社会消费品零售额全年月度数据有哪些？
+  question: 2023年上半年全国汽车类商品社会消费品零售额月度数据有哪些？
   sql: |-
     SELECT month, auto_sales_100m_cny
     FROM retail_sales
-    WHERE year = 2023 AND geo_level = 'national'
+    WHERE year = 2023 AND geo_level = 'national' AND month BETWEEN 1 AND 6
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-    auto_sales_100m_cny: 7325.52
-  - month: 2
-    auto_sales_100m_cny: 8677.97
-  - month: 3
-    auto_sales_100m_cny: 6127.11
-  - month: 4
-    auto_sales_100m_cny: 9360.69
-  - month: 5
-    auto_sales_100m_cny: 5920.86
-  - month: 6
-    auto_sales_100m_cny: 6023.23
-  - month: 7
-    auto_sales_100m_cny: 5492.71
-  - month: 8
-    auto_sales_100m_cny: 8391.33
-  - month: 9
-    auto_sales_100m_cny: 9138.99
-  - month: 10
-    auto_sales_100m_cny: 9058.8
-  - month: 11
-    auto_sales_100m_cny: 8547.81
-  - month: 12
-    auto_sales_100m_cny: 7143.68
-  answer_unit: 亿元
+    items:
+    - name: auto_sales_100m_cny
+      value: 7325.52
+      dims:
+        month: 1
+    - name: auto_sales_100m_cny
+      value: 8677.97
+      dims:
+        month: 2
+    - name: auto_sales_100m_cny
+      value: 6127.11
+      dims:
+        month: 3
+    - name: auto_sales_100m_cny
+      value: 9360.69
+      dims:
+        month: 4
+    - name: auto_sales_100m_cny
+      value: 5920.86
+      dims:
+        month: 5
+    - name: auto_sales_100m_cny
+      value: 6023.23
+      dims:
+        month: 6
   requires_calculator: false
 - id: 3
   question: 2024年6月广东的社零总额和网络零售额分别是多少？
@@ -52,11 +52,12 @@ questions:
     SELECT total_sales_100m_cny, ecommerce_sales_100m_cny
     FROM retail_sales
     WHERE year = 2024 AND month = 6 AND geo_level = 'province' AND geo_name = '广东'
-  answer_type: list
   answer:
-  - total_sales_100m_cny: 7446.83
-    ecommerce_sales_100m_cny: 1808.68
-  answer_unit: 亿元
+    items:
+    - name: total_sales_100m_cny
+      value: 7446.83
+    - name: ecommerce_sales_100m_cny
+      value: 1808.68
   requires_calculator: false
 - id: 4
   question: 2022年12月北京的食品类零售额和服务零售额各是多少？
@@ -64,11 +65,12 @@ questions:
     SELECT food_sales_100m_cny, service_retail_100m_cny
     FROM retail_sales
     WHERE year = 2022 AND month = 12 AND geo_level = 'province' AND geo_name = '北京'
-  answer_type: list
   answer:
-  - food_sales_100m_cny: 444.54
-    service_retail_100m_cny: 823.99
-  answer_unit: 亿元
+    items:
+    - name: food_sales_100m_cny
+      value: 444.54
+    - name: service_retail_100m_cny
+      value: 823.99
   requires_calculator: false
 - id: 5
   question: 2024年3月江苏、浙江、上海的社零总额分别是多少？
@@ -77,15 +79,20 @@ questions:
     FROM retail_sales
     WHERE year = 2024 AND month = 3 AND geo_name IN ('江苏', '浙江', '上海')
     ORDER BY geo_name
-  answer_type: list
   answer:
-  - geo_name: 上海
-    total_sales_100m_cny: 2698.46
-  - geo_name: 江苏
-    total_sales_100m_cny: 7304.39
-  - geo_name: 浙江
-    total_sales_100m_cny: 5091.07
-  answer_unit: 亿元
+    items:
+    - name: total_sales_100m_cny
+      value: 2698.46
+      dims:
+        geo_name: 上海
+    - name: total_sales_100m_cny
+      value: 7304.39
+      dims:
+        geo_name: 江苏
+    - name: total_sales_100m_cny
+      value: 5091.07
+      dims:
+        geo_name: 浙江
   requires_calculator: false
 - id: 6
   question: 2023年7月全国层级的汽车销售额、食品销售额和网络零售额各是多少？
@@ -93,12 +100,14 @@ questions:
     SELECT auto_sales_100m_cny, food_sales_100m_cny, ecommerce_sales_100m_cny
     FROM retail_sales
     WHERE year = 2023 AND month = 7 AND geo_level = 'national'
-  answer_type: list
   answer:
-  - auto_sales_100m_cny: 5492.71
-    food_sales_100m_cny: 8214.43
-    ecommerce_sales_100m_cny: 20499.15
-  answer_unit: 亿元
+    items:
+    - name: auto_sales_100m_cny
+      value: 5492.71
+    - name: food_sales_100m_cny
+      value: 8214.43
+    - name: ecommerce_sales_100m_cny
+      value: 20499.15
   requires_calculator: false
 - id: 7
   question: 网络零售额为空值的数据有多少条？
@@ -106,329 +115,174 @@ questions:
     SELECT COUNT(*) AS missing_count
     FROM retail_sales
     WHERE ecommerce_sales_100m_cny IS NULL
-  answer_type: scalar
-  answer: 0
-  answer_unit: 条
+  answer:
+    items:
+    - name: missing_count
+      value: 0
   requires_calculator: false
 - id: 8
-  question: 2020年到2022年期间，全国社零总额名义同比增速的月度数据是多少？
+  question: 2022年1月至9月，全国社零总额名义同比增速的月度数据是多少？
   sql: |-
     SELECT year, month, yoy_change_pct
     FROM retail_sales
-    WHERE year BETWEEN 2020 AND 2022 AND geo_level = 'national'
+    WHERE year = 2022 AND geo_level = 'national' AND month BETWEEN 1 AND 9
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2020
-    month: 1
-    yoy_change_pct: 7.224
-  - year: 2020
-    month: 2
-    yoy_change_pct: 4.896
-  - year: 2020
-    month: 3
-    yoy_change_pct: 7.219
-  - year: 2020
-    month: 4
-    yoy_change_pct: 6.634
-  - year: 2020
-    month: 5
-    yoy_change_pct: 6.817
-  - year: 2020
-    month: 6
-    yoy_change_pct: 4.934
-  - year: 2020
-    month: 7
-    yoy_change_pct: 5.516
-  - year: 2020
-    month: 8
-    yoy_change_pct: 6.588
-  - year: 2020
-    month: 9
-    yoy_change_pct: 4.992
-  - year: 2020
-    month: 10
-    yoy_change_pct: 6.662
-  - year: 2020
-    month: 11
-    yoy_change_pct: 7.905
-  - year: 2020
-    month: 12
-    yoy_change_pct: 8.089
-  - year: 2021
-    month: 1
-    yoy_change_pct: 6.061
-  - year: 2021
-    month: 2
-    yoy_change_pct: 6.996
-  - year: 2021
-    month: 3
-    yoy_change_pct: 8.987
-  - year: 2021
-    month: 4
-    yoy_change_pct: 8.528
-  - year: 2021
-    month: 5
-    yoy_change_pct: 7.782
-  - year: 2021
-    month: 6
-    yoy_change_pct: 7.02
-  - year: 2021
-    month: 7
-    yoy_change_pct: 6.948
-  - year: 2021
-    month: 8
-    yoy_change_pct: 5.952
-  - year: 2021
-    month: 9
-    yoy_change_pct: 5.275
-  - year: 2021
-    month: 10
-    yoy_change_pct: 6.107
-  - year: 2021
-    month: 11
-    yoy_change_pct: 4.999
-  - year: 2021
-    month: 12
-    yoy_change_pct: 4.312
-  - year: 2022
-    month: 1
-    yoy_change_pct: 10.268
-  - year: 2022
-    month: 2
-    yoy_change_pct: 8.823
-  - year: 2022
-    month: 3
-    yoy_change_pct: 7.16
-  - year: 2022
-    month: 4
-    yoy_change_pct: 6.445
-  - year: 2022
-    month: 5
-    yoy_change_pct: 8.341
-  - year: 2022
-    month: 6
-    yoy_change_pct: 7.47
-  - year: 2022
-    month: 7
-    yoy_change_pct: 8.939
-  - year: 2022
-    month: 8
-    yoy_change_pct: 4.494
-  - year: 2022
-    month: 9
-    yoy_change_pct: 6.766
-  - year: 2022
-    month: 10
-    yoy_change_pct: 3.802
-  - year: 2022
-    month: 11
-    yoy_change_pct: 7.984
-  - year: 2022
-    month: 12
-    yoy_change_pct: 5.632
-  answer_unit: '%'
+    items:
+    - name: yoy_change_pct
+      value: 10.268
+      dims:
+        year: 2022
+        month: 1
+    - name: yoy_change_pct
+      value: 8.823
+      dims:
+        year: 2022
+        month: 2
+    - name: yoy_change_pct
+      value: 7.16
+      dims:
+        year: 2022
+        month: 3
+    - name: yoy_change_pct
+      value: 6.445
+      dims:
+        year: 2022
+        month: 4
+    - name: yoy_change_pct
+      value: 8.341
+      dims:
+        year: 2022
+        month: 5
+    - name: yoy_change_pct
+      value: 7.47
+      dims:
+        year: 2022
+        month: 6
+    - name: yoy_change_pct
+      value: 8.939
+      dims:
+        year: 2022
+        month: 7
+    - name: yoy_change_pct
+      value: 4.494
+      dims:
+        year: 2022
+        month: 8
+    - name: yoy_change_pct
+      value: 6.766
+      dims:
+        year: 2022
+        month: 9
   requires_calculator: false
 - id: 9
-  question: 2018年至2021年间，北京的汽车类零售额月度数据是多少？
+  question: 2021年1月至9月，北京的汽车类零售额月度数据是多少？
   sql: |-
     SELECT year, month, auto_sales_100m_cny
     FROM retail_sales
-    WHERE year BETWEEN 2018 AND 2021 AND geo_level = 'province' AND geo_name = '北京'
+    WHERE year = 2021 AND geo_level = 'province' AND geo_name = '北京' AND month BETWEEN 1 AND 9
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2018
-    month: 1
-    auto_sales_100m_cny: 145.29
-  - year: 2018
-    month: 2
-    auto_sales_100m_cny: 157.57
-  - year: 2018
-    month: 3
-    auto_sales_100m_cny: 152.89
-  - year: 2018
-    month: 4
-    auto_sales_100m_cny: 130.13
-  - year: 2018
-    month: 5
-    auto_sales_100m_cny: 148.52
-  - year: 2018
-    month: 6
-    auto_sales_100m_cny: 235.08
-  - year: 2018
-    month: 7
-    auto_sales_100m_cny: 158.52
-  - year: 2018
-    month: 8
-    auto_sales_100m_cny: 154.74
-  - year: 2018
-    month: 9
-    auto_sales_100m_cny: 242.67
-  - year: 2018
-    month: 10
-    auto_sales_100m_cny: 154.79
-  - year: 2018
-    month: 11
-    auto_sales_100m_cny: 221.87
-  - year: 2018
-    month: 12
-    auto_sales_100m_cny: 332.95
-  - year: 2019
-    month: 1
-    auto_sales_100m_cny: 132.33
-  - year: 2019
-    month: 2
-    auto_sales_100m_cny: 254.79
-  - year: 2019
-    month: 3
-    auto_sales_100m_cny: 209.62
-  - year: 2019
-    month: 4
-    auto_sales_100m_cny: 177.4
-  - year: 2019
-    month: 5
-    auto_sales_100m_cny: 188.87
-  - year: 2019
-    month: 6
-    auto_sales_100m_cny: 253.82
-  - year: 2019
-    month: 7
-    auto_sales_100m_cny: 250.77
-  - year: 2019
-    month: 8
-    auto_sales_100m_cny: 178.08
-  - year: 2019
-    month: 9
-    auto_sales_100m_cny: 142.25
-  - year: 2019
-    month: 10
-    auto_sales_100m_cny: 177.07
-  - year: 2019
-    month: 11
-    auto_sales_100m_cny: 137.43
-  - year: 2019
-    month: 12
-    auto_sales_100m_cny: 236.42
-  - year: 2020
-    month: 1
-    auto_sales_100m_cny: 182.04
-  - year: 2020
-    month: 2
-    auto_sales_100m_cny: 247.04
-  - year: 2020
-    month: 3
-    auto_sales_100m_cny: 271.71
-  - year: 2020
-    month: 4
-    auto_sales_100m_cny: 256.72
-  - year: 2020
-    month: 5
-    auto_sales_100m_cny: 267.81
-  - year: 2020
-    month: 6
-    auto_sales_100m_cny: 205.0
-  - year: 2020
-    month: 7
-    auto_sales_100m_cny: 251.44
-  - year: 2020
-    month: 8
-    auto_sales_100m_cny: 234.17
-  - year: 2020
-    month: 9
-    auto_sales_100m_cny: 228.64
-  - year: 2020
-    month: 10
-    auto_sales_100m_cny: 201.26
-  - year: 2020
-    month: 11
-    auto_sales_100m_cny: 229.18
-  - year: 2020
-    month: 12
-    auto_sales_100m_cny: 205.05
-  - year: 2021
-    month: 1
-    auto_sales_100m_cny: 136.96
-  - year: 2021
-    month: 2
-    auto_sales_100m_cny: 321.85
-  - year: 2021
-    month: 3
-    auto_sales_100m_cny: 243.84
-  - year: 2021
-    month: 4
-    auto_sales_100m_cny: 340.67
-  - year: 2021
-    month: 5
-    auto_sales_100m_cny: 264.6
-  - year: 2021
-    month: 6
-    auto_sales_100m_cny: 144.34
-  - year: 2021
-    month: 7
-    auto_sales_100m_cny: 183.0
-  - year: 2021
-    month: 8
-    auto_sales_100m_cny: 152.86
-  - year: 2021
-    month: 9
-    auto_sales_100m_cny: 180.88
-  - year: 2021
-    month: 10
-    auto_sales_100m_cny: 239.39
-  - year: 2021
-    month: 11
-    auto_sales_100m_cny: 250.21
-  - year: 2021
-    month: 12
-    auto_sales_100m_cny: 228.3
-  answer_unit: 亿元
+    items:
+    - name: auto_sales_100m_cny
+      value: 136.96
+      dims:
+        year: 2021
+        month: 1
+    - name: auto_sales_100m_cny
+      value: 321.85
+      dims:
+        year: 2021
+        month: 2
+    - name: auto_sales_100m_cny
+      value: 243.84
+      dims:
+        year: 2021
+        month: 3
+    - name: auto_sales_100m_cny
+      value: 340.67
+      dims:
+        year: 2021
+        month: 4
+    - name: auto_sales_100m_cny
+      value: 264.6
+      dims:
+        year: 2021
+        month: 5
+    - name: auto_sales_100m_cny
+      value: 144.34
+      dims:
+        year: 2021
+        month: 6
+    - name: auto_sales_100m_cny
+      value: 183.0
+      dims:
+        year: 2021
+        month: 7
+    - name: auto_sales_100m_cny
+      value: 152.86
+      dims:
+        year: 2021
+        month: 8
+    - name: auto_sales_100m_cny
+      value: 180.88
+      dims:
+        year: 2021
+        month: 9
   requires_calculator: false
 - id: 10
-  question: 2024年哪些月份全国社零总额名义同比增速超过5%？
+  question: 2024年哪些月份全国社零总额名义同比增速超过6.5%？
   sql: |-
     SELECT month
     FROM retail_sales
-    WHERE year = 2024 AND geo_level = 'national' AND yoy_change_pct > 5.0
+    WHERE year = 2024 AND geo_level = 'national' AND yoy_change_pct > 6.5
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-  - month: 2
-  - month: 3
-  - month: 4
-  - month: 5
-  - month: 6
-  - month: 7
-  - month: 8
-  - month: 9
-  - month: 10
-  - month: 11
-  - month: 12
-  answer_unit: 月
+    items:
+    - name: month
+      value: 1
+    - name: month
+      value: 2
+    - name: month
+      value: 3
+    - name: month
+      value: 4
+    - name: month
+      value: 5
+    - name: month
+      value: 6
+    - name: month
+      value: 8
+    - name: month
+      value: 9
+    - name: month
+      value: 11
   requires_calculator: false
 - id: 11
-  question: 2023年全国汽车类零售额超过4000亿元的月份有哪些？
+  question: 2023年全国汽车类零售额超过7000亿元的月份有哪些？
   sql: |-
     SELECT month
     FROM retail_sales
-    WHERE year = 2023 AND geo_level = 'national' AND auto_sales_100m_cny > 4000
+    WHERE year = 2023 AND geo_level = 'national' AND auto_sales_100m_cny > 7000
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-  - month: 2
-  - month: 3
-  - month: 4
-  - month: 5
-  - month: 6
-  - month: 7
-  - month: 8
-  - month: 9
-  - month: 10
-  - month: 11
-  - month: 12
-  answer_unit: 月
+    items:
+    - name: month
+      value: 1
+    - name: month
+      value: 2
+    - name: month
+      value: 4
+    - name: month
+      value: 8
+    - name: month
+      value: 9
+    - name: month
+      value: 10
+    - name: month
+      value: 11
+    - name: month
+      value: 12
   requires_calculator: false
 - id: 12
   question: 2024年全国季调环比增速为负值即环比下降的月份有哪些？
@@ -437,240 +291,97 @@ questions:
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national' AND mom_change_sa_pct < 0
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 7
-  answer_unit: 月
+    items:
+    - name: month
+      value: 7
   requires_calculator: false
 - id: 13
-  question: 2022年到2024年间，全国社零总额名义同比增速大于6%的月份有哪些？
+  question: 2022年到2024年间，全国社零总额名义同比增速大于9%的月份有哪些？
   sql: |-
     SELECT year, month
     FROM retail_sales
-    WHERE year BETWEEN 2022 AND 2024 AND geo_level = 'national' AND yoy_change_pct > 6.0
+    WHERE year BETWEEN 2022 AND 2024 AND geo_level = 'national' AND yoy_change_pct > 9
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2022
-    month: 1
-  - year: 2022
-    month: 2
-  - year: 2022
-    month: 3
-  - year: 2022
-    month: 4
-  - year: 2022
-    month: 5
-  - year: 2022
-    month: 6
-  - year: 2022
-    month: 7
-  - year: 2022
-    month: 9
-  - year: 2022
-    month: 11
-  - year: 2023
-    month: 1
-  - year: 2023
-    month: 2
-  - year: 2023
-    month: 3
-  - year: 2023
-    month: 4
-  - year: 2023
-    month: 5
-  - year: 2023
-    month: 6
-  - year: 2023
-    month: 7
-  - year: 2023
-    month: 8
-  - year: 2023
-    month: 10
-  - year: 2023
-    month: 11
-  - year: 2023
-    month: 12
-  - year: 2024
-    month: 1
-  - year: 2024
-    month: 2
-  - year: 2024
-    month: 3
-  - year: 2024
-    month: 4
-  - year: 2024
-    month: 5
-  - year: 2024
-    month: 6
-  - year: 2024
-    month: 7
-  - year: 2024
-    month: 8
-  - year: 2024
-    month: 9
-  - year: 2024
-    month: 10
-  - year: 2024
-    month: 11
-  - year: 2024
-    month: 12
-  answer_unit: null
+    items:
+    - name: month
+      value: 1
+      dims:
+        year: 2022
+    - name: month
+      value: 3
+      dims:
+        year: 2023
+    - name: month
+      value: 5
+      dims:
+        year: 2023
+    - name: month
+      value: 7
+      dims:
+        year: 2023
+    - name: month
+      value: 12
+      dims:
+        year: 2023
+    - name: month
+      value: 1
+      dims:
+        year: 2024
+    - name: month
+      value: 3
+      dims:
+        year: 2024
+    - name: month
+      value: 5
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 14
-  question: 2020年到2023年间，广东社零总额超过3000亿元的月份数据是多少？
+  question: 2024年广东社零总额超过7500亿元的月份数据是多少？
   sql: |-
     SELECT year, month, total_sales_100m_cny
     FROM retail_sales
-    WHERE year BETWEEN 2020 AND 2023 AND geo_level = 'province' AND geo_name = '广东' AND total_sales_100m_cny > 3000
+    WHERE year = 2024 AND geo_level = 'province' AND geo_name = '广东' AND total_sales_100m_cny > 7500
     ORDER BY year, month
-  answer_type: list
   answer:
-  - year: 2020
-    month: 1
-    total_sales_100m_cny: 5854.32
-  - year: 2020
-    month: 2
-    total_sales_100m_cny: 5988.83
-  - year: 2020
-    month: 3
-    total_sales_100m_cny: 6060.36
-  - year: 2020
-    month: 4
-    total_sales_100m_cny: 6146.51
-  - year: 2020
-    month: 5
-    total_sales_100m_cny: 6283.42
-  - year: 2020
-    month: 6
-    total_sales_100m_cny: 5701.02
-  - year: 2020
-    month: 7
-    total_sales_100m_cny: 5433.63
-  - year: 2020
-    month: 8
-    total_sales_100m_cny: 5709.51
-  - year: 2020
-    month: 9
-    total_sales_100m_cny: 5734.63
-  - year: 2020
-    month: 10
-    total_sales_100m_cny: 5788.56
-  - year: 2020
-    month: 11
-    total_sales_100m_cny: 5983.39
-  - year: 2020
-    month: 12
-    total_sales_100m_cny: 6197.55
-  - year: 2021
-    month: 1
-    total_sales_100m_cny: 6212.56
-  - year: 2021
-    month: 2
-    total_sales_100m_cny: 6289.75
-  - year: 2021
-    month: 3
-    total_sales_100m_cny: 6373.29
-  - year: 2021
-    month: 4
-    total_sales_100m_cny: 6576.01
-  - year: 2021
-    month: 5
-    total_sales_100m_cny: 6381.2
-  - year: 2021
-    month: 6
-    total_sales_100m_cny: 6026.44
-  - year: 2021
-    month: 7
-    total_sales_100m_cny: 5959.46
-  - year: 2021
-    month: 8
-    total_sales_100m_cny: 6460.51
-  - year: 2021
-    month: 9
-    total_sales_100m_cny: 6028.91
-  - year: 2021
-    month: 10
-    total_sales_100m_cny: 6137.98
-  - year: 2021
-    month: 11
-    total_sales_100m_cny: 6325.34
-  - year: 2021
-    month: 12
-    total_sales_100m_cny: 6657.86
-  - year: 2022
-    month: 1
-    total_sales_100m_cny: 6574.62
-  - year: 2022
-    month: 2
-    total_sales_100m_cny: 7003.18
-  - year: 2022
-    month: 3
-    total_sales_100m_cny: 6779.4
-  - year: 2022
-    month: 4
-    total_sales_100m_cny: 6975.72
-  - year: 2022
-    month: 5
-    total_sales_100m_cny: 7039.79
-  - year: 2022
-    month: 6
-    total_sales_100m_cny: 6441.61
-  - year: 2022
-    month: 7
-    total_sales_100m_cny: 6874.93
-  - year: 2022
-    month: 8
-    total_sales_100m_cny: 6391.29
-  - year: 2022
-    month: 9
-    total_sales_100m_cny: 6588.35
-  - year: 2022
-    month: 10
-    total_sales_100m_cny: 6570.88
-  - year: 2022
-    month: 11
-    total_sales_100m_cny: 6798.12
-  - year: 2022
-    month: 12
-    total_sales_100m_cny: 6925.9
-  - year: 2023
-    month: 1
-    total_sales_100m_cny: 7017.1
-  - year: 2023
-    month: 2
-    total_sales_100m_cny: 7457.86
-  - year: 2023
-    month: 3
-    total_sales_100m_cny: 7349.64
-  - year: 2023
-    month: 4
-    total_sales_100m_cny: 7173.84
-  - year: 2023
-    month: 5
-    total_sales_100m_cny: 7224.09
-  - year: 2023
-    month: 6
-    total_sales_100m_cny: 7124.53
-  - year: 2023
-    month: 7
-    total_sales_100m_cny: 6934.76
-  - year: 2023
-    month: 8
-    total_sales_100m_cny: 7213.32
-  - year: 2023
-    month: 9
-    total_sales_100m_cny: 7209.41
-  - year: 2023
-    month: 10
-    total_sales_100m_cny: 7061.92
-  - year: 2023
-    month: 11
-    total_sales_100m_cny: 7210.21
-  - year: 2023
-    month: 12
-    total_sales_100m_cny: 7579.79
-  answer_unit: 亿元
+    items:
+    - name: total_sales_100m_cny
+      value: 7535.18
+      dims:
+        year: 2024
+        month: 1
+    - name: total_sales_100m_cny
+      value: 7730.26
+      dims:
+        year: 2024
+        month: 3
+    - name: total_sales_100m_cny
+      value: 7649.52
+      dims:
+        year: 2024
+        month: 4
+    - name: total_sales_100m_cny
+      value: 7583.64
+      dims:
+        year: 2024
+        month: 5
+    - name: total_sales_100m_cny
+      value: 7658.4
+      dims:
+        year: 2024
+        month: 10
+    - name: total_sales_100m_cny
+      value: 7645.27
+      dims:
+        year: 2024
+        month: 11
+    - name: total_sales_100m_cny
+      value: 7761.06
+      dims:
+        year: 2024
+        month: 12
   requires_calculator: false
 - id: 15
   question: 2024年全国社零总额最高的月份是哪个月，金额是多少？
@@ -680,11 +391,12 @@ questions:
     WHERE year = 2024 AND geo_level = 'national'
     ORDER BY total_sales_100m_cny DESC
     LIMIT 1
-  answer_type: list
   answer:
-  - month: 12
-    total_sales_100m_cny: 75963.59
-  answer_unit: 亿元
+    items:
+    - name: total_sales_100m_cny
+      value: 75963.59
+      dims:
+        month: 12
   requires_calculator: false
 - id: 16
   question: 2023年全国网络零售额最高的月份是几月，金额是多少？
@@ -694,11 +406,12 @@ questions:
     WHERE year = 2023 AND geo_level = 'national'
     ORDER BY ecommerce_sales_100m_cny DESC
     LIMIT 1
-  answer_type: list
   answer:
-  - month: 2
-    ecommerce_sales_100m_cny: 21705.08
-  answer_unit: 亿元
+    items:
+    - name: ecommerce_sales_100m_cny
+      value: 21705.08
+      dims:
+        month: 2
   requires_calculator: false
 - id: 17
   question: 2020年全国社零总额名义同比增速最低的月份是几月，增速是多少？
@@ -708,11 +421,12 @@ questions:
     WHERE year = 2020 AND geo_level = 'national'
     ORDER BY yoy_change_pct ASC
     LIMIT 1
-  answer_type: list
   answer:
-  - month: 2
-    yoy_change_pct: 4.896
-  answer_unit: '%'
+    items:
+    - name: yoy_change_pct
+      value: 4.896
+      dims:
+        month: 2
   requires_calculator: false
 - id: 18
   question: 2024年全国汽车类零售额最低的月份是哪个月？
@@ -722,9 +436,10 @@ questions:
     WHERE year = 2024 AND geo_level = 'national'
     ORDER BY auto_sales_100m_cny ASC
     LIMIT 1
-  answer_type: scalar
-  answer: 8
-  answer_unit: 月
+  answer:
+    items:
+    - name: month
+      value: 8
   requires_calculator: false
 - id: 19
   question: 2024年1月社零总额最高的前5个省份是哪些，金额分别是多少？
@@ -734,19 +449,28 @@ questions:
     WHERE year = 2024 AND month = 1 AND geo_level = 'province'
     ORDER BY total_sales_100m_cny DESC
     LIMIT 5
-  answer_type: list
   answer:
-  - geo_name: 广东
-    total_sales_100m_cny: 7535.18
-  - geo_name: 江苏
-    total_sales_100m_cny: 7316.85
-  - geo_name: 山东
-    total_sales_100m_cny: 6616.1
-  - geo_name: 浙江
-    total_sales_100m_cny: 4856.54
-  - geo_name: 四川
-    total_sales_100m_cny: 3544.81
-  answer_unit: 亿元
+    items:
+    - name: total_sales_100m_cny
+      value: 7535.18
+      dims:
+        geo_name: 广东
+    - name: total_sales_100m_cny
+      value: 7316.85
+      dims:
+        geo_name: 江苏
+    - name: total_sales_100m_cny
+      value: 6616.1
+      dims:
+        geo_name: 山东
+    - name: total_sales_100m_cny
+      value: 4856.54
+      dims:
+        geo_name: 浙江
+    - name: total_sales_100m_cny
+      value: 3544.81
+      dims:
+        geo_name: 四川
   requires_calculator: false
 - id: 20
   question: 2023年12月网络零售额最高的前3个省份分别是哪些？
@@ -756,34 +480,40 @@ questions:
     WHERE year = 2023 AND month = 12 AND geo_level = 'province'
     ORDER BY ecommerce_sales_100m_cny DESC
     LIMIT 3
-  answer_type: list
   answer:
-  - geo_name: 广东
-  - geo_name: 山东
-  - geo_name: 江苏
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 江苏
   requires_calculator: false
 - id: 21
-  question: 2024年1月省级社零总额按金额降序、省份名升序排列的前10个省份是哪些？
+  question: 2024年1月省级社零总额超过3000亿元的省份有哪些（按金额降序、省份名升序）？
   sql: |-
     SELECT geo_name
     FROM retail_sales
-    WHERE year = 2024 AND month = 1 AND geo_level = 'province'
+    WHERE year = 2024 AND month = 1 AND geo_level = 'province' AND total_sales_100m_cny > 3000
     ORDER BY total_sales_100m_cny DESC, geo_name ASC
-    LIMIT 10
-  answer_type: list
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
-  - geo_name: 河南
-  - geo_name: 湖北
-  - geo_name: 福建
-  - geo_name: 湖南
-  - geo_name: 安徽
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 浙江
+    - name: geo_name
+      value: 四川
+    - name: geo_name
+      value: 河南
+    - name: geo_name
+      value: 湖北
+    - name: geo_name
+      value: 福建
   requires_calculator: false
 - id: 22
   question: 2024年全国层级社零同比为正的月份有多少个？
@@ -791,9 +521,10 @@ questions:
     SELECT COUNT(*) AS value
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national' AND yoy_change_pct > 0
-  answer_type: scalar
-  answer: 12
-  answer_unit: 条
+  answer:
+    items:
+    - name: value
+      value: 12
   requires_calculator: false
 - id: 23
   question: 社零统计覆盖了多少个省级行政区？
@@ -801,9 +532,10 @@ questions:
     SELECT COUNT(DISTINCT geo_name) AS value
     FROM retail_sales
     WHERE geo_level = 'province'
-  answer_type: scalar
-  answer: 31
-  answer_unit: 个
+  answer:
+    items:
+    - name: value
+      value: 31
   requires_calculator: false
 - id: 24
   question: 2024年全国全年社零总额合计是多少亿元？
@@ -811,9 +543,10 @@ questions:
     SELECT SUM(total_sales_100m_cny) AS value
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 879574.01
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 879574.01
   requires_calculator: false
 - id: 25
   question: 2023年全国汽车类零售额全年累计金额是多少？
@@ -821,9 +554,10 @@ questions:
     SELECT SUM(auto_sales_100m_cny) AS value
     FROM retail_sales
     WHERE year = 2023 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 91208.7
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 91208.7
   requires_calculator: false
 - id: 26
   question: 2024年全国社零总额月均值是多少亿元？
@@ -831,9 +565,10 @@ questions:
     SELECT AVG(total_sales_100m_cny) AS value
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 73297.83416666667
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: value
+      value: 73297.83416666667
   requires_calculator: false
 - id: 27
   question: 2022年全国社零名义同比增速的年度平均值是多少？
@@ -841,9 +576,10 @@ questions:
     SELECT AVG(yoy_change_pct) AS value
     FROM retail_sales
     WHERE year = 2022 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 7.177
-  answer_unit: '%'
+  answer:
+    items:
+    - name: value
+      value: 7.177
   requires_calculator: false
 - id: 28
   question: 2024年全国社零总额的最小值和最大值分别是多少？
@@ -851,11 +587,12 @@ questions:
     SELECT MIN(total_sales_100m_cny) AS min_value, MAX(total_sales_100m_cny) AS max_value
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: list
   answer:
-  - min_value: 71116.65
-    max_value: 75963.59
-  answer_unit: 亿元
+    items:
+    - name: min_value
+      value: 71116.65
+    - name: max_value
+      value: 75963.59
   requires_calculator: false
 - id: 29
   question: 2020年全国社零名义同比增速的最低值和最高值分别是多少？
@@ -863,11 +600,12 @@ questions:
     SELECT MIN(yoy_change_pct) AS min_value, MAX(yoy_change_pct) AS max_value
     FROM retail_sales
     WHERE year = 2020 AND geo_level = 'national'
-  answer_type: list
   answer:
-  - min_value: 4.896
-    max_value: 8.089
-  answer_unit: '%'
+    items:
+    - name: min_value
+      value: 4.896
+    - name: max_value
+      value: 8.089
   requires_calculator: false
 - id: 30
   question: 2020年到2024年，全国每年的社零总额合计分别是多少？
@@ -877,55 +615,74 @@ questions:
     WHERE year BETWEEN 2020 AND 2024 AND geo_level = 'national'
     GROUP BY year
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2020
-    total: 673964.21
-  - year: 2021
-    total: 723613.07
-  - year: 2022
-    total: 776573.48
-  - year: 2023
-    total: 825430.31
-  - year: 2024
-    total: 879574.01
-  answer_unit: 亿元
+    items:
+    - name: total
+      value: 673964.21
+      dims:
+        year: 2020
+    - name: total
+      value: 723613.07
+      dims:
+        year: 2021
+    - name: total
+      value: 776573.48
+      dims:
+        year: 2022
+    - name: total
+      value: 825430.31
+      dims:
+        year: 2023
+    - name: total
+      value: 879574.01
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 31
-  question: 2024年全国各月社零名义同比增速的平均值是多少？
+  question: 2024年1月至9月全国各月社零名义同比增速分别是多少？
   sql: |-
-    SELECT month, AVG(yoy_change_pct) AS avg_yoy
+    SELECT month, yoy_change_pct
     FROM retail_sales
-    WHERE year = 2024 AND geo_level = 'national'
-    GROUP BY month
+    WHERE year = 2024 AND geo_level = 'national' AND month BETWEEN 1 AND 9
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-    avg_yoy: 10.12
-  - month: 2
-    avg_yoy: 8.229
-  - month: 3
-    avg_yoy: 9.809
-  - month: 4
-    avg_yoy: 7.708
-  - month: 5
-    avg_yoy: 9.598
-  - month: 6
-    avg_yoy: 8.101
-  - month: 7
-    avg_yoy: 6.012
-  - month: 8
-    avg_yoy: 7.12
-  - month: 9
-    avg_yoy: 8.733
-  - month: 10
-    avg_yoy: 6.066
-  - month: 11
-    avg_yoy: 7.449
-  - month: 12
-    avg_yoy: 6.466
-  answer_unit: '%'
+    items:
+    - name: yoy_change_pct
+      value: 10.12
+      dims:
+        month: 1
+    - name: yoy_change_pct
+      value: 8.229
+      dims:
+        month: 2
+    - name: yoy_change_pct
+      value: 9.809
+      dims:
+        month: 3
+    - name: yoy_change_pct
+      value: 7.708
+      dims:
+        month: 4
+    - name: yoy_change_pct
+      value: 9.598
+      dims:
+        month: 5
+    - name: yoy_change_pct
+      value: 8.101
+      dims:
+        month: 6
+    - name: yoy_change_pct
+      value: 6.012
+      dims:
+        month: 7
+    - name: yoy_change_pct
+      value: 7.12
+      dims:
+        month: 8
+    - name: yoy_change_pct
+      value: 8.733
+      dims:
+        month: 9
   requires_calculator: false
 - id: 32
   question: 2024年各统计层级中社零总额高于3000亿元的数据数量分别是多少？
@@ -949,410 +706,344 @@ questions:
     WHEN 'province' THEN 3
     WHEN 'city' THEN 4
     END
-  answer_type: list
   answer:
-  - geo_level: national
-    count: 12
-  - geo_level: region
-    count: 84
-  - geo_level: province
-    count: 88
-  - geo_level: city
-    count: 0
-  answer_unit: 条
+    items:
+    - name: count
+      value: 12
+      dims:
+        geo_level: national
+    - name: count
+      value: 84
+      dims:
+        geo_level: region
+    - name: count
+      value: 88
+      dims:
+        geo_level: province
+    - name: count
+      value: 0
+      dims:
+        geo_level: city
   requires_calculator: false
 - id: 33
-  question: 2024年各月份中社零总额高于3000亿元的省份数量分别是多少？
+  question: 2024年1月至9月各月份中社零总额高于3000亿元的省份数量分别是多少？
   sql: |-
     SELECT month, COUNT(*) AS count
     FROM retail_sales
-    WHERE year = 2024 AND geo_level = 'province' AND total_sales_100m_cny > 3000
+    WHERE year = 2024 AND geo_level = 'province' AND total_sales_100m_cny > 3000 AND month BETWEEN 1 AND 9
     GROUP BY month
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-    count: 8
-  - month: 2
-    count: 7
-  - month: 3
-    count: 8
-  - month: 4
-    count: 8
-  - month: 5
-    count: 8
-  - month: 6
-    count: 7
-  - month: 7
-    count: 7
-  - month: 8
-    count: 7
-  - month: 9
-    count: 7
-  - month: 10
-    count: 7
-  - month: 11
-    count: 7
-  - month: 12
-    count: 7
-  answer_unit: 条
+    items:
+    - name: count
+      value: 8
+      dims:
+        month: 1
+    - name: count
+      value: 7
+      dims:
+        month: 2
+    - name: count
+      value: 8
+      dims:
+        month: 3
+    - name: count
+      value: 8
+      dims:
+        month: 4
+    - name: count
+      value: 8
+      dims:
+        month: 5
+    - name: count
+      value: 7
+      dims:
+        month: 6
+    - name: count
+      value: 7
+      dims:
+        month: 7
+    - name: count
+      value: 7
+      dims:
+        month: 8
+    - name: count
+      value: 7
+      dims:
+        month: 9
   requires_calculator: false
 - id: 34
-  question: 2023年和2024年，每年每月的全国社零总额合计分别是多少？
+  question: 2024年1月至9月每月的全国社零总额分别是多少？
   sql: |-
-    SELECT year, month, SUM(total_sales_100m_cny) AS total
+    SELECT month, total_sales_100m_cny AS total
     FROM retail_sales
-    WHERE year IN (2023, 2024) AND geo_level = 'national'
-    GROUP BY year, month
-    ORDER BY year, month
-  answer_type: list
+    WHERE year = 2024 AND geo_level = 'national' AND month BETWEEN 1 AND 9
+    ORDER BY month
   answer:
-  - year: 2023
-    month: 1
-    total: 67542.19
-  - year: 2023
-    month: 2
-    total: 69332.17
-  - year: 2023
-    month: 3
-    total: 69701.54
-  - year: 2023
-    month: 4
-    total: 69032.53
-  - year: 2023
-    month: 5
-    total: 69527.9
-  - year: 2023
-    month: 6
-    total: 67873.0
-  - year: 2023
-    month: 7
-    total: 68231.83
-  - year: 2023
-    month: 8
-    total: 66997.3
-  - year: 2023
-    month: 9
-    total: 68498.03
-  - year: 2023
-    month: 10
-    total: 67786.85
-  - year: 2023
-    month: 11
-    total: 69852.53
-  - year: 2023
-    month: 12
-    total: 71054.44
-  - year: 2024
-    month: 1
-    total: 71807.11
-  - year: 2024
-    month: 2
-    total: 73313.68
-  - year: 2024
-    month: 3
-    total: 74137.37
-  - year: 2024
-    month: 4
-    total: 75288.78
-  - year: 2024
-    month: 5
-    total: 73918.62
-  - year: 2024
-    month: 6
-    total: 73387.03
-  - year: 2024
-    month: 7
-    total: 71660.33
-  - year: 2024
-    month: 8
-    total: 71116.65
-  - year: 2024
-    month: 9
-    total: 71997.4
-  - year: 2024
-    month: 10
-    total: 73318.32
-  - year: 2024
-    month: 11
-    total: 73665.13
-  - year: 2024
-    month: 12
-    total: 75963.59
-  answer_unit: 亿元
+    items:
+    - name: total
+      value: 71807.11
+      dims:
+        month: 1
+    - name: total
+      value: 73313.68
+      dims:
+        month: 2
+    - name: total
+      value: 74137.37
+      dims:
+        month: 3
+    - name: total
+      value: 75288.78
+      dims:
+        month: 4
+    - name: total
+      value: 73918.62
+      dims:
+        month: 5
+    - name: total
+      value: 73387.03
+      dims:
+        month: 6
+    - name: total
+      value: 71660.33
+      dims:
+        month: 7
+    - name: total
+      value: 71116.65
+      dims:
+        month: 8
+    - name: total
+      value: 71997.4
+      dims:
+        month: 9
   requires_calculator: false
 - id: 35
-  question: 2024年各层级在各月份的平均社零总额分别是多少？
+  question: 2024年1月至4月，national和province两个层级的平均社零总额分别是多少？
   sql: |-
     SELECT geo_level, month, AVG(total_sales_100m_cny) AS avg_sales
     FROM retail_sales
-    WHERE year = 2024
+    WHERE year = 2024 AND geo_level IN ('national', 'province') AND month BETWEEN 1 AND 4
     GROUP BY geo_level, month
     ORDER BY geo_level, month
-  answer_type: list
   answer:
-  - geo_level: city
-    month: 1
-    avg_sales: 1041.199
-  - geo_level: city
-    month: 2
-    avg_sales: 1077.337
-  - geo_level: city
-    month: 3
-    avg_sales: 1070.855
-  - geo_level: city
-    month: 4
-    avg_sales: 1107.433
-  - geo_level: city
-    month: 5
-    avg_sales: 1074.8899999999999
-  - geo_level: city
-    month: 6
-    avg_sales: 1072.423
-  - geo_level: city
-    month: 7
-    avg_sales: 1047.708
-  - geo_level: city
-    month: 8
-    avg_sales: 1023.7180000000001
-  - geo_level: city
-    month: 9
-    avg_sales: 1046.5030000000002
-  - geo_level: city
-    month: 10
-    avg_sales: 1067.319
-  - geo_level: city
-    month: 11
-    avg_sales: 1081.7379999999998
-  - geo_level: city
-    month: 12
-    avg_sales: 1111.05
-  - geo_level: national
-    month: 1
-    avg_sales: 71807.11
-  - geo_level: national
-    month: 2
-    avg_sales: 73313.68
-  - geo_level: national
-    month: 3
-    avg_sales: 74137.37
-  - geo_level: national
-    month: 4
-    avg_sales: 75288.78
-  - geo_level: national
-    month: 5
-    avg_sales: 73918.62
-  - geo_level: national
-    month: 6
-    avg_sales: 73387.03
-  - geo_level: national
-    month: 7
-    avg_sales: 71660.33
-  - geo_level: national
-    month: 8
-    avg_sales: 71116.65
-  - geo_level: national
-    month: 9
-    avg_sales: 71997.4
-  - geo_level: national
-    month: 10
-    avg_sales: 73318.32
-  - geo_level: national
-    month: 11
-    avg_sales: 73665.13
-  - geo_level: national
-    month: 12
-    avg_sales: 75963.59
-  - geo_level: province
-    month: 1
-    avg_sales: 2316.358387096774
-  - geo_level: province
-    month: 2
-    avg_sales: 2364.9570967741934
-  - geo_level: province
-    month: 3
-    avg_sales: 2391.528064516129
-  - geo_level: province
-    month: 4
-    avg_sales: 2428.6693548387098
-  - geo_level: province
-    month: 5
-    avg_sales: 2384.472258064516
-  - geo_level: province
-    month: 6
-    avg_sales: 2367.3235483870967
-  - geo_level: province
-    month: 7
-    avg_sales: 2311.623225806452
-  - geo_level: province
-    month: 8
-    avg_sales: 2294.086129032258
-  - geo_level: province
-    month: 9
-    avg_sales: 2322.497096774194
-  - geo_level: province
-    month: 10
-    avg_sales: 2365.107419354839
-  - geo_level: province
-    month: 11
-    avg_sales: 2376.294516129032
-  - geo_level: province
-    month: 12
-    avg_sales: 2450.4390322580643
-  - geo_level: region
-    month: 1
-    avg_sales: 10258.157142857144
-  - geo_level: region
-    month: 2
-    avg_sales: 10473.382857142857
-  - geo_level: region
-    month: 3
-    avg_sales: 10591.052857142857
-  - geo_level: region
-    month: 4
-    avg_sales: 10755.539999999999
-  - geo_level: region
-    month: 5
-    avg_sales: 10559.802857142857
-  - geo_level: region
-    month: 6
-    avg_sales: 10483.861428571428
-  - geo_level: region
-    month: 7
-    avg_sales: 10237.188571428573
-  - geo_level: region
-    month: 8
-    avg_sales: 10159.521428571428
-  - geo_level: region
-    month: 9
-    avg_sales: 10285.342857142856
-  - geo_level: region
-    month: 10
-    avg_sales: 10474.045714285714
-  - geo_level: region
-    month: 11
-    avg_sales: 10523.58857142857
-  - geo_level: region
-    month: 12
-    avg_sales: 10851.941428571428
-  answer_unit: 亿元
+    items:
+    - name: avg_sales
+      value: 71807.11
+      dims:
+        geo_level: national
+        month: 1
+    - name: avg_sales
+      value: 73313.68
+      dims:
+        geo_level: national
+        month: 2
+    - name: avg_sales
+      value: 74137.37
+      dims:
+        geo_level: national
+        month: 3
+    - name: avg_sales
+      value: 75288.78
+      dims:
+        geo_level: national
+        month: 4
+    - name: avg_sales
+      value: 2316.358387096774
+      dims:
+        geo_level: province
+        month: 1
+    - name: avg_sales
+      value: 2364.957096774193
+      dims:
+        geo_level: province
+        month: 2
+    - name: avg_sales
+      value: 2391.528064516129
+      dims:
+        geo_level: province
+        month: 3
+    - name: avg_sales
+      value: 2428.66935483871
+      dims:
+        geo_level: province
+        month: 4
   requires_calculator: false
 - id: 36
-  question: 2024年各省份全年社零总额合计排名前10的省份分别是哪些？
+  question: 2024年各省份全年社零总额合计超过35000亿元的省份有哪些？
   sql: |-
-    SELECT geo_name
+    SELECT geo_name, SUM(total_sales_100m_cny) AS total_sales
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'province'
     GROUP BY geo_name
-    ORDER BY SUM(total_sales_100m_cny) DESC
-    LIMIT 10
-  answer_type: list
+    HAVING SUM(total_sales_100m_cny) > 35000
+    ORDER BY total_sales DESC
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
-  - geo_name: 河南
-  - geo_name: 湖北
-  - geo_name: 福建
-  - geo_name: 湖南
-  - geo_name: 安徽
-  answer_unit: null
+    items:
+    - name: total_sales
+      value: 90523.4
+      dims:
+        geo_name: 广东
+    - name: total_sales
+      value: 89174.21
+      dims:
+        geo_name: 江苏
+    - name: total_sales
+      value: 78708.79
+      dims:
+        geo_name: 山东
+    - name: total_sales
+      value: 59006.75
+      dims:
+        geo_name: 浙江
+    - name: total_sales
+      value: 44118.35
+      dims:
+        geo_name: 四川
+    - name: total_sales
+      value: 42477.95
+      dims:
+        geo_name: 河南
+    - name: total_sales
+      value: 39559.05
+      dims:
+        geo_name: 湖北
+    - name: total_sales
+      value: 35383.35
+      dims:
+        geo_name: 福建
   requires_calculator: false
 - id: 37
-  question: 2024年哪些省份的平均社零名义同比增速超过8%？
+  question: 2024年哪些省份的平均社零名义同比增速超过8.03%？
   sql: |-
-    SELECT geo_name
+    SELECT geo_name, AVG(yoy_change_pct) AS avg_yoy
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'province'
     GROUP BY geo_name
-    HAVING AVG(yoy_change_pct) > 8.0
-    ORDER BY AVG(yoy_change_pct) DESC
-  answer_type: list
+    HAVING AVG(yoy_change_pct) > 8.03
+    ORDER BY avg_yoy DESC
   answer:
-  - geo_name: 陕西
-  - geo_name: 贵州
-  - geo_name: 河南
-  - geo_name: 新疆
-  - geo_name: 北京
-  - geo_name: 江西
-  - geo_name: 山东
-  - geo_name: 广东
-  - geo_name: 辽宁
-  - geo_name: 山西
-  answer_unit: null
+    items:
+    - name: avg_yoy
+      value: 8.414666666667
+      dims:
+        geo_name: 陕西
+    - name: avg_yoy
+      value: 8.3075
+      dims:
+        geo_name: 贵州
+    - name: avg_yoy
+      value: 8.2965
+      dims:
+        geo_name: 河南
+    - name: avg_yoy
+      value: 8.234833333333
+      dims:
+        geo_name: 新疆
+    - name: avg_yoy
+      value: 8.233083333333
+      dims:
+        geo_name: 北京
+    - name: avg_yoy
+      value: 8.204583333333
+      dims:
+        geo_name: 江西
+    - name: avg_yoy
+      value: 8.158333333333
+      dims:
+        geo_name: 山东
+    - name: avg_yoy
+      value: 8.066666666667
+      dims:
+        geo_name: 广东
+    - name: avg_yoy
+      value: 8.059666666667
+      dims:
+        geo_name: 辽宁
   requires_calculator: false
 - id: 38
-  question: 2023年哪些省份的月均网络零售额超过500亿元？
+  question: 2023年哪些省份的月均网络零售额超过700亿元？
   sql: |-
-    SELECT geo_name
+    SELECT geo_name, AVG(ecommerce_sales_100m_cny) AS avg_ecommerce
     FROM retail_sales
     WHERE year = 2023 AND geo_level = 'province'
     GROUP BY geo_name
-    HAVING AVG(ecommerce_sales_100m_cny) > 500
-    ORDER BY AVG(ecommerce_sales_100m_cny) DESC
-  answer_type: list
+    HAVING AVG(ecommerce_sales_100m_cny) > 700
+    ORDER BY avg_ecommerce DESC
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
-  - geo_name: 浙江
-  - geo_name: 四川
-  - geo_name: 河南
-  - geo_name: 湖北
-  - geo_name: 湖南
-  - geo_name: 福建
-  - geo_name: 安徽
-  - geo_name: 北京
-  - geo_name: 河北
-  - geo_name: 上海
-  - geo_name: 陕西
-  answer_unit: null
+    items:
+    - name: avg_ecommerce
+      value: 2024.82
+      dims:
+        geo_name: 广东
+    - name: avg_ecommerce
+      value: 1852.341666666667
+      dims:
+        geo_name: 江苏
+    - name: avg_ecommerce
+      value: 1733.93
+      dims:
+        geo_name: 山东
+    - name: avg_ecommerce
+      value: 1173.608333333333
+      dims:
+        geo_name: 浙江
+    - name: avg_ecommerce
+      value: 1019.764166666667
+      dims:
+        geo_name: 四川
+    - name: avg_ecommerce
+      value: 866.498333333333
+      dims:
+        geo_name: 河南
+    - name: avg_ecommerce
+      value: 861.2425
+      dims:
+        geo_name: 湖北
+    - name: avg_ecommerce
+      value: 740.39
+      dims:
+        geo_name: 湖南
+    - name: avg_ecommerce
+      value: 725.593333333333
+      dims:
+        geo_name: 福建
   requires_calculator: false
 - id: 39
-  question: 哪些省份在2024年有超过10条月度社零数据记录？
+  question: 2024年哪些省份在有12条月度社零数据记录的同时，全年社零总额超过40000亿元？
   sql: |-
-    SELECT geo_name
+    SELECT geo_name, SUM(total_sales_100m_cny) AS yearly_total
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'province'
     GROUP BY geo_name
-    HAVING COUNT(*) > 10
-    ORDER BY geo_name
-  answer_type: list
+    HAVING COUNT(*) = 12 AND SUM(total_sales_100m_cny) > 40000
+    ORDER BY yearly_total DESC
   answer:
-  - geo_name: 上海
-  - geo_name: 云南
-  - geo_name: 内蒙古
-  - geo_name: 北京
-  - geo_name: 吉林
-  - geo_name: 四川
-  - geo_name: 天津
-  - geo_name: 宁夏
-  - geo_name: 安徽
-  - geo_name: 山东
-  - geo_name: 山西
-  - geo_name: 广东
-  - geo_name: 广西
-  - geo_name: 新疆
-  - geo_name: 江苏
-  - geo_name: 江西
-  - geo_name: 河北
-  - geo_name: 河南
-  - geo_name: 浙江
-  - geo_name: 海南
-  - geo_name: 湖北
-  - geo_name: 湖南
-  - geo_name: 甘肃
-  - geo_name: 福建
-  - geo_name: 西藏
-  - geo_name: 贵州
-  - geo_name: 辽宁
-  - geo_name: 重庆
-  - geo_name: 陕西
-  - geo_name: 青海
-  - geo_name: 黑龙江
-  answer_unit: null
+    items:
+    - name: yearly_total
+      value: 90523.4
+      dims:
+        geo_name: 广东
+    - name: yearly_total
+      value: 89174.21
+      dims:
+        geo_name: 江苏
+    - name: yearly_total
+      value: 78708.79
+      dims:
+        geo_name: 山东
+    - name: yearly_total
+      value: 59006.75
+      dims:
+        geo_name: 浙江
+    - name: yearly_total
+      value: 44118.35
+      dims:
+        geo_name: 四川
+    - name: yearly_total
+      value: 42477.95
+      dims:
+        geo_name: 河南
   requires_calculator: false
 - id: 40
   question: 2024年哪些省份的全年汽车类零售额合计超过5000亿元？
@@ -1363,45 +1054,63 @@ questions:
     GROUP BY geo_name
     HAVING SUM(auto_sales_100m_cny) > 5000
     ORDER BY SUM(auto_sales_100m_cny) DESC
-  answer_type: list
   answer:
-  - geo_name: 广东
-  - geo_name: 江苏
-  - geo_name: 山东
-  - geo_name: 浙江
-  answer_unit: null
+    items:
+    - name: geo_name
+      value: 广东
+    - name: geo_name
+      value: 江苏
+    - name: geo_name
+      value: 山东
+    - name: geo_name
+      value: 浙江
   requires_calculator: false
 - id: 41
-  question: 2016年到2025年，全国每年社零总额合计的年度趋势是什么？
+  question: 2016年到2024年，全国每年社零总额合计的年度趋势是什么？
   sql: |-
     SELECT year, SUM(total_sales_100m_cny) AS total
     FROM retail_sales
-    WHERE geo_level = 'national'
+    WHERE geo_level = 'national' AND year BETWEEN 2016 AND 2024
     GROUP BY year
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2016
-    total: 465223.41
-  - year: 2017
-    total: 515197.60000000003
-  - year: 2018
-    total: 573918.63
-  - year: 2019
-    total: 620247.0
-  - year: 2020
-    total: 673964.21
-  - year: 2021
-    total: 723613.07
-  - year: 2022
-    total: 776573.48
-  - year: 2023
-    total: 825430.31
-  - year: 2024
-    total: 879574.01
-  - year: 2025
-    total: 932247.54
-  answer_unit: 亿元
+    items:
+    - name: total
+      value: 465223.41
+      dims:
+        year: 2016
+    - name: total
+      value: 515197.60000000003
+      dims:
+        year: 2017
+    - name: total
+      value: 573918.63
+      dims:
+        year: 2018
+    - name: total
+      value: 620247.0
+      dims:
+        year: 2019
+    - name: total
+      value: 673964.21
+      dims:
+        year: 2020
+    - name: total
+      value: 723613.07
+      dims:
+        year: 2021
+    - name: total
+      value: 776573.48
+      dims:
+        year: 2022
+    - name: total
+      value: 825430.31
+      dims:
+        year: 2023
+    - name: total
+      value: 879574.01
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 42
   question: 2018年到2024年，全国汽车类零售额的年度平均值趋势是什么？
@@ -1411,23 +1120,36 @@ questions:
     WHERE geo_level = 'national' AND year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  answer_type: list
   answer:
-  - year: 2018
-    avg_auto: 5042.044166666667
-  - year: 2019
-    avg_auto: 5660.68
-  - year: 2020
-    avg_auto: 6059.537499999999
-  - year: 2021
-    avg_auto: 6640.639999999999
-  - year: 2022
-    avg_auto: 7165.890833333334
-  - year: 2023
-    avg_auto: 7600.724999999999
-  - year: 2024
-    avg_auto: 7868.66
-  answer_unit: 亿元
+    items:
+    - name: avg_auto
+      value: 5042.044166666667
+      dims:
+        year: 2018
+    - name: avg_auto
+      value: 5660.68
+      dims:
+        year: 2019
+    - name: avg_auto
+      value: 6059.537499999999
+      dims:
+        year: 2020
+    - name: avg_auto
+      value: 6640.639999999999
+      dims:
+        year: 2021
+    - name: avg_auto
+      value: 7165.890833333334
+      dims:
+        year: 2022
+    - name: avg_auto
+      value: 7600.724999999999
+      dims:
+        year: 2023
+    - name: avg_auto
+      value: 7868.66
+      dims:
+        year: 2024
   requires_calculator: false
 - id: 43
   question: 2024年全国哪些月份的社零总额高于全年月均值？
@@ -1440,17 +1162,24 @@ questions:
     WHERE year = 2024 AND geo_level = 'national'
     )
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 2
-  - month: 3
-  - month: 4
-  - month: 5
-  - month: 6
-  - month: 10
-  - month: 11
-  - month: 12
-  answer_unit: 月
+    items:
+    - name: month
+      value: 2
+    - name: month
+      value: 3
+    - name: month
+      value: 4
+    - name: month
+      value: 5
+    - name: month
+      value: 6
+    - name: month
+      value: 10
+    - name: month
+      value: 11
+    - name: month
+      value: 12
   requires_calculator: false
 - id: 44
   question: 2023年全国哪些月份的社零名义同比增速低于全年平均增速？
@@ -1463,15 +1192,20 @@ questions:
     WHERE year = 2023 AND geo_level = 'national'
     )
     ORDER BY month
-  answer_type: list
   answer:
-  - month: 1
-  - month: 6
-  - month: 8
-  - month: 9
-  - month: 10
-  - month: 11
-  answer_unit: 月
+    items:
+    - name: month
+      value: 1
+    - name: month
+      value: 6
+    - name: month
+      value: 8
+    - name: month
+      value: 9
+    - name: month
+      value: 10
+    - name: month
+      value: 11
   requires_calculator: false
 - id: 45
   question: 2024年全国网络零售额月均值是汽车类零售额月均值的多少倍？
@@ -1483,40 +1217,41 @@ questions:
     SELECT AVG(auto_sales_100m_cny) AS avg_auto
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 2.5029019129898438
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 网络零售额月均值/汽车类零售额月均值
+      value: 2.50290191299
   requires_calculator: true
 - id: 46
   question: 2030年全国社零总额是多少亿元？
   sql: null
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
-  answer: null
-  answer_unit: null
+  answer:
+    items: []
 - id: 47
   question: 查询2015年1月的全国社零总额
   sql: null
   expected_error: 数据起始年份为2016年，2015年数据不存在
-  answer: null
-  answer_unit: null
+  answer:
+    items: []
 - id: 48
   question: 查询各零售企业的公司名称和社零销售额
   sql: null
   expected_error: 表中不包含企业名称字段，仅有地理维度（geo_name）聚合数据
-  answer: null
-  answer_unit: null
+  answer:
+    items: []
 - id: 49
   question: 查询全国层级且地区为广东省的社零总额
   sql: null
   expected_error: 逻辑冲突：geo_level='national' 时 geo_name 固定为'中国'，不能同时为'广东省'
-  answer: null
-  answer_unit: null
+  answer:
+    items: []
 - id: 50
   question: 查询社零名义同比增速超过200%的记录
   sql: null
   expected_error: 同比增速超过200%属于极端异常值，实际数据中不存在此类情况
-  answer: null
-  answer_unit: null
+  answer:
+    items: []
 - id: 51
   question: 2024年全国的网络零售额是服务零售额的多少倍？
   sql1: |-
@@ -1527,9 +1262,10 @@ questions:
     SELECT SUM(service_retail_100m_cny) AS service_total
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 0.8571172991067381
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 网络零售额/服务零售额
+      value: 0.857117299107
   requires_calculator: true
 - id: 52
   question: 2023年广东省的社会消费品零售总额比江苏省高出多少亿元？
@@ -1541,9 +1277,10 @@ questions:
     SELECT SUM(total_sales_100m_cny) AS js_sales
     FROM retail_sales
     WHERE year = 2023 AND geo_level = 'province' AND geo_name = '江苏'
-  answer_type: scalar
-  answer: 4757.180000000008
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: 广东-江苏社零总额差值
+      value: 4757.180000000008
   requires_calculator: true
 - id: 53
   question: 2024年全国汽车类销售额占社会消费品零售总额的百分比是多少？
@@ -1555,9 +1292,10 @@ questions:
     SELECT SUM(total_sales_100m_cny) AS total_sales
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 10.735187593821696
-  answer_unit: '%'
+  answer:
+    items:
+    - name: 汽车类销售额占比
+      value: 10.735187593822
   requires_calculator: true
 - id: 54
   question: 2023年华东地区的食品类销售额占全国食品类销售额的百分比是多少？
@@ -1569,9 +1307,10 @@ questions:
     SELECT SUM(food_sales_100m_cny) AS nat_food
     FROM retail_sales
     WHERE year = 2023 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 38.28382480264113
-  answer_unit: '%'
+  answer:
+    items:
+    - name: 华东食品销售额占全国比重
+      value: 38.283824802641
   requires_calculator: true
 - id: 55
   question: 2024年全国网络零售额与汽车类销售额的差值是多少亿元？
@@ -1583,9 +1322,10 @@ questions:
     SELECT SUM(auto_sales_100m_cny) AS auto_total
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 141909.89
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: 网络零售额-汽车类销售额
+      value: 141909.89
   requires_calculator: true
 - id: 56
   question: 2024年全国社会消费品零售总额比2019年增加了多少亿元？
@@ -1597,9 +1337,10 @@ questions:
     SELECT SUM(total_sales_100m_cny) AS sales_2019
     FROM retail_sales
     WHERE year = 2019 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 259327.01
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: 2024年较2019年增量
+      value: 259327.01
   requires_calculator: true
 - id: 57
   question: 2023年12月全国食品类销售额是2018年同期的多少倍？
@@ -1611,9 +1352,10 @@ questions:
     SELECT food_sales_100m_cny AS food_2018_12
     FROM retail_sales
     WHERE year = 2018 AND month = 12 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 1.6222132568987382
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 2023年12月/2018年12月食品销售额倍数
+      value: 1.622213256899
   requires_calculator: true
 - id: 58
   question: 2024年全国服务零售额相比2020年增长了多少亿元？
@@ -1625,9 +1367,10 @@ questions:
     SELECT SUM(service_retail_100m_cny) AS service_2020
     FROM retail_sales
     WHERE year = 2020 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 65528.26000000001
-  answer_unit: 亿元
+  answer:
+    items:
+    - name: 2024年较2020年服务零售额增量
+      value: 65528.26000000001
   requires_calculator: true
 - id: 59
   question: 2024年6月全国网络零售额是2016年同期的多少倍？
@@ -1639,9 +1382,10 @@ questions:
     SELECT ecommerce_sales_100m_cny AS ecom_2016_06
     FROM retail_sales
     WHERE year = 2016 AND month = 6 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 1.6477758373267153
-  answer_unit: 倍
+  answer:
+    items:
+    - name: 2024年6月/2016年6月网络零售额倍数
+      value: 1.647775837327
   requires_calculator: true
 - id: 60
   question: 2020-2024年间，全国社会消费品零售总额的年均复合增长率是多少？
@@ -1653,7 +1397,8 @@ questions:
     SELECT SUM(total_sales_100m_cny) AS sales_2024
     FROM retail_sales
     WHERE year = 2024 AND geo_level = 'national'
-  answer_type: scalar
-  answer: 6.883062340486812
-  answer_unit: '%'
+  answer:
+    items:
+    - name: 2020-2024年社零年均复合增长率
+      value: 6.883062340487
   requires_calculator: true

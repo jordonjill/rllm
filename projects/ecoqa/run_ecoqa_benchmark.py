@@ -78,6 +78,8 @@ def _load_model_profiles(config_path: Path, include_disabled: bool = False) -> l
 def _target_kind(task: dict[str, Any]) -> str:
     question_type = str(task.get("question_type", "")).strip().lower()
     answer_type = str(task.get("answer_type", "")).strip().lower()
+    if answer_type == "structure":
+        return "structure"
     if question_type == "single_table_error":
         return "no_data"
     if answer_type in {"scalar", "list"}:
@@ -110,8 +112,9 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
         reward = float(getattr(traj, "reward", 0.0) or 0.0)
         is_correct = _trajectory_is_correct(traj)
         task = getattr(traj, "task", {}) or {}
+        metadata = _extract_metadata(traj)
         question_id = task_id(task)
-        kind = _target_kind(task)
+        kind = str(metadata.get("target_kind", "")).strip().lower() or _target_kind(task)
         rows.append(
             {
                 "question_id": question_id,
@@ -163,7 +166,8 @@ def _write_details(path: Path, run_id: str, profile: ModelProfile, trajectories:
                 "reward": reward,
                 "is_correct": _trajectory_is_correct(traj),
                 "target_kind": metadata.get("target_kind", ""),
-                "list_exact_match": metadata.get("list_exact_match", ""),
+                "structure_exact_match": metadata.get("structure_exact_match", ""),
+                "structure_alias_value_match": metadata.get("structure_alias_value_match", ""),
                 "final_answer_extracted": metadata.get("final_answer_extracted", ""),
             }
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
@@ -185,12 +189,27 @@ def _append_summary(path: Path, summary_row: dict[str, Any]) -> None:
         "pass_at_1",
         "pass_at_k",
         "reward_mean",
-        "acc_scalar",
-        "acc_list",
-        "acc_no_data",
+        "acc_structure",
         "acc_unknown",
         "notes",
     ]
+    if path.exists():
+        with open(path, encoding="utf-8", newline="") as f:
+            reader = csv.DictReader(f)
+            existing_header = reader.fieldnames or []
+            existing_rows = list(reader)
+
+        if existing_header != fieldnames:
+            # Header schema changed (for example, adding acc_structure). Rewrite
+            # file with the latest schema and keep old rows when keys overlap.
+            with open(path, "w", encoding="utf-8", newline="") as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                for row in existing_rows:
+                    writer.writerow({k: row.get(k, "") for k in fieldnames})
+                writer.writerow({k: summary_row.get(k, "") for k in fieldnames})
+            return
+
     exists = path.exists()
     with open(path, "a", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -270,9 +289,7 @@ def main():
             "pass_at_1": round(metrics["pass_at_1"], 6),
             "pass_at_k": round(metrics["pass_at_k"], 6),
             "reward_mean": round(metrics["reward_mean"], 6),
-            "acc_scalar": round(metrics["accuracy_by_type"].get("scalar", 0.0), 6),
-            "acc_list": round(metrics["accuracy_by_type"].get("list", 0.0), 6),
-            "acc_no_data": round(metrics["accuracy_by_type"].get("no_data", 0.0), 6),
+            "acc_structure": round(metrics["accuracy_by_type"].get("structure", 0.0), 6),
             "acc_unknown": round(metrics["accuracy_by_type"].get("unknown", 0.0), 6),
             "notes": profile.notes,
         }

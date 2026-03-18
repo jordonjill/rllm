@@ -7,58 +7,57 @@ questions:
     SELECT lpr_1y_pct
     FROM interest_rates
     WHERE year = 2024 AND month = 1
+  answer:
+    items:
+    - name: lpr_1y_pct
+      value: 3.241
   requires_calculator: false
-  answer_type: scalar
-  answer: 3.241
-  answer_unit: '%'
 - id: 2
-  question: 2023年全年的政策利率数据有哪些月份记录？
+  question: 2023年季度末（3、6、9、12月）的政策利率数据有哪些？
   sql: |-
     SELECT month
     FROM interest_rates
-    WHERE year = 2023
+    WHERE year = 2023 AND month IN (3, 6, 9, 12)
     ORDER BY month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - month: 1
-  - month: 2
-  - month: 3
-  - month: 4
-  - month: 5
-  - month: 6
-  - month: 7
-  - month: 8
-  - month: 9
-  - month: 10
-  - month: 11
-  - month: 12
-  answer_unit: 月
+    items:
+    - name: month
+      value: 3
+    - name: month
+      value: 6
+    - name: month
+      value: 9
+    - name: month
+      value: 12
+  requires_calculator: false
 - id: 3
   question: 2022年6月的10年期国债收益率和1年期国债收益率分别是多少？
   sql: |-
     SELECT bond_10y_pct, bond_1y_pct
     FROM interest_rates
     WHERE year = 2022 AND month = 6
-  requires_calculator: false
-  answer_type: list
   answer:
-  - bond_10y_pct: 2.441
-    bond_1y_pct: 1.872
-  answer_unit: '%'
+    items:
+    - name: bond_10y_pct
+      value: 2.441
+    - name: bond_1y_pct
+      value: 1.872
+  requires_calculator: false
 - id: 4
   question: 查询2020年12月的7天逆回购利率、1年期LPR和5年期LPR
   sql: |-
     SELECT repo_7d_pct, lpr_1y_pct, lpr_5y_pct
     FROM interest_rates
     WHERE year = 2020 AND month = 12
-  requires_calculator: false
-  answer_type: list
   answer:
-  - repo_7d_pct: 1.769
-    lpr_1y_pct: 3.358
-    lpr_5y_pct: 3.792
-  answer_unit: '%'
+    items:
+    - name: repo_7d_pct
+      value: 1.769
+    - name: lpr_1y_pct
+      value: 3.358
+    - name: lpr_5y_pct
+      value: 3.792
+  requires_calculator: false
 - id: 5
   question: 2025年1月、6月、12月的政策利率分别是多少？
   sql: |-
@@ -66,16 +65,21 @@ questions:
     FROM interest_rates
     WHERE year = 2025 AND month IN (1, 6, 12)
     ORDER BY month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - month: 1
-    policy_rate_pct: 2.289
-  - month: 6
-    policy_rate_pct: 2.276
-  - month: 12
-    policy_rate_pct: 2.285
-  answer_unit: '%'
+    items:
+    - name: policy_rate_pct
+      value: 2.289
+      dims:
+        month: 1
+    - name: policy_rate_pct
+      value: 2.276
+      dims:
+        month: 6
+    - name: policy_rate_pct
+      value: 2.285
+      dims:
+        month: 12
+  requires_calculator: false
 - id: 6
   question: 2019年和2021年各年1月的10年期国债收益率对比
   sql: |-
@@ -83,145 +87,107 @@ questions:
     FROM interest_rates
     WHERE year IN (2019, 2021) AND month = 1
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2019
-    bond_10y_pct: 2.582
-  - year: 2021
-    bond_10y_pct: 2.576
-  answer_unit: '%'
+    items:
+    - name: bond_10y_pct
+      value: 2.582
+      dims:
+        year: 2019
+    - name: bond_10y_pct
+      value: 2.576
+      dims:
+        year: 2021
+  requires_calculator: false
 - id: 7
   question: 实际政策利率为空值的数据有多少条？
   sql: |-
     SELECT COUNT(*) AS missing_count
     FROM interest_rates
     WHERE real_policy_rate_pct IS NULL
+  answer:
+    items:
+    - name: missing_count
+      value: 0
   requires_calculator: false
-  answer_type: scalar
-  answer: 0
-  answer_unit: null
 - id: 8
   question: 2018年至2020年，1年期LPR共有多少期月度数据？
   sql: |-
     SELECT COUNT(*) AS record_count
     FROM interest_rates
     WHERE year BETWEEN 2018 AND 2020
+  answer:
+    items:
+    - name: record_count
+      value: 36
   requires_calculator: false
-  answer_type: scalar
-  answer: 36
-  answer_unit: 条
 - id: 9
   question: 2019年全年的5年期LPR平均值是多少？
   sql: |-
     SELECT AVG(lpr_5y_pct) AS avg_lpr_5y
     FROM interest_rates
     WHERE year = 2019
+  answer:
+    items:
+    - name: avg_lpr_5y
+      value: 3.7899166666666666
   requires_calculator: false
-  answer_type: scalar
-  answer: 3.7899166666666666
-  answer_unit: '%'
 - id: 10
-  question: 政策利率高于2.4%的月份有哪些？
+  question: 政策利率高于2.44%的月份有哪些？
   sql: |-
     SELECT year, month
     FROM interest_rates
-    WHERE policy_rate_pct > 2.4
+    WHERE policy_rate_pct > 2.44
     ORDER BY year, month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    month: 1
-  - year: 2016
-    month: 2
-  - year: 2016
-    month: 3
-  - year: 2016
-    month: 4
-  - year: 2016
-    month: 5
-  - year: 2016
-    month: 6
-  - year: 2016
-    month: 7
-  - year: 2016
-    month: 8
-  - year: 2016
-    month: 9
-  - year: 2016
-    month: 10
-  - year: 2016
-    month: 11
-  - year: 2016
-    month: 12
-  - year: 2017
-    month: 1
-  - year: 2017
-    month: 2
-  - year: 2017
-    month: 3
-  - year: 2017
-    month: 4
-  - year: 2017
-    month: 5
-  - year: 2017
-    month: 6
-  - year: 2017
-    month: 7
-  - year: 2017
-    month: 8
-  - year: 2017
-    month: 10
-  - year: 2017
-    month: 11
-  - year: 2017
-    month: 12
-  - year: 2018
-    month: 1
-  - year: 2018
-    month: 2
-  - year: 2018
-    month: 4
-  - year: 2018
-    month: 5
-  - year: 2018
-    month: 7
-  - year: 2018
-    month: 8
-  - year: 2018
-    month: 9
-  - year: 2018
-    month: 10
-  - year: 2018
-    month: 11
-  - year: 2018
-    month: 12
-  - year: 2019
-    month: 1
-  - year: 2019
-    month: 2
-  - year: 2019
-    month: 3
-  - year: 2019
-    month: 5
-  - year: 2019
-    month: 9
-  - year: 2019
-    month: 10
-  - year: 2019
-    month: 12
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 3
+      dims:
+        year: 2016
+    - name: month
+      value: 4
+      dims:
+        year: 2016
+    - name: month
+      value: 7
+      dims:
+        year: 2016
+    - name: month
+      value: 9
+      dims:
+        year: 2016
+    - name: month
+      value: 10
+      dims:
+        year: 2016
+    - name: month
+      value: 11
+      dims:
+        year: 2016
+    - name: month
+      value: 1
+      dims:
+        year: 2017
+    - name: month
+      value: 6
+      dims:
+        year: 2017
+    - name: month
+      value: 11
+      dims:
+        year: 2017
+  requires_calculator: false
 - id: 11
   question: 10年期与1年期国债收益率利差超过60个基点的月份有多少？
   sql: |-
     SELECT COUNT(*) AS count
     FROM interest_rates
     WHERE yield_spread_10y_1y_bps > 60
+  answer:
+    items:
+    - name: count
+      value: 36
   requires_calculator: false
-  answer_type: scalar
-  answer: 36
-  answer_unit: 条
 - id: 12
   question: 实际政策利率为负值的月份数据
   sql: |-
@@ -229,125 +195,71 @@ questions:
     FROM interest_rates
     WHERE real_policy_rate_pct < 0
     ORDER BY year, month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2024
-    month: 2
-  - year: 2024
-    month: 4
-  - year: 2025
-    month: 3
-  - year: 2025
-    month: 5
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 2
+      dims:
+        year: 2024
+    - name: month
+      value: 4
+      dims:
+        year: 2024
+    - name: month
+      value: 3
+      dims:
+        year: 2025
+    - name: month
+      value: 5
+      dims:
+        year: 2025
+  requires_calculator: false
 - id: 13
-  question: 2020年至2023年期间，7天逆回购利率低于2.5%的月份有哪些？
+  question: 2020年至2023年期间，7天逆回购利率低于1.75%的月份有哪些？
   sql: |-
     SELECT year, month
     FROM interest_rates
-    WHERE year BETWEEN 2020 AND 2023 AND repo_7d_pct < 2.5
+    WHERE year BETWEEN 2020 AND 2023 AND repo_7d_pct < 1.75
     ORDER BY year, month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2020
-    month: 1
-  - year: 2020
-    month: 2
-  - year: 2020
-    month: 3
-  - year: 2020
-    month: 4
-  - year: 2020
-    month: 5
-  - year: 2020
-    month: 6
-  - year: 2020
-    month: 7
-  - year: 2020
-    month: 8
-  - year: 2020
-    month: 9
-  - year: 2020
-    month: 10
-  - year: 2020
-    month: 11
-  - year: 2020
-    month: 12
-  - year: 2021
-    month: 1
-  - year: 2021
-    month: 2
-  - year: 2021
-    month: 3
-  - year: 2021
-    month: 4
-  - year: 2021
-    month: 5
-  - year: 2021
-    month: 6
-  - year: 2021
-    month: 7
-  - year: 2021
-    month: 8
-  - year: 2021
-    month: 9
-  - year: 2021
-    month: 10
-  - year: 2021
-    month: 11
-  - year: 2021
-    month: 12
-  - year: 2022
-    month: 1
-  - year: 2022
-    month: 2
-  - year: 2022
-    month: 3
-  - year: 2022
-    month: 4
-  - year: 2022
-    month: 5
-  - year: 2022
-    month: 6
-  - year: 2022
-    month: 7
-  - year: 2022
-    month: 8
-  - year: 2022
-    month: 9
-  - year: 2022
-    month: 10
-  - year: 2022
-    month: 11
-  - year: 2022
-    month: 12
-  - year: 2023
-    month: 1
-  - year: 2023
-    month: 2
-  - year: 2023
-    month: 3
-  - year: 2023
-    month: 4
-  - year: 2023
-    month: 5
-  - year: 2023
-    month: 6
-  - year: 2023
-    month: 7
-  - year: 2023
-    month: 8
-  - year: 2023
-    month: 9
-  - year: 2023
-    month: 10
-  - year: 2023
-    month: 11
-  - year: 2023
-    month: 12
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 8
+      dims:
+        year: 2020
+    - name: month
+      value: 9
+      dims:
+        year: 2020
+    - name: month
+      value: 8
+      dims:
+        year: 2021
+    - name: month
+      value: 9
+      dims:
+        year: 2021
+    - name: month
+      value: 8
+      dims:
+        year: 2022
+    - name: month
+      value: 9
+      dims:
+        year: 2022
+    - name: month
+      value: 10
+      dims:
+        year: 2022
+    - name: month
+      value: 9
+      dims:
+        year: 2023
+    - name: month
+      value: 10
+      dims:
+        year: 2023
+  requires_calculator: false
 - id: 14
   question: 2022年中，1年期LPR在3.24%至3.30%之间的月份数据
   sql: |-
@@ -355,19 +267,27 @@ questions:
     FROM interest_rates
     WHERE year = 2022 AND lpr_1y_pct BETWEEN 3.24 AND 3.30
     ORDER BY month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - month: 1
-  - month: 2
-  - month: 3
-  - month: 5
-  - month: 6
-  - month: 8
-  - month: 9
-  - month: 10
-  - month: 12
-  answer_unit: 月
+    items:
+    - name: month
+      value: 1
+    - name: month
+      value: 2
+    - name: month
+      value: 3
+    - name: month
+      value: 5
+    - name: month
+      value: 6
+    - name: month
+      value: 8
+    - name: month
+      value: 9
+    - name: month
+      value: 10
+    - name: month
+      value: 12
+  requires_calculator: false
 - id: 15
   question: 历史上政策利率最高的月份是哪个，利率是多少？
   sql: |-
@@ -375,13 +295,15 @@ questions:
     FROM interest_rates
     ORDER BY policy_rate_pct DESC
     LIMIT 1
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    month: 7
-    policy_rate_pct: 2.479
-  answer_unit: '%'
+    items:
+    - name: year
+      value: 2016
+    - name: month
+      value: 7
+    - name: policy_rate_pct
+      value: 2.479
+  requires_calculator: false
 - id: 16
   question: 10年期国债收益率最高的月份及其对应的1年期收益率
   sql: |-
@@ -389,13 +311,15 @@ questions:
     FROM interest_rates
     ORDER BY bond_10y_pct DESC
     LIMIT 1
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2021
-    month: 3
-    bond_1y_pct: 2.082
-  answer_unit: '%'
+    items:
+    - name: year
+      value: 2021
+    - name: month
+      value: 3
+    - name: bond_1y_pct
+      value: 2.082
+  requires_calculator: false
 - id: 17
   question: 5年期LPR最低的月份是什么时候，利率是多少？
   sql: |-
@@ -403,13 +327,15 @@ questions:
     FROM interest_rates
     ORDER BY lpr_5y_pct ASC
     LIMIT 1
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2025
-    month: 2
-    lpr_5y_pct: 3.452
-  answer_unit: '%'
+    items:
+    - name: year
+      value: 2025
+    - name: month
+      value: 2
+    - name: lpr_5y_pct
+      value: 3.452
+  requires_calculator: false
 - id: 18
   question: 实际政策利率最低即最负的月份及其数值
   sql: |-
@@ -417,13 +343,15 @@ questions:
     FROM interest_rates
     ORDER BY real_policy_rate_pct ASC
     LIMIT 1
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2025
-    month: 3
-    real_policy_rate_pct: -0.219
-  answer_unit: '%'
+    items:
+    - name: year
+      value: 2025
+    - name: month
+      value: 3
+    - name: real_policy_rate_pct
+      value: -0.219
+  requires_calculator: false
 - id: 19
   question: 国债收益率利差最大的前5个月份
   sql: |-
@@ -431,20 +359,29 @@ questions:
     FROM interest_rates
     ORDER BY yield_spread_10y_1y_bps DESC
     LIMIT 5
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2018
-    month: 8
-  - year: 2018
-    month: 3
-  - year: 2021
-    month: 7
-  - year: 2018
-    month: 12
-  - year: 2023
-    month: 6
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 8
+      dims:
+        year: 2018
+    - name: month
+      value: 3
+      dims:
+        year: 2018
+    - name: month
+      value: 7
+      dims:
+        year: 2021
+    - name: month
+      value: 12
+      dims:
+        year: 2018
+    - name: month
+      value: 6
+      dims:
+        year: 2023
+  requires_calculator: false
 - id: 20
   question: 7天逆回购利率最低的前3个月份
   sql: |-
@@ -452,61 +389,58 @@ questions:
     FROM interest_rates
     ORDER BY repo_7d_pct ASC
     LIMIT 3
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2022
-    month: 9
-  - year: 2025
-    month: 10
-  - year: 2016
-    month: 10
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 9
+      dims:
+        year: 2022
+    - name: month
+      value: 10
+      dims:
+        year: 2025
+    - name: month
+      value: 10
+      dims:
+        year: 2016
+  requires_calculator: false
 - id: 21
-  question: 按年份降序、月份升序排列，查看2024年的政策利率走势
+  question: 查看2024年季度末（3、6、9、12月）的政策利率走势
   sql: |-
     SELECT month, policy_rate_pct
     FROM interest_rates
-    WHERE year = 2024
-    ORDER BY year DESC, month ASC
-  requires_calculator: false
-  answer_type: list
+    WHERE year = 2024 AND month IN (3, 6, 9, 12)
+    ORDER BY month
   answer:
-  - month: 1
-    policy_rate_pct: 2.282
-  - month: 2
-    policy_rate_pct: 2.299
-  - month: 3
-    policy_rate_pct: 2.269
-  - month: 4
-    policy_rate_pct: 2.266
-  - month: 5
-    policy_rate_pct: 2.278
-  - month: 6
-    policy_rate_pct: 2.287
-  - month: 7
-    policy_rate_pct: 2.291
-  - month: 8
-    policy_rate_pct: 2.31
-  - month: 9
-    policy_rate_pct: 2.307
-  - month: 10
-    policy_rate_pct: 2.265
-  - month: 11
-    policy_rate_pct: 2.295
-  - month: 12
-    policy_rate_pct: 2.278
-  answer_unit: '%'
+    items:
+    - name: policy_rate_pct
+      value: 2.269
+      dims:
+        month: 3
+    - name: policy_rate_pct
+      value: 2.287
+      dims:
+        month: 6
+    - name: policy_rate_pct
+      value: 2.307
+      dims:
+        month: 9
+    - name: policy_rate_pct
+      value: 2.278
+      dims:
+        month: 12
+  requires_calculator: false
 - id: 22
   question: 政策利率高于2.4%的月份有多少个？
   sql: |-
     SELECT COUNT(*) AS total_records
     FROM interest_rates
     WHERE policy_rate_pct > 2.4
+  answer:
+    items:
+    - name: total_records
+      value: 40
   requires_calculator: false
-  answer_type: scalar
-  answer: 40
-  answer_unit: 条
 - id: 23
   question: 政策利率年均值高于2.35%的年份有多少个？
   sql: |-
@@ -515,132 +449,155 @@ questions:
     FROM interest_rates
     GROUP BY year
     HAVING AVG(policy_rate_pct) > 2.35 ) t
+  answer:
+    items:
+    - name: unique_years
+      value: 5
   requires_calculator: false
-  answer_type: scalar
-  answer: 5
-  answer_unit: 个
 - id: 24
   question: 所有月份的国债收益率利差总和是多少基点？
   sql: |-
     SELECT SUM(yield_spread_10y_1y_bps) AS total_spread
     FROM interest_rates
+  answer:
+    items:
+    - name: total_spread
+      value: 6649
   requires_calculator: false
-  answer_type: scalar
-  answer: 6649
-  answer_unit: bps
 - id: 25
   question: 2023年全年1年期LPR的累计值
   sql: |-
     SELECT SUM(lpr_1y_pct) AS sum_lpr_1y
     FROM interest_rates
     WHERE year = 2023
+  answer:
+    items:
+    - name: sum_lpr_1y
+      value: 38.823
   requires_calculator: false
-  answer_type: scalar
-  answer: 38.823
-  answer_unit: '%（累计）'
 - id: 26
   question: 2016年至2025年全部数据期间，政策利率的平均水平是多少？
   sql: |-
     SELECT AVG(policy_rate_pct) AS avg_policy_rate
     FROM interest_rates
+  answer:
+    items:
+    - name: avg_policy_rate
+      value: 2.3594166666666667
   requires_calculator: false
-  answer_type: scalar
-  answer: 2.3594166666666667
-  answer_unit: '%'
 - id: 27
   question: 2020年至2022年期间，实际政策利率的平均值
   sql: |-
     SELECT AVG(real_policy_rate_pct) AS avg_real_rate
     FROM interest_rates
     WHERE year BETWEEN 2020 AND 2022
+  answer:
+    items:
+    - name: avg_real_rate
+      value: 0.9694166666666667
   requires_calculator: false
-  answer_type: scalar
-  answer: 0.9694166666666667
-  answer_unit: '%'
 - id: 28
   question: 历史数据中，10年期国债收益率的最高值和最低值分别是多少？
   sql: |-
     SELECT MAX(bond_10y_pct) AS max_bond_10y, MIN(bond_10y_pct) AS min_bond_10y
     FROM interest_rates
-  requires_calculator: false
-  answer_type: list
   answer:
-  - max_bond_10y: 2.659
-    min_bond_10y: 2.259
-  answer_unit: '%'
+    items:
+    - name: max_bond_10y
+      value: 2.659
+    - name: min_bond_10y
+      value: 2.259
+  requires_calculator: false
 - id: 29
   question: 国债收益率期限利差的最大值和最小值
   sql: |-
     SELECT MAX(yield_spread_10y_1y_bps) AS max_spread, MIN(yield_spread_10y_1y_bps) AS min_spread
     FROM interest_rates
-  requires_calculator: false
-  answer_type: list
   answer:
-  - max_spread: 73
-    min_spread: 35
-  answer_unit: bps
+    items:
+    - name: max_spread
+      value: 73
+    - name: min_spread
+      value: 35
+  requires_calculator: false
 - id: 30
-  question: 各年度政策利率的年均值分别是多少？
+  question: 2018年至2024年各年度政策利率的年均值分别是多少？
   sql: |-
     SELECT year, AVG(policy_rate_pct) AS avg_policy_rate
     FROM interest_rates
+    WHERE year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    avg_policy_rate: 2.4458333333333333
-  - year: 2017
-    avg_policy_rate: 2.427583333333333
-  - year: 2018
-    avg_policy_rate: 2.4154166666666668
-  - year: 2019
-    avg_policy_rate: 2.398
-  - year: 2020
-    avg_policy_rate: 2.3647500000000004
-  - year: 2021
-    avg_policy_rate: 2.347583333333333
-  - year: 2022
-    avg_policy_rate: 2.3259166666666666
-  - year: 2023
-    avg_policy_rate: 2.3093333333333335
-  - year: 2024
-    avg_policy_rate: 2.2855833333333333
-  - year: 2025
-    avg_policy_rate: 2.2741666666666664
-  answer_unit: '%'
+    items:
+    - name: avg_policy_rate
+      value: 2.4154166666666668
+      dims:
+        year: 2018
+    - name: avg_policy_rate
+      value: 2.398
+      dims:
+        year: 2019
+    - name: avg_policy_rate
+      value: 2.3647500000000004
+      dims:
+        year: 2020
+    - name: avg_policy_rate
+      value: 2.347583333333333
+      dims:
+        year: 2021
+    - name: avg_policy_rate
+      value: 2.3259166666666666
+      dims:
+        year: 2022
+    - name: avg_policy_rate
+      value: 2.3093333333333335
+      dims:
+        year: 2023
+    - name: avg_policy_rate
+      value: 2.2855833333333333
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 31
-  question: 各年度5年期LPR的平均水平
+  question: 2018年至2024年各年度5年期LPR的平均水平
   sql: |-
     SELECT year, AVG(lpr_5y_pct) AS avg_lpr_5y
     FROM interest_rates
+    WHERE year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    avg_lpr_5y: 3.9570833333333333
-  - year: 2017
-    avg_lpr_5y: 3.8968333333333334
-  - year: 2018
-    avg_lpr_5y: 3.8455833333333334
-  - year: 2019
-    avg_lpr_5y: 3.7899166666666666
-  - year: 2020
-    avg_lpr_5y: 3.746
-  - year: 2021
-    avg_lpr_5y: 3.689583333333333
-  - year: 2022
-    avg_lpr_5y: 3.64475
-  - year: 2023
-    avg_lpr_5y: 3.59775
-  - year: 2024
-    avg_lpr_5y: 3.546666666666667
-  - year: 2025
-    avg_lpr_5y: 3.48925
-  answer_unit: '%'
+    items:
+    - name: avg_lpr_5y
+      value: 3.8455833333333334
+      dims:
+        year: 2018
+    - name: avg_lpr_5y
+      value: 3.7899166666666666
+      dims:
+        year: 2019
+    - name: avg_lpr_5y
+      value: 3.746
+      dims:
+        year: 2020
+    - name: avg_lpr_5y
+      value: 3.689583333333333
+      dims:
+        year: 2021
+    - name: avg_lpr_5y
+      value: 3.64475
+      dims:
+        year: 2022
+    - name: avg_lpr_5y
+      value: 3.59775
+      dims:
+        year: 2023
+    - name: avg_lpr_5y
+      value: 3.546666666666667
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 32
   question: 按年份统计，政策利率高于2.4%的月份数量分别是多少？
   sql: |-
@@ -649,98 +606,107 @@ questions:
     WHERE policy_rate_pct > 2.4
     GROUP BY year
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    record_count: 12
-  - year: 2017
-    record_count: 11
-  - year: 2018
-    record_count: 10
-  - year: 2019
-    record_count: 7
-  answer_unit: 条
+    items:
+    - name: record_count
+      value: 12
+      dims:
+        year: 2016
+    - name: record_count
+      value: 11
+      dims:
+        year: 2017
+    - name: record_count
+      value: 10
+      dims:
+        year: 2018
+    - name: record_count
+      value: 7
+      dims:
+        year: 2019
+  requires_calculator: false
 - id: 33
-  question: 按年份统计，实际政策利率为正的月份数量分别是多少？
+  question: 2018年至2024年按年份统计，实际政策利率为正的月份数量分别是多少？
   sql: |-
     SELECT year, COUNT(*) AS count
     FROM interest_rates
-    WHERE real_policy_rate_pct > 0
+    WHERE real_policy_rate_pct > 0 AND year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    count: 12
-  - year: 2017
-    count: 12
-  - year: 2018
-    count: 12
-  - year: 2019
-    count: 12
-  - year: 2020
-    count: 12
-  - year: 2021
-    count: 12
-  - year: 2022
-    count: 12
-  - year: 2023
-    count: 12
-  - year: 2024
-    count: 10
-  - year: 2025
-    count: 10
-  answer_unit: 条
+    items:
+    - name: count
+      value: 12
+      dims:
+        year: 2018
+    - name: count
+      value: 12
+      dims:
+        year: 2019
+    - name: count
+      value: 12
+      dims:
+        year: 2020
+    - name: count
+      value: 12
+      dims:
+        year: 2021
+    - name: count
+      value: 12
+      dims:
+        year: 2022
+    - name: count
+      value: 12
+      dims:
+        year: 2023
+    - name: count
+      value: 10
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 34
-  question: 2024年各月份的1年期LPR和10年期国债收益率平均值
+  question: 2024年各季度的1年期LPR和10年期国债收益率平均值
   sql: |-
-    SELECT month, AVG(lpr_1y_pct) AS avg_lpr_1y, AVG(bond_10y_pct) AS avg_bond_10y
+    SELECT CASE WHEN month BETWEEN 1 AND 3 THEN 1 WHEN month BETWEEN 4 AND 6 THEN 2 WHEN month BETWEEN 7 AND 9 THEN 3 ELSE 4 END AS quarter, AVG(lpr_1y_pct) AS avg_lpr_1y, AVG(bond_10y_pct) AS avg_bond_10y
     FROM interest_rates
     WHERE year = 2024
-    GROUP BY month
-    ORDER BY month
-  requires_calculator: false
-  answer_type: list
+    GROUP BY quarter
+    ORDER BY quarter
   answer:
-  - month: 1
-    avg_lpr_1y: 3.241
-    avg_bond_10y: 2.562
-  - month: 2
-    avg_lpr_1y: 3.257
-    avg_bond_10y: 2.426
-  - month: 3
-    avg_lpr_1y: 3.228
-    avg_bond_10y: 2.433
-  - month: 4
-    avg_lpr_1y: 3.245
-    avg_bond_10y: 2.442
-  - month: 5
-    avg_lpr_1y: 3.239
-    avg_bond_10y: 2.497
-  - month: 6
-    avg_lpr_1y: 3.255
-    avg_bond_10y: 2.381
-  - month: 7
-    avg_lpr_1y: 3.226
-    avg_bond_10y: 2.324
-  - month: 8
-    avg_lpr_1y: 3.2
-    avg_bond_10y: 2.273
-  - month: 9
-    avg_lpr_1y: 3.2
-    avg_bond_10y: 2.312
-  - month: 10
-    avg_lpr_1y: 3.242
-    avg_bond_10y: 2.304
-  - month: 11
-    avg_lpr_1y: 3.203
-    avg_bond_10y: 2.463
-  - month: 12
-    avg_lpr_1y: 3.231
-    avg_bond_10y: 2.365
-  answer_unit: '%'
+    items:
+    - name: avg_lpr_1y
+      value: 3.2420000000000004
+      dims:
+        quarter: 1
+    - name: avg_bond_10y
+      value: 2.4736666666666665
+      dims:
+        quarter: 1
+    - name: avg_lpr_1y
+      value: 3.2463333333333337
+      dims:
+        quarter: 2
+    - name: avg_bond_10y
+      value: 2.44
+      dims:
+        quarter: 2
+    - name: avg_lpr_1y
+      value: 3.2086666666666672
+      dims:
+        quarter: 3
+    - name: avg_bond_10y
+      value: 2.303
+      dims:
+        quarter: 3
+    - name: avg_lpr_1y
+      value: 3.2253333333333334
+      dims:
+        quarter: 4
+    - name: avg_bond_10y
+      value: 2.377333333333333
+      dims:
+        quarter: 4
+  requires_calculator: false
 - id: 35
   question: 2022年和2023年各年每季度的平均政策利率
   sql: |-
@@ -749,65 +715,88 @@ questions:
     WHERE year IN (2022, 2023)
     GROUP BY year, quarter
     ORDER BY year, quarter
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2022
-    quarter: 1
-    avg_policy_rate: 2.326333333333333
-  - year: 2022
-    quarter: 2
-    avg_policy_rate: 2.3193333333333332
-  - year: 2022
-    quarter: 3
-    avg_policy_rate: 2.3223333333333334
-  - year: 2022
-    quarter: 4
-    avg_policy_rate: 2.335666666666667
-  - year: 2023
-    quarter: 1
-    avg_policy_rate: 2.3303333333333334
-  - year: 2023
-    quarter: 2
-    avg_policy_rate: 2.3043333333333336
-  - year: 2023
-    quarter: 3
-    avg_policy_rate: 2.3056666666666668
-  - year: 2023
-    quarter: 4
-    avg_policy_rate: 2.297
-  answer_unit: '%'
+    items:
+    - name: avg_policy_rate
+      value: 2.326333333333333
+      dims:
+        year: 2022
+        quarter: 1
+    - name: avg_policy_rate
+      value: 2.3193333333333332
+      dims:
+        year: 2022
+        quarter: 2
+    - name: avg_policy_rate
+      value: 2.3223333333333334
+      dims:
+        year: 2022
+        quarter: 3
+    - name: avg_policy_rate
+      value: 2.335666666666667
+      dims:
+        year: 2022
+        quarter: 4
+    - name: avg_policy_rate
+      value: 2.3303333333333334
+      dims:
+        year: 2023
+        quarter: 1
+    - name: avg_policy_rate
+      value: 2.3043333333333336
+      dims:
+        year: 2023
+        quarter: 2
+    - name: avg_policy_rate
+      value: 2.3056666666666668
+      dims:
+        year: 2023
+        quarter: 3
+    - name: avg_policy_rate
+      value: 2.297
+      dims:
+        year: 2023
+        quarter: 4
+  requires_calculator: false
 - id: 36
-  question: 各年度国债收益率利差的平均值，按利差从大到小排序
+  question: 2018年至2024年各年度国债收益率利差的平均值，按利差从大到小排序
   sql: |-
     SELECT year, AVG(yield_spread_10y_1y_bps) AS avg_spread
     FROM interest_rates
+    WHERE year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY avg_spread DESC
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2023
-    avg_spread: 58.916666666666664
-  - year: 2025
-    avg_spread: 56.75
-  - year: 2021
-    avg_spread: 56.333333333333336
-  - year: 2022
-    avg_spread: 56.0
-  - year: 2024
-    avg_spread: 55.75
-  - year: 2018
-    avg_spread: 55.75
-  - year: 2017
-    avg_spread: 54.583333333333336
-  - year: 2020
-    avg_spread: 53.916666666666664
-  - year: 2016
-    avg_spread: 53.75
-  - year: 2019
-    avg_spread: 52.333333333333336
-  answer_unit: bps
+    items:
+    - name: avg_spread
+      value: 58.916666666666664
+      dims:
+        year: 2023
+    - name: avg_spread
+      value: 56.333333333333336
+      dims:
+        year: 2021
+    - name: avg_spread
+      value: 56.0
+      dims:
+        year: 2022
+    - name: avg_spread
+      value: 55.75
+      dims:
+        year: 2024
+    - name: avg_spread
+      value: 55.75
+      dims:
+        year: 2018
+    - name: avg_spread
+      value: 53.916666666666664
+      dims:
+        year: 2020
+    - name: avg_spread
+      value: 52.333333333333336
+      dims:
+        year: 2019
+  requires_calculator: false
 - id: 37
   question: 哪些年份的政策利率年均值高于2.35%？
   sql: |-
@@ -816,271 +805,209 @@ questions:
     GROUP BY year
     HAVING AVG(policy_rate_pct) > 2.35
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-  - year: 2017
-  - year: 2018
-  - year: 2019
-  - year: 2020
-  answer_unit: null
+    items:
+    - name: year
+      value: 2016
+    - name: year
+      value: 2017
+    - name: year
+      value: 2018
+    - name: year
+      value: 2019
+    - name: year
+      value: 2020
+  requires_calculator: false
 - id: 38
-  question: 哪些年份的实际政策利率年均值为正？
+  question: 2018年至2024年哪些年份的实际政策利率年均值为正？
   sql: |-
     SELECT year
     FROM interest_rates
+    WHERE year BETWEEN 2018 AND 2024
     GROUP BY year
     HAVING AVG(real_policy_rate_pct) > 0
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-  - year: 2017
-  - year: 2018
-  - year: 2019
-  - year: 2020
-  - year: 2021
-  - year: 2022
-  - year: 2023
-  - year: 2024
-  - year: 2025
-  answer_unit: null
+    items:
+    - name: year
+      value: 2018
+    - name: year
+      value: 2019
+    - name: year
+      value: 2020
+    - name: year
+      value: 2021
+    - name: year
+      value: 2022
+    - name: year
+      value: 2023
+    - name: year
+      value: 2024
+  requires_calculator: false
 - id: 39
-  question: 哪些年份有完整的12个月度政策利率记录？
+  question: 2018年至2024年哪些年份有完整的12个月度政策利率记录？
   sql: |-
     SELECT year
     FROM interest_rates
+    WHERE year BETWEEN 2018 AND 2024
     GROUP BY year
     HAVING COUNT(*) = 12
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-  - year: 2017
-  - year: 2018
-  - year: 2019
-  - year: 2020
-  - year: 2021
-  - year: 2022
-  - year: 2023
-  - year: 2024
-  - year: 2025
-  answer_unit: null
+    items:
+    - name: year
+      value: 2018
+    - name: year
+      value: 2019
+    - name: year
+      value: 2020
+    - name: year
+      value: 2021
+    - name: year
+      value: 2022
+    - name: year
+      value: 2023
+    - name: year
+      value: 2024
+  requires_calculator: false
 - id: 40
-  question: 哪些年份的国债利差累计总和超过600个基点？
+  question: 哪些年份的国债利差累计总和超过650个基点？
   sql: |-
     SELECT year
     FROM interest_rates
     GROUP BY year
-    HAVING SUM(yield_spread_10y_1y_bps) > 600
+    HAVING SUM(yield_spread_10y_1y_bps) > 650
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-  - year: 2017
-  - year: 2018
-  - year: 2019
-  - year: 2020
-  - year: 2021
-  - year: 2022
-  - year: 2023
-  - year: 2024
-  - year: 2025
-  answer_unit: null
+    items:
+    - name: year
+      value: 2017
+    - name: year
+      value: 2018
+    - name: year
+      value: 2021
+    - name: year
+      value: 2022
+    - name: year
+      value: 2023
+    - name: year
+      value: 2024
+    - name: year
+      value: 2025
+  requires_calculator: false
 - id: 41
-  question: 2016年至2025年政策利率的年度变化趋势
+  question: 2018年至2024年政策利率的年度变化趋势
   sql: |-
     SELECT year, AVG(policy_rate_pct) AS avg_policy_rate
     FROM interest_rates
+    WHERE year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    avg_policy_rate: 2.4458333333333333
-  - year: 2017
-    avg_policy_rate: 2.427583333333333
-  - year: 2018
-    avg_policy_rate: 2.4154166666666668
-  - year: 2019
-    avg_policy_rate: 2.398
-  - year: 2020
-    avg_policy_rate: 2.3647500000000004
-  - year: 2021
-    avg_policy_rate: 2.347583333333333
-  - year: 2022
-    avg_policy_rate: 2.3259166666666666
-  - year: 2023
-    avg_policy_rate: 2.3093333333333335
-  - year: 2024
-    avg_policy_rate: 2.2855833333333333
-  - year: 2025
-    avg_policy_rate: 2.2741666666666664
-  answer_unit: '%'
+    items:
+    - name: avg_policy_rate
+      value: 2.4154166666666668
+      dims:
+        year: 2018
+    - name: avg_policy_rate
+      value: 2.398
+      dims:
+        year: 2019
+    - name: avg_policy_rate
+      value: 2.3647500000000004
+      dims:
+        year: 2020
+    - name: avg_policy_rate
+      value: 2.347583333333333
+      dims:
+        year: 2021
+    - name: avg_policy_rate
+      value: 2.3259166666666666
+      dims:
+        year: 2022
+    - name: avg_policy_rate
+      value: 2.3093333333333335
+      dims:
+        year: 2023
+    - name: avg_policy_rate
+      value: 2.2855833333333333
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 42
-  question: 各年度7天逆回购利率的最低值趋势
+  question: 2018年至2024年各年度7天逆回购利率的最低值趋势
   sql: |-
     SELECT year, MIN(repo_7d_pct) AS min_repo_7d
     FROM interest_rates
+    WHERE year BETWEEN 2018 AND 2024
     GROUP BY year
     ORDER BY year
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    min_repo_7d: 1.625
-  - year: 2017
-    min_repo_7d: 1.681
-  - year: 2018
-    min_repo_7d: 1.693
-  - year: 2019
-    min_repo_7d: 1.663
-  - year: 2020
-    min_repo_7d: 1.72
-  - year: 2021
-    min_repo_7d: 1.739
-  - year: 2022
-    min_repo_7d: 1.619
-  - year: 2023
-    min_repo_7d: 1.664
-  - year: 2024
-    min_repo_7d: 1.632
-  - year: 2025
-    min_repo_7d: 1.621
-  answer_unit: '%'
+    items:
+    - name: min_repo_7d
+      value: 1.693
+      dims:
+        year: 2018
+    - name: min_repo_7d
+      value: 1.663
+      dims:
+        year: 2019
+    - name: min_repo_7d
+      value: 1.72
+      dims:
+        year: 2020
+    - name: min_repo_7d
+      value: 1.739
+      dims:
+        year: 2021
+    - name: min_repo_7d
+      value: 1.619
+      dims:
+        year: 2022
+    - name: min_repo_7d
+      value: 1.664
+      dims:
+        year: 2023
+    - name: min_repo_7d
+      value: 1.632
+      dims:
+        year: 2024
+  requires_calculator: false
 - id: 43
-  question: 哪些月份的1年期LPR高于全部数据的平均值？
+  question: 哪些月份的1年期LPR高于全部数据平均值0.15个百分点以上？
   sql: |-
     SELECT year, month
     FROM interest_rates
     WHERE lpr_1y_pct > (
       SELECT AVG(lpr_1y_pct)
       FROM interest_rates
-    )
+    ) + 0.15
     ORDER BY year, month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    month: 1
-  - year: 2016
-    month: 2
-  - year: 2016
-    month: 3
-  - year: 2016
-    month: 4
-  - year: 2016
-    month: 5
-  - year: 2016
-    month: 6
-  - year: 2016
-    month: 7
-  - year: 2016
-    month: 8
-  - year: 2016
-    month: 9
-  - year: 2016
-    month: 10
-  - year: 2016
-    month: 11
-  - year: 2016
-    month: 12
-  - year: 2017
-    month: 1
-  - year: 2017
-    month: 2
-  - year: 2017
-    month: 3
-  - year: 2017
-    month: 4
-  - year: 2017
-    month: 5
-  - year: 2017
-    month: 6
-  - year: 2017
-    month: 7
-  - year: 2017
-    month: 8
-  - year: 2017
-    month: 9
-  - year: 2017
-    month: 10
-  - year: 2017
-    month: 11
-  - year: 2017
-    month: 12
-  - year: 2018
-    month: 1
-  - year: 2018
-    month: 2
-  - year: 2018
-    month: 3
-  - year: 2018
-    month: 4
-  - year: 2018
-    month: 5
-  - year: 2018
-    month: 6
-  - year: 2018
-    month: 7
-  - year: 2018
-    month: 8
-  - year: 2018
-    month: 9
-  - year: 2018
-    month: 10
-  - year: 2018
-    month: 11
-  - year: 2018
-    month: 12
-  - year: 2019
-    month: 1
-  - year: 2019
-    month: 3
-  - year: 2019
-    month: 5
-  - year: 2019
-    month: 6
-  - year: 2019
-    month: 7
-  - year: 2019
-    month: 8
-  - year: 2019
-    month: 9
-  - year: 2019
-    month: 10
-  - year: 2019
-    month: 11
-  - year: 2019
-    month: 12
-  - year: 2020
-    month: 2
-  - year: 2020
-    month: 3
-  - year: 2020
-    month: 5
-  - year: 2020
-    month: 7
-  - year: 2020
-    month: 9
-  - year: 2020
-    month: 10
-  - year: 2020
-    month: 12
-  - year: 2021
-    month: 7
-  - year: 2021
-    month: 8
-  - year: 2022
-    month: 7
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 2
+      dims:
+        year: 2016
+    - name: month
+      value: 5
+      dims:
+        year: 2016
+    - name: month
+      value: 7
+      dims:
+        year: 2016
+    - name: month
+      value: 9
+      dims:
+        year: 2016
+    - name: month
+      value: 3
+      dims:
+        year: 2017
+  requires_calculator: false
 - id: 44
-  question: 找出国债收益率利差大于2023年平均利差的月份
+  question: 找出国债收益率利差大于2023年平均利差12个基点以上的月份
   sql: |-
     SELECT year, month
     FROM interest_rates
@@ -1088,100 +1015,42 @@ questions:
       SELECT AVG(yield_spread_10y_1y_bps)
       FROM interest_rates
       WHERE year = 2023
-    )
+    ) + 12
     ORDER BY year, month
-  requires_calculator: false
-  answer_type: list
   answer:
-  - year: 2016
-    month: 2
-  - year: 2016
-    month: 7
-  - year: 2016
-    month: 8
-  - year: 2017
-    month: 2
-  - year: 2017
-    month: 4
-  - year: 2017
-    month: 7
-  - year: 2017
-    month: 10
-  - year: 2018
-    month: 3
-  - year: 2018
-    month: 8
-  - year: 2018
-    month: 9
-  - year: 2018
-    month: 12
-  - year: 2019
-    month: 1
-  - year: 2019
-    month: 4
-  - year: 2019
-    month: 10
-  - year: 2020
-    month: 4
-  - year: 2020
-    month: 9
-  - year: 2020
-    month: 11
-  - year: 2020
-    month: 12
-  - year: 2021
-    month: 7
-  - year: 2021
-    month: 8
-  - year: 2021
-    month: 10
-  - year: 2022
-    month: 3
-  - year: 2022
-    month: 8
-  - year: 2022
-    month: 9
-  - year: 2022
-    month: 10
-  - year: 2022
-    month: 12
-  - year: 2023
-    month: 2
-  - year: 2023
-    month: 3
-  - year: 2023
-    month: 5
-  - year: 2023
-    month: 6
-  - year: 2023
-    month: 8
-  - year: 2023
-    month: 9
-  - year: 2023
-    month: 11
-  - year: 2024
-    month: 1
-  - year: 2024
-    month: 9
-  - year: 2024
-    month: 10
-  - year: 2024
-    month: 11
-  - year: 2025
-    month: 1
-  - year: 2025
-    month: 3
-  - year: 2025
-    month: 4
-  - year: 2025
-    month: 9
-  - year: 2025
-    month: 10
-  - year: 2025
-    month: 12
-  answer_unit: 年月
+    items:
+    - name: month
+      value: 3
+      dims:
+        year: 2018
+    - name: month
+      value: 8
+      dims:
+        year: 2018
+    - name: month
+      value: 12
+      dims:
+        year: 2018
+    - name: month
+      value: 7
+      dims:
+        year: 2021
+    - name: month
+      value: 6
+      dims:
+        year: 2023
+    - name: month
+      value: 10
+      dims:
+        year: 2025
+  requires_calculator: false
 - id: 45
   question: 2024年政策利率的年均值是2019年的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 0.9531206561023075
+  requires_calculator: true
   sql1: |-
     SELECT AVG(policy_rate_pct) AS rate_2024
     FROM interest_rates
@@ -1190,37 +1059,43 @@ questions:
     SELECT AVG(policy_rate_pct) AS rate_2019
     FROM interest_rates
     WHERE year = 2019
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 0.9531206561023075
 - id: 46
   question: 2030年1月的政策利率是多少？
   sql: null
+  answer:
+    items: []
   expected_error: 数据范围仅覆盖2016-2025年，无法查询2030年数据
-  answer: null
 - id: 47
   question: 查询2015年的货币市场利率数据
   sql: null
+  answer:
+    items: []
   expected_error: 数据起始年份为2016年，2015年数据不存在
-  answer: null
 - id: 48
   question: 查询各省份的政策利率差异
   sql: null
+  answer:
+    items: []
   expected_error: 表中仅包含国家层级数据（geo_level=national），不包含省级数据
-  answer: null
 - id: 49
   question: 查询国家层级且地区为上海的利率数据
   sql: null
+  answer:
+    items: []
   expected_error: 逻辑冲突：geo_level=national时geo_name固定为"中国"，不存在上海
-  answer: null
 - id: 50
   question: 查询政策利率超过20%的月份
   sql: null
+  answer:
+    items: []
   expected_error: 中国政策利率正常范围为0-10%，不存在超过20%的情况
-  answer: null
 - id: 51
   question: 2023年全年，5年期LPR贷款利率的年均值是1年期LPR的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 1.1120469824588517
+  requires_calculator: true
   sql1: |-
     SELECT AVG(lpr_5y_pct) AS avg_lpr_5y
     FROM interest_rates
@@ -1229,12 +1104,13 @@ questions:
     SELECT AVG(lpr_1y_pct) AS avg_lpr_1y
     FROM interest_rates
     WHERE year = 2023
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 1.1120469824588517
 - id: 52
   question: 2024年全年，10年期国债收益率比1年期国债收益率平均高出多少个百分点？
+  answer:
+    items:
+    - name: result
+      value: 0.5574166666666664
+  requires_calculator: true
   sql1: |-
     SELECT AVG(bond_10y_pct) AS avg_bond_10y
     FROM interest_rates
@@ -1243,12 +1119,13 @@ questions:
     SELECT AVG(bond_1y_pct) AS avg_bond_1y
     FROM interest_rates
     WHERE year = 2024
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 百分点
-  answer: 0.5574166666666664
 - id: 53
   question: 2022年全年，名义政策利率年均值是实际政策利率年均值的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 2.7468753075484695
+  requires_calculator: true
   sql1: |-
     SELECT AVG(policy_rate_pct) AS avg_nominal
     FROM interest_rates
@@ -1257,12 +1134,13 @@ questions:
     SELECT AVG(real_policy_rate_pct) AS avg_real
     FROM interest_rates
     WHERE year = 2022
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 2.7468753075484695
 - id: 54
   question: 2025年6月，5年期LPR与1年期LPR的利差占1年期LPR的百分比是多少？
+  answer:
+    items:
+    - name: result
+      value: 9.706616729088637
+  requires_calculator: true
   sql1: |-
     SELECT lpr_5y_pct AS lpr_5y
     FROM interest_rates
@@ -1271,12 +1149,13 @@ questions:
     SELECT lpr_1y_pct AS lpr_1y
     FROM interest_rates
     WHERE year = 2025 AND month = 6
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: '%'
-  answer: 9.706616729088637
 - id: 55
   question: 2021年全年，政策利率年均值占7天逆回购利率年均值的比例是多少？
+  answer:
+    items:
+    - name: result
+      value: 127.38412841962467
+  requires_calculator: true
   sql1: |-
     SELECT AVG(policy_rate_pct) AS avg_policy
     FROM interest_rates
@@ -1285,12 +1164,13 @@ questions:
     SELECT AVG(repo_7d_pct) AS avg_repo
     FROM interest_rates
     WHERE year = 2021
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: '%'
-  answer: 127.38412841962467
 - id: 56
   question: 2025年12月的1年期LPR贷款利率比2016年1月下降了多少个百分点？
+  answer:
+    items:
+    - name: result
+      value: 0.24399999999999977
+  requires_calculator: true
   sql1: |-
     SELECT lpr_1y_pct AS lpr_2016_01
     FROM interest_rates
@@ -1299,12 +1179,13 @@ questions:
     SELECT lpr_1y_pct AS lpr_2025_12
     FROM interest_rates
     WHERE year = 2025 AND month = 12
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 百分点
-  answer: 0.24399999999999977
 - id: 57
   question: 2024年的7天逆回购利率年均值是2019年的多少倍？
+  answer:
+    items:
+    - name: result
+      value: 1.0021963245181533
+  requires_calculator: true
   sql1: |-
     SELECT AVG(repo_7d_pct) AS avg_repo_2024
     FROM interest_rates
@@ -1313,12 +1194,13 @@ questions:
     SELECT AVG(repo_7d_pct) AS avg_repo_2019
     FROM interest_rates
     WHERE year = 2019
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 倍
-  answer: 1.0021963245181533
 - id: 58
   question: 2025年6月的10年期国债收益率比2020年6月增加了多少个百分点？
+  answer:
+    items:
+    - name: result
+      value: 0.13900000000000023
+  requires_calculator: true
   sql1: |-
     SELECT bond_10y_pct AS bond_2025_06
     FROM interest_rates
@@ -1327,12 +1209,13 @@ questions:
     SELECT bond_10y_pct AS bond_2020_06
     FROM interest_rates
     WHERE year = 2020 AND month = 6
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 百分点
-  answer: 0.13900000000000023
 - id: 59
   question: 2024年全年政策利率的最大值与最小值之差是多少个基点？
+  answer:
+    items:
+    - name: result
+      value: 4.499999999999993
+  requires_calculator: true
   sql1: |-
     SELECT MAX(policy_rate_pct) AS max_rate
     FROM interest_rates
@@ -1341,12 +1224,13 @@ questions:
     SELECT MIN(policy_rate_pct) AS min_rate
     FROM interest_rates
     WHERE year = 2024
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: 基点
-  answer: 4.499999999999993
 - id: 60
   question: 2025年1月的5年期LPR相比2020年1月下降了百分之几？
+  answer:
+    items:
+    - name: result
+      value: 4.50885668276973
+  requires_calculator: true
   sql1: |-
     SELECT lpr_5y_pct AS lpr_2020_01
     FROM interest_rates
@@ -1355,7 +1239,3 @@ questions:
     SELECT lpr_5y_pct AS lpr_2025_01
     FROM interest_rates
     WHERE year = 2025 AND month = 1
-  requires_calculator: true
-  answer_type: scalar
-  answer_unit: '%'
-  answer: 4.50885668276973

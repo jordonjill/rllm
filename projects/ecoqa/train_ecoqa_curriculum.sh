@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 set -x
 
 unset ROCR_VISIBLE_DEVICES
@@ -12,10 +13,13 @@ export WANDB_DIR=/root/autodl-tmp/wandb
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export OMP_NUM_THREADS=10
-export SHAPING_ENABLE=${SHAPING_ENABLE:-True}
-export SHAPING_MAX_BONUS=${SHAPING_MAX_BONUS:-0.20}
+export SHAPING_ENABLE=${SHAPING_ENABLE:-False}
+export SHAPING_MAX_BONUS=${SHAPING_MAX_BONUS:-0.10}
 export ECOQA_ENABLE_SHAPING_BONUS=${SHAPING_ENABLE}
 export ECOQA_MAX_SHAPING_BONUS=${SHAPING_MAX_BONUS}
+
+mkdir -p "${RAY_TMPDIR}" "${WANDB_DIR}"
+python3 -m projects.ecoqa.prepare_ecoqa_data
 
 COMMON_ARGS=(
     algorithm.adv_estimator=grpo
@@ -63,10 +67,9 @@ COMMON_ARGS=(
     trainer.logger=['console','wandb']
     trainer.project_name='rllm-agent'
     trainer.experiment_name='ecoqa-4b-curriculum'
-    trainer.val_before_train=False
+    trainer.val_before_train=True
     trainer.n_gpus_per_node=1
     trainer.nnodes=1
-    trainer.test_freq=90
     trainer.default_hdfs_dir=null
     trainer.default_local_dir=/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b-curriculum
     rllm.agent.max_steps=10
@@ -81,6 +84,7 @@ python3 -m projects.ecoqa.train_ecoqa_curriculum \
     data.shuffle=False \
     trainer.resume_mode=disable \
     trainer.save_freq=108 \
+    trainer.test_freq=108 \
     ++ecoqa_curriculum.enable=True \
     ++ecoqa_curriculum.phase=0.5 \
     ++ecoqa_curriculum.size_multiplier=1.2 \
@@ -96,5 +100,6 @@ python3 -m projects.ecoqa.train_ecoqa_curriculum \
     data.shuffle=True \
     trainer.resume_mode=auto \
     trainer.save_freq=90 \
+    trainer.test_freq=90 \
     ++ecoqa_curriculum.enable=False \
     trainer.total_epochs=1

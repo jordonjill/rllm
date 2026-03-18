@@ -90,6 +90,12 @@ def test_structure_empty_items_match():
     assert wrong.reward == 0.0 and not wrong.is_correct
 
 
+def test_single_table_error_target_kind_is_no_data():
+    task = _task('{"items":[]}', question_type="single_table_error")
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[]}')
+    assert pred.metadata["target_kind"] == "no_data"
+
+
 def test_incorrect_answer_gets_progress_bonus_when_right_table_and_sql_success():
     task = _task(
         '{"items":[{"name":"result","value":8.10725}]}',
@@ -130,6 +136,20 @@ def test_incorrect_answer_gets_no_bonus_when_only_wrong_table_sql_succeeds():
     assert wrong.reward == 0.0
     assert wrong.metadata["exp_table_hit_rate"] == 0.0
     assert wrong.metadata["exp_table_sql_succ_rate"] == 0.0
+
+
+def test_incorrect_answer_csv_suffix_table_still_counts_as_expected_hit():
+    task = _task(
+        '{"items":[{"name":"result","value":8.10725}]}',
+        sql_call_records=[
+            {"table_name": "interest_rates.csv", "success": True},
+            {"table_name": "interest_rates.csv", "success": True},
+        ],
+    )
+    wrong = eco_qa_reward_function(task, 'FINAL ANSWER: {"items":[{"name":"result","value":7.0}]}')
+    assert wrong.reward > 0.0 and wrong.reward < 1.0
+    assert wrong.metadata["exp_table_hit_rate"] == 1.0
+    assert wrong.metadata["exp_table_sql_succ_rate"] == 1.0
 
 
 def test_incorrect_non_structure_prediction_gets_no_shaping_bonus():

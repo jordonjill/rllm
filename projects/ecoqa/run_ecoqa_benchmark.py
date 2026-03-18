@@ -245,7 +245,7 @@ def main():
     parser.add_argument("--output-dir", default="projects/ecoqa/benchmarks/results")
     parser.add_argument("--n-parallel-agents", type=int, default=32)
     parser.add_argument("--max-steps", type=int, default=10)
-    parser.add_argument("--max-prompt-length", type=int, default=4096)
+    parser.add_argument("--max-prompt-length", type=int, default=2048)
     parser.add_argument("--temperature", type=float, default=0.6)
     parser.add_argument("--top-p", type=float, default=0.95)
     args = parser.parse_args()

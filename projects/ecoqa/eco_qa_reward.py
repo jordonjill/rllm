@@ -203,14 +203,23 @@ def _safe_ratio(numerator: int | float, denominator: int | float) -> float:
     return float(numerator) / float(denominator)
 
 
+def _normalize_table_token(table_name: object) -> str:
+    if not isinstance(table_name, str):
+        return ""
+    token = table_name.strip().lower()
+    if token.endswith(".csv"):
+        token = token[:-4]
+    return token
+
+
 def _normalize_expected_tables(expected_table_name: str | list[str]) -> set[str]:
     if isinstance(expected_table_name, list):
-        expected = [name.strip().lower() for name in expected_table_name if isinstance(name, str) and name.strip()]
+        expected = [_normalize_table_token(name) for name in expected_table_name if isinstance(name, str) and name.strip()]
     elif isinstance(expected_table_name, str) and expected_table_name.strip():
-        expected = [expected_table_name.strip().lower()]
+        expected = [_normalize_table_token(expected_table_name)]
     else:
         expected = []
-    return set(expected)
+    return {name for name in expected if name}
 
 
 def _sql_call_stats(task_info: dict, expected_tables: set[str]) -> tuple[int, int, int]:
@@ -225,13 +234,23 @@ def _sql_call_stats(task_info: dict, expected_tables: set[str]) -> tuple[int, in
         if not isinstance(record, dict):
             continue
         total_sql_calls += 1
-        table_name = str(record.get("table_name", "")).strip().lower()
+        table_name = _normalize_table_token(record.get("table_name", ""))
         if table_name not in expected_tables:
             continue
         exp_table_sql_calls += 1
         if bool(record.get("success", False)):
             exp_table_sql_success += 1
     return total_sql_calls, exp_table_sql_calls, exp_table_sql_success
+
+
+def _infer_target_kind(task_info: dict) -> str:
+    question_type = str(task_info.get("question_type", "")).strip().lower()
+    answer_type = str(task_info.get("answer_type", "")).strip().lower()
+    if question_type == "single_table_error":
+        return "no_data"
+    if answer_type == "structure":
+        return "structure"
+    return "unknown"
 
 
 def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
@@ -242,7 +261,7 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
 
     ground_truth_text = str(ground_truth)
     final_answer = _extract_final_answer(action)
-    target_kind = "structure"
+    target_kind = _infer_target_kind(task_info)
 
     is_correct = False
     structure_exact_match = False

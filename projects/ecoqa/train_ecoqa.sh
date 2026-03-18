@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 set -x
 
 unset ROCR_VISIBLE_DEVICES
@@ -12,10 +13,13 @@ export WANDB_DIR=/root/autodl-tmp/wandb
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export OMP_NUM_THREADS=10
-export SHAPING_ENABLE=${SHAPING_ENABLE:-True}
-export SHAPING_MAX_BONUS=${SHAPING_MAX_BONUS:-0.20}
+export SHAPING_ENABLE=${SHAPING_ENABLE:-False}
+export SHAPING_MAX_BONUS=${SHAPING_MAX_BONUS:-0.10}
 export ECOQA_ENABLE_SHAPING_BONUS=${SHAPING_ENABLE}
 export ECOQA_MAX_SHAPING_BONUS=${SHAPING_MAX_BONUS}
+
+mkdir -p "${RAY_TMPDIR}" "${WANDB_DIR}"
+python3 -m projects.ecoqa.prepare_ecoqa_data
 
 python3 -m projects.ecoqa.train_ecoqa \
     algorithm.adv_estimator=grpo \
@@ -63,7 +67,7 @@ python3 -m projects.ecoqa.train_ecoqa \
     trainer.logger=['console','wandb'] \
     trainer.project_name='rllm-agent' \
     trainer.experiment_name='ecoqa-4b' \
-    trainer.val_before_train=False \
+    trainer.val_before_train=True \
     trainer.resume_mode=disable \
     trainer.n_gpus_per_node=1 \
     trainer.nnodes=1 \

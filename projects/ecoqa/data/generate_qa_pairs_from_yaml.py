@@ -7,6 +7,7 @@ import argparse
 import csv
 import json
 import random
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -45,6 +46,20 @@ def _normalize_answer(value: Any) -> str:
     if not isinstance(value, (dict, list)):
         raise ValueError(f"answer must be dict/list for structured format, got: {type(value).__name__}")
     return json.dumps(value, ensure_ascii=False)
+
+
+def _normalize_signature_text(value: Any) -> str:
+    text = _normalize_text(value)
+    return re.sub(r"\s+", " ", text)
+
+
+def _signature_key(example: dict[str, Any]) -> tuple[str, str, str, str]:
+    return (
+        _normalize_signature_text(example.get("table_name", "")),
+        _normalize_signature_text(example.get("question", "")),
+        _normalize_signature_text(example.get("ground_truth_sql", "")),
+        _normalize_signature_text(example.get("answer", "")),
+    )
 
 
 def _load_examples(yaml_dir: Path) -> list[dict[str, Any]]:
@@ -113,6 +128,43 @@ def _load_examples(yaml_dir: Path) -> list[dict[str, Any]]:
     return examples
 
 
+def _split_one_source_group(
+    group_items: list[dict[str, Any]],
+    *,
+    n_train: int,
+    n_val: int,
+    n_test: int,
+    rng: random.Random,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    buckets: dict[tuple[str, str, str, str], list[dict[str, Any]]] = defaultdict(list)
+    for item in group_items:
+        buckets[_signature_key(item)].append(item)
+
+    bucket_keys = list(buckets.keys())
+    rng.shuffle(bucket_keys)
+
+    split_rows: dict[str, list[dict[str, Any]]] = {"train": [], "val": [], "test": []}
+    remaining = {"train": n_train, "val": n_val, "test": n_test}
+    split_priority = {"train": 0, "val": 1, "test": 2}
+
+    for key in bucket_keys:
+        bucket = buckets[key]
+        size = len(bucket)
+
+        # Prefer splits that can absorb the full bucket while keeping target
+        # sizes close; if none can, place in the split with largest remaining.
+        feasible = [name for name in ("train", "val", "test") if remaining[name] >= size]
+        if feasible:
+            chosen = sorted(feasible, key=lambda name: (-remaining[name], split_priority[name]))[0]
+        else:
+            chosen = sorted(("train", "val", "test"), key=lambda name: (-remaining[name], split_priority[name]))[0]
+
+        split_rows[chosen].extend(bucket)
+        remaining[chosen] -= size
+
+    return split_rows["train"], split_rows["val"], split_rows["test"]
+
+
 def _split_examples(
     examples: list[dict[str, Any]],
     train_ratio: float,
@@ -145,9 +197,16 @@ def _split_examples(
             else:
                 n_train -= 1
 
-        train.extend(group_items[:n_train])
-        val.extend(group_items[n_train : n_train + n_val])
-        test.extend(group_items[n_train + n_val :])
+        group_train, group_val, group_test = _split_one_source_group(
+            group_items,
+            n_train=n_train,
+            n_val=n_val,
+            n_test=n_test,
+            rng=rng,
+        )
+        train.extend(group_train)
+        val.extend(group_val)
+        test.extend(group_test)
 
     rng.shuffle(train)
     rng.shuffle(val)
@@ -180,6 +239,13 @@ def _print_split_stats(split_name: str, rows: list[dict[str, Any]]) -> None:
     )
 
 
+def _cross_split_signature_overlap(train_rows: list[dict[str, Any]], val_rows: list[dict[str, Any]], test_rows: list[dict[str, Any]]) -> int:
+    train_signatures = {_signature_key(row) for row in train_rows}
+    val_signatures = {_signature_key(row) for row in val_rows}
+    test_signatures = {_signature_key(row) for row in test_rows}
+    return len((train_signatures & val_signatures) | (train_signatures & test_signatures) | (val_signatures & test_signatures))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate EcoQA train/val/test CSV files from YAML question banks.")
     parser.add_argument("--yaml-dir", type=Path, default=Path("projects/ecoqa/data/yaml"))
@@ -205,6 +271,7 @@ def main() -> None:
     _print_split_stats("train", train_rows)
     _print_split_stats("val", val_rows)
     _print_split_stats("test", test_rows)
+    print(f"cross_split_duplicate_signatures: {_cross_split_signature_overlap(train_rows, val_rows, test_rows)}")
 
 
 if __name__ == "__main__":

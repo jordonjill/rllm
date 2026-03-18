@@ -68,6 +68,10 @@ def _normalize_ref_token(token: str) -> str:
     return ".".join(parts).lower()
 
 
+def _known_table_refs() -> set[str]:
+    return {name.lower() for name in _TABLES} | {sql_name.lower() for sql_name in _SQL_NAMES.values()}
+
+
 def _safe_json_value(val):
     if pd.isna(val):
         return None
@@ -237,6 +241,7 @@ Returns:
             return "Error: query must reference at least one table."
 
         allowed_tables = {table.lower(), _SQL_NAMES[table].lower()}
+        known_table_refs = _known_table_refs()
         for ref in referenced_tables:
             ref_key = _normalize_ref_token(ref)
             if not ref_key:
@@ -245,7 +250,9 @@ Returns:
                 return "Error: schema-qualified table references are not allowed."
             if ref_key in {"sqlite_master", "sqlite_schema"}:
                 return "Error: querying SQLite internal tables is not allowed."
-            if ref_key not in allowed_tables:
+            # Permit CTE/subquery aliases (unknown refs), but block access to
+            # other real preloaded tables.
+            if ref_key in known_table_refs and ref_key not in allowed_tables:
                 return f"Error: query may only reference table '{table}'."
 
         quoted_sql_name = f'"{sql_name}"'

@@ -28,7 +28,7 @@ Rules:
 - Final answer schema must be:
   - {"items":[{"name": <field_name>, "value": <value>, "dims": <optional dimension object>}, ...]}
   - If no data: {"items":[]}
-- If you use dims, dims keys must be real column names, and dims values must exactly match returned values.
+- If you use dims, dims keys must be real column names or dimensions explicitly derived in your SQL, and dims values must exactly match returned values.
 
 Answer examples:
   - FINAL ANSWER: {"items":[{"name":"avg_lpr_5y","value":3.7899}]}

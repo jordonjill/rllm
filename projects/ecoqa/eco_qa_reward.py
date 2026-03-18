@@ -36,7 +36,7 @@ def _as_env_float(name: str, default: float) -> float:
 
 
 _SHAPING_ENABLED = _as_env_bool("ECOQA_ENABLE_SHAPING_BONUS", True)
-_MAX_SHAPING_BONUS = max(0.0, _as_env_float("ECOQA_MAX_SHAPING_BONUS", 0.15))
+_MAX_SHAPING_BONUS = max(0.0, _as_env_float("ECOQA_MAX_SHAPING_BONUS", 0.05))
 
 
 def _extract_final_answer(action: str) -> str:
@@ -141,6 +141,22 @@ def _extract_items(text: str) -> list | None:
     return None
 
 
+def _is_valid_structure_prediction(text: str) -> bool:
+    parsed = _try_parse_json(text)
+    if not isinstance(parsed, dict):
+        return False
+    items = parsed.get("items")
+    if not isinstance(items, list):
+        return False
+    for item in items:
+        if not isinstance(item, dict):
+            return False
+        normalized_item = _normalize_item(item)
+        if "value" not in normalized_item:
+            return False
+    return True
+
+
 def _serialize_dim_value_signature(item: dict) -> str | None:
     normalized_item = _normalize_item(item)
     if "value" not in normalized_item:
@@ -233,6 +249,7 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     structure_alias_value_match = False
     gt_items = _extract_items(ground_truth_text)
     pred_items = _extract_items(final_answer)
+    pred_structure_valid = _is_valid_structure_prediction(final_answer)
 
     if isinstance(gt_items, list) and isinstance(pred_items, list):
         gt_dict_items = [item for item in gt_items if isinstance(item, dict)]
@@ -252,11 +269,12 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     exp_table_hit_rate = _safe_ratio(exp_table_sql_calls, sql_call_count)
     exp_table_sql_succ_rate = _safe_ratio(exp_table_sql_success, exp_table_sql_calls)
 
-    # Shaping reward for incorrect answers is based only on SQL success ratio
-    # over expected table calls.
+    # Optional shaping for wrong answers: only when predicted answer format is valid,
+    # and weighted by expected-table hit + SQL success ratios.
     shaping_bonus = 0.0
-    if _SHAPING_ENABLED and not is_correct and exp_table_sql_calls > 0:
-        shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, _MAX_SHAPING_BONUS * exp_table_sql_succ_rate))
+    if _SHAPING_ENABLED and not is_correct and pred_structure_valid and sql_call_count > 0 and exp_table_sql_calls > 0:
+        shaping_factor = exp_table_hit_rate * exp_table_sql_succ_rate
+        shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, _MAX_SHAPING_BONUS * shaping_factor))
 
     final_reward = correctness_reward if is_correct else shaping_bonus
 
@@ -277,6 +295,7 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
             "target_kind": target_kind,
             "structure_exact_match": structure_exact_match,
             "structure_alias_value_match": structure_alias_value_match,
+            "pred_structure_valid": float(pred_structure_valid),
             "ground_truth_item_count": len(gt_items) if isinstance(gt_items, list) else -1,
             "pred_item_count": len(pred_items) if isinstance(pred_items, list) else -1,
             "final_answer_extracted": final_answer,

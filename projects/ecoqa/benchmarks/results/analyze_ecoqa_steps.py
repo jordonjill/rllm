@@ -204,8 +204,7 @@ def _row_is_correct(row: dict) -> bool:
                     return float(correctness_reward) >= 1.0
                 except (TypeError, ValueError):
                     pass
-    # Fallback for legacy rows without explicit correctness info.
-    return float(row.get("reward", 0.0) or 0.0) >= 1.0
+    return False
 
 
 def _categorize_failure(row: dict) -> tuple[str, dict]:

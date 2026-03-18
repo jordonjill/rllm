@@ -31,3 +31,15 @@ def test_sql_query_rejects_cross_table_query():
     tool = SQLQuery()
     blocked = tool.sql_query("interest_rates", "SELECT year FROM exchange_rates LIMIT 1")
     assert "only reference table 'interest_rates'" in blocked
+
+
+def test_sql_query_rejects_schema_qualified_reference():
+    tool = SQLQuery()
+    blocked = tool.sql_query("interest_rates", "SELECT year FROM main.exchange_rates LIMIT 1")
+    assert "schema-qualified table references are not allowed" in blocked
+
+
+def test_sql_query_rejects_sqlite_internal_tables():
+    tool = SQLQuery()
+    blocked = tool.sql_query("interest_rates", 'SELECT name FROM sqlite_master WHERE type = "table" LIMIT 1')
+    assert "sqlite internal tables" in blocked.lower()

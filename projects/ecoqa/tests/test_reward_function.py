@@ -130,3 +130,16 @@ def test_incorrect_answer_gets_no_bonus_when_only_wrong_table_sql_succeeds():
     assert wrong.reward == 0.0
     assert wrong.metadata["exp_table_hit_rate"] == 0.0
     assert wrong.metadata["exp_table_sql_succ_rate"] == 0.0
+
+
+def test_incorrect_non_structure_prediction_gets_no_shaping_bonus():
+    task = _task(
+        '{"items":[{"name":"result","value":8.10725}]}',
+        sql_call_records=[
+            {"table_name": "interest_rates", "success": True},
+            {"table_name": "interest_rates", "success": True},
+        ],
+    )
+    wrong = eco_qa_reward_function(task, "FINAL ANSWER: 8.0")
+    assert wrong.reward == 0.0
+    assert wrong.metadata["pred_structure_valid"] == 0.0

@@ -14,6 +14,8 @@ def _trajectory(
     reward: float,
     is_correct: bool | None = None,
     correctness_reward: float | None = None,
+    question_type: str = "single_table",
+    answer_type: str = "structure",
 ):
     info = {}
     if is_correct is not None:
@@ -24,8 +26,8 @@ def _trajectory(
     return SimpleNamespace(
         task={
             "question_id": question_id,
-            "question_type": "single_table",
-            "answer_type": "structure",
+            "question_type": question_type,
+            "answer_type": answer_type,
         },
         reward=reward,
         steps=[SimpleNamespace(info=info)],
@@ -51,8 +53,26 @@ def test_benchmark_metrics_use_is_correct_flag_not_reward_sign():
     assert metrics["accuracy_by_type"]["structure"] == 1 / 3
 
 
+def test_benchmark_metrics_include_no_data_bucket():
+    trajectories = [
+        _trajectory("q1", reward=1.0, is_correct=True, question_type="single_table_error"),
+        _trajectory("q2", reward=0.0, is_correct=False, question_type="single_table_error"),
+    ]
+    metrics = _compute_metrics(trajectories)
+    assert metrics["accuracy_by_type"]["no_data"] == 0.5
+
+
 def test_benchmark_target_kind_supports_structure():
     assert benchmark_target_kind({"question_type": "single_table", "answer_type": "structure"}) == "structure"
+
+
+def test_benchmark_target_kind_prioritizes_no_data_for_single_table_error():
+    assert benchmark_target_kind({"question_type": "single_table_error", "answer_type": "structure"}) == "no_data"
+
+
+def test_benchmark_is_correct_without_metadata_returns_false():
+    traj = _trajectory("q1", reward=1.0, is_correct=None, correctness_reward=None)
+    assert benchmark_is_correct(traj) is False
 
 
 def test_run_metrics_use_is_correct_flag_not_reward_sign(capsys):

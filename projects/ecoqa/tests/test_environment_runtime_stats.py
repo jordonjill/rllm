@@ -57,3 +57,35 @@ def test_environment_tracks_sql_runtime_stats():
         {"table_name": "interest_rates", "success": True},
         {"table_name": "interest_rates", "success": False},
     ]
+
+
+def test_environment_forces_failure_on_step_budget_tool_call():
+    task = {
+        "question": "dummy",
+        "ground_truth": '{"items":[{"name":"x","value":1}]}',
+        "question_type": "single_table",
+        "answer_type": "structure",
+        "table_name": "interest_rates",
+    }
+    env = EcoQAEnvironment(task=task, max_steps=1)
+    env.reset()
+
+    obs, reward, done, info = env.step(
+        [
+            _tool_call(
+                "1",
+                "sql_query",
+                {
+                    "table_name": "interest_rates",
+                    "query": "SELECT year FROM interest_rates LIMIT 1",
+                },
+            )
+        ]
+    )
+
+    assert done is True
+    assert reward == 0.0
+    assert obs == {}
+    assert info["is_correct"] is False
+    assert info["metadata"]["forced_termination_reason"] == "max_steps_without_final_answer"
+    assert task["sql_call_records"] == []

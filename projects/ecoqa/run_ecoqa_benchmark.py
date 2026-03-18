@@ -40,8 +40,7 @@ def _trajectory_is_correct(trajectory) -> bool:
                     return float(correctness_reward) >= 1.0
                 except (TypeError, ValueError):
                     pass
-    # Fallback: for tasks without explicit is_correct, treat reward >= 1.0 as correct.
-    return float(getattr(trajectory, "reward", 0.0) or 0.0) >= 1.0
+    return False
 
 
 def _load_model_profiles(config_path: Path, include_disabled: bool = False) -> list[ModelProfile]:
@@ -78,10 +77,10 @@ def _load_model_profiles(config_path: Path, include_disabled: bool = False) -> l
 def _target_kind(task: dict[str, Any]) -> str:
     question_type = str(task.get("question_type", "")).strip().lower()
     answer_type = str(task.get("answer_type", "")).strip().lower()
-    if answer_type == "structure":
-        return "structure"
     if question_type == "single_table_error":
         return "no_data"
+    if answer_type == "structure":
+        return "structure"
     if answer_type in {"scalar", "list"}:
         return answer_type
     return "unknown"
@@ -190,6 +189,7 @@ def _append_summary(path: Path, summary_row: dict[str, Any]) -> None:
         "pass_at_k",
         "reward_mean",
         "acc_structure",
+        "acc_no_data",
         "acc_unknown",
         "notes",
     ]
@@ -244,7 +244,7 @@ def main():
     parser.add_argument("--include-disabled", action="store_true", help="Run profiles marked enabled=false.")
     parser.add_argument("--output-dir", default="projects/ecoqa/benchmarks/results")
     parser.add_argument("--n-parallel-agents", type=int, default=32)
-    parser.add_argument("--max-steps", type=int, default=12)
+    parser.add_argument("--max-steps", type=int, default=10)
     parser.add_argument("--max-prompt-length", type=int, default=4096)
     parser.add_argument("--temperature", type=float, default=0.6)
     parser.add_argument("--top-p", type=float, default=0.95)
@@ -290,6 +290,7 @@ def main():
             "pass_at_k": round(metrics["pass_at_k"], 6),
             "reward_mean": round(metrics["reward_mean"], 6),
             "acc_structure": round(metrics["accuracy_by_type"].get("structure", 0.0), 6),
+            "acc_no_data": round(metrics["accuracy_by_type"].get("no_data", 0.0), 6),
             "acc_unknown": round(metrics["accuracy_by_type"].get("unknown", 0.0), 6),
             "notes": profile.notes,
         }

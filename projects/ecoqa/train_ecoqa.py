@@ -120,6 +120,7 @@ def main(config):
         workflow_args={
             "agent_cls": EcoQAAgent,
             "env_cls": EcoQAEnvironment,
+            "env_args": {"max_steps": max_steps},
             "max_steps": max_steps,
         },
         config=config,

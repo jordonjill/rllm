@@ -19,7 +19,10 @@ _SQL_NAMES: dict[str, str] = {}
 _TABLE_INFO_CACHE: dict[str, str] = {}
 _TABLE_NAME_MAP: dict[str, str] = {}
 _PRELOADED = False
-_TABLE_REF_RE = re.compile(r"\b(?:FROM|JOIN)\s+([`\"\[]?[A-Za-z_][A-Za-z0-9_]*[`\"\]]?)", re.IGNORECASE)
+_TABLE_REF_RE = re.compile(
+    r"\b(?:FROM|JOIN)\s+((?:[`\"\[]?[A-Za-z_][A-Za-z0-9_]*[`\"\]]?\s*\.\s*)?[`\"\[]?[A-Za-z_][A-Za-z0-9_]*[`\"\]]?)",
+    re.IGNORECASE,
+)
 
 
 def _sanitize_sql_name(name: str) -> str:
@@ -54,10 +57,15 @@ def _normalize_table_name(table_name: str | object) -> str | None:
 def _extract_query_table_refs(query: str) -> list[str]:
     refs: list[str] = []
     for match in _TABLE_REF_RE.finditer(query):
-        token = match.group(1).strip().strip('`"[]').strip()
+        token = match.group(1).strip()
         if token:
             refs.append(token)
     return refs
+
+
+def _normalize_ref_token(token: str) -> str:
+    parts = [part.strip().strip('`"[]') for part in re.split(r"\s*\.\s*", token) if part.strip()]
+    return ".".join(parts).lower()
 
 
 def _safe_json_value(val):
@@ -205,6 +213,8 @@ Returns:
 
         if "SELECT" not in query_upper or "FROM" not in query_upper:
             return "Error: query must contain SELECT and FROM clauses."
+        if re.search(r"\b(SQLITE_MASTER|SQLITE_SCHEMA)\b", query_upper):
+            return "Error: querying SQLite internal tables is not allowed."
 
         sql_filters = (
             " WHERE ",
@@ -227,10 +237,15 @@ Returns:
             return "Error: query must reference at least one table."
 
         allowed_tables = {table.lower(), _SQL_NAMES[table].lower()}
-        known_tables = set(_TABLE_NAME_MAP.keys()) | {name.lower() for name in _SQL_NAMES.values()}
         for ref in referenced_tables:
-            ref_key = ref.lower()
-            if ref_key in known_tables and ref_key not in allowed_tables:
+            ref_key = _normalize_ref_token(ref)
+            if not ref_key:
+                continue
+            if "." in ref_key:
+                return "Error: schema-qualified table references are not allowed."
+            if ref_key in {"sqlite_master", "sqlite_schema"}:
+                return "Error: querying SQLite internal tables is not allowed."
+            if ref_key not in allowed_tables:
                 return f"Error: query may only reference table '{table}'."
 
         quoted_sql_name = f'"{sql_name}"'

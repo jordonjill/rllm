@@ -30,31 +30,31 @@ def test_split_examples_keeps_duplicate_signatures_in_same_split():
             source_id="1",
             question="Q_dup",
             ground_truth_sql="SELECT x FROM demo_table WHERE y=1 LIMIT 1",
-            answer='{"items":[{"name":"result","value":1}]}',
+            answer='{"rows":[{"result":1}]}',
         ),
         _example(
             source_id="2",
             question="Q_dup",
             ground_truth_sql="SELECT x FROM demo_table WHERE y=1 LIMIT 1",
-            answer='{"items":[{"name":"result","value":1}]}',
+            answer='{"rows":[{"result":1}]}',
         ),
         _example(
             source_id="3",
             question="Q_a",
             ground_truth_sql="SELECT a FROM demo_table WHERE y=2 LIMIT 1",
-            answer='{"items":[{"name":"result","value":2}]}',
+            answer='{"rows":[{"result":2}]}',
         ),
         _example(
             source_id="4",
             question="Q_b",
             ground_truth_sql="SELECT b FROM demo_table WHERE y=3 LIMIT 1",
-            answer='{"items":[{"name":"result","value":3}]}',
+            answer='{"rows":[{"result":3}]}',
         ),
         _example(
             source_id="5",
             question="Q_c",
             ground_truth_sql="SELECT c FROM demo_table WHERE y=4 LIMIT 1",
-            answer='{"items":[{"name":"result","value":4}]}',
+            answer='{"rows":[{"result":4}]}',
         ),
     ]
 

@@ -27,11 +27,12 @@ It is not training; it is for end-to-end evaluation/inference.
 ## Answer / Reward Format
 
 - QA ground truth now uses a unified structured JSON format:
-  - `{"items":[{"name": "...", "value": ..., "dims": {...}}, ...]}`
-  - no-data answer: `{"items":[]}`
-- Reward correctness compares `items` structurally (order-insensitive), with alias tolerance on `name`:
-  - if `dims` exists, `dims + value` must match exactly
-  - if `dims` does not exist, `value` must match
+  - `{"rows":[{"result": ..., "year": ..., "month": ...}, ...]}`
+  - no-data answer: `{"rows":[]}`
+- Reward correctness compares `rows` structurally (order-insensitive) with normalized key/value matching.
+- Recommended output convention:
+  - put main target value in `result`
+  - put qualifiers in other columns (`year/month/geo_name/...`)
 - Reward metadata keeps only 5 fields:
   - `final_reward`
   - `correctness_reward`

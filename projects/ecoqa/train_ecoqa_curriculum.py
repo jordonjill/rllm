@@ -74,18 +74,18 @@ def _infer_sql_difficulty(example: dict) -> str:
 
     try:
         payload = json.loads(ground_truth) if ground_truth else {}
-        items = payload.get("items", []) if isinstance(payload, dict) else []
+        rows = payload.get("rows", []) if isinstance(payload, dict) else []
     except json.JSONDecodeError:
-        items = []
+        rows = []
 
-    if isinstance(items, list):
+    if isinstance(rows, list):
         # Empty answer usually means no-data case, typically easier.
-        if len(items) == 0:
+        if len(rows) == 0:
             score = max(0.0, score - 0.5)
-        # Structured answers with multiple items or dims are typically harder.
-        if len(items) > 1:
+        # Multi-row and multi-column outputs are typically harder.
+        if len(rows) > 1:
             score += 0.5
-        if any(isinstance(it, dict) and isinstance(it.get("dims"), dict) and it.get("dims") for it in items):
+        if any(isinstance(row, dict) and len(row) > 1 for row in rows):
             score += 0.5
 
     if score <= 1:

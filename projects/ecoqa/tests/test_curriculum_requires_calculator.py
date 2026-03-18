@@ -29,13 +29,13 @@ def test_curriculum_structure_items_and_dims_increase_difficulty():
     base = {
         "ground_truth_sql": "SELECT month FROM exchange_rates ORDER BY month DESC",
         "requires_calculator": False,
-        "ground_truth": '{"items":[{"name":"month","value":12}]}',
+        "ground_truth": '{"rows":[{"month":12}]}',
     }
     richer = {
         **base,
         "ground_truth": (
-            '{"items":[{"name":"month","value":12,"dims":{"year":2024}},'
-            '{"name":"month","value":11,"dims":{"year":2024}}]}'
+            '{"rows":[{"year":2024,"month":12},'
+            '{"year":2024,"month":11}]}'
         ),
     }
 

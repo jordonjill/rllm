@@ -11,6 +11,24 @@ _JSON_CODE_BLOCK_RE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL | re.I
 _FINAL_ANSWER_PARAGRAPH_RE = re.compile(r"FINAL ANSWER:\s*(.*?)(?=\n\s*\n)", re.DOTALL | re.IGNORECASE)
 _FINAL_ANSWER_TAIL_RE = re.compile(r"FINAL ANSWER:\s*(.*)$", re.DOTALL | re.IGNORECASE)
 _FULL_NUMBER_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?%?")
+_QUALIFIER_KEYS = {
+    "year",
+    "quarter",
+    "month",
+    "week",
+    "day",
+    "ref_date",
+    "date",
+    "geo_level",
+    "geo_code",
+    "geo_name",
+    "parent_geo_code",
+    "parent_geo_name",
+    "sector",
+    "industry",
+    "category",
+    "rank",
+}
 
 
 def _as_env_bool(name: str, default: bool) -> bool:
@@ -62,11 +80,6 @@ def _extract_final_answer_with_status(action: str) -> tuple[str, bool]:
     if _try_parse_json(stripped) is not None:
         return stripped, True
     return stripped, False
-
-
-def _extract_final_answer(action: str) -> str:
-    answer, _ = _extract_final_answer_with_status(action)
-    return answer
 
 
 def _try_parse_json(text: str):
@@ -137,21 +150,44 @@ def _normalize_json_value(value):
     return _normalize_text(str(value))
 
 
-def _normalize_item(item: dict) -> dict:
-    return {str(key).strip().lower(): _normalize_json_value(value) for key, value in item.items()}
+def _normalize_row(row: dict) -> dict:
+    normalized = {str(key).strip().lower(): _normalize_json_value(value) for key, value in row.items()}
+    if "result" in normalized:
+        return normalized
+
+    keys = list(normalized.keys())
+    if not keys:
+        return normalized
+
+    non_qualifier_keys = [key for key in keys if key not in _QUALIFIER_KEYS]
+
+    # Alias-tolerant normalization: if the row has a single metric-like key,
+    # canonicalize it to "result" so SQL alias differences do not hurt reward.
+    if len(non_qualifier_keys) == 1:
+        key = non_qualifier_keys[0]
+        normalized["result"] = normalized.pop(key)
+        return normalized
+
+    # For one-column target rows (e.g., month/geo_name lists), allow the
+    # single field to act as result as well.
+    if len(keys) == 1:
+        only_key = keys[0]
+        normalized = {"result": normalized[only_key]}
+
+    return normalized
 
 
-def _serialize_item(item: dict) -> str:
-    return json.dumps(item, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+def _serialize_row(row: dict) -> str:
+    return json.dumps(row, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
-def _extract_items(text: str) -> list | None:
+def _extract_rows(text: str) -> list | None:
     parsed = _try_parse_json(text)
     if not isinstance(parsed, dict):
         return None
-    items = parsed.get("items")
-    if isinstance(items, list):
-        return items
+    rows = parsed.get("rows")
+    if isinstance(rows, list):
+        return rows
     return None
 
 
@@ -159,56 +195,11 @@ def _is_valid_structure_prediction(text: str) -> bool:
     parsed = _try_parse_json(text)
     if not isinstance(parsed, dict):
         return False
-    items = parsed.get("items")
-    if not isinstance(items, list):
+
+    rows = parsed.get("rows")
+    if not isinstance(rows, list):
         return False
-    for item in items:
-        if not isinstance(item, dict):
-            return False
-        normalized_item = _normalize_item(item)
-        if "value" not in normalized_item:
-            return False
-    return True
-
-
-def _serialize_dim_value_signature(item: dict) -> str | None:
-    normalized_item = _normalize_item(item)
-    if "value" not in normalized_item:
-        return None
-
-    payload: dict[str, object] = {"value": normalized_item.get("value")}
-    dims = normalized_item.get("dims")
-    if dims is not None:
-        if not isinstance(dims, dict):
-            return None
-        payload["has_dims"] = True
-        payload["dims"] = dims
-    else:
-        payload["has_dims"] = False
-    return _serialize_item(payload)
-
-
-def _structure_alias_match(pred_items: list, gt_items: list) -> bool:
-    if len(pred_items) != len(gt_items):
-        return False
-    if not all(isinstance(item, dict) for item in pred_items):
-        return False
-    if not all(isinstance(item, dict) for item in gt_items):
-        return False
-
-    gt_signatures = []
-    pred_signatures = []
-    for item in gt_items:
-        sig = _serialize_dim_value_signature(item)
-        if sig is None:
-            return False
-        gt_signatures.append(sig)
-    for item in pred_items:
-        sig = _serialize_dim_value_signature(item)
-        if sig is None:
-            return False
-        pred_signatures.append(sig)
-    return Counter(pred_signatures) == Counter(gt_signatures)
+    return all(isinstance(row, dict) for row in rows)
 
 
 def _safe_ratio(numerator: int | float, denominator: int | float) -> float:
@@ -277,17 +268,15 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     final_answer, final_answer_extractable = _extract_final_answer_with_status(action)
 
     is_correct = False
-    gt_items = _extract_items(ground_truth_text)
-    pred_items = _extract_items(final_answer)
+    gt_rows = _extract_rows(ground_truth_text)
+    pred_rows = _extract_rows(final_answer)
     pred_structure_valid = _is_valid_structure_prediction(final_answer)
 
-    if isinstance(gt_items, list) and isinstance(pred_items, list):
-        gt_dict_items = [item for item in gt_items if isinstance(item, dict)]
-        pred_dict_items = [item for item in pred_items if isinstance(item, dict)]
-        if len(gt_dict_items) == len(gt_items) and len(pred_dict_items) == len(pred_items):
-            gt_counter = Counter(_serialize_item(_normalize_item(item)) for item in gt_dict_items)
-            pred_counter = Counter(_serialize_item(_normalize_item(item)) for item in pred_dict_items)
-            is_correct = pred_counter == gt_counter or _structure_alias_match(pred_dict_items, gt_dict_items)
+    if isinstance(gt_rows, list) and isinstance(pred_rows, list):
+        if all(isinstance(row, dict) for row in gt_rows) and all(isinstance(row, dict) for row in pred_rows):
+            gt_counter = Counter(_serialize_row(_normalize_row(row)) for row in gt_rows)
+            pred_counter = Counter(_serialize_row(_normalize_row(row)) for row in pred_rows)
+            is_correct = pred_counter == gt_counter
 
     correctness_reward = 1.0 if is_correct else 0.0
     expected_table_name = task_info.get("table_name", "")
@@ -297,8 +286,6 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     exp_table_hit_rate = _safe_ratio(exp_table_sql_calls, sql_call_count)
     exp_table_sql_succ_rate = _safe_ratio(exp_table_sql_success, exp_table_sql_calls)
 
-    # Optional shaping for wrong answers: only when predicted answer format is valid,
-    # and weighted by expected-table hit + SQL success ratios.
     shaping_bonus = 0.0
     answer_score = 1.0 if final_answer_extractable and pred_structure_valid else 0.0
     if _SHAPING_ENABLED and not is_correct and sql_call_count > 0 and exp_table_sql_calls > 0:

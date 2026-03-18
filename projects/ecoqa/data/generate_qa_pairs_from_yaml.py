@@ -39,11 +39,61 @@ def _normalize_text(value: Any) -> str:
 
 
 def _normalize_answer(value: Any) -> str:
+    def _normalize_rows(rows_value: Any) -> list[dict[str, Any]]:
+        if not isinstance(rows_value, list):
+            raise ValueError("answer.rows must be a list")
+        normalized_rows: list[dict[str, Any]] = []
+        for row in rows_value:
+            if not isinstance(row, dict):
+                raise ValueError("each row in answer.rows must be an object")
+            normalized_rows.append(dict(row))
+        return normalized_rows
+
+    def _items_to_rows(items_value: Any) -> list[dict[str, Any]]:
+        if not isinstance(items_value, list):
+            raise ValueError("answer.items must be a list")
+        rows: list[dict[str, Any]] = []
+        for item in items_value:
+            if not isinstance(item, dict):
+                raise ValueError("each item in answer.items must be an object")
+            if "name" not in item:
+                raise ValueError("each item in answer.items must contain name")
+            if "value" not in item:
+                raise ValueError("each item in answer.items must contain value")
+
+            row: dict[str, Any] = {}
+            dims = item.get("dims")
+            if dims is not None:
+                if not isinstance(dims, dict):
+                    raise ValueError("item.dims must be an object")
+                for key, dim_value in dims.items():
+                    dim_key = _normalize_text(key)
+                    if not dim_key:
+                        raise ValueError("item.dims contains empty key")
+                    row[dim_key] = dim_value
+
+            # Converge output schema: always use a stable metric key.
+            if "result" in row:
+                raise ValueError("item.dims cannot contain reserved key 'result'")
+            row["result"] = item.get("value")
+            rows.append(row)
+        return rows
+
     if value is None:
-        value = {"items": []}
-    if not isinstance(value, (dict, list)):
+        payload = {"rows": []}
+    elif isinstance(value, dict):
+        if "rows" in value:
+            payload = {"rows": _normalize_rows(value.get("rows"))}
+        elif "items" in value:
+            payload = {"rows": _items_to_rows(value.get("items"))}
+        else:
+            raise ValueError("answer object must contain 'rows' or 'items'")
+    elif isinstance(value, list):
+        payload = {"rows": _normalize_rows(value)}
+    else:
         raise ValueError(f"answer must be dict/list for structured format, got: {type(value).__name__}")
-    return json.dumps(value, ensure_ascii=False)
+
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
 
 
 def _normalize_signature_text(value: Any) -> str:

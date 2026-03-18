@@ -60,7 +60,7 @@ def test_environment_tracks_sql_runtime_stats():
 def test_environment_forces_failure_on_step_budget_tool_call():
     task = {
         "question": "dummy",
-        "ground_truth": '{"items":[{"name":"x","value":1}]}',
+        "ground_truth": '{"rows":[{"x":1}]}',
         "table_name": "interest_rates",
     }
     env = EcoQAEnvironment(task=task)

@@ -45,11 +45,11 @@ def _normalize_structure_answer(value, question_id: str) -> str:
     if not isinstance(parsed, dict):
         raise ValueError(f"Answer must be JSON object for question_id={question_id}")
 
-    items = parsed.get("items")
-    if not isinstance(items, list):
-        raise ValueError(f"Answer must contain list field 'items' for question_id={question_id}")
-    if not all(isinstance(item, dict) for item in items):
-        raise ValueError(f"Each item in answer.items must be object for question_id={question_id}")
+    rows = parsed.get("rows")
+    if not isinstance(rows, list):
+        raise ValueError(f"Answer must contain list field 'rows' for question_id={question_id}")
+    if not all(isinstance(row, dict) for row in rows):
+        raise ValueError(f"Each row in answer.rows must be object for question_id={question_id}")
 
     # Canonical JSON string for stable downstream parsing/comparison.
     return json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))

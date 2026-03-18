@@ -75,7 +75,7 @@ def _infer_sql_difficulty(example: dict) -> str:
 
     # Multi-SQL + calculator questions are harder even if each SQL is simple.
     if _as_bool(example.get("requires_calculator", False), default=False):
-        score += 1.0
+        score += 1.5
 
     if answer_type == "list":
         score += 0.5

@@ -36,7 +36,7 @@ def _as_env_float(name: str, default: float) -> float:
 
 
 _SHAPING_ENABLED = _as_env_bool("ECOQA_ENABLE_SHAPING_BONUS", True)
-_MAX_SHAPING_BONUS = max(0.0, _as_env_float("ECOQA_MAX_SHAPING_BONUS", 0.05))
+_MAX_SHAPING_BONUS = max(0.0, _as_env_float("ECOQA_MAX_SHAPING_BONUS", 0.10))
 
 
 def _extract_final_answer(action: str) -> str:

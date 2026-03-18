@@ -104,8 +104,10 @@ python -m projects.ecoqa.run_ecoqa
 Run trained checkpoint:
 
 ```bash
+CKPT_DIR=$(ls -d /root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b/global_step_* | sort -V | tail -n1)
+
 python -m vllm.entrypoints.openai.api_server \
-  --model /root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b \
+  --model "$CKPT_DIR" \
   --served-model-name ecoqa-ckpt \
   --host 0.0.0.0 \
   --port 30000 \
@@ -123,6 +125,24 @@ python -m projects.ecoqa.run_ecoqa
 
 If your model path or endpoint differs from the defaults in `run_ecoqa.py`,
 override `ECOQA_BASE_MODEL_PATH`, `ECOQA_CKPT_MODEL_PATH`, and `ECOQA_BASE_URL`.
+
+`run_ecoqa.py` checkpoint selection behavior:
+
+- If `ECOQA_CKPT_MODEL_PATH` is set, use it directly (recommended when vLLM uses `--served-model-name`).
+- Else it resolves the latest `global_step_*` under `ECOQA_CKPT_ROOT` (default `/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b`).
+
+Run only `global_step_90`:
+
+```bash
+python -m vllm.entrypoints.openai.api_server \
+  --model /root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b/global_step_90 \
+  --served-model-name ecoqa-ckpt \
+  --host 0.0.0.0 \
+  --port 30000 \
+  --dtype bfloat16 \
+  --max-model-len 16384 \
+  --gpu-memory-utilization 0.92
+```
 
 4. Run GRPO training:
 

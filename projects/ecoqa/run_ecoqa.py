@@ -6,6 +6,39 @@ from pathlib import Path
 from .eval_runtime import build_engine, load_split, task_id
 
 
+def _resolve_latest_ckpt_dir(path_or_root: str) -> str:
+    raw = (path_or_root or "").strip()
+    if not raw:
+        return raw
+
+    candidate = Path(raw)
+    if not candidate.exists() or not candidate.is_dir():
+        return raw
+
+    if candidate.name.startswith("global_step_"):
+        return str(candidate)
+
+    best_step = -1
+    best_path: Path | None = None
+    for child in candidate.iterdir():
+        if not child.is_dir():
+            continue
+        name = child.name
+        if not name.startswith("global_step_"):
+            continue
+        step_text = name.removeprefix("global_step_")
+        if not step_text.isdigit():
+            continue
+        step = int(step_text)
+        if step > best_step:
+            best_step = step
+            best_path = child
+
+    if best_path is not None:
+        return str(best_path)
+    return raw
+
+
 def _trajectory_is_correct(trajectory) -> bool:
     steps = getattr(trajectory, "steps", None) or []
     if steps:
@@ -167,7 +200,10 @@ def main():
         model_source = "base"
 
     base_model_path = os.getenv("ECOQA_BASE_MODEL_PATH", "/root/autodl-tmp/models/Qwen3-4B-Instruct-2507")
-    ckpt_model_path = os.getenv("ECOQA_CKPT_MODEL_PATH", "/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b")
+    ckpt_model_path = os.getenv("ECOQA_CKPT_MODEL_PATH", "").strip()
+    ckpt_model_root = os.getenv("ECOQA_CKPT_ROOT", "/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b").strip()
+    if not ckpt_model_path:
+        ckpt_model_path = _resolve_latest_ckpt_dir(ckpt_model_root)
     model_name = base_model_path if model_source == "base" else ckpt_model_path
 
     base_url = os.getenv("ECOQA_BASE_URL", "http://127.0.0.1:30000/v1")
@@ -178,6 +214,8 @@ def main():
     print(f"[EcoQA] split={split}, repeat_n={repeat_n}, max_steps={max_steps}, max_prompt_length={max_prompt_length}")
     print(f"[EcoQA] sampling: temperature={temperature}, top_p={top_p}")
     print(f"[EcoQA] model_source={model_source}")
+    if model_source == "ckpt":
+        print(f"[EcoQA] ckpt_root={ckpt_model_root}")
     print(f"[EcoQA] model={model_name}")
     print(f"[EcoQA] base_url={base_url} (expect vLLM with dtype=bfloat16)")
 

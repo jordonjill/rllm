@@ -4,7 +4,6 @@ from typing import Any
 
 from transformers import AutoTokenizer
 
-from rllm.data.dataset import DatasetRegistry
 from rllm.engine.agent_execution_engine import AgentExecutionEngine
 
 from .eco_qa_agent import EcoQAAgent
@@ -21,11 +20,9 @@ def task_id(task: dict[str, Any]) -> str:
 
 
 def load_split(split: str):
-    dataset = DatasetRegistry.load_dataset("ecoqa", split)
-    if dataset is None:
-        train, val, test = prepare_ecoqa_data()
-        dataset = {"train": train, "val": val, "test": test}[split]
-    return dataset
+    # Always refresh from QA CSV to avoid stale registry schema.
+    train, val, test = prepare_ecoqa_data()
+    return {"train": train, "val": val, "test": test}[split]
 
 
 def build_engine(

@@ -5,7 +5,6 @@ import re
 import hydra
 
 from rllm.agents.agent import Episode
-from rllm.data.dataset import DatasetRegistry
 from rllm.engine.rollout.rollout_engine import ModelOutput
 from rllm.trainer.agent_trainer import AgentTrainer
 from rllm.workflows.multi_turn_workflow import MultiTurnWorkflow
@@ -242,13 +241,10 @@ class EcoQAWorkflow(MultiTurnWorkflow):
     version_base=None,
 )
 def main(config):
-    train_dataset = DatasetRegistry.load_dataset("ecoqa", "train")
-    val_dataset = DatasetRegistry.load_dataset("ecoqa", "val")
+    from .prepare_ecoqa_data import prepare_ecoqa_data
 
-    if train_dataset is None or val_dataset is None:
-        from .prepare_ecoqa_data import prepare_ecoqa_data
-
-        train_dataset, val_dataset, _ = prepare_ecoqa_data()
+    # Always refresh from QA CSV to avoid stale registry schema.
+    train_dataset, val_dataset, _ = prepare_ecoqa_data()
 
     train_dataset = _build_curriculum_train_dataset(config, train_dataset)
 

@@ -15,8 +15,6 @@ class _DummyDataset:
 
 def test_curriculum_requires_calculator_increases_difficulty_bucket():
     base = {
-        "question_type": "single_table",
-        "answer_type": "scalar",
         "ground_truth_sql": "SELECT month FROM exchange_rates WHERE year = 2024 ORDER BY month DESC",
         "requires_calculator": False,
     }
@@ -29,8 +27,6 @@ def test_curriculum_requires_calculator_increases_difficulty_bucket():
 
 def test_curriculum_structure_items_and_dims_increase_difficulty():
     base = {
-        "question_type": "single_table",
-        "answer_type": "structure",
         "ground_truth_sql": "SELECT month FROM exchange_rates ORDER BY month DESC",
         "requires_calculator": False,
         "ground_truth": '{"items":[{"name":"month","value":12}]}',

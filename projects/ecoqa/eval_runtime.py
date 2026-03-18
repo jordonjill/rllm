@@ -51,7 +51,6 @@ def build_engine(
     return AgentExecutionEngine(
         agent_class=EcoQAAgent,
         env_class=EcoQAEnvironment,
-        env_args={"max_steps": max_steps},
         engine_name="openai",
         rollout_engine_args={"model": model, "base_url": base_url, "api_key": api_key},
         tokenizer=tokenizer,

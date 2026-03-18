@@ -16,11 +16,9 @@ def _example(
         "id": "",
         "source_id": source_id,
         "table_name": table_name,
-        "question_type": "single_table",
         "question": question,
         "ground_truth_sql": ground_truth_sql,
         "answer": answer,
-        "answer_type": "structure",
         "requires_calculator": False,
         "source_yaml": source_yaml,
     }

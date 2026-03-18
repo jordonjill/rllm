@@ -29,10 +29,15 @@ It is not training; it is for end-to-end evaluation/inference.
 - QA ground truth now uses a unified structured JSON format:
   - `{"items":[{"name": "...", "value": ..., "dims": {...}}, ...]}`
   - no-data answer: `{"items":[]}`
-- `answer_type` is unified as `structure`.
 - Reward correctness compares `items` structurally (order-insensitive), with alias tolerance on `name`:
   - if `dims` exists, `dims + value` must match exactly
   - if `dims` does not exist, `value` must match
+- Reward metadata keeps only 5 fields:
+  - `final_reward`
+  - `correctness_reward`
+  - `shaping_bonus`
+  - `exp_table_hit_rate`
+  - `exp_table_sql_succ_rate`
 
 ## Quick Start
 
@@ -48,7 +53,7 @@ uv pip install -e ".[dev]"
 python3 projects/ecoqa/data/generate_qa_pairs_from_yaml.py
 ```
 
-By default this script reads `projects/ecoqa/data/yaml/*.yaml`, applies a reproducible random split (seed=42), and writes:
+By default this script reads `projects/ecoqa/data/yaml/*.yaml`, applies a reproducible random split (seed=20260318), and writes:
 
 - `projects/ecoqa/data/qa_pairs/train_ecoqa.csv` (720)
 - `projects/ecoqa/data/qa_pairs/val_ecoqa.csv` (90)
@@ -134,7 +139,7 @@ Tips:
 - Enable/disable models in `projects/ecoqa/benchmarks/model_profiles.json`.
 - For online API models, set the env var referenced by `api_key_env` (for example `OPENAI_API_KEY`).
 - For trained checkpoints, update `model` in the `trained_ecoqa_local` profile and start a serving endpoint.
-- `model_comparison.csv` includes `acc_structure` for the unified answer format.
+- `model_comparison.csv` includes mean values for `final_reward`, `correctness_reward`, `shaping_bonus`, `exp_table_hit_rate`, and `exp_table_sql_succ_rate`.
 
 ## Tests
 

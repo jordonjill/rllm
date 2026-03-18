@@ -116,8 +116,6 @@ def prepare_ecoqa_data(force_regenerate: bool = False):
             "ground_truth": ground_truth,
             "data_source": "ecoqa",
             "question_id": question_id,
-            "question_type": _safe_str(example.get("question_type")).lower(),
-            "answer_type": "structure",
             "table_name": _safe_str(example.get("table_name")),
             "ground_truth_sql": _safe_str(example.get("ground_truth_sql")),
             "requires_calculator": _safe_bool(example.get("requires_calculator")),

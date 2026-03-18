@@ -174,20 +174,31 @@ def _extract_final_answer(row: dict) -> str:
     steps = row.get("steps", [])
     if not steps:
         return ""
-    metadata = ((steps[-1].get("info", {}) or {}).get("metadata", {}) or {})
-    return str(metadata.get("final_answer_extracted", "") or "")
+    last_step = steps[-1] if isinstance(steps[-1], dict) else {}
+    metadata = ((last_step.get("info", {}) or {}).get("metadata", {}) or {})
+    if isinstance(metadata, dict):
+        extracted = str(metadata.get("final_answer_extracted", "") or "").strip()
+        if extracted:
+            return extracted
 
+    action = last_step.get("action", [])
+    if isinstance(action, list):
+        for call in action:
+            function = (call or {}).get("function", {}) or {}
+            if function.get("name") != "finish":
+                continue
+            arguments = function.get("arguments", {})
+            if isinstance(arguments, str):
+                try:
+                    arguments = json.loads(arguments)
+                except Exception:
+                    arguments = {}
+            if isinstance(arguments, dict):
+                response = str(arguments.get("response", "") or "").strip()
+                if response:
+                    return response
 
-def _infer_target_kind(row: dict) -> str:
-    question_type = str(row.get("question_type", "")).strip().lower()
-    answer_type = str(row.get("answer_type", "")).strip().lower()
-    if answer_type == "structure":
-        return "structure"
-    if question_type == "single_table_error":
-        return "no_data"
-    if answer_type in {"list", "scalar"}:
-        return answer_type
-    return "unknown"
+    return str(last_step.get("model_response", "") or "").strip()
 
 
 def _row_is_correct(row: dict) -> bool:
@@ -209,55 +220,49 @@ def _row_is_correct(row: dict) -> bool:
 
 def _categorize_failure(row: dict) -> tuple[str, dict]:
     final_answer = _extract_final_answer(row)
-    target_kind = _infer_target_kind(row)
     gt_items = _extract_items(str(row.get("ground_truth", "")))
     pred_items = _extract_items(final_answer)
     sql_query, sql_rows = _extract_sql_query_and_last_rows(row.get("steps", []))
 
     category = "unknown_failure"
-    if target_kind == "structure":
-        parsed_pred = _try_parse_json(final_answer)
-        if not isinstance(parsed_pred, dict):
-            category = "format_non_json_object"
-        elif "items" not in parsed_pred:
-            category = "format_missing_items_field"
-        elif not isinstance(parsed_pred.get("items"), list):
-            category = "format_items_not_list"
-        elif pred_items is None or gt_items is None:
-            category = "parse_or_schema_error"
-        elif not all(isinstance(x, dict) for x in pred_items):
-            category = "items_not_object"
-        elif not all(isinstance(x, dict) for x in gt_items):
-            category = "ground_truth_items_not_object"
-        elif any("value" not in x for x in pred_items):
-            category = "item_missing_value"
-        elif sql_rows == [] and len(gt_items) > 0:
-            category = "sql_empty_result"
+    parsed_pred = _try_parse_json(final_answer)
+    if not isinstance(parsed_pred, dict):
+        category = "format_non_json_object"
+    elif "items" not in parsed_pred:
+        category = "format_missing_items_field"
+    elif not isinstance(parsed_pred.get("items"), list):
+        category = "format_items_not_list"
+    elif pred_items is None or gt_items is None:
+        category = "parse_or_schema_error"
+    elif not all(isinstance(x, dict) for x in pred_items):
+        category = "items_not_object"
+    elif not all(isinstance(x, dict) for x in gt_items):
+        category = "ground_truth_items_not_object"
+    elif any("value" not in x for x in pred_items):
+        category = "item_missing_value"
+    elif sql_rows == [] and len(gt_items) > 0:
+        category = "sql_empty_result"
+    else:
+        gt_exact = Counter(_serialize_row(_normalize_row(x)) for x in gt_items)
+        pred_exact = Counter(_serialize_row(_normalize_row(x)) for x in pred_items)
+        if gt_exact == pred_exact:
+            category = "unexpected_exact_match"
+        elif _structure_alias_match(pred_items, gt_items):
+            category = "alias_only_name_mismatch"
+        elif len(pred_items) != len(gt_items):
+            category = "item_count_mismatch"
         else:
-            gt_exact = Counter(_serialize_row(_normalize_row(x)) for x in gt_items)
-            pred_exact = Counter(_serialize_row(_normalize_row(x)) for x in pred_items)
-            if gt_exact == pred_exact:
-                category = "unexpected_exact_match"
-            elif _structure_alias_match(pred_items, gt_items):
-                category = "alias_only_name_mismatch"
-            elif len(pred_items) != len(gt_items):
-                category = "item_count_mismatch"
-            else:
-                gt_dim_value = Counter(_serialize_dim_value_signature(x) for x in gt_items)
-                pred_dim_value = Counter(_serialize_dim_value_signature(x) for x in pred_items)
-                gt_dim_value.pop(None, None)
-                pred_dim_value.pop(None, None)
-                gt_value_only = Counter(_serialize_value(_normalize_row(x).get("value")) for x in gt_items)
-                pred_value_only = Counter(_serialize_value(_normalize_row(x).get("value")) for x in pred_items)
+            gt_dim_value = Counter(_serialize_dim_value_signature(x) for x in gt_items)
+            pred_dim_value = Counter(_serialize_dim_value_signature(x) for x in pred_items)
+            gt_dim_value.pop(None, None)
+            pred_dim_value.pop(None, None)
+            gt_value_only = Counter(_serialize_value(_normalize_row(x).get("value")) for x in gt_items)
+            pred_value_only = Counter(_serialize_value(_normalize_row(x).get("value")) for x in pred_items)
 
-                if gt_value_only == pred_value_only and gt_dim_value != pred_dim_value:
-                    category = "dims_mismatch_or_missing"
-                else:
-                    category = "value_mismatch"
-    elif target_kind == "no_data":
-        category = "no_data_not_returned"
-    elif target_kind in {"list", "scalar"}:
-        category = "legacy_target_kind_mismatch"
+            if gt_value_only == pred_value_only and gt_dim_value != pred_dim_value:
+                category = "dims_mismatch_or_missing"
+            else:
+                category = "value_mismatch"
 
     return category, {
         "question_id": str(row.get("question_id", "")),
@@ -273,24 +278,34 @@ def analyze(input_path: Path, top_n_examples: int = 3) -> dict:
     success = sum(1 for row in rows if _row_is_correct(row))
     failure = total - success
 
-    answer_type_stats = defaultdict(lambda: {"total": 0, "success": 0})
-    question_type_stats = defaultdict(lambda: {"total": 0, "success": 0})
     step_distribution = Counter()
     termination_distribution = Counter()
     sql_call_distribution = Counter()
+    final_reward_values: list[float] = []
+    correctness_reward_values: list[float] = []
+    shaping_bonus_values: list[float] = []
+    hit_rate_values: list[float] = []
+    sql_succ_rate_values: list[float] = []
 
     for row in rows:
         ok = _row_is_correct(row)
-        answer_type = str(row.get("answer_type", "unknown") or "unknown")
-        question_type = str(row.get("question_type", "unknown") or "unknown")
-
-        answer_type_stats[answer_type]["total"] += 1
-        answer_type_stats[answer_type]["success"] += int(ok)
-        question_type_stats[question_type]["total"] += 1
-        question_type_stats[question_type]["success"] += int(ok)
 
         step_distribution[int(row.get("num_steps", 0) or 0)] += 1
         termination_distribution[str(row.get("termination_reason_inferred", ""))] += 1
+
+        final_reward_values.append(float(row.get("reward", 0.0) or 0.0))
+        steps = row.get("steps", [])
+        last_step = steps[-1] if isinstance(steps, list) and steps and isinstance(steps[-1], dict) else {}
+        metadata = ((last_step.get("info", {}) or {}).get("metadata", {}) or {})
+        if isinstance(metadata, dict):
+            if metadata.get("correctness_reward") is not None:
+                correctness_reward_values.append(float(metadata.get("correctness_reward")))
+            if metadata.get("shaping_bonus") is not None:
+                shaping_bonus_values.append(float(metadata.get("shaping_bonus")))
+            if metadata.get("exp_table_hit_rate") is not None:
+                hit_rate_values.append(float(metadata.get("exp_table_hit_rate")))
+            if metadata.get("exp_table_sql_succ_rate") is not None:
+                sql_succ_rate_values.append(float(metadata.get("exp_table_sql_succ_rate")))
 
         sql_calls = 0
         for step in row.get("steps", []):
@@ -317,9 +332,15 @@ def analyze(input_path: Path, top_n_examples: int = 3) -> dict:
         "success": success,
         "failure": failure,
         "success_rate": (success / total) if total else 0.0,
-        "mean_reward": (sum(float(row.get("reward", 0.0) or 0.0) for row in rows) / total) if total else 0.0,
-        "answer_type_stats": answer_type_stats,
-        "question_type_stats": question_type_stats,
+        "final_reward_mean": (sum(final_reward_values) / len(final_reward_values)) if final_reward_values else 0.0,
+        "correctness_reward_mean": (sum(correctness_reward_values) / len(correctness_reward_values))
+        if correctness_reward_values
+        else 0.0,
+        "shaping_bonus_mean": (sum(shaping_bonus_values) / len(shaping_bonus_values)) if shaping_bonus_values else 0.0,
+        "exp_table_hit_rate_mean": (sum(hit_rate_values) / len(hit_rate_values)) if hit_rate_values else 0.0,
+        "exp_table_sql_succ_rate_mean": (sum(sql_succ_rate_values) / len(sql_succ_rate_values))
+        if sql_succ_rate_values
+        else 0.0,
         "step_distribution": step_distribution,
         "termination_distribution": termination_distribution,
         "sql_call_distribution": sql_call_distribution,
@@ -337,7 +358,11 @@ def _print_report(report: dict) -> None:
                 "success": report["success"],
                 "failure": report["failure"],
                 "success_rate_pct": round(report["success_rate"] * 100, 2),
-                "mean_reward": round(report["mean_reward"], 4),
+                "final_reward_mean": round(report["final_reward_mean"], 4),
+                "correctness_reward_mean": round(report["correctness_reward_mean"], 4),
+                "shaping_bonus_mean": round(report["shaping_bonus_mean"], 4),
+                "exp_table_hit_rate_mean": round(report["exp_table_hit_rate_mean"], 4),
+                "exp_table_sql_succ_rate_mean": round(report["exp_table_sql_succ_rate_mean"], 4),
                 "step_distribution": dict(report["step_distribution"]),
                 "termination_distribution": dict(report["termination_distribution"]),
                 "sql_call_distribution": dict(report["sql_call_distribution"]),
@@ -346,18 +371,6 @@ def _print_report(report: dict) -> None:
             indent=2,
         )
     )
-
-    print("\n=== BY ANSWER TYPE ===")
-    for key in sorted(report["answer_type_stats"]):
-        row = report["answer_type_stats"][key]
-        rate = (row["success"] / row["total"] * 100) if row["total"] else 0.0
-        print(f"{key}: {row['success']}/{row['total']} ({rate:.1f}%)")
-
-    print("\n=== BY QUESTION TYPE ===")
-    for key in sorted(report["question_type_stats"]):
-        row = report["question_type_stats"][key]
-        rate = (row["success"] / row["total"] * 100) if row["total"] else 0.0
-        print(f"{key}: {row['success']}/{row['total']} ({rate:.1f}%)")
 
     print("\n=== FAILURE CATEGORIES ===")
     total_fail = max(report["failure"], 1)
@@ -390,8 +403,6 @@ def main() -> None:
         args.save_json.parent.mkdir(parents=True, exist_ok=True)
         serializable = {
             **report,
-            "answer_type_stats": dict(report["answer_type_stats"]),
-            "question_type_stats": dict(report["question_type_stats"]),
             "step_distribution": dict(report["step_distribution"]),
             "termination_distribution": dict(report["termination_distribution"]),
             "sql_call_distribution": dict(report["sql_call_distribution"]),

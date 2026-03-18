@@ -6,5 +6,6 @@
 Each summary row corresponds to one model profile run over one dataset split.
 
 Key columns:
-- `pass_at_1`, `pass_at_k`, `reward_mean`
-- `acc_structure` (primary accuracy under unified `{"items":[...]}` answers)
+- `pass_at_1`, `pass_at_k`
+- `final_reward_mean`, `correctness_reward_mean`, `shaping_bonus_mean`
+- `exp_table_hit_rate_mean`, `exp_table_sql_succ_rate_mean`

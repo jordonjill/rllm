@@ -10,16 +10,6 @@ from .eco_qa_agent import EcoQAAgent
 from .eco_qa_environment import EcoQAEnvironment
 
 
-def _infer_target_kind_from_task(task: dict) -> str:
-    question_type = str(task.get("question_type", "")).strip().lower()
-    answer_type = str(task.get("answer_type", "")).strip().lower()
-    if question_type == "single_table_error":
-        return "no_data"
-    if answer_type == "structure":
-        return "structure"
-    return "unknown"
-
-
 class EcoQAWorkflow(MultiTurnWorkflow):
     """MultiTurnWorkflow with reward metadata logging."""
 
@@ -87,33 +77,15 @@ class EcoQAWorkflow(MultiTurnWorkflow):
         if episode.trajectories and episode.trajectories[0].steps:
             step_info = episode.trajectories[0].steps[-1].info
             metadata = step_info.get("metadata", {})
-            target_kind = str(metadata.get("target_kind", "")).strip().lower()
-            if not target_kind:
-                task = episode.task if isinstance(episode.task, dict) else {}
-                target_kind = _infer_target_kind_from_task(task)
             correctness_reward = float(metadata.get("correctness_reward", float(step_info.get("is_correct", False))))
 
-            # Keep overall rewards for global monitoring.
             episode.metrics["correctness_reward"] = correctness_reward
-            episode.metrics["final_reward"] = float(metadata.get("final_reward", correctness_reward))
+            episode.metrics["final_reward"] = float(
+                metadata.get("final_reward", getattr(episode.trajectories[0], "reward", correctness_reward))
+            )
             episode.metrics["shaping_bonus"] = float(metadata.get("shaping_bonus", 0.0))
             episode.metrics["exp_table_hit_rate"] = float(metadata.get("exp_table_hit_rate", 0.0))
             episode.metrics["exp_table_sql_succ_rate"] = float(metadata.get("exp_table_sql_succ_rate", 0.0))
-            episode.metrics["forced_max_steps_failure"] = float(metadata.get("forced_max_steps_failure", 0.0))
-            episode.metrics["pred_structure_valid"] = float(metadata.get("pred_structure_valid", 0.0))
-
-            # Dataset composition monitoring.
-            episode.metrics["target_is_structure"] = 1.0 if target_kind == "structure" else 0.0
-            episode.metrics["target_is_no_data"] = 1.0 if target_kind == "no_data" else 0.0
-            episode.metrics["target_is_unknown"] = 1.0 if target_kind not in {"structure", "no_data"} else 0.0
-
-            # Type-conditional accuracy (denominator = samples of that type only).
-            if target_kind == "structure":
-                episode.metrics["structure_acc"] = correctness_reward
-                episode.metrics["structure_exact_match"] = float(bool(metadata.get("structure_exact_match", False)))
-                episode.metrics["structure_alias_value_match"] = float(bool(metadata.get("structure_alias_value_match", False)))
-            elif target_kind == "no_data":
-                episode.metrics["no_data_acc"] = correctness_reward
 
 
 @hydra.main(
@@ -139,7 +111,6 @@ def main(config):
         workflow_args={
             "agent_cls": EcoQAAgent,
             "env_cls": EcoQAEnvironment,
-            "env_args": {"max_steps": max_steps},
             "max_steps": max_steps,
         },
         config=config,

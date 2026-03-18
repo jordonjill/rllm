@@ -6,7 +6,8 @@ from collections import Counter
 
 from rllm.rewards.reward_types import RewardOutput
 
-_FINAL_ANSWER_CODE_BLOCK_RE = re.compile(r"```\s*FINAL ANSWER:\s*(.*?)\s*```", re.DOTALL | re.IGNORECASE)
+_FINAL_ANSWER_CODE_BLOCK_RE = re.compile(r"```(?:\w+)?\s*FINAL ANSWER:\s*(.*?)\s*```", re.DOTALL | re.IGNORECASE)
+_JSON_CODE_BLOCK_RE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL | re.IGNORECASE)
 _FINAL_ANSWER_PARAGRAPH_RE = re.compile(r"FINAL ANSWER:\s*(.*?)(?=\n\s*\n)", re.DOTALL | re.IGNORECASE)
 _FINAL_ANSWER_TAIL_RE = re.compile(r"FINAL ANSWER:\s*(.*)$", re.DOTALL | re.IGNORECASE)
 _FULL_NUMBER_RE = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?%?")
@@ -39,20 +40,33 @@ _SHAPING_ENABLED = _as_env_bool("ECOQA_ENABLE_SHAPING_BONUS", True)
 _MAX_SHAPING_BONUS = max(0.0, _as_env_float("ECOQA_MAX_SHAPING_BONUS", 0.10))
 
 
-def _extract_final_answer(action: str) -> str:
+def _extract_final_answer_with_status(action: str) -> tuple[str, bool]:
     match = _FINAL_ANSWER_CODE_BLOCK_RE.search(action)
     if match:
-        return match.group(1).strip()
+        return match.group(1).strip(), True
+
+    for code_block in _JSON_CODE_BLOCK_RE.finditer(action):
+        candidate = code_block.group(1).strip()
+        if _try_parse_json(candidate) is not None:
+            return candidate, True
 
     match = _FINAL_ANSWER_PARAGRAPH_RE.search(action)
     if match:
-        return match.group(1).strip()
+        return match.group(1).strip(), True
 
     match = _FINAL_ANSWER_TAIL_RE.search(action)
     if match:
-        return match.group(1).strip()
+        return match.group(1).strip(), True
 
-    return action.strip()
+    stripped = action.strip()
+    if _try_parse_json(stripped) is not None:
+        return stripped, True
+    return stripped, False
+
+
+def _extract_final_answer(action: str) -> str:
+    answer, _ = _extract_final_answer_with_status(action)
+    return answer
 
 
 def _try_parse_json(text: str):
@@ -243,29 +257,26 @@ def _sql_call_stats(task_info: dict, expected_tables: set[str]) -> tuple[int, in
     return total_sql_calls, exp_table_sql_calls, exp_table_sql_success
 
 
-def _infer_target_kind(task_info: dict) -> str:
-    question_type = str(task_info.get("question_type", "")).strip().lower()
-    answer_type = str(task_info.get("answer_type", "")).strip().lower()
-    if question_type == "single_table_error":
-        return "no_data"
-    if answer_type == "structure":
-        return "structure"
-    return "unknown"
-
-
 def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     question = task_info.get("question")
     ground_truth = task_info.get("ground_truth")
     if not action or not question or ground_truth in (None, ""):
-        return RewardOutput(reward=0.0, is_correct=False, metadata={"correctness_reward": 0.0})
+        return RewardOutput(
+            reward=0.0,
+            is_correct=False,
+            metadata={
+                "final_reward": 0.0,
+                "correctness_reward": 0.0,
+                "shaping_bonus": 0.0,
+                "exp_table_hit_rate": 0.0,
+                "exp_table_sql_succ_rate": 0.0,
+            },
+        )
 
     ground_truth_text = str(ground_truth)
-    final_answer = _extract_final_answer(action)
-    target_kind = _infer_target_kind(task_info)
+    final_answer, final_answer_extractable = _extract_final_answer_with_status(action)
 
     is_correct = False
-    structure_exact_match = False
-    structure_alias_value_match = False
     gt_items = _extract_items(ground_truth_text)
     pred_items = _extract_items(final_answer)
     pred_structure_valid = _is_valid_structure_prediction(final_answer)
@@ -276,9 +287,7 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
         if len(gt_dict_items) == len(gt_items) and len(pred_dict_items) == len(pred_items):
             gt_counter = Counter(_serialize_item(_normalize_item(item)) for item in gt_dict_items)
             pred_counter = Counter(_serialize_item(_normalize_item(item)) for item in pred_dict_items)
-            structure_exact_match = pred_counter == gt_counter
-            structure_alias_value_match = _structure_alias_match(pred_dict_items, gt_dict_items)
-            is_correct = structure_exact_match or structure_alias_value_match
+            is_correct = pred_counter == gt_counter or _structure_alias_match(pred_dict_items, gt_dict_items)
 
     correctness_reward = 1.0 if is_correct else 0.0
     expected_table_name = task_info.get("table_name", "")
@@ -291,8 +300,9 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     # Optional shaping for wrong answers: only when predicted answer format is valid,
     # and weighted by expected-table hit + SQL success ratios.
     shaping_bonus = 0.0
-    if _SHAPING_ENABLED and not is_correct and pred_structure_valid and sql_call_count > 0 and exp_table_sql_calls > 0:
-        shaping_factor = exp_table_hit_rate * exp_table_sql_succ_rate
+    answer_score = 1.0 if final_answer_extractable and pred_structure_valid else 0.0
+    if _SHAPING_ENABLED and not is_correct and sql_call_count > 0 and exp_table_sql_calls > 0:
+        shaping_factor = exp_table_hit_rate * exp_table_sql_succ_rate * answer_score
         shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, _MAX_SHAPING_BONUS * shaping_factor))
 
     final_reward = correctness_reward if is_correct else shaping_bonus
@@ -301,22 +311,10 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
         reward=final_reward,
         is_correct=is_correct,
         metadata={
+            "final_reward": final_reward,
             "correctness_reward": correctness_reward,
             "shaping_bonus": shaping_bonus,
-            "final_reward": final_reward,
-            "sql_call_count": sql_call_count,
-            "exp_table_sql_calls": exp_table_sql_calls,
-            "exp_table_sql_success": exp_table_sql_success,
             "exp_table_hit_rate": exp_table_hit_rate,
             "exp_table_sql_succ_rate": exp_table_sql_succ_rate,
-            "shaping_enabled": float(_SHAPING_ENABLED),
-            "max_shaping_bonus": _MAX_SHAPING_BONUS,
-            "target_kind": target_kind,
-            "structure_exact_match": structure_exact_match,
-            "structure_alias_value_match": structure_alias_value_match,
-            "pred_structure_valid": float(pred_structure_valid),
-            "ground_truth_item_count": len(gt_items) if isinstance(gt_items, list) else -1,
-            "pred_item_count": len(pred_items) if isinstance(pred_items, list) else -1,
-            "final_answer_extracted": final_answer,
         },
     )

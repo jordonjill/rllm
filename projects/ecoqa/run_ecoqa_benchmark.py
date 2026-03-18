@@ -74,17 +74,6 @@ def _load_model_profiles(config_path: Path, include_disabled: bool = False) -> l
         profiles.append(profile)
     return profiles
 
-def _target_kind(task: dict[str, Any]) -> str:
-    question_type = str(task.get("question_type", "")).strip().lower()
-    answer_type = str(task.get("answer_type", "")).strip().lower()
-    if question_type == "single_table_error":
-        return "no_data"
-    if answer_type == "structure":
-        return "structure"
-    if answer_type in {"scalar", "list"}:
-        return answer_type
-    return "unknown"
-
 
 def _extract_metadata(trajectory) -> dict[str, Any]:
     if not getattr(trajectory, "steps", None):
@@ -94,16 +83,25 @@ def _extract_metadata(trajectory) -> dict[str, Any]:
     return metadata if isinstance(metadata, dict) else {}
 
 
+def _extract_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def _compute_metrics(trajectories: list) -> dict[str, Any]:
-    total = len(trajectories)
-    if total == 0:
+    if len(trajectories) == 0:
         return {
             "num_trajectories": 0,
             "num_unique_questions": 0,
             "pass_at_1": 0.0,
             "pass_at_k": 0.0,
-            "reward_mean": 0.0,
-            "accuracy_by_type": {},
+            "final_reward_mean": 0.0,
+            "correctness_reward_mean": 0.0,
+            "shaping_bonus_mean": 0.0,
+            "exp_table_hit_rate_mean": 0.0,
+            "exp_table_sql_succ_rate_mean": 0.0,
         }
 
     rows: list[dict[str, Any]] = []
@@ -113,12 +111,14 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
         task = getattr(traj, "task", {}) or {}
         metadata = _extract_metadata(traj)
         question_id = task_id(task)
-        kind = str(metadata.get("target_kind", "")).strip().lower() or _target_kind(task)
         rows.append(
             {
                 "question_id": question_id,
-                "kind": kind,
-                "reward": reward,
+                "final_reward": reward,
+                "correctness_reward": _extract_float(metadata.get("correctness_reward"), float(is_correct)),
+                "shaping_bonus": _extract_float(metadata.get("shaping_bonus"), 0.0),
+                "exp_table_hit_rate": _extract_float(metadata.get("exp_table_hit_rate"), 0.0),
+                "exp_table_sql_succ_rate": _extract_float(metadata.get("exp_table_sql_succ_rate"), 0.0),
                 "is_correct": is_correct,
             }
         )
@@ -128,22 +128,22 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
     for r in rows:
         grouped.setdefault(r["question_id"], []).append(r)
     pass_at_k = sum(1 for _, group in grouped.items() if any(g["is_correct"] for g in group)) / len(grouped)
-    reward_mean = sum(r["reward"] for r in rows) / len(rows)
-
-    by_type: dict[str, float] = {}
-    for kind in sorted(set(r["kind"] for r in rows)):
-        sub = [r for r in rows if r["kind"] == kind]
-        if not sub:
-            continue
-        by_type[kind] = sum(1 for r in sub if r["is_correct"]) / len(sub)
+    final_reward_mean = sum(r["final_reward"] for r in rows) / len(rows)
+    correctness_reward_mean = sum(r["correctness_reward"] for r in rows) / len(rows)
+    shaping_bonus_mean = sum(r["shaping_bonus"] for r in rows) / len(rows)
+    exp_table_hit_rate_mean = sum(r["exp_table_hit_rate"] for r in rows) / len(rows)
+    exp_table_sql_succ_rate_mean = sum(r["exp_table_sql_succ_rate"] for r in rows) / len(rows)
 
     return {
         "num_trajectories": len(rows),
         "num_unique_questions": len(grouped),
         "pass_at_1": pass_at_1,
         "pass_at_k": pass_at_k,
-        "reward_mean": reward_mean,
-        "accuracy_by_type": by_type,
+        "final_reward_mean": final_reward_mean,
+        "correctness_reward_mean": correctness_reward_mean,
+        "shaping_bonus_mean": shaping_bonus_mean,
+        "exp_table_hit_rate_mean": exp_table_hit_rate_mean,
+        "exp_table_sql_succ_rate_mean": exp_table_sql_succ_rate_mean,
     }
 
 
@@ -160,14 +160,12 @@ def _write_details(path: Path, run_id: str, profile: ModelProfile, trajectories:
                 "model_kind": profile.kind,
                 "trajectory_index": idx,
                 "question_id": task_id(task),
-                "question_type": task.get("question_type", ""),
-                "answer_type": task.get("answer_type", ""),
-                "reward": reward,
+                "final_reward": reward,
                 "is_correct": _trajectory_is_correct(traj),
-                "target_kind": metadata.get("target_kind", ""),
-                "structure_exact_match": metadata.get("structure_exact_match", ""),
-                "structure_alias_value_match": metadata.get("structure_alias_value_match", ""),
-                "final_answer_extracted": metadata.get("final_answer_extracted", ""),
+                "correctness_reward": _extract_float(metadata.get("correctness_reward"), 0.0),
+                "shaping_bonus": _extract_float(metadata.get("shaping_bonus"), 0.0),
+                "exp_table_hit_rate": _extract_float(metadata.get("exp_table_hit_rate"), 0.0),
+                "exp_table_sql_succ_rate": _extract_float(metadata.get("exp_table_sql_succ_rate"), 0.0),
             }
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
@@ -187,10 +185,11 @@ def _append_summary(path: Path, summary_row: dict[str, Any]) -> None:
         "num_unique_questions",
         "pass_at_1",
         "pass_at_k",
-        "reward_mean",
-        "acc_structure",
-        "acc_no_data",
-        "acc_unknown",
+        "final_reward_mean",
+        "correctness_reward_mean",
+        "shaping_bonus_mean",
+        "exp_table_hit_rate_mean",
+        "exp_table_sql_succ_rate_mean",
         "notes",
     ]
     if path.exists():
@@ -200,7 +199,7 @@ def _append_summary(path: Path, summary_row: dict[str, Any]) -> None:
             existing_rows = list(reader)
 
         if existing_header != fieldnames:
-            # Header schema changed (for example, adding acc_structure). Rewrite
+            # Header schema changed. Rewrite
             # file with the latest schema and keep old rows when keys overlap.
             with open(path, "w", encoding="utf-8", newline="") as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -288,10 +287,11 @@ def main():
             "num_unique_questions": metrics["num_unique_questions"],
             "pass_at_1": round(metrics["pass_at_1"], 6),
             "pass_at_k": round(metrics["pass_at_k"], 6),
-            "reward_mean": round(metrics["reward_mean"], 6),
-            "acc_structure": round(metrics["accuracy_by_type"].get("structure", 0.0), 6),
-            "acc_no_data": round(metrics["accuracy_by_type"].get("no_data", 0.0), 6),
-            "acc_unknown": round(metrics["accuracy_by_type"].get("unknown", 0.0), 6),
+            "final_reward_mean": round(metrics["final_reward_mean"], 6),
+            "correctness_reward_mean": round(metrics["correctness_reward_mean"], 6),
+            "shaping_bonus_mean": round(metrics["shaping_bonus_mean"], 6),
+            "exp_table_hit_rate_mean": round(metrics["exp_table_hit_rate_mean"], 6),
+            "exp_table_sql_succ_rate_mean": round(metrics["exp_table_sql_succ_rate_mean"], 6),
             "notes": profile.notes,
         }
         _append_summary(summary_csv, summary_row)

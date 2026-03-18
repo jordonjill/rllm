@@ -18,8 +18,6 @@ def test_environment_tracks_sql_runtime_stats():
     task = {
         "question": "dummy",
         "ground_truth": "1",
-        "question_type": "single_table",
-        "answer_type": "scalar",
         "table_name": "interest_rates",
     }
     env = EcoQAEnvironment(task=task)
@@ -63,11 +61,10 @@ def test_environment_forces_failure_on_step_budget_tool_call():
     task = {
         "question": "dummy",
         "ground_truth": '{"items":[{"name":"x","value":1}]}',
-        "question_type": "single_table",
-        "answer_type": "structure",
         "table_name": "interest_rates",
     }
-    env = EcoQAEnvironment(task=task, max_steps=1)
+    env = EcoQAEnvironment(task=task)
+    env.max_steps = 1
     env.reset()
 
     obs, reward, done, info = env.step(
@@ -87,5 +84,11 @@ def test_environment_forces_failure_on_step_budget_tool_call():
     assert reward == 0.0
     assert obs == {}
     assert info["is_correct"] is False
-    assert info["metadata"]["forced_termination_reason"] == "max_steps_without_final_answer"
+    assert set(info["metadata"].keys()) == {
+        "final_reward",
+        "correctness_reward",
+        "shaping_bonus",
+        "exp_table_hit_rate",
+        "exp_table_sql_succ_rate",
+    }
     assert task["sql_call_records"] == []

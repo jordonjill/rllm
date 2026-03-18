@@ -8,7 +8,7 @@ import csv
 import json
 import random
 import re
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -18,11 +18,9 @@ CSV_COLUMNS = [
     "id",
     "source_id",
     "table_name",
-    "question_type",
     "question",
     "ground_truth_sql",
     "answer",
-    "answer_type",
     "requires_calculator",
     "source_yaml",
 ]
@@ -90,21 +88,15 @@ def _load_examples(yaml_dir: Path) -> list[dict[str, Any]]:
             raw_answer = question_item.get("answer")
 
             if expected_error is not None:
-                question_type = "single_table_error"
                 answer = _normalize_answer(raw_answer)
-                answer_type = "structure"
                 ground_truth_sql = ""
                 requires_calculator = False
             elif single_sql:
-                question_type = "single_table"
                 answer = _normalize_answer(raw_answer)
-                answer_type = "structure"
                 ground_truth_sql = single_sql
                 requires_calculator = bool(question_item.get("requires_calculator", False))
             elif sql_1 and sql_2:
-                question_type = "single_table"
                 answer = _normalize_answer(raw_answer)
-                answer_type = "structure"
                 ground_truth_sql = json.dumps({"sql1": sql_1, "sql2": sql_2}, ensure_ascii=False)
                 requires_calculator = bool(question_item.get("requires_calculator", True))
             else:
@@ -115,11 +107,9 @@ def _load_examples(yaml_dir: Path) -> list[dict[str, Any]]:
                     "id": "",
                     "source_id": _normalize_text(question_item.get("id", "")),
                     "table_name": table_name,
-                    "question_type": question_type,
                     "question": question_text,
                     "ground_truth_sql": ground_truth_sql,
                     "answer": answer,
-                    "answer_type": answer_type,
                     "requires_calculator": requires_calculator,
                     "source_yaml": yaml_path.name,
                 }
@@ -231,12 +221,7 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 
 
 def _print_split_stats(split_name: str, rows: list[dict[str, Any]]) -> None:
-    question_type_counts = Counter(row["question_type"] for row in rows)
-    print(
-        f"{split_name}: {len(rows)} rows | "
-        f"single_table={question_type_counts.get('single_table', 0)} | "
-        f"single_table_error={question_type_counts.get('single_table_error', 0)}"
-    )
+    print(f"{split_name}: {len(rows)} rows")
 
 
 def _cross_split_signature_overlap(train_rows: list[dict[str, Any]], val_rows: list[dict[str, Any]], test_rows: list[dict[str, Any]]) -> int:
@@ -252,7 +237,7 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, default=Path("projects/ecoqa/data/qa_pairs"))
     parser.add_argument("--train-ratio", type=float, default=0.8)
     parser.add_argument("--val-ratio", type=float, default=0.1)
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--seed", type=int, default=20260318)
     args = parser.parse_args()
 
     examples = _load_examples(args.yaml_dir)

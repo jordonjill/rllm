@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 set -x
 
 unset ROCR_VISIBLE_DEVICES
@@ -17,9 +16,6 @@ export SHAPING_ENABLE=${SHAPING_ENABLE:-False}
 export SHAPING_MAX_BONUS=${SHAPING_MAX_BONUS:-0.10}
 export ECOQA_ENABLE_SHAPING_BONUS=${SHAPING_ENABLE}
 export ECOQA_MAX_SHAPING_BONUS=${SHAPING_MAX_BONUS}
-
-mkdir -p "${RAY_TMPDIR}" "${WANDB_DIR}"
-python3 -m projects.ecoqa.prepare_ecoqa_data
 
 python3 -m projects.ecoqa.train_ecoqa \
     algorithm.adv_estimator=grpo \
@@ -66,7 +62,7 @@ python3 -m projects.ecoqa.train_ecoqa \
     trainer.max_actor_ckpt_to_keep=1 \
     trainer.logger=['console','wandb'] \
     trainer.project_name='rllm-agent' \
-    trainer.experiment_name='ecoqa-4b' \
+    trainer.experiment_name='ecoqa-4b-nr-nc' \
     trainer.val_before_train=True \
     trainer.resume_mode=disable \
     trainer.n_gpus_per_node=1 \

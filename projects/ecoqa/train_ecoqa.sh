@@ -68,7 +68,7 @@ python3 -m projects.ecoqa.train_ecoqa \
     trainer.n_gpus_per_node=1 \
     trainer.nnodes=1 \
     trainer.save_freq=90 \
-    trainer.test_freq=90 \
+    trainer.test_freq=30 \
     trainer.default_hdfs_dir=null \
     trainer.default_local_dir=/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b \
     rllm.agent.max_steps=10 \

@@ -67,6 +67,36 @@ def _ensure_qa_files_exist() -> None:
     )
 
 
+def _patch_verl_data_source_column(dataset) -> None:
+    if not hasattr(dataset, "get_verl_data_path"):
+        return
+    verl_path = dataset.get_verl_data_path()
+    if not verl_path:
+        return
+
+    try:
+        df = pd.read_parquet(verl_path)
+    except Exception:
+        return
+
+    if "data_source" in df.columns:
+        return
+    if "extra_info" not in df.columns:
+        return
+
+    def _extract_data_source(extra_info):
+        if isinstance(extra_info, dict):
+            value = extra_info.get("data_source", "")
+            if value is None:
+                return "unknown"
+            text = str(value).strip()
+            return text or "unknown"
+        return "unknown"
+
+    df["data_source"] = df["extra_info"].apply(_extract_data_source)
+    df.to_parquet(verl_path, index=False)
+
+
 def prepare_ecoqa_data(force_regenerate: bool = False):
     if force_regenerate:
         print("force_regenerate=True is ignored: using pre-generated EcoQA QA pairs.")
@@ -100,6 +130,10 @@ def prepare_ecoqa_data(force_regenerate: bool = False):
     train_dataset = DatasetRegistry.register_dataset("ecoqa", train_processed, "train")
     val_dataset = DatasetRegistry.register_dataset("ecoqa", val_processed, "val")
     test_dataset = DatasetRegistry.register_dataset("ecoqa", test_processed, "test")
+
+    # Ensure val metrics are grouped under "ecoqa" instead of "unknown".
+    for ds in (train_dataset, val_dataset, test_dataset):
+        _patch_verl_data_source_column(ds)
 
     return train_dataset, val_dataset, test_dataset
 

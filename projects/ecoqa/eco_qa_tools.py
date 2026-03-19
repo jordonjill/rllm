@@ -93,7 +93,7 @@ def _compute_table_info(table_name: str, df: pd.DataFrame) -> str:
 
     sample_values: dict[str, list] = {}
     for col in df.columns:
-        uniq = df[col].dropna().head(100).astype(str).unique().tolist()[:8]
+        uniq = df[col].dropna().head(100).astype(str).unique().tolist()[:10]
         sample_values[col] = [_safe_json_value(v) for v in uniq]
     payload["sample_values"] = sample_values
 

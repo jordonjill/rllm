@@ -26,6 +26,8 @@ STAGE1_ENTROPY=${STAGE1_ENTROPY:-0.0002}
 STAGE1_TEMP=${STAGE1_TEMP:-0.7}
 STAGE1_SHAPING_ENABLE=${STAGE1_SHAPING_ENABLE:-True}
 STAGE1_SHAPING_MAX_BONUS=${STAGE1_SHAPING_MAX_BONUS:-0.1}
+# Ensure step 90 is visited/saved when one epoch has 90 internal steps.
+STAGE1_TOTAL_STEPS=${STAGE1_TOTAL_STEPS:-91}
 
 # Stage-2 defaults (stabilize + correctness)
 STAGE2_LR=${STAGE2_LR:-1e-6}
@@ -33,6 +35,9 @@ STAGE2_ENTROPY=${STAGE2_ENTROPY:-0.00005}
 STAGE2_TEMP=${STAGE2_TEMP:-0.6}
 STAGE2_SHAPING_ENABLE=${STAGE2_SHAPING_ENABLE:-False}
 STAGE2_SHAPING_MAX_BONUS=${STAGE2_SHAPING_MAX_BONUS:-0.00}
+# Stage-2 runs for one more epoch (another ~90 steps) after resuming from step 90.
+# Use 181 so training reaches/saves step 180 with save_freq=10.
+STAGE2_TOTAL_STEPS=${STAGE2_TOTAL_STEPS:-181}
 
 VAL_TEMP=${VAL_TEMP:-0.6}
 
@@ -101,7 +106,8 @@ python3 -m projects.ecoqa.train_ecoqa_twostage \
     actor_rollout_ref.actor.entropy_coeff=${STAGE1_ENTROPY} \
     actor_rollout_ref.rollout.temperature=${STAGE1_TEMP} \
     trainer.resume_mode=disable \
-    trainer.total_epochs=1
+    trainer.total_epochs=1 \
+    trainer.total_training_steps=${STAGE1_TOTAL_STEPS}
 
 # Stage-2: keep no curriculum, reduce exploration and close with correctness objective.
 export ECOQA_ENABLE_SHAPING_BONUS=${STAGE2_SHAPING_ENABLE}
@@ -112,4 +118,5 @@ python3 -m projects.ecoqa.train_ecoqa_twostage \
     actor_rollout_ref.actor.entropy_coeff=${STAGE2_ENTROPY} \
     actor_rollout_ref.rollout.temperature=${STAGE2_TEMP} \
     trainer.resume_mode=auto \
-    trainer.total_epochs=1
+    trainer.total_epochs=1 \
+    trainer.total_training_steps=${STAGE2_TOTAL_STEPS}

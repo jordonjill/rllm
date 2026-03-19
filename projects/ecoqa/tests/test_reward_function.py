@@ -163,3 +163,19 @@ def test_incorrect_non_structure_prediction_gets_no_shaping_bonus():
     )
     wrong = eco_qa_reward_function(task, "FINAL ANSWER: 8.0")
     assert wrong.reward == 0.0
+
+
+def test_incorrect_partial_field_match_gets_more_bonus_than_full_miss():
+    task = _task(
+        '{"rows":[{"year":2024,"result":8.10725}]}',
+        sql_call_records=[
+            {"table_name": "interest_rates", "success": True},
+            {"table_name": "interest_rates", "success": True},
+        ],
+    )
+    partial = eco_qa_reward_function(task, 'FINAL ANSWER: {"rows":[{"year":2024,"result":7.0}]}')
+    full_miss = eco_qa_reward_function(task, 'FINAL ANSWER: {"rows":[{"year":2023,"result":7.0}]}')
+
+    assert partial.reward > 0.0
+    assert full_miss.reward == 0.0
+    assert partial.reward > full_miss.reward

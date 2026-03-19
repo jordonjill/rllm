@@ -199,7 +199,57 @@ def _is_valid_structure_prediction(text: str) -> bool:
     rows = parsed.get("rows")
     if not isinstance(rows, list):
         return False
-    return all(isinstance(row, dict) for row in rows)
+    if not all(isinstance(row, dict) for row in rows):
+        return False
+    if not rows:
+        return True
+    return all(len(row) > 0 for row in rows)
+
+
+def _row_weighted_match_score(gt_row: dict, pred_row: dict) -> float:
+    if not gt_row:
+        return 0.0
+
+    if "result" in gt_row:
+        result_score = 1.0 if pred_row.get("result") == gt_row.get("result") else 0.0
+        dim_keys = [key for key in gt_row.keys() if key != "result"]
+        if dim_keys:
+            dim_match = sum(1 for key in dim_keys if pred_row.get(key) == gt_row.get(key)) / len(dim_keys)
+        else:
+            dim_match = 1.0
+        return 0.8 * result_score + 0.2 * dim_match
+
+    matched = sum(1 for key, value in gt_row.items() if pred_row.get(key) == value)
+    return matched / len(gt_row)
+
+
+def _partial_row_match_ratio(gt_rows: list, pred_rows: list) -> float:
+    if not isinstance(gt_rows, list) or not isinstance(pred_rows, list):
+        return 0.0
+
+    gt_pool = [_normalize_row(row) for row in gt_rows if isinstance(row, dict)]
+    pred_pool = [_normalize_row(row) for row in pred_rows if isinstance(row, dict)]
+    if not gt_pool or not pred_pool:
+        return 0.0
+
+    pred_pool.sort(key=lambda row: len(row), reverse=True)
+    used_gt_indices: set[int] = set()
+    matched_score = 0.0
+    for pred_row in pred_pool:
+        best_idx = -1
+        best_score = 0.0
+        for gt_idx, gt_row in enumerate(gt_pool):
+            if gt_idx in used_gt_indices:
+                continue
+            score = _row_weighted_match_score(gt_row, pred_row)
+            if score > best_score:
+                best_score = score
+                best_idx = gt_idx
+        if best_idx >= 0 and best_score > 0.0:
+            used_gt_indices.add(best_idx)
+            matched_score += best_score
+
+    return min(1.0, matched_score / len(gt_pool))
 
 
 def _safe_ratio(numerator: int | float, denominator: int | float) -> float:
@@ -287,7 +337,10 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
     exp_table_sql_succ_rate = _safe_ratio(exp_table_sql_success, exp_table_sql_calls)
 
     shaping_bonus = 0.0
-    answer_score = 1.0 if final_answer_extractable and pred_structure_valid else 0.0
+    partial_match_ratio = _partial_row_match_ratio(gt_rows, pred_rows) if isinstance(gt_rows, list) and isinstance(pred_rows, list) else 0.0
+    answer_score = 0.0
+    if final_answer_extractable and pred_structure_valid:
+        answer_score = partial_match_ratio
     if _SHAPING_ENABLED and not is_correct and sql_call_count > 0 and exp_table_sql_calls > 0:
         shaping_factor = exp_table_hit_rate * exp_table_sql_succ_rate * answer_score
         shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, _MAX_SHAPING_BONUS * shaping_factor))

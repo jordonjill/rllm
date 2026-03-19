@@ -21,7 +21,7 @@ python3 -m projects.ecoqa.train_ecoqa \
     algorithm.adv_estimator=grpo \
     data.train_batch_size=8 \
     data.val_batch_size=8 \
-    data.max_prompt_length=2048 \
+    data.max_prompt_length=2560 \
     data.max_response_length=3072 \
     actor_rollout_ref.model.path=/root/autodl-tmp/models/Qwen3-4B-Instruct-2507 \
     actor_rollout_ref.model.use_remove_padding=True \
@@ -59,7 +59,7 @@ python3 -m projects.ecoqa.train_ecoqa \
     actor_rollout_ref.rollout.enable_prefix_caching=True \
     actor_rollout_ref.actor.checkpoint.save_contents=[model] \
     actor_rollout_ref.actor.checkpoint.load_contents=[model] \
-    trainer.max_actor_ckpt_to_keep=1 \
+    trainer.max_actor_ckpt_to_keep=3 \
     trainer.logger=['console','wandb'] \
     trainer.project_name='rllm-agent' \
     trainer.experiment_name='ecoqa-4b-nr-nc' \
@@ -67,7 +67,7 @@ python3 -m projects.ecoqa.train_ecoqa \
     trainer.resume_mode=disable \
     trainer.n_gpus_per_node=1 \
     trainer.nnodes=1 \
-    trainer.save_freq=90 \
+    trainer.save_freq=10 \
     trainer.test_freq=30 \
     trainer.default_hdfs_dir=null \
     trainer.default_local_dir=/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b \

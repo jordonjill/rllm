@@ -104,11 +104,13 @@ python -m projects.ecoqa.run_ecoqa
 Run trained checkpoint:
 
 ```bash
-CKPT_DIR=$(ls -d /root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b/global_step_* | sort -V | tail -n1)
+CKPT_STEP_DIR=$(ls -d /root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b/global_step_* | sort -V | tail -n1)
 
 python -m vllm.entrypoints.openai.api_server \
-  --model "$CKPT_DIR" \
-  --served-model-name ecoqa-ckpt \
+  --model /root/autodl-tmp/models/Qwen3-4B-Instruct-2507 \
+  --served-model-name ecoqa-qwen \
+  --enable-lora \
+  --lora-modules ecoqa-ckpt="$CKPT_STEP_DIR"/actor/lora_adapter \
   --host 0.0.0.0 \
   --port 30000 \
   --dtype bfloat16 \
@@ -128,15 +130,19 @@ override `ECOQA_BASE_MODEL_PATH`, `ECOQA_CKPT_MODEL_PATH`, and `ECOQA_BASE_URL`.
 
 `run_ecoqa.py` checkpoint selection behavior:
 
-- If `ECOQA_CKPT_MODEL_PATH` is set, use it directly (recommended when vLLM uses `--served-model-name`).
-- Else it resolves the latest `global_step_*` under `ECOQA_CKPT_ROOT` (default `/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b`).
+- Base model default: `/root/autodl-tmp/models/Qwen3-4B-Instruct-2507`
+- Checkpoint model default: `ecoqa-ckpt` (served LoRA model id)
 
 Run only `global_step_90`:
 
 ```bash
+CKPT_STEP_DIR=/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b/global_step_90
+
 python -m vllm.entrypoints.openai.api_server \
-  --model /root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b/global_step_90 \
-  --served-model-name ecoqa-ckpt \
+  --model /root/autodl-tmp/models/Qwen3-4B-Instruct-2507 \
+  --served-model-name ecoqa-qwen \
+  --enable-lora \
+  --lora-modules ecoqa-ckpt="$CKPT_STEP_DIR"/actor/lora_adapter \
   --host 0.0.0.0 \
   --port 30000 \
   --dtype bfloat16 \
@@ -149,6 +155,17 @@ python -m vllm.entrypoints.openai.api_server \
 ```bash
 bash projects/ecoqa/train_ecoqa.sh
 ```
+
+Run two-stage training without curriculum (stage-1 with small shaping, stage-2 correctness-only):
+
+```bash
+bash projects/ecoqa/train_ecoqa_twostage.sh
+```
+
+Shaping env vars:
+
+- `ECOQA_ENABLE_SHAPING_BONUS` (default `True`)
+- `ECOQA_MAX_SHAPING_BONUS` (default `0.10`)
 
 ## Runtime Troubleshooting
 

@@ -1,5 +1,4 @@
 from projects.ecoqa import prepare_ecoqa_data as prep
-from projects.ecoqa.train_ecoqa_curriculum import _infer_sql_difficulty
 
 
 class _DummyDataset:
@@ -11,36 +10,6 @@ class _DummyDataset:
 
     def get_data(self):
         return self._data
-
-
-def test_curriculum_requires_calculator_increases_difficulty_bucket():
-    base = {
-        "ground_truth_sql": "SELECT month FROM exchange_rates WHERE year = 2024 ORDER BY month DESC",
-        "requires_calculator": False,
-    }
-    calc = dict(base)
-    calc["requires_calculator"] = True
-
-    assert _infer_sql_difficulty(base) == "easy"
-    assert _infer_sql_difficulty(calc) == "medium"
-
-
-def test_curriculum_structure_items_and_dims_increase_difficulty():
-    base = {
-        "ground_truth_sql": "SELECT month FROM exchange_rates ORDER BY month DESC",
-        "requires_calculator": False,
-        "ground_truth": '{"rows":[{"month":12}]}',
-    }
-    richer = {
-        **base,
-        "ground_truth": (
-            '{"rows":[{"year":2024,"month":12},'
-            '{"year":2024,"month":11}]}'
-        ),
-    }
-
-    assert _infer_sql_difficulty(base) == "easy"
-    assert _infer_sql_difficulty(richer) == "medium"
 
 
 def test_prepare_data_keeps_requires_calculator_field(monkeypatch):

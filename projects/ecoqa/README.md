@@ -29,14 +29,13 @@ It is not training; it is for end-to-end evaluation/inference.
 - QA ground truth now uses a unified structured JSON format:
   - `{"rows":[{"result": ..., "year": ..., "month": ...}, ...]}`
   - no-data answer: `{"rows":[]}`
-- Reward correctness compares `rows` structurally (order-insensitive) with normalized key/value matching.
+- Reward score is row-level **F1** over normalized structured rows.
+- Exact-match correctness (`is_correct`) requires predicted rows to be fully identical to ground truth rows.
 - Recommended output convention:
   - put main target value in `result`
   - put qualifiers in other columns (`year/month/geo_name/...`)
-- Reward metadata keeps only 5 fields:
-  - `final_reward`
-  - `correctness_reward`
-  - `shaping_bonus`
+- Reward metadata keeps 3 fields:
+  - `f1_score`
   - `exp_table_hit_rate`
   - `exp_table_sql_succ_rate`
 
@@ -196,7 +195,7 @@ Tips:
 - Enable/disable models in `projects/ecoqa/benchmarks/model_profiles.json`.
 - For online API models, set the env var referenced by `api_key_env` (for example `OPENAI_API_KEY`).
 - For trained checkpoints, update `model` in the `trained_ecoqa_local` profile and start a serving endpoint.
-- `model_comparison.csv` includes mean values for `final_reward`, `correctness_reward`, `shaping_bonus`, `exp_table_hit_rate`, and `exp_table_sql_succ_rate`.
+- `model_comparison.csv` includes `pass_at_1`, `pass_at_k`, `f1_score_mean`, `exp_table_hit_rate_mean`, and `exp_table_sql_succ_rate_mean`.
 
 ## Tests
 

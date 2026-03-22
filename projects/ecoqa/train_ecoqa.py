@@ -76,13 +76,9 @@ class EcoQAWorkflow(MultiTurnWorkflow):
         if episode.trajectories and episode.trajectories[0].steps:
             step_info = episode.trajectories[0].steps[-1].info
             metadata = step_info.get("metadata", {})
-            correctness_reward = float(metadata.get("correctness_reward", float(step_info.get("is_correct", False))))
+            f1_score = float(metadata.get("f1_score", getattr(episode.trajectories[0], "reward", 0.0)))
 
-            episode.metrics["correctness_reward"] = correctness_reward
-            episode.metrics["final_reward"] = float(
-                metadata.get("final_reward", getattr(episode.trajectories[0], "reward", correctness_reward))
-            )
-            episode.metrics["shaping_bonus"] = float(metadata.get("shaping_bonus", 0.0))
+            episode.metrics["f1_score"] = f1_score
             episode.metrics["exp_table_hit_rate"] = float(metadata.get("exp_table_hit_rate", 0.0))
             episode.metrics["exp_table_sql_succ_rate"] = float(metadata.get("exp_table_sql_succ_rate", 0.0))
 

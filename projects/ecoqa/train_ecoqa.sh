@@ -12,10 +12,6 @@ export WANDB_DIR=/root/autodl-tmp/wandb
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export OMP_NUM_THREADS=10
-export SHAPING_ENABLE=${SHAPING_ENABLE:-False}
-export SHAPING_MAX_BONUS=${SHAPING_MAX_BONUS:-0.10}
-export ECOQA_ENABLE_SHAPING_BONUS=${SHAPING_ENABLE}
-export ECOQA_MAX_SHAPING_BONUS=${SHAPING_MAX_BONUS}
 
 python3 -m projects.ecoqa.train_ecoqa \
     algorithm.adv_estimator=grpo \
@@ -59,15 +55,15 @@ python3 -m projects.ecoqa.train_ecoqa \
     actor_rollout_ref.rollout.enable_prefix_caching=True \
     actor_rollout_ref.actor.checkpoint.save_contents=[model] \
     actor_rollout_ref.actor.checkpoint.load_contents=[model] \
-    trainer.max_actor_ckpt_to_keep=3 \
+    trainer.max_actor_ckpt_to_keep=1 \
     trainer.logger=['console','wandb'] \
     trainer.project_name='rllm-agent' \
-    trainer.experiment_name='ecoqa-4b-nr-nc' \
+    trainer.experiment_name='ecoqa-4b-f1' \
     trainer.val_before_train=True \
     trainer.resume_mode=disable \
     trainer.n_gpus_per_node=1 \
     trainer.nnodes=1 \
-    trainer.save_freq=10 \
+    trainer.save_freq=90 \
     trainer.test_freq=30 \
     trainer.default_hdfs_dir=null \
     trainer.default_local_dir=/root/autodl-tmp/checkpoints/rllm-agent/ecoqa-4b \

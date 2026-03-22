@@ -1,6 +1,5 @@
 import json
 import math
-import os
 import re
 from collections import Counter
 
@@ -29,33 +28,6 @@ _QUALIFIER_KEYS = {
     "category",
     "rank",
 }
-
-
-def _as_env_bool(name: str, default: bool) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    lowered = value.strip().lower()
-    if lowered in {"1", "true", "yes", "y", "on"}:
-        return True
-    if lowered in {"0", "false", "no", "n", "off"}:
-        return False
-    return default
-
-
-def _as_env_float(name: str, default: float) -> float:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    try:
-        parsed = float(value)
-    except ValueError:
-        return default
-    return parsed
-
-
-_SHAPING_ENABLED = _as_env_bool("ECOQA_ENABLE_SHAPING_BONUS", True)
-_MAX_SHAPING_BONUS = max(0.0, _as_env_float("ECOQA_MAX_SHAPING_BONUS", 0.10))
 
 
 def _extract_final_answer_with_status(action: str) -> tuple[str, bool]:
@@ -191,65 +163,32 @@ def _extract_rows(text: str) -> list | None:
     return None
 
 
-def _is_valid_structure_prediction(text: str) -> bool:
-    parsed = _try_parse_json(text)
-    if not isinstance(parsed, dict):
-        return False
-
-    rows = parsed.get("rows")
+def _to_row_counter(rows: list) -> Counter[str] | None:
     if not isinstance(rows, list):
-        return False
+        return None
     if not all(isinstance(row, dict) for row in rows):
-        return False
-    if not rows:
-        return True
-    return all(len(row) > 0 for row in rows)
+        return None
+    return Counter(_serialize_row(_normalize_row(row)) for row in rows)
 
 
-def _row_weighted_match_score(gt_row: dict, pred_row: dict) -> float:
-    if not gt_row:
+def _counter_f1_score(gt_counter: Counter[str], pred_counter: Counter[str]) -> float:
+    gt_total = sum(gt_counter.values())
+    pred_total = sum(pred_counter.values())
+
+    if gt_total == 0 and pred_total == 0:
+        return 1.0
+    if gt_total == 0 or pred_total == 0:
         return 0.0
 
-    if "result" in gt_row:
-        result_score = 1.0 if pred_row.get("result") == gt_row.get("result") else 0.0
-        dim_keys = [key for key in gt_row.keys() if key != "result"]
-        if dim_keys:
-            dim_match = sum(1 for key in dim_keys if pred_row.get(key) == gt_row.get(key)) / len(dim_keys)
-        else:
-            dim_match = 1.0
-        return 0.8 * result_score + 0.2 * dim_match
+    overlap = 0
+    for row_key in set(gt_counter) | set(pred_counter):
+        overlap += min(gt_counter.get(row_key, 0), pred_counter.get(row_key, 0))
 
-    matched = sum(1 for key, value in gt_row.items() if pred_row.get(key) == value)
-    return matched / len(gt_row)
-
-
-def _partial_row_match_ratio(gt_rows: list, pred_rows: list) -> float:
-    if not isinstance(gt_rows, list) or not isinstance(pred_rows, list):
+    precision = overlap / pred_total
+    recall = overlap / gt_total
+    if precision + recall == 0.0:
         return 0.0
-
-    gt_pool = [_normalize_row(row) for row in gt_rows if isinstance(row, dict)]
-    pred_pool = [_normalize_row(row) for row in pred_rows if isinstance(row, dict)]
-    if not gt_pool or not pred_pool:
-        return 0.0
-
-    pred_pool.sort(key=lambda row: len(row), reverse=True)
-    used_gt_indices: set[int] = set()
-    matched_score = 0.0
-    for pred_row in pred_pool:
-        best_idx = -1
-        best_score = 0.0
-        for gt_idx, gt_row in enumerate(gt_pool):
-            if gt_idx in used_gt_indices:
-                continue
-            score = _row_weighted_match_score(gt_row, pred_row)
-            if score > best_score:
-                best_score = score
-                best_idx = gt_idx
-        if best_idx >= 0 and best_score > 0.0:
-            used_gt_indices.add(best_idx)
-            matched_score += best_score
-
-    return min(1.0, matched_score / len(gt_pool))
+    return 2.0 * precision * recall / (precision + recall)
 
 
 def _safe_ratio(numerator: int | float, denominator: int | float) -> float:
@@ -298,63 +237,79 @@ def _sql_call_stats(task_info: dict, expected_tables: set[str]) -> tuple[int, in
     return total_sql_calls, exp_table_sql_calls, exp_table_sql_success
 
 
+def _build_metadata(
+    *,
+    f1_score: float,
+    exp_table_hit_rate: float,
+    exp_table_sql_succ_rate: float,
+) -> dict[str, float]:
+    return {
+        "f1_score": f1_score,
+        "exp_table_hit_rate": exp_table_hit_rate,
+        "exp_table_sql_succ_rate": exp_table_sql_succ_rate,
+    }
+
+
 def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
+    expected_tables = _normalize_expected_tables(task_info.get("table_name", ""))
+    sql_call_count, exp_table_sql_calls, exp_table_sql_success = _sql_call_stats(task_info, expected_tables)
+    exp_table_hit_rate = _safe_ratio(exp_table_sql_calls, sql_call_count)
+    exp_table_sql_succ_rate = _safe_ratio(exp_table_sql_success, exp_table_sql_calls)
+
     question = task_info.get("question")
     ground_truth = task_info.get("ground_truth")
     if not action or not question or ground_truth in (None, ""):
         return RewardOutput(
             reward=0.0,
             is_correct=False,
-            metadata={
-                "final_reward": 0.0,
-                "correctness_reward": 0.0,
-                "shaping_bonus": 0.0,
-                "exp_table_hit_rate": 0.0,
-                "exp_table_sql_succ_rate": 0.0,
-            },
+            metadata=_build_metadata(
+                f1_score=0.0,
+                exp_table_hit_rate=exp_table_hit_rate,
+                exp_table_sql_succ_rate=exp_table_sql_succ_rate,
+            ),
         )
 
     ground_truth_text = str(ground_truth)
     final_answer, final_answer_extractable = _extract_final_answer_with_status(action)
 
-    is_correct = False
     gt_rows = _extract_rows(ground_truth_text)
-    pred_rows = _extract_rows(final_answer)
-    pred_structure_valid = _is_valid_structure_prediction(final_answer)
+    gt_counter = _to_row_counter(gt_rows) if isinstance(gt_rows, list) else None
+    if gt_counter is None:
+        return RewardOutput(
+            reward=0.0,
+            is_correct=False,
+            metadata=_build_metadata(
+                f1_score=0.0,
+                exp_table_hit_rate=exp_table_hit_rate,
+                exp_table_sql_succ_rate=exp_table_sql_succ_rate,
+            ),
+        )
 
-    if isinstance(gt_rows, list) and isinstance(pred_rows, list):
-        if all(isinstance(row, dict) for row in gt_rows) and all(isinstance(row, dict) for row in pred_rows):
-            gt_counter = Counter(_serialize_row(_normalize_row(row)) for row in gt_rows)
-            pred_counter = Counter(_serialize_row(_normalize_row(row)) for row in pred_rows)
-            is_correct = pred_counter == gt_counter
+    pred_counter: Counter[str] | None = None
+    if final_answer_extractable:
+        pred_rows = _extract_rows(final_answer)
+        pred_counter = _to_row_counter(pred_rows) if isinstance(pred_rows, list) else None
 
-    correctness_reward = 1.0 if is_correct else 0.0
-    expected_table_name = task_info.get("table_name", "")
+    if pred_counter is None:
+        return RewardOutput(
+            reward=0.0,
+            is_correct=False,
+            metadata=_build_metadata(
+                f1_score=0.0,
+                exp_table_hit_rate=exp_table_hit_rate,
+                exp_table_sql_succ_rate=exp_table_sql_succ_rate,
+            ),
+        )
 
-    expected_tables = _normalize_expected_tables(expected_table_name)
-    sql_call_count, exp_table_sql_calls, exp_table_sql_success = _sql_call_stats(task_info, expected_tables)
-    exp_table_hit_rate = _safe_ratio(exp_table_sql_calls, sql_call_count)
-    exp_table_sql_succ_rate = _safe_ratio(exp_table_sql_success, exp_table_sql_calls)
-
-    shaping_bonus = 0.0
-    partial_match_ratio = _partial_row_match_ratio(gt_rows, pred_rows) if isinstance(gt_rows, list) and isinstance(pred_rows, list) else 0.0
-    answer_score = 0.0
-    if final_answer_extractable and pred_structure_valid:
-        answer_score = partial_match_ratio
-    if _SHAPING_ENABLED and not is_correct and sql_call_count > 0 and exp_table_sql_calls > 0:
-        shaping_factor = exp_table_hit_rate * exp_table_sql_succ_rate * answer_score
-        shaping_bonus = max(0.0, min(_MAX_SHAPING_BONUS, _MAX_SHAPING_BONUS * shaping_factor))
-
-    final_reward = correctness_reward if is_correct else shaping_bonus
+    f1_score = _counter_f1_score(gt_counter, pred_counter)
+    is_correct = pred_counter == gt_counter
 
     return RewardOutput(
-        reward=final_reward,
+        reward=f1_score,
         is_correct=is_correct,
-        metadata={
-            "final_reward": final_reward,
-            "correctness_reward": correctness_reward,
-            "shaping_bonus": shaping_bonus,
-            "exp_table_hit_rate": exp_table_hit_rate,
-            "exp_table_sql_succ_rate": exp_table_sql_succ_rate,
-        },
+        metadata=_build_metadata(
+            f1_score=f1_score,
+            exp_table_hit_rate=exp_table_hit_rate,
+            exp_table_sql_succ_rate=exp_table_sql_succ_rate,
+        ),
     )

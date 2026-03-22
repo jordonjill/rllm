@@ -12,8 +12,7 @@ def _trajectory(
     *,
     reward: float,
     is_correct: bool | None = None,
-    correctness_reward: float | None = None,
-    shaping_bonus: float | None = None,
+    f1_score: float | None = None,
     exp_table_hit_rate: float | None = None,
     exp_table_sql_succ_rate: float | None = None,
 ):
@@ -22,10 +21,8 @@ def _trajectory(
         info["is_correct"] = is_correct
 
     metadata = {}
-    if correctness_reward is not None:
-        metadata["correctness_reward"] = correctness_reward
-    if shaping_bonus is not None:
-        metadata["shaping_bonus"] = shaping_bonus
+    if f1_score is not None:
+        metadata["f1_score"] = f1_score
     if exp_table_hit_rate is not None:
         metadata["exp_table_hit_rate"] = exp_table_hit_rate
     if exp_table_sql_succ_rate is not None:
@@ -42,7 +39,7 @@ def _trajectory(
     )
 
 
-def test_benchmark_trajectory_is_correct_ignores_positive_shaping_reward():
+def test_benchmark_trajectory_is_correct_ignores_positive_reward_when_not_exact():
     traj = _trajectory("q1", reward=0.15, is_correct=False)
     assert benchmark_is_correct(traj) is False
 
@@ -53,8 +50,7 @@ def test_benchmark_metrics_use_is_correct_flag_not_reward_sign():
             "q1",
             reward=0.15,
             is_correct=False,
-            correctness_reward=0.0,
-            shaping_bonus=0.15,
+            f1_score=0.15,
             exp_table_hit_rate=0.5,
             exp_table_sql_succ_rate=0.5,
         ),
@@ -62,8 +58,7 @@ def test_benchmark_metrics_use_is_correct_flag_not_reward_sign():
             "q1",
             reward=1.0,
             is_correct=True,
-            correctness_reward=1.0,
-            shaping_bonus=0.0,
+            f1_score=1.0,
             exp_table_hit_rate=1.0,
             exp_table_sql_succ_rate=1.0,
         ),
@@ -71,8 +66,7 @@ def test_benchmark_metrics_use_is_correct_flag_not_reward_sign():
             "q2",
             reward=0.12,
             is_correct=False,
-            correctness_reward=0.0,
-            shaping_bonus=0.12,
+            f1_score=0.12,
             exp_table_hit_rate=0.0,
             exp_table_sql_succ_rate=0.0,
         ),
@@ -82,15 +76,13 @@ def test_benchmark_metrics_use_is_correct_flag_not_reward_sign():
     assert metrics["num_unique_questions"] == 2
     assert metrics["pass_at_1"] == 1 / 3
     assert metrics["pass_at_k"] == 1 / 2
-    assert metrics["final_reward_mean"] == (0.15 + 1.0 + 0.12) / 3
-    assert metrics["correctness_reward_mean"] == (0.0 + 1.0 + 0.0) / 3
-    assert metrics["shaping_bonus_mean"] == (0.15 + 0.0 + 0.12) / 3
+    assert metrics["f1_score_mean"] == (0.15 + 1.0 + 0.12) / 3
     assert metrics["exp_table_hit_rate_mean"] == (0.5 + 1.0 + 0.0) / 3
     assert metrics["exp_table_sql_succ_rate_mean"] == (0.5 + 1.0 + 0.0) / 3
 
 
 def test_benchmark_is_correct_without_metadata_returns_false():
-    traj = _trajectory("q1", reward=1.0, is_correct=None, correctness_reward=None)
+    traj = _trajectory("q1", reward=1.0, is_correct=None, f1_score=None)
     assert benchmark_is_correct(traj) is False
 
 
@@ -98,7 +90,7 @@ def test_run_metrics_use_is_correct_flag_not_reward_sign(capsys):
     trajectories = [
         _trajectory("q1", reward=0.2, is_correct=False),
         _trajectory("q1", reward=0.1, is_correct=False),
-        _trajectory("q2", reward=0.05, is_correct=True, correctness_reward=1.0),
+        _trajectory("q2", reward=0.05, is_correct=True, f1_score=1.0),
     ]
 
     _print_eval_metrics(trajectories)
@@ -107,11 +99,11 @@ def test_run_metrics_use_is_correct_flag_not_reward_sign(capsys):
     assert "Total unique problems: 2" in captured
     assert "Pass@1: 0.3333333333333333" in captured
     assert "Pass@k: 0.5" in captured
-    assert "Final Reward Mean:" in captured
+    assert "F1 Score Mean:" in captured
 
 
-def test_run_is_correct_supports_correctness_reward_metadata_fallback():
-    correct = _trajectory("q1", reward=0.0, correctness_reward=1.0)
-    incorrect = _trajectory("q2", reward=0.2, correctness_reward=0.0)
+def test_run_is_correct_supports_f1_metadata_fallback():
+    correct = _trajectory("q1", reward=0.0, f1_score=1.0)
+    incorrect = _trajectory("q2", reward=0.2, f1_score=0.0)
     assert run_is_correct(correct) is True
     assert run_is_correct(incorrect) is False

@@ -84,8 +84,14 @@ def test_environment_forces_failure_on_step_budget_tool_call():
     assert reward == 0.0
     assert obs == {}
     assert info["is_correct"] is False
-    assert set(info["metadata"].keys()) == {"f1_score", "exp_table_hit_rate", "exp_table_sql_succ_rate"}
-    assert info["metadata"]["f1_score"] == 0.0
+    assert set(info["metadata"].keys()) == {
+        "final_reward",
+        "correctness_reward",
+        "exp_table_hit_rate",
+        "exp_table_sql_succ_rate",
+    }
+    assert info["metadata"]["final_reward"] == 0.0
+    assert info["metadata"]["correctness_reward"] == 0.0
     assert info["metadata"]["exp_table_hit_rate"] == 0.0
     assert info["metadata"]["exp_table_sql_succ_rate"] == 0.0
     assert task["sql_call_records"] == []

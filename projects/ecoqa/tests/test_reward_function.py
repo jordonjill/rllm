@@ -16,7 +16,8 @@ def test_exact_match_gets_f1_one():
     pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"rows":[{"result":8.10725}]}')
     assert pred.reward == 1.0
     assert pred.is_correct is True
-    assert pred.metadata["f1_score"] == 1.0
+    assert pred.metadata["final_reward"] == 1.0
+    assert pred.metadata["correctness_reward"] == 1.0
     assert pred.metadata["exp_table_hit_rate"] == 0.0
     assert pred.metadata["exp_table_sql_succ_rate"] == 0.0
 
@@ -46,6 +47,8 @@ def test_partial_overlap_returns_fractional_f1():
     pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"rows":[{"result":1}]}')
     assert pred.is_correct is False
     assert pred.reward == pytest.approx(2.0 / 3.0, rel=1e-9)
+    assert pred.metadata["final_reward"] == pytest.approx(2.0 / 3.0, rel=1e-9)
+    assert pred.metadata["correctness_reward"] == 0.0
 
 
 def test_extra_wrong_row_lowers_precision_and_f1():
@@ -80,6 +83,13 @@ def test_duplicate_rows_counted_with_multiplicity():
     task = _task('{"rows":[{"result":1},{"result":1}]}')
     pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"rows":[{"result":1}]}')
     assert pred.reward == pytest.approx(2.0 / 3.0, rel=1e-9)
+    assert pred.is_correct is False
+
+
+def test_partial_dict_match_gets_fractional_reward():
+    task = _task('{"rows":[{"year":2024,"result":100}]}')
+    pred = eco_qa_reward_function(task, 'FINAL ANSWER: {"rows":[{"year":2024,"result":90}]}')
+    assert pred.reward == pytest.approx(0.5, rel=1e-9)
     assert pred.is_correct is False
 
 

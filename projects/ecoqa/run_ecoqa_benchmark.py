@@ -34,10 +34,10 @@ def _trajectory_is_correct(trajectory) -> bool:
             return bool(info.get("is_correct"))
         metadata = info.get("metadata", {})
         if isinstance(metadata, dict):
-            f1_score = metadata.get("f1_score")
-            if f1_score is not None:
+            correctness_reward = metadata.get("correctness_reward")
+            if correctness_reward is not None:
                 try:
-                    return float(f1_score) >= 1.0
+                    return float(correctness_reward) >= 1.0
                 except (TypeError, ValueError):
                     pass
     return False
@@ -97,7 +97,8 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
             "num_unique_questions": 0,
             "pass_at_1": 0.0,
             "pass_at_k": 0.0,
-            "f1_score_mean": 0.0,
+            "final_reward_mean": 0.0,
+            "correctness_reward_mean": 0.0,
             "exp_table_hit_rate_mean": 0.0,
             "exp_table_sql_succ_rate_mean": 0.0,
         }
@@ -112,7 +113,8 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
         rows.append(
             {
                 "question_id": question_id,
-                "f1_score": _extract_float(metadata.get("f1_score"), reward),
+                "final_reward": _extract_float(metadata.get("final_reward"), reward),
+                "correctness_reward": _extract_float(metadata.get("correctness_reward"), float(is_correct)),
                 "exp_table_hit_rate": _extract_float(metadata.get("exp_table_hit_rate"), 0.0),
                 "exp_table_sql_succ_rate": _extract_float(metadata.get("exp_table_sql_succ_rate"), 0.0),
                 "is_correct": is_correct,
@@ -124,7 +126,8 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
     for r in rows:
         grouped.setdefault(r["question_id"], []).append(r)
     pass_at_k = sum(1 for _, group in grouped.items() if any(g["is_correct"] for g in group)) / len(grouped)
-    f1_score_mean = sum(r["f1_score"] for r in rows) / len(rows)
+    final_reward_mean = sum(r["final_reward"] for r in rows) / len(rows)
+    correctness_reward_mean = sum(r["correctness_reward"] for r in rows) / len(rows)
     exp_table_hit_rate_mean = sum(r["exp_table_hit_rate"] for r in rows) / len(rows)
     exp_table_sql_succ_rate_mean = sum(r["exp_table_sql_succ_rate"] for r in rows) / len(rows)
 
@@ -133,7 +136,8 @@ def _compute_metrics(trajectories: list) -> dict[str, Any]:
         "num_unique_questions": len(grouped),
         "pass_at_1": pass_at_1,
         "pass_at_k": pass_at_k,
-        "f1_score_mean": f1_score_mean,
+        "final_reward_mean": final_reward_mean,
+        "correctness_reward_mean": correctness_reward_mean,
         "exp_table_hit_rate_mean": exp_table_hit_rate_mean,
         "exp_table_sql_succ_rate_mean": exp_table_sql_succ_rate_mean,
     }
@@ -152,7 +156,8 @@ def _write_details(path: Path, run_id: str, profile: ModelProfile, trajectories:
                 "model_kind": profile.kind,
                 "trajectory_index": idx,
                 "question_id": task_id(task),
-                "f1_score": _extract_float(metadata.get("f1_score"), reward),
+                "final_reward": _extract_float(metadata.get("final_reward"), reward),
+                "correctness_reward": _extract_float(metadata.get("correctness_reward"), float(_trajectory_is_correct(traj))),
                 "is_correct": _trajectory_is_correct(traj),
                 "exp_table_hit_rate": _extract_float(metadata.get("exp_table_hit_rate"), 0.0),
                 "exp_table_sql_succ_rate": _extract_float(metadata.get("exp_table_sql_succ_rate"), 0.0),
@@ -175,7 +180,8 @@ def _append_summary(path: Path, summary_row: dict[str, Any]) -> None:
         "num_unique_questions",
         "pass_at_1",
         "pass_at_k",
-        "f1_score_mean",
+        "final_reward_mean",
+        "correctness_reward_mean",
         "exp_table_hit_rate_mean",
         "exp_table_sql_succ_rate_mean",
         "notes",
@@ -275,7 +281,8 @@ def main():
             "num_unique_questions": metrics["num_unique_questions"],
             "pass_at_1": round(metrics["pass_at_1"], 6),
             "pass_at_k": round(metrics["pass_at_k"], 6),
-            "f1_score_mean": round(metrics["f1_score_mean"], 6),
+            "final_reward_mean": round(metrics["final_reward_mean"], 6),
+            "correctness_reward_mean": round(metrics["correctness_reward_mean"], 6),
             "exp_table_hit_rate_mean": round(metrics["exp_table_hit_rate_mean"], 6),
             "exp_table_sql_succ_rate_mean": round(metrics["exp_table_sql_succ_rate_mean"], 6),
             "notes": profile.notes,
@@ -284,7 +291,7 @@ def main():
 
         print(
             f"pass@1={summary_row['pass_at_1']}, pass@k={summary_row['pass_at_k']}, "
-            f"f1_mean={summary_row['f1_score_mean']}"
+            f"final_reward_mean={summary_row['final_reward_mean']}"
         )
         print(f"details -> {details_path}")
 

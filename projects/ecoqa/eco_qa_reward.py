@@ -171,21 +171,59 @@ def _to_row_counter(rows: list) -> Counter[str] | None:
     return Counter(_serialize_row(_normalize_row(row)) for row in rows)
 
 
-def _counter_f1_score(gt_counter: Counter[str], pred_counter: Counter[str]) -> float:
-    gt_total = sum(gt_counter.values())
-    pred_total = sum(pred_counter.values())
+def _normalize_rows(rows: list) -> list[dict]:
+    if not isinstance(rows, list):
+        return []
+    return [_normalize_row(row) for row in rows if isinstance(row, dict)]
 
-    if gt_total == 0 and pred_total == 0:
+
+def _serialize_value(value: object) -> str:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+
+
+def _row_kv_f1_score(gt_row: dict, pred_row: dict) -> float:
+    gt_items = {(key, _serialize_value(value)) for key, value in gt_row.items()}
+    pred_items = {(key, _serialize_value(value)) for key, value in pred_row.items()}
+
+    if not gt_items and not pred_items:
         return 1.0
-    if gt_total == 0 or pred_total == 0:
+    if not gt_items or not pred_items:
         return 0.0
 
-    overlap = 0
-    for row_key in set(gt_counter) | set(pred_counter):
-        overlap += min(gt_counter.get(row_key, 0), pred_counter.get(row_key, 0))
+    tp = len(gt_items & pred_items)
+    if tp == 0:
+        return 0.0
+    fp = len(pred_items - gt_items)
+    fn = len(gt_items - pred_items)
+    return (2.0 * tp) / (2.0 * tp + fp + fn)
 
-    precision = overlap / pred_total
-    recall = overlap / gt_total
+
+def _dict_level_f1_score(gt_rows: list[dict], pred_rows: list[dict]) -> float:
+    if not gt_rows and not pred_rows:
+        return 1.0
+    if not gt_rows or not pred_rows:
+        return 0.0
+
+    scored_pairs: list[tuple[float, int, int]] = []
+    for gt_idx, gt_row in enumerate(gt_rows):
+        for pred_idx, pred_row in enumerate(pred_rows):
+            score = _row_kv_f1_score(gt_row, pred_row)
+            if score > 0.0:
+                scored_pairs.append((score, gt_idx, pred_idx))
+
+    scored_pairs.sort(key=lambda x: x[0], reverse=True)
+    used_gt: set[int] = set()
+    used_pred: set[int] = set()
+    matched_score_sum = 0.0
+    for score, gt_idx, pred_idx in scored_pairs:
+        if gt_idx in used_gt or pred_idx in used_pred:
+            continue
+        used_gt.add(gt_idx)
+        used_pred.add(pred_idx)
+        matched_score_sum += score
+
+    precision = matched_score_sum / len(pred_rows)
+    recall = matched_score_sum / len(gt_rows)
     if precision + recall == 0.0:
         return 0.0
     return 2.0 * precision * recall / (precision + recall)
@@ -239,12 +277,14 @@ def _sql_call_stats(task_info: dict, expected_tables: set[str]) -> tuple[int, in
 
 def _build_metadata(
     *,
-    f1_score: float,
+    final_reward: float,
+    correctness_reward: float,
     exp_table_hit_rate: float,
     exp_table_sql_succ_rate: float,
 ) -> dict[str, float]:
     return {
-        "f1_score": f1_score,
+        "final_reward": final_reward,
+        "correctness_reward": correctness_reward,
         "exp_table_hit_rate": exp_table_hit_rate,
         "exp_table_sql_succ_rate": exp_table_sql_succ_rate,
     }
@@ -263,7 +303,8 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
             reward=0.0,
             is_correct=False,
             metadata=_build_metadata(
-                f1_score=0.0,
+                final_reward=0.0,
+                correctness_reward=0.0,
                 exp_table_hit_rate=exp_table_hit_rate,
                 exp_table_sql_succ_rate=exp_table_sql_succ_rate,
             ),
@@ -274,41 +315,48 @@ def eco_qa_reward_function(task_info: dict, action: str) -> RewardOutput:
 
     gt_rows = _extract_rows(ground_truth_text)
     gt_counter = _to_row_counter(gt_rows) if isinstance(gt_rows, list) else None
+    gt_norm_rows = _normalize_rows(gt_rows) if isinstance(gt_rows, list) else []
     if gt_counter is None:
         return RewardOutput(
             reward=0.0,
             is_correct=False,
             metadata=_build_metadata(
-                f1_score=0.0,
+                final_reward=0.0,
+                correctness_reward=0.0,
                 exp_table_hit_rate=exp_table_hit_rate,
                 exp_table_sql_succ_rate=exp_table_sql_succ_rate,
             ),
         )
 
     pred_counter: Counter[str] | None = None
+    pred_norm_rows: list[dict] = []
     if final_answer_extractable:
         pred_rows = _extract_rows(final_answer)
         pred_counter = _to_row_counter(pred_rows) if isinstance(pred_rows, list) else None
+        pred_norm_rows = _normalize_rows(pred_rows) if isinstance(pred_rows, list) else []
 
     if pred_counter is None:
         return RewardOutput(
             reward=0.0,
             is_correct=False,
             metadata=_build_metadata(
-                f1_score=0.0,
+                final_reward=0.0,
+                correctness_reward=0.0,
                 exp_table_hit_rate=exp_table_hit_rate,
                 exp_table_sql_succ_rate=exp_table_sql_succ_rate,
             ),
         )
 
-    f1_score = _counter_f1_score(gt_counter, pred_counter)
+    final_reward = _dict_level_f1_score(gt_norm_rows, pred_norm_rows)
     is_correct = pred_counter == gt_counter
+    correctness_reward = 1.0 if is_correct else 0.0
 
     return RewardOutput(
-        reward=f1_score,
+        reward=final_reward,
         is_correct=is_correct,
         metadata=_build_metadata(
-            f1_score=f1_score,
+            final_reward=final_reward,
+            correctness_reward=correctness_reward,
             exp_table_hit_rate=exp_table_hit_rate,
             exp_table_sql_succ_rate=exp_table_sql_succ_rate,
         ),

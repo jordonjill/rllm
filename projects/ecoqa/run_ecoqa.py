@@ -14,10 +14,10 @@ def _trajectory_is_correct(trajectory) -> bool:
             return bool(info.get("is_correct"))
         metadata = info.get("metadata", {})
         if isinstance(metadata, dict):
-            f1_score = metadata.get("f1_score")
-            if f1_score is not None:
+            correctness_reward = metadata.get("correctness_reward")
+            if correctness_reward is not None:
                 try:
-                    return float(f1_score) >= 1.0
+                    return float(correctness_reward) >= 1.0
                 except (TypeError, ValueError):
                     pass
     return False
@@ -45,14 +45,16 @@ def _print_eval_metrics(trajectories: list) -> None:
         print("Total unique problems: 0")
         print("Pass@1: 0.0")
         print("Pass@k: 0.0")
-        print("F1 Score Mean: 0.0")
+        print("Final Reward Mean: 0.0")
+        print("Correctness Reward Mean: 0.0")
         print("Expected Table Hit Rate: 0.0")
         print("Expected Table SQL Success Rate: 0.0")
         return
 
     grouped: dict[str, list[bool]] = {}
     total_correct = 0
-    f1_scores: list[float] = []
+    final_rewards: list[float] = []
+    correctness_rewards: list[float] = []
     hit_rates: list[float] = []
     sql_succ_rates: list[float] = []
     for traj in trajectories:
@@ -62,10 +64,14 @@ def _print_eval_metrics(trajectories: list) -> None:
         grouped.setdefault(qid, []).append(is_correct)
         if is_correct:
             total_correct += 1
-        f1 = _extract_float_metadata(traj, "f1_score")
-        if f1 is None:
-            f1 = float(getattr(traj, "reward", 0.0) or 0.0)
-        f1_scores.append(f1)
+        final_reward = _extract_float_metadata(traj, "final_reward")
+        if final_reward is None:
+            final_reward = float(getattr(traj, "reward", 0.0) or 0.0)
+        final_rewards.append(final_reward)
+        correctness_reward = _extract_float_metadata(traj, "correctness_reward")
+        if correctness_reward is None:
+            correctness_reward = float(is_correct)
+        correctness_rewards.append(correctness_reward)
         hit_rate = _extract_float_metadata(traj, "exp_table_hit_rate")
         if hit_rate is not None:
             hit_rates.append(hit_rate)
@@ -75,14 +81,16 @@ def _print_eval_metrics(trajectories: list) -> None:
 
     pass_at_1 = total_correct / len(trajectories)
     pass_at_k = sum(1 for group in grouped.values() if any(group)) / len(grouped)
-    avg_f1 = sum(f1_scores) / len(f1_scores) if f1_scores else 0.0
+    avg_final_reward = sum(final_rewards) / len(final_rewards) if final_rewards else 0.0
+    avg_correctness_reward = sum(correctness_rewards) / len(correctness_rewards) if correctness_rewards else 0.0
     avg_hit_rate = sum(hit_rates) / len(hit_rates) if hit_rates else 0.0
     avg_sql_succ_rate = sum(sql_succ_rates) / len(sql_succ_rates) if sql_succ_rates else 0.0
 
     print("Total unique problems:", len(grouped))
     print("Pass@1:", pass_at_1)
     print("Pass@k:", pass_at_k)
-    print("F1 Score Mean:", avg_f1)
+    print("Final Reward Mean:", avg_final_reward)
+    print("Correctness Reward Mean:", avg_correctness_reward)
     print("Expected Table Hit Rate:", avg_hit_rate)
     print("Expected Table SQL Success Rate:", avg_sql_succ_rate)
 
